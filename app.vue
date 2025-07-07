@@ -23,7 +23,7 @@
     <!-- WhatsApp Button -->
     <a
       :href="t.whatsappLink"
-      class="fixed bottom-[30px] right-[30px] z-[1000] w-[60px] h-[60px] bg-green-500 rounded-full flex items-center justify-center animate-pulse cursor-pointer no-underline shadow-[0_5px_20px_rgba(37,211,102,0.4)] hover:scale-110 transition-transform duration-300 md:flex hidden"
+      class="fixed bottom-[30px] right-[30px] z-[1000] w-[60px] h-[60px] bg-[#25D366] rounded-full flex items-center justify-center animate-pulse cursor-pointer no-underline shadow-[0_4px_20px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_30px_rgba(0,0,0,0.25)] hover:scale-110 transition-all duration-300"
       target="_blank"
       aria-label="Contactar por WhatsApp"
     >
