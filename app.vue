@@ -62,23 +62,215 @@
       </div>
     </header>
 
-    <!-- Logos Section -->
-    <section id="logos" class="py-[50px] px-5 bg-white border-b border-gray-200 fade-in-section">
-      <div class="max-w-6xl mx-auto px-5">
-        <div class="text-center font-semibold text-gray-600 mb-[30px] text-base">
-          {{ t.logosHeader }}
+    <section id="logos" class="py-16 px-5 bg-gradient-to-b from-white to-gray-50 border-b border-gray-200 fade-in-section overflow-hidden">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center font-semibold text-gray-700 mb-10 text-lg">
+      {{ t.logosHeader }}
+    </div>
+    
+    <!-- Mobile Grid Layout -->
+    <div class="md:hidden">
+      <div class="grid grid-cols-3 gap-6">
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/21afeea318a64a71bcb1dbd3ef27ffec/shein-logo.png" 
+               alt="SHEIN Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
         </div>
-        <div class="flex justify-around items-center flex-wrap gap-10">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon Logo" class="h-[35px] max-w-[120px] object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/EBay_logo.svg" alt="eBay Logo" class="h-[35px] max-w-[120px] object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Walmart_logo.svg" alt="Walmart Logo" class="h-[35px] max-w-[120px] object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/f/f5/Best_Buy_Logo.svg" alt="Best Buy Logo" class="h-[35px] max-w-[120px] object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="Nike Logo" class="h-[35px] max-w-[120px] object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Target_logo.svg" alt="Target Logo" class="h-[50px] max-w-[120px] object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Costco_Wholesale_logo_2010-10-26.svg" alt="Costco Logo" class="h-[35px] max-w-[120px] object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+        
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/c7378301189a420a8648cdc317dad98b/sephora.png" 
+               alt="Sephora Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
+        </div>
+        
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/4342cf740e1d4c809a5266f006012ffc/macys-logo.png" 
+               alt="Macy's Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
+        </div>
+        
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9b11fc458968411b972a0f7df9e42c67/apple-logo.png" 
+               alt="Apple Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
+        </div>
+        
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/22ea4c4db5df4d4fbb4f5067de096869/shop-disney-logo.png" 
+               alt="Disney Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
+        </div>
+        
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9c6f199c00bc41a8ba335347cbb4ac66/ready-edit-nordstrom-logo-transparent-2.png" 
+               alt="Nordstrom Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
+        </div>
+        
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3706eb76defa4368bf0c8b1d738b3456/amazon-logo.png" 
+               alt="Amazon Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
+        </div>
+        
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/7569832f95cb49f8af42a2aa4c4adc8d/walmart-logo.png" 
+               alt="Walmart Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
+        </div>
+        
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/fbd77ea07e224a73b1fecf4137d7ba78/ebay-logo.png" 
+               alt="eBay Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
+        </div>
+        
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/f3ffc5a464e94ff89d4405d026923c27/bath-body-works.png" 
+               alt="Bath & Body Works Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
+        </div>
+        
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3e5ad2a7062640a1a4fee03f0004ebbe/gap.png" 
+               alt="Gap Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
+        </div>
+        
+        <div class="flex items-center justify-center">
+          <img src="https://static.nc-myus.com/images/pub/www/uploads/image/774f8d281cfe45ef81f7882de1599be2/carters-logo-120x120.png" 
+               alt="Carter's Logo" 
+               class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
         </div>
       </div>
-    </section>
+    </div>
+    
+    <!-- Desktop Carousel -->
+    <div class="hidden md:block relative">
+      <!-- Gradient Overlays for smooth edges -->
+      <div class="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-white via-white to-transparent z-10 pointer-events-none md:w-32"></div>
+      <div class="absolute right-0 top-0 w-20 h-full bg-gradient-to-l from-white via-white to-transparent z-10 pointer-events-none md:w-32"></div>
+      
+      <!-- Carousel Wrapper -->
+      <div 
+        ref="logoCarousel"
+        class="flex overflow-x-auto scrollbar-hide touch-pan-x"
+        @mousedown="startDrag"
+        @mousemove="onDrag"
+        @mouseup="endDrag"
+        @mouseleave="endDrag"
+        @touchstart="startTouch"
+        @touchmove="onTouch"
+        @touchend="endTouch"
+      >
+        <!-- Logo Track - Duplicated for infinite scroll effect -->
+        <div class="flex animate-scroll-logos">
+          <!-- First set of logos -->
+          <div class="flex items-center gap-12 px-6">
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/21afeea318a64a71bcb1dbd3ef27ffec/shein-logo.png" 
+                 alt="SHEIN Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/c7378301189a420a8648cdc317dad98b/sephora.png" 
+                 alt="Sephora Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/4342cf740e1d4c809a5266f006012ffc/macys-logo.png" 
+                 alt="Macy's Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9b11fc458968411b972a0f7df9e42c67/apple-logo.png" 
+                 alt="Apple Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/22ea4c4db5df4d4fbb4f5067de096869/shop-disney-logo.png" 
+                 alt="Disney Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9c6f199c00bc41a8ba335347cbb4ac66/ready-edit-nordstrom-logo-transparent-2.png" 
+                 alt="Nordstrom Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3706eb76defa4368bf0c8b1d738b3456/amazon-logo.png" 
+                 alt="Amazon Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/7569832f95cb49f8af42a2aa4c4adc8d/walmart-logo.png" 
+                 alt="Walmart Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/fbd77ea07e224a73b1fecf4137d7ba78/ebay-logo.png" 
+                 alt="eBay Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/f3ffc5a464e94ff89d4405d026923c27/bath-body-works.png" 
+                 alt="Bath & Body Works Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3e5ad2a7062640a1a4fee03f0004ebbe/gap.png" 
+                 alt="Gap Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/774f8d281cfe45ef81f7882de1599be2/carters-logo-120x120.png" 
+                 alt="Carter's Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+          </div>
+          
+          <!-- Duplicate set for seamless loop -->
+          <div class="flex items-center gap-12 px-6">
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/21afeea318a64a71bcb1dbd3ef27ffec/shein-logo.png" 
+                 alt="SHEIN Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/c7378301189a420a8648cdc317dad98b/sephora.png" 
+                 alt="Sephora Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/4342cf740e1d4c809a5266f006012ffc/macys-logo.png" 
+                 alt="Macy's Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9b11fc458968411b972a0f7df9e42c67/apple-logo.png" 
+                 alt="Apple Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/22ea4c4db5df4d4fbb4f5067de096869/shop-disney-logo.png" 
+                 alt="Disney Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9c6f199c00bc41a8ba335347cbb4ac66/ready-edit-nordstrom-logo-transparent-2.png" 
+                 alt="Nordstrom Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3706eb76defa4368bf0c8b1d738b3456/amazon-logo.png" 
+                 alt="Amazon Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/7569832f95cb49f8af42a2aa4c4adc8d/walmart-logo.png" 
+                 alt="Walmart Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/fbd77ea07e224a73b1fecf4137d7ba78/ebay-logo.png" 
+                 alt="eBay Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/f3ffc5a464e94ff89d4405d026923c27/bath-body-works.png" 
+                 alt="Bath & Body Works Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3e5ad2a7062640a1a4fee03f0004ebbe/gap.png" 
+                 alt="Gap Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+            
+            <img src="https://static.nc-myus.com/images/pub/www/uploads/image/774f8d281cfe45ef81f7882de1599be2/carters-logo-120x120.png" 
+                 alt="Carter's Logo" 
+                 class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
     <!-- How It Works Section -->
     <section id="how-it-works" class="py-24 px-5">
@@ -353,9 +545,8 @@
     </footer>
   </div>
 </template>
-
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 // Language state
 const currentLang = ref('es')
@@ -376,6 +567,14 @@ const calculatorResult = ref({
 
 // FAQ state
 const openFaq = ref(-1)
+
+// Logo carousel state
+const logoCarousel = ref(null)
+const isDragging = ref(false)
+const startX = ref(0)
+const scrollLeft = ref(0)
+const animationPaused = ref(false)
+const autoScrollInterval = ref(null)
 
 // Translations
 const translations = {
@@ -805,7 +1004,106 @@ const calculatePrice = () => {
   }
 }
 
-// Lifecycle
+// Logo Carousel Methods - Updated for perfect infinite loop
+const startAutoScroll = () => {
+  if (!logoCarousel.value) return
+  
+  // Clear any existing interval
+  if (autoScrollInterval.value) {
+    clearInterval(autoScrollInterval.value)
+  }
+  
+  // Start auto-scrolling
+  autoScrollInterval.value = setInterval(() => {
+    if (!isDragging.value && logoCarousel.value) {
+      logoCarousel.value.scrollLeft += 1
+      
+      // Check if we've scrolled halfway through (one complete set)
+      const scrollWidth = logoCarousel.value.scrollWidth
+      const clientWidth = logoCarousel.value.clientWidth
+      const maxScroll = scrollWidth - clientWidth
+      
+      // Reset to beginning when we've scrolled through one complete set
+      if (logoCarousel.value.scrollLeft >= maxScroll / 2) {
+        logoCarousel.value.scrollLeft = 0
+      }
+    }
+  }, 30) // Smooth scrolling at 30fps
+}
+
+const stopAutoScroll = () => {
+  if (autoScrollInterval.value) {
+    clearInterval(autoScrollInterval.value)
+    autoScrollInterval.value = null
+  }
+}
+
+const startDrag = (e) => {
+  isDragging.value = true
+  startX.value = e.pageX - logoCarousel.value.offsetLeft
+  scrollLeft.value = logoCarousel.value.scrollLeft
+  logoCarousel.value.style.cursor = 'grabbing'
+  stopAutoScroll()
+}
+
+const onDrag = (e) => {
+  if (!isDragging.value) return
+  e.preventDefault()
+  const x = e.pageX - logoCarousel.value.offsetLeft
+  const walk = (x - startX.value) * 2
+  logoCarousel.value.scrollLeft = scrollLeft.value - walk
+}
+
+const endDrag = () => {
+  isDragging.value = false
+  if (logoCarousel.value) {
+    logoCarousel.value.style.cursor = 'grab'
+  }
+  // Resume auto-scroll after a delay
+  setTimeout(() => {
+    if (!isDragging.value) {
+      startAutoScroll()
+    }
+  }, 1000)
+}
+
+const startTouch = (e) => {
+  isDragging.value = true
+  startX.value = e.touches[0].pageX - logoCarousel.value.offsetLeft
+  scrollLeft.value = logoCarousel.value.scrollLeft
+  stopAutoScroll()
+}
+
+const onTouch = (e) => {
+  if (!isDragging.value) return
+  const x = e.touches[0].pageX - logoCarousel.value.offsetLeft
+  const walk = (x - startX.value) * 2
+  logoCarousel.value.scrollLeft = scrollLeft.value - walk
+}
+
+const endTouch = () => {
+  isDragging.value = false
+  // Resume auto-scroll after a delay
+  setTimeout(() => {
+    if (!isDragging.value) {
+      startAutoScroll()
+    }
+  }, 1000)
+}
+
+const pauseAnimation = () => {
+  stopAutoScroll()
+}
+
+const resumeAnimation = () => {
+  setTimeout(() => {
+    if (!isDragging.value) {
+      startAutoScroll()
+    }
+  }, 1000)
+}
+
+// Lifecycle hooks
 onMounted(() => {
   // Load preferred language
   if (typeof window !== 'undefined') {
@@ -813,7 +1111,109 @@ onMounted(() => {
     currentLang.value = preferredLanguage
   }
 
-  // Intersection Observer for animations
+  // Add styles for animations
+  const style = document.createElement('style')
+  style.textContent = `
+    /* Remove CSS animation in favor of JS-based scrolling */
+    .animate-scroll-logos {
+      display: flex;
+      animation: none !important;
+    }
+    
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Fade in animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fadeIn {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .fade-in-section {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    /* Pulse animation for WhatsApp button */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 5px 30px rgba(37, 211, 102, 0.6);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+      }
+    }
+
+    .animate-pulse {
+      animation: pulse 2s infinite;
+    }
+
+    /* Tailwind primary color variables */
+    :root {
+      --primary-50: #eff6ff;
+      --primary-100: #dbeafe;
+      --primary-200: #bfdbfe;
+      --primary-300: #93c5fd;
+      --primary-400: #60a5fa;
+      --primary-500: #2E6BB7;
+      --primary-600: #2563eb;
+      --primary-700: #1d4ed8;
+      --primary-800: #1e40af;
+      --primary-900: #1e3a8a;
+    }
+
+    .bg-primary-50 { background-color: var(--primary-50); }
+    .bg-primary-500 { background-color: var(--primary-500); }
+    .bg-primary-600 { background-color: var(--primary-600); }
+    .text-primary-500 { color: var(--primary-500); }
+    .border-primary-500 { border-color: var(--primary-500); }
+    .hover\\:bg-primary-600:hover { background-color: var(--primary-600); }
+    .hover\\:text-primary-500:hover { color: var(--primary-500); }
+    .hover\\:border-primary-500:hover { border-color: var(--primary-500); }
+
+    .bg-dark-500 { background-color: #1a202c; }
+  `
+  document.head.appendChild(style)
+
+  // Start auto-scrolling after a short delay
+  setTimeout(() => {
+    startAutoScroll()
+  }, 500)
+
+  // Add hover listeners to pause/resume on hover
+  if (logoCarousel.value) {
+    logoCarousel.value.addEventListener('mouseenter', stopAutoScroll)
+    logoCarousel.value.addEventListener('mouseleave', () => {
+      if (!isDragging.value) {
+        startAutoScroll()
+      }
+    })
+  }
+
+  // Intersection Observer for section animations
   const sections = document.querySelectorAll('.fade-in-section')
   const observer = new IntersectionObserver(
     (entries) => {
@@ -831,5 +1231,15 @@ onMounted(() => {
     section.style.animationPlayState = 'paused'
     observer.observe(section)
   })
+})
+
+onUnmounted(() => {
+  // Clean up
+  stopAutoScroll()
+  
+  if (logoCarousel.value) {
+    logoCarousel.value.removeEventListener('mouseenter', stopAutoScroll)
+    logoCarousel.value.removeEventListener('mouseleave', startAutoScroll)
+  }
 })
 </script>
