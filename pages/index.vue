@@ -13,7 +13,7 @@
     </a>
 
     <!-- Hero Section -->
-    <header class="min-h-[95vh] flex items-center text-center py-[120px] px-5 bg-white">
+    <header class="min-h-[75vh] flex items-center text-center py-[120px] px-5 bg-white">
       <div class="max-w-[800px] mx-auto animate-fadeIn">
         <svg class="w-[100px] h-auto mb-5 mx-auto" viewBox="0 0 150 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
           <g stroke="#0d2c4f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
@@ -32,7 +32,7 @@
           {{ t.heroSubtitle }}
         </p>
         <div class="flex justify-center gap-[15px] flex-wrap">
-          <a href="#pricing" class="px-8 py-4 rounded-full inline-flex items-center justify-center gap-2.5 font-semibold text-lg no-underline border-2 border-transparent cursor-pointer transition-all duration-300 bg-primary-500 text-white shadow-md hover:-translate-y-1 hover:shadow-lg hover:bg-primary-600">
+          <a href="#how-it-works" class="px-8 py-4 rounded-full inline-flex items-center justify-center gap-2.5 font-semibold text-lg no-underline border-2 border-transparent cursor-pointer transition-all duration-300 bg-primary-500 text-white shadow-md hover:-translate-y-1 hover:shadow-lg hover:bg-primary-600">
             {{ t.ctaPlans }}
           </a>
           <a href="#calculator" class="px-8 py-4 rounded-full inline-flex items-center justify-center gap-2.5 font-semibold text-lg no-underline border-2 cursor-pointer transition-all duration-300 border-gray-200 bg-white text-gray-900 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5">
@@ -42,215 +42,7 @@
       </div>
     </header>
 
-    <section id="logos" class="py-16 px-5 bg-gradient-to-b from-white to-gray-50 border-b border-gray-200 fade-in-section overflow-hidden">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center font-semibold text-gray-700 mb-10 text-lg">
-          {{ t.logosHeader }}
-        </div>
-        
-        <!-- Mobile Grid Layout -->
-        <div class="md:hidden">
-          <div class="grid grid-cols-3 gap-6">
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/21afeea318a64a71bcb1dbd3ef27ffec/shein-logo.png" 
-                   alt="SHEIN Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-            
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/c7378301189a420a8648cdc317dad98b/sephora.png" 
-                   alt="Sephora Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-            
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/4342cf740e1d4c809a5266f006012ffc/macys-logo.png" 
-                   alt="Macy's Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-            
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9b11fc458968411b972a0f7df9e42c67/apple-logo.png" 
-                   alt="Apple Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-            
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/22ea4c4db5df4d4fbb4f5067de096869/shop-disney-logo.png" 
-                   alt="Disney Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-            
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9c6f199c00bc41a8ba335347cbb4ac66/ready-edit-nordstrom-logo-transparent-2.png" 
-                   alt="Nordstrom Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-            
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3706eb76defa4368bf0c8b1d738b3456/amazon-logo.png" 
-                   alt="Amazon Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-            
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/7569832f95cb49f8af42a2aa4c4adc8d/walmart-logo.png" 
-                   alt="Walmart Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-            
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/fbd77ea07e224a73b1fecf4137d7ba78/ebay-logo.png" 
-                   alt="eBay Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-            
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/f3ffc5a464e94ff89d4405d026923c27/bath-body-works.png" 
-                   alt="Bath & Body Works Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-            
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3e5ad2a7062640a1a4fee03f0004ebbe/gap.png" 
-                   alt="Gap Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-            
-            <div class="flex items-center justify-center">
-              <img src="https://static.nc-myus.com/images/pub/www/uploads/image/774f8d281cfe45ef81f7882de1599be2/carters-logo-120x120.png" 
-                   alt="Carter's Logo" 
-                   class="h-16 w-auto max-w-[100px] object-contain grayscale opacity-60">
-            </div>
-          </div>
-        </div>
-        
-        <!-- Desktop Carousel -->
-        <div class="hidden md:block relative">
-          <!-- Gradient Overlays for smooth edges -->
-          <div class="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-white via-white to-transparent z-10 pointer-events-none md:w-32"></div>
-          <div class="absolute right-0 top-0 w-20 h-full bg-gradient-to-l from-white via-white to-transparent z-10 pointer-events-none md:w-32"></div>
-          
-          <!-- Carousel Wrapper -->
-          <div 
-            ref="logoCarousel"
-            class="flex overflow-x-auto scrollbar-hide touch-pan-x"
-            @mousedown="startDrag"
-            @mousemove="onDrag"
-            @mouseup="endDrag"
-            @mouseleave="endDrag"
-            @touchstart="startTouch"
-            @touchmove="onTouch"
-            @touchend="endTouch"
-          >
-            <!-- Logo Track - Duplicated for infinite scroll effect -->
-            <div class="flex animate-scroll-logos">
-              <!-- First set of logos -->
-              <div class="flex items-center gap-12 px-6">
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/21afeea318a64a71bcb1dbd3ef27ffec/shein-logo.png" 
-                     alt="SHEIN Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/c7378301189a420a8648cdc317dad98b/sephora.png" 
-                     alt="Sephora Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/4342cf740e1d4c809a5266f006012ffc/macys-logo.png" 
-                     alt="Macy's Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9b11fc458968411b972a0f7df9e42c67/apple-logo.png" 
-                     alt="Apple Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/22ea4c4db5df4d4fbb4f5067de096869/shop-disney-logo.png" 
-                     alt="Disney Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9c6f199c00bc41a8ba335347cbb4ac66/ready-edit-nordstrom-logo-transparent-2.png" 
-                     alt="Nordstrom Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3706eb76defa4368bf0c8b1d738b3456/amazon-logo.png" 
-                     alt="Amazon Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/7569832f95cb49f8af42a2aa4c4adc8d/walmart-logo.png" 
-                     alt="Walmart Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/fbd77ea07e224a73b1fecf4137d7ba78/ebay-logo.png" 
-                     alt="eBay Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/f3ffc5a464e94ff89d4405d026923c27/bath-body-works.png" 
-                     alt="Bath & Body Works Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3e5ad2a7062640a1a4fee03f0004ebbe/gap.png" 
-                     alt="Gap Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/774f8d281cfe45ef81f7882de1599be2/carters-logo-120x120.png" 
-                     alt="Carter's Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-              </div>
-              
-              <!-- Duplicate set for seamless loop -->
-              <div class="flex items-center gap-12 px-6">
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/21afeea318a64a71bcb1dbd3ef27ffec/shein-logo.png" 
-                     alt="SHEIN Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/c7378301189a420a8648cdc317dad98b/sephora.png" 
-                     alt="Sephora Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/4342cf740e1d4c809a5266f006012ffc/macys-logo.png" 
-                     alt="Macy's Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9b11fc458968411b972a0f7df9e42c67/apple-logo.png" 
-                     alt="Apple Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/22ea4c4db5df4d4fbb4f5067de096869/shop-disney-logo.png" 
-                     alt="Disney Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/9c6f199c00bc41a8ba335347cbb4ac66/ready-edit-nordstrom-logo-transparent-2.png" 
-                     alt="Nordstrom Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3706eb76defa4368bf0c8b1d738b3456/amazon-logo.png" 
-                     alt="Amazon Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/7569832f95cb49f8af42a2aa4c4adc8d/walmart-logo.png" 
-                     alt="Walmart Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/fbd77ea07e224a73b1fecf4137d7ba78/ebay-logo.png" 
-                     alt="eBay Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/f3ffc5a464e94ff89d4405d026923c27/bath-body-works.png" 
-                     alt="Bath & Body Works Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/3e5ad2a7062640a1a4fee03f0004ebbe/gap.png" 
-                     alt="Gap Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-                
-                <img src="https://static.nc-myus.com/images/pub/www/uploads/image/774f8d281cfe45ef81f7882de1599be2/carters-logo-120x120.png" 
-                     alt="Carter's Logo" 
-                     class="h-20 w-auto max-w-[280px] object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 cursor-pointer transform hover:scale-110">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <LogoCarousel :animation-speed="30" />
 
     <!-- How It Works Section -->
     <section id="how-it-works" class="py-24 px-5">
@@ -283,97 +75,7 @@
       </div>
     </section>
 
-    <!-- Calculator Section -->
-    <section id="calculator" class="py-24 px-5">
-      <div class="max-w-6xl mx-auto px-5 fade-in-section">
-        <div class="text-center mb-14 max-w-3xl mx-auto">
-          <span class="text-primary-500 font-semibold mb-2.5 block uppercase tracking-wider">{{ t.calculatorTagline }}</span>
-          <h2 class="text-4xl md:text-5xl lg:text-6xl mb-4 font-extrabold text-gray-900 leading-tight">{{ t.calculatorTitle }}</h2>
-          <p class="text-lg text-gray-600">{{ t.calculatorSubtitle }}</p>
-        </div>
-        <div class="max-w-3xl mx-auto bg-white p-10 rounded-2xl shadow-lg border border-gray-200">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-[30px]">
-            <div class="flex flex-col">
-              <label for="length" class="font-semibold mb-2 text-gray-900">{{ t.length }}</label>
-              <input v-model.number="dimensions.length" type="number" id="length" placeholder="0" class="w-full p-3 rounded-lg border border-gray-200 text-base">
-            </div>
-            <div class="flex flex-col">
-              <label for="width" class="font-semibold mb-2 text-gray-900">{{ t.width }}</label>
-              <input v-model.number="dimensions.width" type="number" id="width" placeholder="0" class="w-full p-3 rounded-lg border border-gray-200 text-base">
-            </div>
-            <div class="flex flex-col">
-              <label for="height" class="font-semibold mb-2 text-gray-900">{{ t.height }}</label>
-              <input v-model.number="dimensions.height" type="number" id="height" placeholder="0" class="w-full p-3 rounded-lg border border-gray-200 text-base">
-            </div>
-            <div class="flex flex-col">
-              <label class="font-semibold mb-2 text-gray-900">{{ t.unit }}</label>
-              <div class="flex bg-gray-50 rounded-lg p-1 border border-gray-200">
-                <button
-                  @click="currentUnit = 'cm'"
-                  :class="['flex-1 p-2 border-none bg-transparent rounded-md cursor-pointer font-semibold transition-all duration-200', currentUnit === 'cm' ? 'bg-primary-500 text-white' : '']"
-                >
-                  cm
-                </button>
-                <button
-                  @click="currentUnit = 'in'"
-                  :class="['flex-1 p-2 border-none bg-transparent rounded-md cursor-pointer font-semibold transition-all duration-200', currentUnit === 'in' ? 'bg-primary-500 text-white' : '']"
-                >
-                  in
-                </button>
-              </div>
-            </div>
-          </div>
-          <button @click="calculatePrice" class="w-full px-8 py-4 rounded-full inline-flex items-center justify-center gap-2.5 font-semibold text-lg no-underline border-2 border-transparent cursor-pointer transition-all duration-300 bg-primary-500 text-white shadow-md hover:-translate-y-1 hover:shadow-lg hover:bg-primary-600">
-            {{ t.estimateCost }}
-          </button>
-          <div v-if="calculatorResult.show" :class="['mt-[30px] p-5 rounded-xl text-center animate-fadeIn', calculatorResult.type === 'success' ? 'bg-green-50 border border-green-500' : 'bg-red-50 border border-red-500']">
-            <h3 class="mb-[10px] text-[1.25rem] font-bold" v-html="calculatorResult.title"></h3>
-            <p class="mb-0" v-html="calculatorResult.message"></p>
-            <p v-if="calculatorResult.subtext" class="text-[0.9rem] text-gray-600 mt-2" v-html="calculatorResult.subtext"></p>
-            <div v-if="calculatorResult.showTip" class="mt-5 p-[15px] bg-primary-50 rounded-lg text-[0.95rem]" v-html="t.consolidationTip"></div>
-            <a v-if="calculatorResult.showContactBtn" :href="calculatorResult.contactLink" target="_blank" class="px-8 py-4 rounded-full inline-flex items-center justify-center gap-2.5 font-semibold text-lg no-underline border-2 border-transparent cursor-pointer transition-all duration-300 bg-primary-500 text-white shadow-md hover:-translate-y-1 hover:shadow-lg hover:bg-primary-600 mt-[15px]">
-              {{ t.contactBtn }}
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-24 px-5">
-      <div class="max-w-6xl mx-auto px-5 fade-in-section">
-        <div class="text-center mb-14 max-w-3xl mx-auto">
-          <span class="text-primary-500 font-semibold mb-2.5 block uppercase tracking-wider">{{ t.pricingTagline }}</span>
-          <h2 class="text-4xl md:text-5xl lg:text-6xl mb-4 font-extrabold text-gray-900 leading-tight">{{ t.pricingTitle }}</h2>
-          <p class="text-lg text-gray-600">{{ t.pricingSubtitle }}</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px] items-stretch justify-center">
-          <div v-for="(plan, index) in t.pricingPlans" :key="index" :class="['bg-white p-8 rounded-2xl border-2 shadow-md flex flex-col text-center transition-all duration-300 relative w-full max-w-sm mx-auto', plan.featured ? 'border-primary-500 shadow-lg' : 'border-gray-200']">
-            <div v-if="plan.featured" class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase">{{ t.mostPopular }}</div>
-            <div class="text-lg font-bold text-primary-500 mb-4">{{ plan.name }}</div>
-            <div class="text-5xl font-extrabold text-gray-900 mb-6">${{ plan.price }} <span class="text-2xl text-gray-600 font-medium">USD</span></div>
-            <ul class="list-none mb-8 text-left flex-grow">
-              <li v-for="(feature, fIndex) in plan.features" :key="fIndex" class="flex items-center gap-2.5 mb-3">
-                <span class="text-green-500 w-5 h-5 flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
-                  </svg>
-                </span>
-                <div>
-                  <strong>{{ feature.label }}:</strong> {{ feature.value }}
-                </div>
-              </li>
-            </ul>
-            <a :href="plan.link" :class="plan.featured ? 'w-full mt-auto px-8 py-4 rounded-full inline-flex items-center justify-center gap-2.5 font-semibold text-lg no-underline border-2 border-transparent cursor-pointer transition-all duration-300 bg-primary-500 text-white shadow-md hover:-translate-y-1 hover:shadow-lg hover:bg-primary-600' : 'w-full mt-auto px-8 py-4 rounded-full inline-flex items-center justify-center gap-2.5 font-semibold text-lg no-underline border-2 cursor-pointer transition-all duration-300 border-gray-200 bg-white text-gray-900 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5'" target="_blank" rel="noopener noreferrer">
-              {{ plan.buttonText }}
-            </a>
-          </div>
-        </div>
-        <div class="max-w-2xl mx-auto mt-14 p-5 bg-primary-50 border border-blue-200 rounded-2xl text-sm">
-          <p>{{ t.paymentNote }}</p>
-        </div>
-      </div>
-    </section>
+    <BoxCalculator />
 
     <!-- Trust Section -->
     <section id="trust" class="py-24 px-5 bg-white">
@@ -573,8 +275,8 @@ const translations = {
     en: 'Send your purchases to our PO Box in San Diego and we will ship it to your home or business in Mexico.'
   },
   ctaPlans: {
-    es: 'Ver Planes de Consolidación',
-    en: 'See Consolidation Plans'
+    es: 'Ver cómo funciona',
+    en: 'See how it works'
   },
   ctaEstimate: {
     es: 'Estimar un Artículo',
@@ -812,10 +514,11 @@ const pricingPlans = computed(() => {
   return language.value === 'es' ? [
     {
       name: 'Caja Chica',
-      price: 89,
+      price: 110,
+      priceMXN: '1,980',
       features: [
-        { label: 'Dimensiones', value: '40x30x25 cm' },
-        { label: 'Ideal para', value: 'Ropa, cosméticos, electrónicos pequeños.' }
+        { label: 'Peso', value: 'Hasta 10 kg' },
+        { label: 'Ideal para', value: 'Ropa, cosméticos, electrónicos pequeños' }
       ],
       buttonText: 'Elegir Plan Chico',
       link: 'https://wa.me/16195591910?text=Hola!%20Quiero%20cotizar%20un%20envío%20consolidado%20en%20Caja%20Chica.',
@@ -823,10 +526,11 @@ const pricingPlans = computed(() => {
     },
     {
       name: 'Caja Mediana',
-      price: 165,
+      price: 190,
+      priceMXN: '3,420',
       features: [
-        { label: 'Dimensiones', value: '60x45x40 cm' },
-        { label: 'Ideal para', value: 'Cajas de zapatos, equipo de deporte, herramientas.' }
+        { label: 'Peso', value: '11–25 kg' },
+        { label: 'Ideal para', value: 'Cajas de zapatos, equipo de deporte, herramientas' }
       ],
       buttonText: 'Elegir Plan Mediano',
       link: 'https://wa.me/16195591910?text=Hola!%20Quiero%20cotizar%20un%20envío%20consolidado%20en%20Caja%20Mediana.',
@@ -834,22 +538,36 @@ const pricingPlans = computed(() => {
     },
     {
       name: 'Caja Grande',
-      price: 225,
+      price: 275,
+      priceMXN: '4,950',
       features: [
-        { label: 'Dimensiones', value: '80x50x50 cm' },
-        { label: 'Ideal para', value: 'Muebles pequeños, equipo de ejercicio, refacciones.' }
+        { label: 'Peso', value: '26–40 kg' },
+        { label: 'Ideal para', value: 'Muebles pequeños, equipo de ejercicio, refacciones' }
       ],
       buttonText: 'Elegir Plan Grande',
       link: 'https://wa.me/16195591910?text=Hola!%20Quiero%20cotizar%20un%20envío%20consolidado%20en%20Caja%20Grande.',
+      featured: false
+    },
+    {
+      name: 'Caja XL',
+      price: 350,
+      priceMXN: '6,300',
+      features: [
+        { label: 'Peso', value: '41–60 kg' },
+        { label: 'Ideal para', value: 'Artículos grandes, múltiples cajas consolidadas' }
+      ],
+      buttonText: 'Elegir Plan XL',
+      link: 'https://wa.me/16195591910?text=Hola!%20Quiero%20cotizar%20un%20envío%20consolidado%20en%20Caja%20XL.',
       featured: false
     }
   ] : [
     {
       name: 'Small Box',
-      price: 89,
+      price: 110,
+      priceMXN: '1,980',
       features: [
-        { label: 'Dimensions', value: '15.7x11.8x9.8 in' },
-        { label: 'Ideal for', value: 'Clothing, cosmetics, small electronics.' }
+        { label: 'Weight', value: 'Up to 10 kg' },
+        { label: 'Ideal for', value: 'Clothing, cosmetics, small electronics' }
       ],
       buttonText: 'Choose Small Plan',
       link: 'https://wa.me/16195591910?text=Hi!%20I\'d%20like%20a%20quote%20for%20a%20consolidated%20Small%20Box.',
@@ -857,10 +575,11 @@ const pricingPlans = computed(() => {
     },
     {
       name: 'Medium Box',
-      price: 165,
+      price: 190,
+      priceMXN: '3,420',
       features: [
-        { label: 'Dimensions', value: '23.6x17.7x15.7 in' },
-        { label: 'Ideal for', value: 'Shoe boxes, sports equipment, tools.' }
+        { label: 'Weight', value: '11–25 kg' },
+        { label: 'Ideal for', value: 'Shoe boxes, sports equipment, tools' }
       ],
       buttonText: 'Choose Medium Plan',
       link: 'https://wa.me/16195591910?text=Hi!%20I\'d%20like%20a%20quote%20for%20a%20consolidated%20Medium%20Box.',
@@ -868,13 +587,26 @@ const pricingPlans = computed(() => {
     },
     {
       name: 'Large Box',
-      price: 225,
+      price: 275,
+      priceMXN: '4,950',
       features: [
-        { label: 'Dimensions', value: '31.5x19.7x19.7 in' },
-        { label: 'Ideal for', value: 'Small furniture, exercise equipment, auto parts.' }
+        { label: 'Weight', value: '26–40 kg' },
+        { label: 'Ideal for', value: 'Small furniture, exercise equipment, auto parts' }
       ],
       buttonText: 'Choose Large Plan',
       link: 'https://wa.me/16195591910?text=Hi!%20I\'d%20like%20a%20quote%20for%20a%20consolidated%20Large%20Box.',
+      featured: false
+    },
+    {
+      name: 'XL Box',
+      price: 350,
+      priceMXN: '6,300',
+      features: [
+        { label: 'Weight', value: '41–60 kg' },
+        { label: 'Ideal for', value: 'Large items, multiple consolidated boxes' }
+      ],
+      buttonText: 'Choose XL Plan',
+      link: 'https://wa.me/16195591910?text=Hi!%20I\'d%20like%20a%20quote%20for%20a%20consolidated%20XL%20Box.',
       featured: false
     }
   ]
