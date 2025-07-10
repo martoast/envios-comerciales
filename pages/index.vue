@@ -271,8 +271,8 @@ const translations = {
     en: 'Shop in the <span class="text-[#2E6BB7]">USA</span> and receive in <span class="text-[#2E6BB7]">Mexico</span>.'
   },
   heroSubtitle: {
-    es: 'Envia tus compras a nuestro PO Box en San Diego y nosotros lo enviamos a tu casa o negocio en México.',
-    en: 'Send your purchases to our PO Box in San Diego and we will ship it to your home or business in Mexico.'
+    es: 'Tu dirección personal en San Diego. Enviamos todo a México al mejor precio.',
+    en: 'Your personal San Diego address. We ship everything to Mexico at the best price.'
   },
   ctaPlans: {
     es: 'Ver cómo funciona',
@@ -474,37 +474,37 @@ const steps = computed(() => {
   const { language } = useLanguage()
   return language.value === 'es' ? [
     {
-      title: '1. Envíanos tu Orden',
-      description: 'Nos mandas los links de los productos que quieres o envías tus compras a nuestra dirección en San Diego.'
+      title: '1. Obtén tu Dirección en USA',
+      description: 'Te damos una dirección personal en San Diego para que compres en cualquier tienda de Estados Unidos.'
     },
     {
-      title: '2. Recibimos y Consolidamos',
-      description: 'Recibimos tus paquetes, los agrupamos en un solo envío para ahorrar costos de envio.'
+      title: '2. Compra y Envía',
+      description: 'Compra en tus tiendas favoritas y usa tu dirección de San Diego al pagar. Nosotros recibimos todos tus paquetes.'
     },
     {
-      title: '3. Cruzamos la Frontera',
-      description: 'Nos encargamos de todos los trámites de aduana y la importación para que no tengas sorpresas.'
+      title: '3. Preparamos tu Envío',
+      description: 'Empacamos tus compras de forma segura y optimizada. Si tienes varios paquetes, los consolidamos en una sola caja para ahorrar costos.'
     },
     {
-      title: '4. Recibe en tu Puerta',
-      description: 'Tu paquete llega seguro en 3-5 días hábiles a cualquier parte de México. ¡Listo para disfrutar!'
+      title: '4. Entregamos en México',
+      description: 'Manejamos la importación y aduana. Tu paquete llega a tu puerta en 3-5 días hábiles con seguimiento completo.'
     }
   ] : [
     {
-      title: '1. Send Us Your Order',
-      description: 'Send us the links to the products you want, or ship your purchases to our San Diego address.'
+      title: '1. Get Your US Address',
+      description: 'We provide you with a personal US address in San Diego to shop from any American store.'
     },
     {
-      title: '2. We Receive & Consolidate',
-      description: 'We receive your packages and group them into a single shipment to save on shipping costs.'
+      title: '2. Shop & Ship',
+      description: 'Shop your favorite stores and use your San Diego address at checkout. We receive all your packages.'
     },
     {
-      title: '3. We Cross the Border',
-      description: 'We handle all customs paperwork and import procedures so you have no surprises.'
+      title: '3. We Prepare Your Shipment',
+      description: 'We securely pack your purchases for international shipping. Multiple packages? We consolidate them into one box to save you money.'
     },
     {
-      title: '4. Receive at Your Door',
-      description: 'Your package arrives safely in 3-5 business days anywhere in Mexico. Ready to enjoy!'
+      title: '4. Delivered in Mexico',
+      description: 'We handle import and customs. Your package arrives at your door in 3-5 business days with full tracking.'
     }
   ]
 })

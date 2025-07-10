@@ -10,6 +10,15 @@
   </template>
   
   <script setup>
+
+  // useSeoMeta({
+  //   title: '',
+  //   ogTitle: '',
+  //   description: '',
+  //   ogDescription: '',
+  //   ogImage: '',
+  //   twitterCard: 'summary_large_image',
+  // })
   // Initialize language on layout mount
   const { initializeLanguage } = useLanguage()
   

@@ -307,8 +307,8 @@
       en: 'SHIPPING CALCULATOR'
     },
     calculatorTitle: {
-      es: 'Calcula el Costo de tu Caja Consolidada',
-      en: 'Calculate Your Consolidated Box Cost'
+      es: 'Calcula tu Envío a México',
+      en: 'Calculate Shipping to Mexico'
     },
     calculatorSubtitle: {
       es: 'Ingresa las dimensiones y peso de tu caja para obtener un precio estimado. Cobramos por peso real o volumétrico, el que sea mayor.',
