@@ -304,226 +304,244 @@
         </div>
 
         <!-- Add Item Section (only show if order is collecting) -->
-        <div
-          v-if="order.status === 'collecting'"
-          class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8"
+<div
+  v-if="order.status === 'collecting'"
+  class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8"
+>
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-bold text-gray-900">{{ t.addNewItem }}</h2>
+    <button
+      @click="showAddForm = !showAddForm"
+      class="sm:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+    >
+      <svg
+        :class="[
+          'w-5 h-5 text-gray-600 transition-transform',
+          showAddForm ? 'rotate-45' : '',
+        ]"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 4v16m8-8H4"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <Transition
+    enter-active-class="transition ease-out duration-200"
+    enter-from-class="opacity-0 scale-95"
+    enter-to-class="opacity-100 scale-100"
+    leave-active-class="transition ease-in duration-150"
+    leave-from-class="opacity-100 scale-100"
+    leave-to-class="opacity-0 scale-95"
+  >
+    <form
+      v-show="showAddForm || !isMobile"
+      @submit.prevent="handleAddItem"
+      class="space-y-4"
+    >
+      <!-- Product Name -->
+      <div>
+        <label
+          for="product_name"
+          class="block text-sm font-semibold text-gray-900 mb-2"
         >
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-gray-900">{{ t.addNewItem }}</h2>
-            <button
-              @click="showAddForm = !showAddForm"
-              class="sm:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg
-                :class="[
-                  'w-5 h-5 text-gray-600 transition-transform',
-                  showAddForm ? 'rotate-45' : '',
-                ]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-            </button>
-          </div>
+          {{ t.productNameLabel }}
+        </label>
+        <input
+          v-model="itemForm.product_name"
+          type="text"
+          id="product_name"
+          :placeholder="t.productNamePlaceholder"
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+          required
+        />
+      </div>
 
-          <Transition
-            enter-active-class="transition ease-out duration-200"
-            enter-from-class="opacity-0 scale-95"
-            enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition ease-in duration-150"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
+      <!-- Product URL -->
+      <div>
+        <label
+          for="product_url"
+          class="block text-sm font-semibold text-gray-900 mb-2"
+        >
+          {{ t.productUrlLabel }}
+        </label>
+        <input
+          v-model="itemForm.product_url"
+          type="url"
+          id="product_url"
+          :placeholder="t.productUrlPlaceholder"
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+          required
+        />
+      </div>
+
+      <!-- Quantity and Price -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label
+            for="quantity"
+            class="block text-sm font-semibold text-gray-900 mb-2"
           >
-            <form
-              v-show="showAddForm || !isMobile"
-              @submit.prevent="handleAddItem"
-              class="space-y-4"
-            >
-              <!-- Product URL -->
-              <div>
-                <label
-                  for="product_url"
-                  class="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  {{ t.productUrlLabel }}
-                </label>
-                <input
-                  v-model="itemForm.product_url"
-                  type="url"
-                  id="product_url"
-                  :placeholder="t.productUrlPlaceholder"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                  required
-                />
-              </div>
-
-              <!-- Quantity and Price -->
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    for="quantity"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
-                  >
-                    {{ t.quantityLabel }}
-                  </label>
-                  <input
-                    v-model.number="itemForm.quantity"
-                    type="number"
-                    id="quantity"
-                    min="1"
-                    max="99"
-                    :placeholder="t.quantityPlaceholder"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    for="declared_value"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
-                  >
-                    {{ t.priceLabel }}
-                  </label>
-                  <div class="relative">
-                    <span
-                      class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                      >$</span
-                    >
-                    <input
-                      v-model.number="itemForm.declared_value"
-                      type="number"
-                      id="declared_value"
-                      min="0.01"
-                      max="9999.99"
-                      step="0.01"
-                      :placeholder="t.pricePlaceholder"
-                      class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tracking Info (Optional) -->
-              <div class="space-y-4 pt-2">
-                <button
-                  type="button"
-                  @click="showTrackingFields = !showTrackingFields"
-                  class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
-                >
-                  <svg
-                    :class="[
-                      'w-4 h-4 transition-transform',
-                      showTrackingFields ? 'rotate-90' : '',
-                    ]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                  {{ t.addTrackingInfo }}
-                </button>
-
-                <Transition
-                  enter-active-class="transition ease-out duration-200"
-                  enter-from-class="opacity-0 -translate-y-2"
-                  enter-to-class="opacity-100 translate-y-0"
-                  leave-active-class="transition ease-in duration-150"
-                  leave-from-class="opacity-100 translate-y-0"
-                  leave-to-class="opacity-0 -translate-y-2"
-                >
-                  <div
-                    v-if="showTrackingFields"
-                    class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                  >
-                    <div>
-                      <label
-                        for="tracking_number"
-                        class="block text-sm font-semibold text-gray-900 mb-2"
-                      >
-                        {{ t.trackingNumberLabel }}
-                      </label>
-                      <input
-                        v-model="itemForm.tracking_number"
-                        type="text"
-                        id="tracking_number"
-                        :placeholder="t.trackingNumberPlaceholder"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        for="carrier"
-                        class="block text-sm font-semibold text-gray-900 mb-2"
-                      >
-                        {{ t.carrierLabel }}
-                      </label>
-                      <select
-                        v-model="itemForm.carrier"
-                        id="carrier"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                      >
-                        <option value="">{{ t.selectCarrier }}</option>
-                        <option
-                          v-for="(label, value) in carriers"
-                          :key="value"
-                          :value="value"
-                        >
-                          {{ label }}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                </Transition>
-              </div>
-
-              <!-- Submit Button -->
-              <div class="flex justify-end pt-2">
-                <button
-                  type="submit"
-                  :disabled="addingItem"
-                  class="px-6 py-3 bg-primary-500 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-                >
-                  <svg
-                    v-if="addingItem"
-                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  {{ addingItem ? t.addingItem : t.addItem }}
-                </button>
-              </div>
-            </form>
-          </Transition>
+            {{ t.quantityLabel }}
+          </label>
+          <input
+            v-model.number="itemForm.quantity"
+            type="number"
+            id="quantity"
+            min="1"
+            max="99"
+            :placeholder="t.quantityPlaceholder"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+            required
+          />
         </div>
+        <div>
+          <label
+            for="declared_value"
+            class="block text-sm font-semibold text-gray-900 mb-2"
+          >
+            {{ t.priceLabel }}
+          </label>
+          <div class="relative">
+            <span
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              >$</span
+            >
+            <input
+              v-model.number="itemForm.declared_value"
+              type="number"
+              id="declared_value"
+              min="0.01"
+              max="9999.99"
+              step="0.01"
+              :placeholder="t.pricePlaceholder"
+              class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracking Info (Optional) -->
+      <div class="space-y-4 pt-2">
+        <button
+          type="button"
+          @click="showTrackingFields = !showTrackingFields"
+          class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
+        >
+          <svg
+            :class="[
+              'w-4 h-4 transition-transform',
+              showTrackingFields ? 'rotate-90' : '',
+            ]"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+          {{ t.addTrackingInfo }}
+        </button>
+
+        <Transition
+          enter-active-class="transition ease-out duration-200"
+          enter-from-class="opacity-0 -translate-y-2"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition ease-in duration-150"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-2"
+        >
+          <div
+            v-if="showTrackingFields"
+            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          >
+            <div>
+              <label
+                for="tracking_number"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+              >
+                {{ t.trackingNumberLabel }}
+              </label>
+              <input
+                v-model="itemForm.tracking_number"
+                type="text"
+                id="tracking_number"
+                :placeholder="t.trackingNumberPlaceholder"
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+            <div>
+              <label
+                for="carrier"
+                class="block text-sm font-semibold text-gray-900 mb-2"
+              >
+                {{ t.carrierLabel }}
+              </label>
+              <select
+                v-model="itemForm.carrier"
+                id="carrier"
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="">{{ t.selectCarrier }}</option>
+                <option
+                  v-for="(label, value) in carriers"
+                  :key="value"
+                  :value="value"
+                >
+                  {{ label }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </Transition>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex justify-end pt-2">
+        <button
+          type="submit"
+          :disabled="addingItem"
+          class="px-6 py-3 bg-primary-500 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+        >
+          <svg
+            v-if="addingItem"
+            class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          {{ addingItem ? t.addingItem : t.addItem }}
+        </button>
+      </div>
+    </form>
+  </Transition>
+</div>
 
         <!-- Complete Order Banner (only show if order is collecting and has items) -->
         <div
@@ -593,132 +611,129 @@
               class="px-4 sm:px-6 py-4 hover:bg-gray-50 transition-colors"
             >
               <!-- Mobile Layout -->
-              <div class="space-y-3">
-                <!-- Top Row: Product Link and Delete Button -->
-                <div class="flex items-start justify-between gap-3">
-                  <a
-                    :href="item.product_url"
-                    target="_blank"
-                    class="flex-1 group"
-                  >
-                    <div class="flex items-center gap-2">
-                      <span
-                        class="text-sm font-medium text-primary-600 group-hover:text-primary-700 group-hover:underline line-clamp-2"
-                      >
-                        {{
-                          item.product_name ||
-                          formatProductUrl(item.product_url)
-                        }}
-                      </span>
-                    </div>
-                  </a>
+<div class="space-y-3">
+  <!-- Top Row: Product Link and Delete Button -->
+  <div class="flex items-start justify-between gap-3">
+    <a
+      :href="item.product_url"
+      target="_blank"
+      class="flex-1 group"
+    >
+      <div class="flex items-center gap-2">
+        <span
+          class="text-sm font-medium text-primary-600 group-hover:text-primary-700 group-hover:underline line-clamp-2"
+        >
+          {{ item.product_name }}
+        </span>
+      </div>
+    </a>
 
-                  <!-- Delete button (only if order is collecting) -->
-                  <button
-                    v-if="order.status === 'collecting'"
-                    @click="selectedItemToDelete = item"
-                    class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all flex-shrink-0"
-                    :title="t.deleteItem"
-                  >
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                  </button>
-                </div>
+    <!-- Delete button (only if order is collecting) -->
+    <button
+      v-if="order.status === 'collecting'"
+      @click="selectedItemToDelete = item"
+      class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all flex-shrink-0"
+      :title="t.deleteItem"
+    >
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+        />
+      </svg>
+    </button>
+  </div>
 
-                <!-- Middle Row: Key Info -->
-                <div class="flex items-center justify-between text-sm">
-                  <div class="flex items-center gap-4">
-                    <!-- Quantity -->
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-gray-500">{{ t.quantity }}:</span>
-                      <span class="font-medium text-gray-900">{{
-                        item.quantity
-                      }}</span>
-                    </div>
+  <!-- Middle Row: Key Info -->
+  <div class="flex items-center justify-between text-sm">
+    <div class="flex items-center gap-4">
+      <!-- Quantity -->
+      <div class="flex items-center gap-1.5">
+        <span class="text-gray-500">{{ t.quantity }}:</span>
+        <span class="font-medium text-gray-900">{{
+          item.quantity
+        }}</span>
+      </div>
 
-                    <!-- Price -->
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-gray-500">{{ t.price }}:</span>
-                      <span class="font-medium text-gray-900"
-                        >${{ item.declared_value }}</span
-                      >
-                    </div>
-                  </div>
+      <!-- Price -->
+      <div class="flex items-center gap-1.5">
+        <span class="text-gray-500">{{ t.price }}:</span>
+        <span class="font-medium text-gray-900"
+          >${{ item.declared_value }}</span
+        >
+      </div>
+    </div>
 
-                  <!-- Status Badge -->
-                  <span
-                    v-if="item.arrived"
-                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700"
-                  >
-                    {{ t.arrived }}
-                  </span>
-                  <span
-                    v-else
-                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700"
-                  >
-                    {{ t.inTransit }}
-                  </span>
-                </div>
+    <!-- Status Badge -->
+    <span
+      v-if="item.arrived"
+      class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700"
+    >
+      {{ t.arrived }}
+    </span>
+    <span
+      v-else
+      class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700"
+    >
+      {{ t.inTransit }}
+    </span>
+  </div>
 
-                <!-- Bottom Row: Additional Info -->
-                <div
-                  class="flex flex-wrap items-center gap-3 text-xs text-gray-500"
-                >
-                  <!-- Retailer -->
-                  <span
-                    v-if="item.retailer"
-                    class="inline-flex items-center gap-1"
-                  >
-                    <svg
-                      class="w-3.5 h-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                      />
-                    </svg>
-                    {{ item.retailer }}
-                  </span>
+  <!-- Bottom Row: Additional Info -->
+  <div
+    class="flex flex-wrap items-center gap-3 text-xs text-gray-500"
+  >
+    <!-- Retailer -->
+    <span
+      v-if="item.retailer"
+      class="inline-flex items-center gap-1"
+    >
+      <svg
+        class="w-3.5 h-3.5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+        />
+      </svg>
+      {{ item.retailer }}
+    </span>
 
-                  <!-- Tracking Info -->
-                  <span
-                    v-if="item.tracking_number"
-                    class="inline-flex items-center gap-1"
-                  >
-                    <svg
-                      class="w-3.5 h-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
-                      />
-                    </svg>
-                    {{ item.carrier_name || item.carrier || "Tracking" }}:
-                    {{ item.tracking_number }}
-                  </span>
-                </div>
-              </div>
+    <!-- Tracking Info -->
+    <span
+      v-if="item.tracking_number"
+      class="inline-flex items-center gap-1"
+    >
+      <svg
+        class="w-3.5 h-3.5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+        />
+      </svg>
+      {{ item.carrier_name || item.carrier || "Tracking" }}:
+      {{ item.tracking_number }}
+    </span>
+  </div>
+</div>
             </div>
           </div>
         </div>
@@ -1136,6 +1151,7 @@ const reopeningOrder = ref(false);
 
 // Form for new item
 const itemForm = ref({
+  product_name: "",
   product_url: "",
   quantity: 1,
   declared_value: "",
@@ -1441,6 +1457,14 @@ const translations = {
     es: "Entregado",
     en: "Delivered",
   },
+  productNameLabel: {
+  es: "Nombre del Producto",
+  en: "Product Name",
+},
+productNamePlaceholder: {
+  es: "Ej: Cepillo de dientes eléctrico Oral-B",
+  en: "Ex: Oral-B Electric Toothbrush",
+},
 };
 
 // Get reactive translations
@@ -1466,7 +1490,7 @@ const fetchOrder = async () => {
 };
 
 const handleAddItem = async () => {
-  if (!itemForm.value.product_url || !itemForm.value.declared_value) return;
+  if (!itemForm.value.product_name || !itemForm.value.product_url || !itemForm.value.declared_value) return;
 
   addingItem.value = true;
   try {
@@ -1479,6 +1503,7 @@ const handleAddItem = async () => {
 
     // Reset form
     itemForm.value = {
+      product_name: "",
       product_url: "",
       quantity: 1,
       declared_value: "",
