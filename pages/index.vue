@@ -205,7 +205,7 @@
             <h4 class="text-white mb-4 text-lg">{{ t.contact }}</h4>
             <ul class="list-none p-0 m-0">
               <li class="mb-2">
-                <a href="mailto:erickmartos00@gmail.com" class="text-white/70 no-underline hover:text-white hover:underline">erickmartos00@gmail.com</a>
+                <a href="mailto:envioscomercialestj@gmail.com" class="text-white/70 no-underline hover:text-white hover:underline">envioscomercialestj@gmail.com</a>
               </li>
               <li class="mb-2">
                 <a href="https://wa.me/16195591910" target="_blank" class="text-white/70 no-underline hover:text-white hover:underline">WhatsApp: +1 (619) 559-1910</a>

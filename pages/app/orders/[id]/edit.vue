@@ -1,0 +1,532 @@
+<template>
+    <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
+      <!-- Header -->
+      <div class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <NuxtLink 
+                :to="`/app/orders/${orderId}`" 
+                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+              </NuxtLink>
+              <div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">{{ t.editOrder }}</h1>
+                <p class="text-sm text-gray-600 mt-1">{{ order?.order_number }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Main Content -->
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <!-- Loading State -->
+        <div v-if="loading" class="flex items-center justify-center py-16">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-50 rounded-2xl">
+            <svg class="animate-spin h-8 w-8 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+        </div>
+  
+        <!-- Error Alert -->
+        <Transition
+          enter-active-class="transform ease-out duration-300 transition"
+          enter-from-class="translate-y-2 opacity-0"
+          enter-to-class="translate-y-0 opacity-100"
+          leave-active-class="transition ease-in duration-200"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
+        >
+          <div v-if="errorMessage" class="mb-6 bg-red-50 border-l-4 border-red-500 rounded-lg p-4 shadow-sm animate-shake">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="w-5 h-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div class="ml-3 flex-1">
+                <p class="text-sm font-medium text-red-800">{{ errorMessage }}</p>
+              </div>
+              <button @click="errorMessage = ''" class="ml-3 flex-shrink-0">
+                <svg class="w-5 h-5 text-red-400 hover:text-red-600 transition-colors" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </Transition>
+  
+        <!-- Edit Form -->
+        <form v-if="order" @submit.prevent="handleSubmit" class="space-y-6">
+          <!-- Order Details Section -->
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">{{ t.orderDetails }}</h2>
+            
+            <!-- Order Name -->
+            <div>
+              <label for="order_name" class="block text-sm font-semibold text-gray-900 mb-2">
+                {{ t.orderNameLabel }}
+              </label>
+              <input
+                v-model="form.order_name"
+                type="text"
+                id="order_name"
+                :placeholder="t.orderNamePlaceholder"
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                required
+              >
+              <p class="mt-2 text-sm text-gray-500">{{ t.orderNameHint }}</p>
+            </div>
+          </div>
+  
+          <!-- Delivery Address Section -->
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn" style="animation-delay: 0.1s">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">{{ t.deliveryAddressTitle }}</h2>
+            
+            <div class="space-y-4">
+              <!-- Street -->
+              <div>
+                <label for="street" class="block text-sm font-semibold text-gray-900 mb-2">
+                  {{ t.streetLabel }}
+                </label>
+                <input
+                  v-model="form.delivery_address.street"
+                  type="text"
+                  id="street"
+                  :placeholder="t.streetPlaceholder"
+                  class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                  required
+                >
+              </div>
+  
+              <!-- Numbers -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="exterior_number" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.exteriorNumberLabel }}
+                  </label>
+                  <input
+                    v-model="form.delivery_address.exterior_number"
+                    type="text"
+                    id="exterior_number"
+                    :placeholder="t.exteriorNumberPlaceholder"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    required
+                  >
+                </div>
+                <div>
+                  <label for="interior_number" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.interiorNumberLabel }}
+                  </label>
+                  <input
+                    v-model="form.delivery_address.interior_number"
+                    type="text"
+                    id="interior_number"
+                    :placeholder="t.interiorNumberPlaceholder"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                  >
+                </div>
+              </div>
+  
+              <!-- Colonia and Municipio -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="colonia" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.coloniaLabel }}
+                  </label>
+                  <input
+                    v-model="form.delivery_address.colonia"
+                    type="text"
+                    id="colonia"
+                    :placeholder="t.coloniaPlaceholder"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    required
+                  >
+                </div>
+                <div>
+                  <label for="municipio" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.municipioLabel }}
+                  </label>
+                  <input
+                    v-model="form.delivery_address.municipio"
+                    type="text"
+                    id="municipio"
+                    :placeholder="t.municipioPlaceholder"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    required
+                  >
+                </div>
+              </div>
+  
+              <!-- Estado and Postal Code -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="estado" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.estadoLabel }}
+                  </label>
+                  <select
+                    v-model="form.delivery_address.estado"
+                    id="estado"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    required
+                  >
+                    <option value="">{{ t.selectEstado }}</option>
+                    <option v-for="estado in mexicanStates" :key="estado" :value="estado">
+                      {{ estado }}
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label for="postal_code" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.postalCodeLabel }}
+                  </label>
+                  <input
+                    v-model="form.delivery_address.postal_code"
+                    type="text"
+                    id="postal_code"
+                    :placeholder="t.postalCodePlaceholder"
+                    maxlength="5"
+                    pattern="[0-9]{5}"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    required
+                  >
+                </div>
+              </div>
+  
+              <!-- Referencias -->
+              <div>
+                <label for="referencias" class="block text-sm font-semibold text-gray-900 mb-2">
+                  {{ t.referenciasLabel }}
+                </label>
+                <textarea
+                  v-model="form.delivery_address.referencias"
+                  id="referencias"
+                  rows="3"
+                  :placeholder="t.referenciasPlaceholder"
+                  class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none"
+                ></textarea>
+              </div>
+  
+              <!-- Rural Checkbox -->
+              <div class="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+                <label class="flex items-start gap-3 cursor-pointer">
+                  <input
+                    v-model="form.is_rural"
+                    type="checkbox"
+                    class="mt-1 h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
+                  >
+                  <div class="flex-1">
+                    <span class="text-sm font-semibold text-gray-900">{{ t.ruralAreaLabel }}</span>
+                    <p class="text-sm text-gray-600 mt-1">{{ t.ruralAreaDescription }}</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-3 sm:justify-between">
+            <NuxtLink
+              :to="`/app/orders/${orderId}`"
+              class="order-2 sm:order-1 px-6 py-3 bg-white text-gray-700 font-semibold rounded-xl border border-gray-300 hover:bg-gray-50 transition-all duration-300 text-center"
+            >
+              {{ t.cancel }}
+            </NuxtLink>
+            
+            <button
+              type="submit"
+              :disabled="saving || !hasChanges"
+              class="order-1 sm:order-2 px-6 py-3 bg-primary-500 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+            >
+              <svg v-if="saving" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span v-if="!saving">{{ t.saveChanges }}</span>
+              <span v-else>{{ t.saving }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </template>
+  
+  <script setup>
+  import { ref, computed, onMounted, watch } from 'vue'
+  
+  // Define page meta
+  definePageMeta({
+    layout: 'app',
+    middleware: ['auth', 'customer']
+  })
+  
+  // Nuxt imports
+  const { $customFetch, $toast } = useNuxtApp()
+  const route = useRoute()
+  const router = useRouter()
+  
+  // Use the language composable
+  const { t: createTranslations } = useLanguage()
+  
+  // State
+  const orderId = route.params.id
+  const order = ref(null)
+  const loading = ref(true)
+  const saving = ref(false)
+  const errorMessage = ref('')
+  const originalData = ref(null)
+  
+  // Form data
+  const form = ref({
+    order_name: '',
+    delivery_address: {
+      street: '',
+      exterior_number: '',
+      interior_number: '',
+      colonia: '',
+      municipio: '',
+      estado: '',
+      postal_code: '',
+      referencias: ''
+    },
+    is_rural: false
+  })
+  
+  // Mexican states
+  const mexicanStates = [
+    'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas',
+    'Chihuahua', 'Ciudad de México', 'Coahuila', 'Colima', 'Durango', 'Guanajuato',
+    'Guerrero', 'Hidalgo', 'Jalisco', 'México', 'Michoacán', 'Morelos', 'Nayarit',
+    'Nuevo León', 'Oaxaca', 'Puebla', 'Querétaro', 'Quintana Roo', 'San Luis Potosí',
+    'Sinaloa', 'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 'Veracruz', 'Yucatán', 'Zacatecas'
+  ]
+  
+  // Translations
+  const translations = {
+    editOrder: {
+      es: 'Editar Orden',
+      en: 'Edit Order'
+    },
+    orderDetails: {
+      es: 'Detalles de la Orden',
+      en: 'Order Details'
+    },
+    orderNameLabel: {
+      es: 'Nombre de la Orden',
+      en: 'Order Name'
+    },
+    orderNamePlaceholder: {
+      es: 'Ej: Compras de Navidad',
+      en: 'Ex: Christmas Shopping'
+    },
+    orderNameHint: {
+      es: 'Un nombre descriptivo para identificar fácilmente tu orden',
+      en: 'A descriptive name to easily identify your order'
+    },
+    deliveryAddressTitle: {
+      es: 'Dirección de Entrega',
+      en: 'Delivery Address'
+    },
+    streetLabel: {
+      es: 'Calle',
+      en: 'Street'
+    },
+    streetPlaceholder: {
+      es: 'Nombre de la calle',
+      en: 'Street name'
+    },
+    exteriorNumberLabel: {
+      es: 'Número Exterior',
+      en: 'Exterior Number'
+    },
+    exteriorNumberPlaceholder: {
+      es: '123',
+      en: '123'
+    },
+    interiorNumberLabel: {
+      es: 'Número Interior',
+      en: 'Interior Number'
+    },
+    interiorNumberPlaceholder: {
+      es: 'Opcional',
+      en: 'Optional'
+    },
+    coloniaLabel: {
+      es: 'Colonia',
+      en: 'Neighborhood'
+    },
+    coloniaPlaceholder: {
+      es: 'Nombre de la colonia',
+      en: 'Neighborhood name'
+    },
+    municipioLabel: {
+      es: 'Municipio/Delegación',
+      en: 'Municipality'
+    },
+    municipioPlaceholder: {
+      es: 'Municipio o delegación',
+      en: 'Municipality'
+    },
+    estadoLabel: {
+      es: 'Estado',
+      en: 'State'
+    },
+    selectEstado: {
+      es: 'Selecciona un estado',
+      en: 'Select a state'
+    },
+    postalCodeLabel: {
+      es: 'Código Postal',
+      en: 'Postal Code'
+    },
+    postalCodePlaceholder: {
+      es: '12345',
+      en: '12345'
+    },
+    referenciasLabel: {
+      es: 'Referencias',
+      en: 'References'
+    },
+    referenciasPlaceholder: {
+      es: 'Entre calles, puntos de referencia, color de la casa, etc.',
+      en: 'Between streets, landmarks, house color, etc.'
+    },
+    ruralAreaLabel: {
+      es: 'Zona Rural',
+      en: 'Rural Area'
+    },
+    ruralAreaDescription: {
+      es: 'Marca esta casilla si tu dirección está en una zona rural. Puede aplicar un cargo adicional.',
+      en: 'Check this box if your address is in a rural area. Additional charges may apply.'
+    },
+    cancel: {
+      es: 'Cancelar',
+      en: 'Cancel'
+    },
+    saveChanges: {
+      es: 'Guardar Cambios',
+      en: 'Save Changes'
+    },
+    saving: {
+      es: 'Guardando...',
+      en: 'Saving...'
+    },
+    orderUpdatedSuccess: {
+      es: 'Orden actualizada exitosamente',
+      en: 'Order updated successfully'
+    },
+    generalError: {
+      es: 'Ocurrió un error. Por favor, intenta de nuevo.',
+      en: 'An error occurred. Please try again.'
+    },
+    orderNotEditable: {
+      es: 'Esta orden ya no se puede editar',
+      en: 'This order can no longer be edited'
+    }
+  }
+  
+  // Get reactive translations
+  const t = createTranslations(translations)
+  
+  // Computed
+  const hasChanges = computed(() => {
+    return JSON.stringify(form.value) !== JSON.stringify(originalData.value)
+  })
+  
+  // Methods
+  const fetchOrder = async () => {
+    loading.value = true
+    try {
+      const response = await $customFetch(`/orders/${orderId}`)
+      order.value = response.data
+      
+      // Check if order can be edited
+      if (order.value.status !== 'collecting') {
+        $toast.error(t.value.orderNotEditable)
+        await router.push(`/app/orders/${orderId}`)
+        return
+      }
+      
+      // Populate form with current data
+      form.value = {
+        order_name: order.value.order_name,
+        delivery_address: { ...order.value.delivery_address },
+        is_rural: order.value.is_rural
+      }
+      
+      // Store original data for comparison
+      originalData.value = JSON.parse(JSON.stringify(form.value))
+      
+    } catch (error) {
+      console.error('Error fetching order:', error)
+      $toast.error(t.value.generalError)
+      await router.push('/app/orders')
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  const handleSubmit = async () => {
+    if (!hasChanges.value) return
+  
+    saving.value = true
+    errorMessage.value = ''
+  
+    try {
+      const response = await $customFetch(`/orders/${orderId}`, {
+        method: 'PUT',
+        body: form.value
+      })
+  
+      if (response.success) {
+        $toast.success(t.value.orderUpdatedSuccess)
+        await router.push(`/app/orders/${orderId}`)
+      }
+    } catch (error) {
+      console.error('Error updating order:', error)
+      errorMessage.value = error.data?.message || t.value.generalError
+      $toast.error(errorMessage.value)
+    } finally {
+      saving.value = false
+    }
+  }
+  
+  // Lifecycle
+  onMounted(() => {
+    fetchOrder()
+  })
+  </script>
+  
+  <style scoped>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+  </style>
