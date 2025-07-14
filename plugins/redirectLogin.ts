@@ -8,13 +8,13 @@ export default defineNuxtPlugin(() => {
 
                 console.log(queryParams)
             
-                return await navigateTo('/login' + 
-                    `?${queryParams.toString()}`, 
-                    {
-                        redirectCode: 302,
-                        external: true
-                    }
-                )
+                // return await navigateTo('/login' + 
+                //     `?${queryParams.toString()}`, 
+                //     {
+                //         redirectCode: 302,
+                //         external: true
+                //     }
+                // )
             }
         }
     }
