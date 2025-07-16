@@ -170,8 +170,7 @@
               >
                 <div class="flex items-start justify-between mb-3">
                   <div>
-                    <p class="font-semibold text-gray-900">{{ order.order_name }}</p>
-                    <p class="text-sm text-gray-500">{{ order.order_number }}</p>
+                    <p class="font-semibold text-gray-900">{{ order.order_number }}</p>
                     <p class="text-xs text-gray-500 mt-1">{{ order.user?.name }}</p>
                   </div>
                   <span :class="[
@@ -243,8 +242,7 @@
                   >
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <p class="text-sm font-semibold text-gray-900">{{ order.order_name }}</p>
-                        <p class="text-sm text-gray-500">{{ order.order_number }}</p>
+                        <p class="text-sm font-semibold text-gray-900">{{ order.order_number }}</p>
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">

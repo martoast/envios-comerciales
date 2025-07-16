@@ -30,9 +30,6 @@
               </svg>
             </NuxtLink>
             <div>
-              <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">
-                {{ order?.order_name || t.loading }}
-              </h1>
               <p class="text-sm text-gray-500 mt-1">
                 {{ order?.order_number }}
               </p>

@@ -196,7 +196,6 @@
                         >
                           {{ pkg.order.order_number }}
                         </NuxtLink>
-                        <p class="text-xs text-gray-500">{{ pkg.order.order_name }}</p>
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">

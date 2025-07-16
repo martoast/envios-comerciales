@@ -189,7 +189,6 @@
                   <thead class="bg-gray-50 border-b border-gray-100">
                     <tr>
                       <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.orderNumber }}</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.orderName }}</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.status }}</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.deliveryAddress }}</th>
                       <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.total }}</th>
@@ -200,7 +199,7 @@
                   <tbody class="divide-y divide-gray-100">
                     <tr v-for="order in customerData.customer.orders" :key="order.id" class="hover:bg-gray-50 transition-colors">
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ order.order_number }}</td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ order.order_name }}</td>
+                    
                       <td class="px-6 py-4 whitespace-nowrap">
                         <span :class="[
                           'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
@@ -244,8 +243,7 @@
                 >
                   <div class="flex items-start justify-between mb-2">
                     <div>
-                      <p class="font-medium text-gray-900">{{ order.order_name }}</p>
-                      <p class="text-sm text-gray-500">{{ order.order_number }}</p>
+                      <p class="font-medium text-gray-900">{{ order.order_number }}</p>
                     </div>
                     <span :class="[
                       'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
@@ -573,7 +571,7 @@
       events.push({
         label: t.value.firstOrder,
         date: formatDate(firstOrder.created_at),
-        description: firstOrder.order_name,
+        description: '',
         completed: true
       })
   
@@ -583,7 +581,7 @@
         events.push({
           label: t.value.lastOrder,
           date: formatDate(lastOrder.created_at),
-          description: lastOrder.order_name,
+          description: '',
           completed: true
         })
       }

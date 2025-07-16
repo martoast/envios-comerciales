@@ -385,7 +385,25 @@ const handleLogin = async () => {
       }
     })
 
-    await navigateTo('/app/')
+    // Check for redirect query parameter
+    const route = useRoute()
+    const redirectTo = route.query.redirect
+
+    if (redirectTo && typeof redirectTo === 'string') {
+      // Ensure the redirect is a relative path for security
+      if (redirectTo.startsWith('/')) {
+        console.log('Redirecting to:', redirectTo)
+        await navigateTo(redirectTo)
+      } else {
+        // If it's not a relative path, go to default app page
+        console.log('Invalid redirect path, going to default app page')
+        await navigateTo('/app/')
+      }
+    } else {
+      // No redirect, go to default app page
+      console.log('No redirect parameter, going to default app page')
+      await navigateTo('/app/')
+    }
 
   } catch (error) {
     console.error('Login error:', error)

@@ -75,6 +75,13 @@
       </div>
     </section>
 
+    <PricingSection 
+      :show-header="true" 
+      :show-features="false" 
+      :show-c-t-a="false"
+      background-color="bg-white"
+    />
+
     <BoxCalculator />
 
     <!-- Trust Section -->

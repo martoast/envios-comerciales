@@ -17,11 +17,9 @@
               </svg>
             </NuxtLink>
             <div class="min-w-0">
-              <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900 truncate">
-                {{ order?.order_name }}
-              </h1>
+              
               <div class="mt-1">
-                <p class="text-sm text-gray-600 mb-3">{{ order?.order_number }}</p>
+                <p class="font-bold mb-3">{{ order?.order_number }}</p>
                 <!-- Status Badge (Mobile) -->
                 <span v-if="order" :class="[
                   'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs',
@@ -70,20 +68,7 @@
                         {{ t.editOrder }}
                       </NuxtLink>
                     </MenuItem>
-                    <MenuItem v-slot="{ active }">
-                      <button
-                        @click="showDeleteOrderModal = true"
-                        :class="[
-                          active ? 'bg-red-50' : '',
-                          'group flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-red-600 transition-colors'
-                        ]"
-                      >
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                        {{ t.deleteOrder }}
-                      </button>
-                    </MenuItem>
+                  
                   </div>
                 </MenuItems>
               </transition>
@@ -100,15 +85,7 @@
                 </svg>
                 {{ t.editOrder }}
               </NuxtLink>
-              <button
-                @click="showDeleteOrderModal = true"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-white text-red-600 font-medium rounded-xl border border-red-300 hover:bg-red-50 transition-all duration-300"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-                {{ t.deleteOrder }}
-              </button>
+              
             </div>
           </div>
         </div>
@@ -473,31 +450,6 @@
                     required
                   />
                 </div>
-                <div>
-                  <label
-                    for="declared_value"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
-                  >
-                    {{ t.priceLabel }}
-                  </label>
-                  <div class="relative">
-                    <span
-                      class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                      >$</span
-                    >
-                    <input
-                      v-model.number="itemForm.declared_value"
-                      type="number"
-                      id="declared_value"
-                      min="0.01"
-                      max="9999.99"
-                      step="0.01"
-                      :placeholder="t.pricePlaceholder"
-                      class="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                      required
-                    />
-                  </div>
-                </div>
               </div>
 
               <!-- Tracking Info (Optional) -->
@@ -733,13 +685,6 @@
                       }}</span>
                     </div>
 
-                    <!-- Price -->
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-gray-500">{{ t.price }}:</span>
-                      <span class="font-medium text-gray-900"
-                        >${{ item.declared_value }}</span
-                      >
-                    </div>
                   </div>
 
                   <!-- Status Badge -->
@@ -1055,7 +1000,7 @@
                         v-if="order"
                         class="mt-3 text-sm font-medium text-gray-700"
                       >
-                        {{ order.order_name }}
+                        {{ order.order_number }}
                       </p>
                       <p
                         v-if="order?.items?.length > 0"
@@ -1442,8 +1387,8 @@ const translations = {
     en: "Complete order?",
   },
   confirmCompleteOrderText: {
-    es: "Una vez completada, no podrás agregar más artículos. Te notificaremos cuando lleguen todos tus paquetes.",
-    en: "Once completed, you won't be able to add more items. We'll notify you when all your packages arrive.",
+    es: "Te notificaremos cuando lleguen todos tus paquetes.",
+    en: "We'll notify you when all your packages arrive.",
   },
   confirmComplete: {
     es: "Sí, completar",
@@ -1586,7 +1531,7 @@ const isNewOrder = computed(() => {
   const createdAt = new Date(order.value.created_at);
   const now = new Date();
   const diffMinutes = (now - createdAt) / 1000 / 60;
-  return diffMinutes < 5;
+  return diffMinutes < 1;
 });
 
 // Methods
