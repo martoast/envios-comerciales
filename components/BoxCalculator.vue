@@ -160,7 +160,12 @@
             <div v-if="declaredValue > 0" class="bg-white rounded-lg p-4 border border-yellow-200">
               <div class="flex justify-between items-center">
                 <span class="text-sm text-gray-600">{{ t.ivaPreview }}:</span>
-                <span class="font-semibold text-gray-900">${{ ivaAmount.toFixed(2) }} USD</span>
+                <span class="font-semibold text-gray-900">
+                  ${{ formatPrice(ivaDisplayAmount) }}
+                </span>
+              </div>
+              <div v-if="declaredValue > 0" class="text-xs text-gray-500 text-right mt-1">
+                (${{ formatPrice(ivaAlternateAmount, true) }})
               </div>
             </div>
           </div>
@@ -185,7 +190,7 @@
                 </div>
                 <p class="text-sm text-gray-600 mb-2">{{ t.ruralDescription }}</p>
                 <p v-if="ruralSurcharge" class="text-sm font-medium text-green-700">
-                  +${{ ruralSurcharge.price }} {{ ruralSurcharge.currency }}
+                  +{{ formatPrice(getRuralSurchargeAmount()) }}
                 </p>
               </div>
             </label>
@@ -264,22 +269,22 @@
               <div class="space-y-3">
                 <div class="flex justify-between items-center">
                   <span class="text-gray-600">{{ getBoxTranslations(calculatorResult.recommendedBox).name }}</span>
-                  <span class="font-medium text-gray-900">${{ calculatorResult.boxPrice.toFixed(2) }} USD</span>
+                  <span class="font-medium text-gray-900">${{ formatPrice(calculatorResult.boxPriceDisplay) }}</span>
                 </div>
                 <div v-if="declaredValue >= 50" class="flex justify-between items-center">
                   <span class="text-gray-600">{{ t.ivaLabel }} (16%)</span>
-                  <span class="font-medium text-gray-900">${{ ivaAmount.toFixed(2) }} USD</span>
+                  <span class="font-medium text-gray-900">${{ formatPrice(ivaDisplayAmount) }}</span>
                 </div>
                 <div v-if="isRural && ruralSurcharge" class="flex justify-between items-center">
                   <span class="text-gray-600">{{ t.ruralSurcharge }}</span>
-                  <span class="font-medium text-gray-900">${{ ruralSurcharge.price.toFixed(2) }} USD</span>
+                  <span class="font-medium text-gray-900">${{ formatPrice(getRuralSurchargeAmount()) }}</span>
                 </div>
                 <div class="border-t pt-3">
                   <div class="flex justify-between items-center">
                     <span class="text-lg font-semibold text-gray-900">{{ t.total }}</span>
                     <div class="text-right">
-                      <div class="text-2xl font-bold text-primary-600">${{ calculatorResult.totalCost.toFixed(2) }} USD</div>
-                      <div class="text-sm text-gray-500">≈ ${{ (calculatorResult.totalCost * 18).toLocaleString() }} MXN</div>
+                      <div class="text-2xl font-bold text-primary-600">${{ formatPrice(calculatorResult.totalCostDisplay) }}</div>
+                      <div class="text-sm text-gray-500">≈ ${{ formatPrice(calculatorResult.totalCostAlternate, true) }}</div>
                     </div>
                   </div>
                 </div>
@@ -351,13 +356,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 
 // Nuxt imports
 const { $customFetch } = useNuxtApp()
 
 // Use the language composable
-const { t: createTranslations } = useLanguage()
+const { t: createTranslations, language } = useLanguage()
+
+// Exchange rate constant
+const exchangeRate = 18
 
 // State
 const dimensions = ref({ length: 0, width: 0, height: 0 })
@@ -376,7 +384,10 @@ const calculatorResult = ref({
   subtitle: '',
   recommendedBox: null,
   boxPrice: 0,
+  boxPriceDisplay: 0,
   totalCost: 0,
+  totalCostDisplay: 0,
+  totalCostAlternate: 0,
   volumetricWeight: 0,
   chargeableWeight: 0
 })
@@ -554,11 +565,53 @@ const canCalculate = computed(() => {
          declaredValue.value > 0
 })
 
-const ivaAmount = computed(() => {
+const ivaAmountUSD = computed(() => {
   return declaredValue.value >= 50 ? declaredValue.value * 0.16 : 0
 })
 
+const ivaAmountMXN = computed(() => {
+  return ivaAmountUSD.value * exchangeRate
+})
+
+// Display amounts based on language
+const ivaDisplayAmount = computed(() => {
+  return language.value === 'es' ? ivaAmountMXN.value : ivaAmountUSD.value
+})
+
+const ivaAlternateAmount = computed(() => {
+  return language.value === 'es' ? ivaAmountUSD.value : ivaAmountMXN.value
+})
+
 // Methods
+const formatPrice = (amount, isAlternate = false) => {
+  const isSpanish = language.value === 'es'
+  
+  // Determine currency based on context
+  let currency
+  if (isAlternate) {
+    currency = isSpanish ? 'USD' : 'MXN'
+  } else {
+    currency = isSpanish ? 'MXN' : 'USD'
+  }
+  
+  return `${amount.toFixed(2)} ${currency}`
+}
+
+const getRuralSurchargeAmount = () => {
+  if (!ruralSurcharge.value) return 0
+  
+  const isSpanish = language.value === 'es'
+  const isMXN = ruralSurcharge.value.currency === 'MXN'
+  
+  if (isSpanish) {
+    // Show in MXN for Spanish
+    return isMXN ? ruralSurcharge.value.price : ruralSurcharge.value.price * exchangeRate
+  } else {
+    // Show in USD for English
+    return isMXN ? ruralSurcharge.value.price / exchangeRate : ruralSurcharge.value.price
+  }
+}
+
 const getBoxTranslations = (box) => {
   if (!box) return { name: '', description: '' }
   
@@ -619,9 +672,20 @@ const calculateShipping = () => {
   })
 
   if (suitableBox) {
-    const boxPrice = suitableBox.price
-    const ruralFee = isRural.value && ruralSurcharge.value ? ruralSurcharge.value.price : 0
-    const totalCost = boxPrice + ivaAmount.value + ruralFee
+    const isSpanish = language.value === 'es'
+    
+    // Box price is in MXN from the API
+    const boxPriceMXN = suitableBox.price
+    const boxPriceUSD = boxPriceMXN / exchangeRate
+    
+    // Rural fee - convert if needed
+    const ruralFeeMXN = isRural.value && ruralSurcharge.value ? 
+      (ruralSurcharge.value.currency === 'MXN' ? ruralSurcharge.value.price : ruralSurcharge.value.price * exchangeRate) : 0
+    const ruralFeeUSD = ruralFeeMXN / exchangeRate
+    
+    // Calculate totals in both currencies
+    const totalCostMXN = boxPriceMXN + ivaAmountMXN.value + ruralFeeMXN
+    const totalCostUSD = boxPriceUSD + ivaAmountUSD.value + ruralFeeUSD
 
     calculatorResult.value = {
       show: true,
@@ -629,8 +693,11 @@ const calculateShipping = () => {
       title: t.value.perfectFit,
       subtitle: '',
       recommendedBox: suitableBox,
-      boxPrice: boxPrice,
-      totalCost: totalCost,
+      boxPrice: boxPriceMXN,
+      boxPriceDisplay: isSpanish ? boxPriceMXN : boxPriceUSD,
+      totalCost: totalCostMXN,
+      totalCostDisplay: isSpanish ? totalCostMXN : totalCostUSD,
+      totalCostAlternate: isSpanish ? totalCostUSD : totalCostMXN,
       volumetricWeight: volumetricWeight,
       chargeableWeight: chargeableWeight
     }
@@ -642,7 +709,10 @@ const calculateShipping = () => {
       subtitle: t.value.contactForQuote,
       recommendedBox: null,
       boxPrice: 0,
+      boxPriceDisplay: 0,
       totalCost: 0,
+      totalCostDisplay: 0,
+      totalCostAlternate: 0,
       volumetricWeight: volumetricWeight,
       chargeableWeight: chargeableWeight
     }
@@ -660,6 +730,13 @@ const resetCalculator = () => {
 // Lifecycle
 onMounted(() => {
   fetchProducts()
+})
+
+// Watch for language changes and recalculate if results are showing
+watch(language, () => {
+  if (calculatorResult.value.show && canCalculate.value) {
+    calculateShipping()
+  }
 })
 </script>
 
