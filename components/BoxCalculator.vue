@@ -250,8 +250,8 @@
                   <p class="font-medium text-gray-900">{{ calculatorResult.recommendedBox.dimensions }}</p>
                 </div>
                 <div class="bg-gray-50 rounded-lg p-3">
-                  <p class="text-xs text-gray-600 mb-1">{{ t.volumetricWeight }}</p>
-                  <p class="font-medium text-gray-900">~{{ calculatorResult.recommendedBox.volumetric_weight }}kg</p>
+                  <p class="text-xs text-gray-600 mb-1">{{ t.maxWeight }}</p>
+                  <p class="font-medium text-gray-900">{{ calculatorResult.recommendedBox.max_weight }}kg</p>
                 </div>
               </div>
             </div>
@@ -266,7 +266,7 @@
                   <span class="text-gray-600">{{ getBoxTranslations(calculatorResult.recommendedBox).name }}</span>
                   <span class="font-medium text-gray-900">${{ calculatorResult.boxPrice.toFixed(2) }} USD</span>
                 </div>
-                <div v-if="declaredValue > 0" class="flex justify-between items-center">
+                <div v-if="declaredValue >= 50" class="flex justify-between items-center">
                   <span class="text-gray-600">{{ t.ivaLabel }} (16%)</span>
                   <span class="font-medium text-gray-900">${{ ivaAmount.toFixed(2) }} USD</span>
                 </div>
@@ -471,9 +471,9 @@ const translations = {
     es: 'Dimensiones máximas',
     en: 'Maximum dimensions'
   },
-  volumetricWeight: {
-    es: 'Peso volumétrico',
-    en: 'Volumetric weight'
+  maxWeight: {
+    es: 'Peso máximo',
+    en: 'Maximum weight'
   },
   costBreakdown: {
     es: 'Desglose de costos',
@@ -519,30 +519,26 @@ const translations = {
     es: 'Contactar por WhatsApp',
     en: 'Contact via WhatsApp'
   },
-  // Product translations
-  smallBoxName: {
+  // Product translations using EXACT names from API
+  'Extra Small': {
+    es: 'Caja Extra Pequeña',
+    en: 'Extra Small Box'
+  },
+  'Small Box': {
     es: 'Caja Pequeña',
     en: 'Small Box'
   },
-  smallBoxDescription: {
-    es: 'Perfecta para compras pequeñas como electrónicos, cosméticos o accesorios.',
-    en: 'Perfect for small purchases like electronics, cosmetics, or accessories.'
-  },
-  mediumBoxName: {
+  'Medium Box': {
     es: 'Caja Mediana',
     en: 'Medium Box'
   },
-  mediumBoxDescription: {
-    es: 'Ideal para ropa, zapatos o múltiples artículos pequeños.',
-    en: 'Ideal for clothing, shoes, or multiple small items.'
-  },
-  largeBoxName: {
+  'Large Box': {
     es: 'Caja Grande',
     en: 'Large Box'
   },
-  largeBoxDescription: {
-    es: 'Perfecta para compras grandes, artículos para el hogar o electrónicos grandes.',
-    en: 'Great for bulk purchases, home goods, or large electronics.'
+  'Extra Large': {
+    es: 'Caja Extra Grande',
+    en: 'Extra Large Box'
   }
 }
 
@@ -559,31 +555,18 @@ const canCalculate = computed(() => {
 })
 
 const ivaAmount = computed(() => {
-  return declaredValue.value ? declaredValue.value * 0.16 : 0
+  return declaredValue.value >= 50 ? declaredValue.value * 0.16 : 0
 })
 
 // Methods
 const getBoxTranslations = (box) => {
   if (!box) return { name: '', description: '' }
   
-  // Map Stripe product types to our translations
-  const typeMapping = {
-    'Small Box': {
-      name: t.value.smallBoxName,
-      description: t.value.smallBoxDescription
-    },
-    'Medium Box': {
-      name: t.value.mediumBoxName,
-      description: t.value.mediumBoxDescription
-    },
-    'Large Box': {
-      name: t.value.largeBoxName,
-      description: t.value.largeBoxDescription
-    }
-  }
+  // Use the box name directly as the translation key
+  const translatedName = t.value[box.name] || box.name
   
-  return typeMapping[box.name] || {
-    name: box.name,
+  return {
+    name: translatedName,
     description: box.description
   }
 }
@@ -615,14 +598,22 @@ const calculateShipping = () => {
   const volumetricWeight = (lengthCm * widthCm * heightCm) / 5000
   const chargeableWeight = Math.max(weight.value, volumetricWeight)
 
-  // Find suitable box that meets BOTH dimension AND weight requirements
+  // Find suitable box - check if package dimensions fit within box dimensions
   const suitableBox = availableBoxes.value.find(box => {
-    // Check dimensions - package must fit within box dimensions
+    // Parse box dimensions (format: "42x27x32cm")
     const boxDims = box.dimensions.split('x').map(d => parseInt(d.replace('cm', '')))
-    const dimensionsFit = lengthCm <= boxDims[0] && widthCm <= boxDims[1] && heightCm <= boxDims[2]
     
-    // Check weight - chargeable weight must not exceed box's volumetric weight limit
-    const weightFits = chargeableWeight <= parseFloat(box.volumetric_weight)
+    // Sort package dimensions to match with sorted box dimensions
+    const packageDims = [lengthCm, widthCm, heightCm].sort((a, b) => b - a)
+    const sortedBoxDims = boxDims.sort((a, b) => b - a)
+    
+    // Check if package fits (each dimension must be smaller than corresponding box dimension)
+    const dimensionsFit = packageDims[0] <= sortedBoxDims[0] && 
+                         packageDims[1] <= sortedBoxDims[1] && 
+                         packageDims[2] <= sortedBoxDims[2]
+    
+    // Check weight limit
+    const weightFits = chargeableWeight <= parseFloat(box.max_weight)
     
     return dimensionsFit && weightFits
   })
