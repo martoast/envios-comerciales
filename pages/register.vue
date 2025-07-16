@@ -244,7 +244,7 @@
         <!-- Login Link -->
         <p class="text-center text-sm sm:text-base text-gray-600">
           {{ t.alreadyHaveAccount }}
-          <NuxtLink to="/login" class="text-primary-500 font-semibold hover:text-primary-600 hover:underline transition-colors">
+          <NuxtLink :to="loginLink" class="text-primary-500 font-semibold hover:text-primary-600 hover:underline transition-colors">
             {{ t.loginLink }}
           </NuxtLink>
         </p>
@@ -273,6 +273,7 @@ definePageMeta({
 
 // Nuxt imports
 const { $customFetch } = useNuxtApp()
+const route = useRoute()
 
 // Use the language composable
 const { t: createTranslations } = useLanguage()
@@ -291,6 +292,17 @@ const showPassword = ref(false)
 const showPasswordConfirm = ref(false)
 const errorMessage = ref('')
 const errors = ref({})
+
+// Get redirect parameter from route
+const redirectTo = route.query.redirect
+
+// Computed property for login link with redirect parameter
+const loginLink = computed(() => {
+  if (redirectTo && typeof redirectTo === 'string') {
+    return `/login?redirect=${encodeURIComponent(redirectTo)}`
+  }
+  return '/login'
+})
 
 // Define translations
 const translations = {
@@ -458,8 +470,22 @@ const handleRegister = async () => {
       }
     })
 
-    // Success - redirect to home
-    await navigateTo('/app/')
+    // Success - check for redirect query parameter
+    if (redirectTo && typeof redirectTo === 'string') {
+      // Ensure the redirect is a relative path for security
+      if (redirectTo.startsWith('/')) {
+        console.log('Redirecting to:', redirectTo)
+        await navigateTo(redirectTo)
+      } else {
+        // If it's not a relative path, go to default app page
+        console.log('Invalid redirect path, going to default app page')
+        await navigateTo('/app/')
+      }
+    } else {
+      // No redirect, go to default app page
+      console.log('No redirect parameter, going to default app page')
+      await navigateTo('/app/')
+    }
 
   } catch (error) {
     console.error('Registration error:', error)

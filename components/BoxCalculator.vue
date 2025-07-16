@@ -520,7 +520,7 @@ const translations = {
     en: 'Contact via WhatsApp'
   },
   // Product translations using EXACT names from API
-  'Extra Small': {
+  'Extra Small Box': {
     es: 'Caja Extra Pequeña',
     en: 'Extra Small Box'
   },
@@ -536,7 +536,7 @@ const translations = {
     es: 'Caja Grande',
     en: 'Large Box'
   },
-  'Extra Large': {
+  'Extra Large Box': {
     es: 'Caja Extra Grande',
     en: 'Extra Large Box'
   }

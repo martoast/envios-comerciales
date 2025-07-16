@@ -211,7 +211,7 @@
           <p class="text-sm sm:text-base text-gray-600">
             {{ t.dontHaveAccount }}
           </p>
-          <NuxtLink to="/register" class="mt-2 inline-flex items-center justify-center w-full px-6 py-3 border-2 border-primary-500 rounded-xl text-primary-500 font-semibold hover:bg-primary-50 transition-all duration-200">
+          <NuxtLink :to="registerLink" class="mt-2 inline-flex items-center justify-center w-full px-6 py-3 border-2 border-primary-500 rounded-xl text-primary-500 font-semibold hover:bg-primary-50 transition-all duration-200">
             {{ t.registerLink }}
           </NuxtLink>
         </div>
@@ -353,6 +353,17 @@ const isFormValid = computed(() => {
          form.value.password && 
          emailValid.value
 })
+
+const registerLink = computed(() => {
+  const route = useRoute()
+  const redirectTo = route.query.redirect
+  
+  if (redirectTo) {
+    return `/register?redirect=${redirectTo}`
+  }
+  return '/register'
+})
+
 
 // Methods
 const validateEmail = () => {

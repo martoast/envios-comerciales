@@ -437,7 +437,7 @@
     
     // Map Stripe product names to our translations
     const typeMapping = {
-      'Extra Small': {
+      'Extra Small Box': {
         name: t.value.extraSmallBoxName,
         description: t.value.extraSmallBoxDescription
       },
@@ -453,7 +453,7 @@
         name: t.value.largeBoxName,
         description: t.value.largeBoxDescription
       },
-      'Extra Large': {
+      'Extra Large Box': {
         name: t.value.extraLargeBoxName,
         description: t.value.extraLargeBoxDescription
       }
