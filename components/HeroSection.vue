@@ -35,28 +35,6 @@
             {{ t.ctaCalculate }}
           </a>
         </div>
-        
-        <!-- Trust badges -->
-        <div class="flex flex-wrap justify-center gap-8 items-center text-gray-600">
-          <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-            </svg>
-            <span class="text-sm font-medium">{{ t.trustBadge1 }}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-            </svg>
-            <span class="text-sm font-medium">{{ t.trustBadge2 }}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-            </svg>
-            <span class="text-sm font-medium">{{ t.trustBadge3 }}</span>
-          </div>
-        </div>
       </div>
     </header>
   </template>

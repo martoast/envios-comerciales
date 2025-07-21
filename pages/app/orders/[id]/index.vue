@@ -450,6 +450,24 @@
                     required
                   />
                 </div>
+                <div>
+                  <label
+                    for="declared_value"
+                    class="block text-sm font-semibold text-gray-900 mb-2"
+                  >
+                    {{ t.priceLabel }}
+                  </label>
+                  <input
+                    v-model.number="itemForm.declared_value"
+                    type="number"
+                    id="declared_value"
+                    min="0"
+                    step="0.01"
+                    :placeholder="t.pricePlaceholder"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    required
+                  />
+                </div>
               </div>
 
               <!-- Tracking Info (Optional) -->
@@ -535,7 +553,7 @@
               <div class="flex justify-end pt-2">
                 <button
                   type="submit"
-                  :disabled="addingItem"
+                  :disabled="addingItem || !itemForm.product_url || !itemForm.product_name || !itemForm.declared_value"
                   class="px-6 py-3 bg-primary-500 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                 >
                   <svg

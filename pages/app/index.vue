@@ -29,11 +29,24 @@
               </div>
               <h2 class="text-xl font-bold text-gray-900">{{ t.yourUSAddress }}</h2>
             </div>
-            <div class="space-y-2">
-              <p class="text-lg font-semibold text-gray-900">{{ user?.name || 'Loading...' }}</p>
-              <p class="text-gray-700">{{ poBoxAddress.line1 }}</p>
-              <p class="text-gray-700">{{ poBoxAddress.line2 }}</p>
-              <p class="text-gray-700">{{ poBoxAddress.line3 }}</p>
+            <div class="space-y-3">
+              <div>
+                <p class="text-xs uppercase tracking-wider text-gray-500 mb-1">{{ t.nameAtCheckout }}</p>
+                <p class="text-lg font-semibold text-gray-900">SDSS {{ user?.name || 'Loading...' }}</p>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-wider text-gray-500 mb-1">{{ t.shippingAddress }}</p>
+                <p class="text-gray-700">{{ poBoxAddress.line1 }}</p>
+                <p class="text-gray-700">{{ poBoxAddress.line2 }}</p>
+              </div>
+              <div class="mt-3 p-3 bg-blue-50 rounded-lg">
+                <p class="text-sm text-blue-700">
+                  <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  {{ t.checkoutTip }}
+                </p>
+              </div>
             </div>
           </div>
           <div class="flex flex-col sm:flex-row gap-3">
@@ -260,9 +273,8 @@ const copied = ref(false)
 
 // PO Box Address
 const poBoxAddress = computed(() => ({
-  line1: `PC-${user?.id || 'XXXX'}`,
-  line2: '1234 E Aviation Blvd, Suite 200',
-  line3: 'El Segundo, CA 90245, USA'
+  line1: `2220 Otay Lakes Rd. Suite 502 #${user?.id || 'XX'}`,
+  line2: 'Chula Vista CA 91915'
 }))
 
 // Translations
@@ -419,6 +431,18 @@ const translations = {
   delivered: {
     es: 'Entregado',
     en: 'Delivered'
+  },
+  nameAtCheckout: {
+    es: 'Nombre para el checkout',
+    en: 'Name at checkout'
+  },
+  shippingAddress: {
+    es: 'Dirección de envío',
+    en: 'Shipping address'
+  },
+  checkoutTip: {
+    es: 'Usa exactamente este nombre y dirección cuando compres en línea',
+    en: 'Use exactly this name and address when shopping online'
   }
 }
 
@@ -473,10 +497,9 @@ const fetchRecentOrders = async () => {
 }
 
 const copyAddress = async () => {
-  const address = `${user?.name}
+  const address = `SDSS (${user?.name})
 ${poBoxAddress.value.line1}
-${poBoxAddress.value.line2}
-${poBoxAddress.value.line3}`
+${poBoxAddress.value.line2}`
   
   try {
     await navigator.clipboard.writeText(address)

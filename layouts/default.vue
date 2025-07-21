@@ -2,7 +2,7 @@
 <template>
     <div class="min-h-screen">
       <!-- Language Toggle - Always visible -->
-      <LanguageToggle />
+      <LanguageToggle class="fixed top-4 right-4 sm:top-5 sm:right-5 z-[1001]" />
       
       <!-- Page Content -->
       <slot />
