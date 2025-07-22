@@ -60,7 +60,7 @@
       },
       {
         title: 'Úsalo como shipping address en tus compras',
-        description: 'Compra en Amazon, eBay, Walmart o cualquier tienda. Al pagar, ingresa "SDSS [Tu Nombre]" en el campo de nombre y usa la dirección de USA que te proporcionamos.'
+        description: 'Compra en Amazon, eBay, Walmart o cualquier tienda. Al pagar usa la dirección de USA que te proporcionamos.'
       },
       {
         title: 'Nosotros consolidamos y enviamos a México',
@@ -73,7 +73,7 @@
       },
       {
         title: 'Use it as your shipping address for purchases',
-        description: 'Shop on Amazon, eBay, Walmart or any store. At checkout, enter "SDSS [Your Name]" in the name field and use the USA address we provide you.'
+        description: 'Shop on Amazon, eBay, Walmart or any store. At checkout, use the USA address we provide you.'
       },
       {
         title: 'We consolidate and ship to Mexico',
