@@ -35,8 +35,8 @@
   
   const translations = {
     heroTitle: {
-      es: 'Compra en <span class="text-[#2E6BB7]">cualquier parte del mundo</span> y recíbelo en México',
-      en: 'Shop <span class="text-[#2E6BB7]">anywhere in the world</span> and receive in Mexico'
+      es: 'Compra en <span class="text-[#2E6BB7]">cualquier tienda del mundo</span> y recíbelo en México',
+      en: 'Shop from <span class="text-[#2E6BB7]">any store in the world</span> and receive in Mexico'
     },
     heroSubtitle: {
       es: 'Te damos un domicilio en USA para tus compras online',

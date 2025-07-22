@@ -60,7 +60,7 @@
       },
       {
         title: 'Úsalo como shipping address en tus compras',
-        description: 'Compra en Amazon, eBay, Walmart o cualquier tienda de USA, Europa o China. Usa tu nueva dirección al pagar.'
+        description: 'Compra en Amazon, eBay, Walmart o cualquier tienda. Al pagar, ingresa "SDSS [Tu Nombre]" en el campo de nombre y usa la dirección de USA que te proporcionamos.'
       },
       {
         title: 'Nosotros consolidamos y enviamos a México',
@@ -72,8 +72,8 @@
         description: 'It\'s free and only takes 2 minutes. We assign you a personal address in San Diego that you can use immediately.'
       },
       {
-        title: 'Use it as your shipping address',
-        description: 'Shop at Amazon, eBay, Walmart or any store in the USA, Europe or China. Use your new address at checkout.'
+        title: 'Use it as your shipping address for purchases',
+        description: 'Shop on Amazon, eBay, Walmart or any store. At checkout, enter "SDSS [Your Name]" in the name field and use the USA address we provide you.'
       },
       {
         title: 'We consolidate and ship to Mexico',

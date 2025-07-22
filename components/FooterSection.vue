@@ -2,16 +2,7 @@
   <footer class="bg-dark-500 text-white/70 py-8 sm:py-12 px-4 sm:px-5 text-sm sm:text-base border-t border-white/10">
     <div class="max-w-6xl mx-auto">
       <!-- Main Content Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 text-center md:text-left mb-8">
-        <!-- USA Address -->
-        <div>
-          <h4 class="text-white mb-3 sm:mb-4 text-base sm:text-lg font-semibold">{{ t.addressUSA }}</h4>
-          <p class="m-0 leading-relaxed">
-            2220 Otay Lakes Road<br>
-            San Diego, CA 91915<br>
-            United States
-          </p>
-        </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 text-center mb-8">
         
         <!-- Contact -->
         <div>
