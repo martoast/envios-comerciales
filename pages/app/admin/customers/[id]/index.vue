@@ -100,9 +100,9 @@
                   <p class="text-sm text-gray-500">{{ t.email }}</p>
                   <p class="font-medium text-gray-900">{{ customerData.customer.email }}</p>
                 </div>
-                <div v-if="customerData.customer.phone">
+                <div>
                   <p class="text-sm text-gray-500">{{ t.phone }}</p>
-                  <p class="font-medium text-gray-900">{{ customerData.customer.phone }}</p>
+                  <p class="font-medium text-gray-900">{{ customerData.customer.phone ?? '--' }}</p>
                 </div>
                 <div v-if="customerData.customer.provider">
                   <p class="text-sm text-gray-500">{{ t.signupMethod }}</p>

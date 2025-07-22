@@ -223,7 +223,7 @@
                   class="block px-6 py-4 hover:bg-gray-50 transition-colors"
                 >
                   <div class="flex items-center justify-between mb-2">
-                    <p class="font-medium text-gray-900">{{ order.id }}</p>
+                    <p class="font-medium text-gray-900">{{ order.order_number }}</p>
                     <span :class="[
                       'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                       getStatusColor(order.status)

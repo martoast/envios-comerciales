@@ -56,61 +56,18 @@
               {{ t.dashboard }}
             </button>
             
-            <!-- Orders Dropdown -->
-            <div
-              class="relative inline-flex h-full group"
-              @mouseenter="showDropdown('orders')"
-              @mouseleave="hideDropdown('orders')"
+            <!-- Orders now single link -->
+            <button
+              @click="handleNavigation('/app/admin/orders')"
+              :class="[
+                isActiveRoute('/app/admin/orders')
+                  ? 'border-primary-500 text-gray-900'
+                  : 'border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900',
+                'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors duration-200',
+              ]"
             >
-              <button
-                type="button"
-                class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200"
-                :class="[
-                  isActiveRoute('/app/admin/orders')
-                    ? 'border-primary-500 text-gray-900'
-                    : 'border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900',
-                ]"
-              >
-                {{ t.orders }}
-                <svg
-                  class="w-2.5 h-2.5 ms-3"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 10 6"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m1 1 4 4 4-4"
-                  />
-                </svg>
-              </button>
-              <div
-                v-show="dropdowns.orders"
-                class="absolute left-0 top-full mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-                style="position: absolute; z-index: 99999;"
-                role="menu"
-                aria-orientation="vertical"
-              >
-                <div class="py-1" role="none">
-                  <a
-                    href="/app/admin/orders"
-                    @click.prevent="handleNavigation('/app/admin/orders')"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200"
-                    role="menuitem"
-                  >{{ t.allOrders }}</a>
-                  <a
-                    href="/app/admin/orders/ready-to-quote"
-                    @click.prevent="handleNavigation('/app/admin/orders/ready-to-quote')"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200"
-                    role="menuitem"
-                  >{{ t.readyToQuote }}</a>
-                </div>
-              </div>
-            </div>
+              {{ t.orders }}
+            </button>
 
             <!-- Packages - Now a single link -->
             <button
@@ -238,17 +195,7 @@
               'block border-l-4 py-2 pl-6 pr-4 text-base font-medium',
             ]"
           >{{ t.allOrders }}</DisclosureButton>
-          <DisclosureButton
-            as="a"
-            href="/app/admin/orders/ready-to-quote"
-            @click.prevent="handleNavigation('/app/admin/orders/ready-to-quote')"
-            :class="[
-              isActiveRoute('/app/admin/orders/ready-to-quote')
-                ? 'bg-primary-50 border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900',
-              'block border-l-4 py-2 pl-6 pr-4 text-base font-medium',
-            ]"
-          >{{ t.readyToQuote }}</DisclosureButton>
+          
         </div>
 
         <!-- Mobile Packages - Now a single link -->
@@ -341,10 +288,6 @@ const translations = {
   allOrders: {
     es: 'Todas las Órdenes',
     en: 'All Orders'
-  },
-  readyToQuote: {
-    es: 'Listas para Cotizar',
-    en: 'Ready to Quote'
   },
   packages: {
     es: 'Paquetes',

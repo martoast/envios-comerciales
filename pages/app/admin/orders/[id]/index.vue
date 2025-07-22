@@ -738,30 +738,6 @@
                         {{ t.dimensionsHint }}
                       </p>
                     </div>
-
-                    <!-- Warning Message -->
-                    <div
-                      class="bg-amber-50 border border-amber-200 rounded-lg p-3"
-                    >
-                      <div class="flex items-start gap-2">
-                        <svg
-                          class="w-5 h-5 text-amber-600 mt-0.5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                          />
-                        </svg>
-                        <p class="text-sm text-amber-700">
-                          {{ t.arrivedWarning }}
-                        </p>
-                      </div>
-                    </div>
                   </div>
 
                   <div class="mt-6 flex gap-3">
@@ -1328,10 +1304,6 @@ const translations = {
   dimensionsHint: {
     es: "Largo x Ancho x Alto en centímetros",
     en: "Length x Width x Height in centimeters",
-  },
-  arrivedWarning: {
-    es: "Esta acción no se puede deshacer. Asegúrese de haber pesado el paquete correctamente.",
-    en: "This action cannot be undone. Make sure you have weighed the package correctly.",
   },
   confirmArrived: {
     es: "Confirmar Llegada",

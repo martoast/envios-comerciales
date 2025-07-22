@@ -24,17 +24,7 @@
               <h1 class="text-3xl font-extrabold text-gray-900">{{ t.packages }}</h1>
             </div>
   
-            <!-- Dashboard Link Desktop -->
-            <NuxtLink 
-              to="/app/admin/dashboard" 
-              class="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300 animate-fadeIn"
-              style="animation-delay: 0.1s"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-              </svg>
-              {{ t.dashboard }}
-            </NuxtLink>
+            
           </div>
         </div>
       </div>
@@ -148,172 +138,159 @@
           <!-- Packages List -->
           <div v-else>
             <!-- Desktop Table -->
-            <div class="hidden sm:block overflow-x-auto">
-              <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-100">
-                  <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.product }}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.value }}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.order }}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.customer }}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.status }}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.weight }}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.date }}</th>
-                    <th class="relative px-6 py-3"><span class="sr-only">{{ t.actions }}</span></th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                  <tr 
-                    v-for="pkg in packages" 
-                    :key="pkg.id"
-                    class="hover:bg-gray-50 transition-colors"
-                  >
-                    <td class="px-6 py-4">
-                      <div>
-                        <p class="text-sm text-gray-900 line-clamp-1">{{ pkg.product_name || t.noName }}</p>
-                        <a 
-                          v-if="pkg.product_url" 
-                          :href="pkg.product_url" 
-                          target="_blank"
-                          class="text-xs text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
-                        >
-                          {{ t.viewProduct }}
-                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                          </svg>
-                        </a>
-                        <p class="text-xs text-gray-500">{{ t.qty }}: {{ pkg.quantity }}</p>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${{ pkg.declared_value }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <NuxtLink 
-                          :to="`/app/admin/orders/${pkg.order.id}`"
-                          class="text-sm font-medium text-primary-600 hover:text-primary-700"
-                        >
-                          {{ pkg.order.order_number }}
-                        </NuxtLink>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <NuxtLink 
-                        :to="`/app/admin/customers/${pkg.order.user.id}`"
-                        class="text-sm text-gray-900 hover:text-primary-600"
-                      >
-                        {{ pkg.order.user.name }}
-                      </NuxtLink>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <span :class="[
-                        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                        getPackageStatusColor(pkg)
-                      ]">
-                        {{ getPackageStatusLabel(pkg) }}
-                      </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {{ pkg.weight ? `${pkg.weight} kg` : '-' }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {{ formatDate(pkg.arrived_at || pkg.created_at) }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button 
-                        v-if="!pkg.arrived"
-                        @click="openMarkArrivedModal(pkg)"
-                        class="text-primary-600 hover:text-primary-900"
-                      >
-                        {{ t.markArrived }}
-                      </button>
-                      <button 
-                        v-else-if="!pkg.weight"
-                        @click="openAddWeightModal(pkg)"
-                        class="text-orange-600 hover:text-orange-900"
-                      >
-                        {{ t.addWeight }}
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-  
-            <!-- Mobile Cards -->
-            <div class="sm:hidden divide-y divide-gray-100">
-              <div v-for="pkg in packages" :key="pkg.id" class="p-4">
-                <div class="flex items-start justify-between mb-3">
-                  <div class="flex-1">
-                    <p class="font-medium text-gray-900">{{ pkg.product_name || t.noName }}</p>
-                    <a 
-                      v-if="pkg.product_url" 
-                      :href="pkg.product_url" 
-                      target="_blank"
-                      class="text-sm text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 mt-1"
-                    >
-                      {{ t.viewProduct }}
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                      </svg>
-                    </a>
-                  </div>
-                  <span :class="[
-                    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                    getPackageStatusColor(pkg)
-                  ]">
-                    {{ getPackageStatusLabel(pkg) }}
-                  </span>
-                </div>
-                
-                <div class="space-y-2 text-sm">
-                  <div class="flex items-center justify-between">
-                    <span class="text-gray-500">{{ t.value }}:</span>
-                    <span class="font-medium text-gray-900">${{ pkg.declared_value }}</span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-gray-500">{{ t.order }}:</span>
-                    <NuxtLink 
-                      :to="`/app/admin/orders/${pkg.order.id}`"
-                      class="font-medium text-primary-600"
-                    >
-                      {{ pkg.order.order_number }}
-                    </NuxtLink>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-gray-500">{{ t.customer }}:</span>
-                    <NuxtLink 
-                      :to="`/app/admin/customers/${pkg.order.user.id}`"
-                      class="font-medium text-gray-900"
-                    >
-                      {{ pkg.order.user.name }}
-                    </NuxtLink>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-gray-500">{{ t.weight }}:</span>
-                    <span class="font-medium text-gray-900">{{ pkg.weight ? `${pkg.weight} kg` : '-' }}</span>
-                  </div>
-                </div>
-  
-                <div class="mt-3">
-                  <button 
-                    v-if="!pkg.arrived"
-                    @click="openMarkArrivedModal(pkg)"
-                    class="w-full px-4 py-2 bg-primary-50 text-primary-600 font-medium rounded-lg hover:bg-primary-100 transition-all"
-                  >
-                    {{ t.markArrived }}
-                  </button>
-                  <button 
-                    v-else-if="!pkg.weight"
-                    @click="openAddWeightModal(pkg)"
-                    class="w-full px-4 py-2 bg-orange-50 text-orange-600 font-medium rounded-lg hover:bg-orange-100 transition-all"
-                  >
-                    {{ t.addWeight }}
-                  </button>
-                </div>
-              </div>
-            </div>
+<div class="hidden sm:block overflow-x-auto">
+  <table class="min-w-full">
+    <thead>
+      <tr class="border-b border-gray-200">
+        <th class="px-6 py-3 text-left">
+          <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.product }}</span>
+        </th>
+        <th class="px-6 py-3 text-left">
+          <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.order }}</span>
+        </th>
+        <th class="px-6 py-3 text-left">
+          <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.customer }}</span>
+        </th>
+        <th class="px-6 py-3 text-left">
+          <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.value }}</span>
+        </th>
+        <th class="px-6 py-3 text-left">
+          <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.status }}</span>
+        </th>
+        <th class="px-6 py-3 text-left">
+          <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.weight }}</span>
+        </th>
+        <th class="px-6 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="bg-white">
+      <tr 
+        v-for="pkg in packages" 
+        :key="pkg.id"
+        @click="navigateToPackage(pkg.id)"
+        class="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+      >
+        <td class="px-6 py-4">
+          <div class="text-sm font-medium text-gray-900">
+            {{ pkg.product_name || t.noName }}
+          </div>
+          <div class="text-sm text-gray-500">
+            {{ t.qty }}: {{ pkg.quantity }}
+          </div>
+        </td>
+        <td class="px-6 py-4">
+          <div class="text-sm text-gray-900">
+            {{ pkg.order.order_number }}
+          </div>
+        </td>
+        <td class="px-6 py-4">
+          <div class="text-sm text-gray-900">
+            {{ pkg.order.user.name }}
+          </div>
+        </td>
+        <td class="px-6 py-4">
+          <div class="text-sm text-gray-900">
+            ${{ pkg.declared_value || '0.00' }}
+          </div>
+        </td>
+        <td class="px-6 py-4">
+          <span :class="[
+            'inline-flex px-2 py-1 text-xs font-medium rounded-full',
+            getPackageStatusColor(pkg)
+          ]">
+            {{ getPackageStatusLabel(pkg) }}
+          </span>
+        </td>
+        <td class="px-6 py-4">
+          <div class="text-sm text-gray-900">
+            {{ pkg.weight ? `${pkg.weight} kg` : '-' }}
+          </div>
+        </td>
+        <td class="px-6 py-4 text-right" @click.stop>
+          <button 
+            v-if="!pkg.arrived"
+            @click="openMarkArrivedModal(pkg)"
+            class="text-sm text-primary-600 hover:text-primary-700 font-medium"
+          >
+            {{ t.markArrived }}
+          </button>
+          <button 
+            v-else-if="!pkg.weight"
+            @click="openAddWeightModal(pkg)"
+            class="text-sm text-orange-600 hover:text-orange-700 font-medium"
+          >
+            {{ t.addWeight }}
+          </button>
+          <span v-else class="text-sm text-gray-400">
+            {{ t.complete }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Mobile Cards -->
+<div class="sm:hidden space-y-4">
+  <div 
+    v-for="pkg in packages" 
+    :key="pkg.id" 
+    @click="navigateToPackage(pkg.id)"
+    class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all cursor-pointer"
+  >
+    <div class="flex justify-between items-start mb-3">
+      <div>
+        <h3 class="font-medium text-gray-900">{{ pkg.product_name || t.noName }}</h3>
+        <p class="text-sm text-gray-500 mt-1">{{ t.qty }}: {{ pkg.quantity }}</p>
+      </div>
+      <span :class="[
+        'inline-flex px-2 py-1 text-xs font-medium rounded-full',
+        getPackageStatusColor(pkg)
+      ]">
+        {{ getPackageStatusLabel(pkg) }}
+      </span>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-3 text-sm">
+      <div>
+        <p class="text-gray-500">{{ t.order }}</p>
+        <p class="font-medium text-gray-900">{{ pkg.order.order_number }}</p>
+      </div>
+      <div>
+        <p class="text-gray-500">{{ t.customer }}</p>
+        <p class="font-medium text-gray-900">{{ pkg.order.user.name }}</p>
+      </div>
+      <div>
+        <p class="text-gray-500">{{ t.value }}</p>
+        <p class="font-medium text-gray-900">${{ pkg.declared_value || '0.00' }}</p>
+      </div>
+      <div>
+        <p class="text-gray-500">{{ t.weight }}</p>
+        <p class="font-medium text-gray-900">{{ pkg.weight ? `${pkg.weight} kg` : '-' }}</p>
+      </div>
+    </div>
+
+    <div class="mt-4" @click.stop>
+      <button 
+        v-if="!pkg.arrived"
+        @click="openMarkArrivedModal(pkg)"
+        class="w-full py-2 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition-all"
+      >
+        {{ t.markArrived }}
+      </button>
+      <button 
+        v-else-if="!pkg.weight"
+        @click="openAddWeightModal(pkg)"
+        class="w-full py-2 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-all"
+      >
+        {{ t.addWeight }}
+      </button>
+      <div v-else class="text-center text-sm text-gray-500">
+        {{ t.packageComplete }}
+      </div>
+    </div>
+  </div>
+</div>
   
             <!-- Pagination -->
             <div v-if="pagination.lastPage > 1" class="px-4 sm:px-6 py-4 border-t border-gray-100">
@@ -384,7 +361,7 @@
                       <!-- Package Info -->
                       <div class="bg-gray-50 rounded-lg p-4">
                         <p class="text-sm font-medium text-gray-900 mb-1">{{ selectedPackage.product_name || t.noName }}</p>
-                        <p class="text-xs text-gray-500">{{ t.value }}: ${{ selectedPackage.declared_value }}</p>
+                        <p class="text-xs text-gray-500">{{ t.value }}: ${{ selectedPackage.declared_value ?? '-' }}</p>
                         <p class="text-xs text-gray-500">{{ t.order }}: {{ selectedPackage.order.order_number }}</p>
                         <p class="text-xs text-gray-500">{{ t.customer }}: {{ selectedPackage.order.user.name }}</p>
                       </div>
@@ -454,15 +431,7 @@
                         <p class="mt-1 text-xs text-gray-500">{{ t.dimensionsHint }}</p>
                       </div>
   
-                      <!-- Warning Message -->
-                      <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                        <div class="flex items-start gap-2">
-                          <svg class="w-5 h-5 text-amber-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                          </svg>
-                          <p class="text-sm text-amber-700">{{ t.arrivedWarning }}</p>
-                        </div>
-                      </div>
+                      
                     </div>
   
                     <div class="mt-6 flex gap-3">
@@ -712,10 +681,6 @@
       es: 'Largo x Ancho x Alto en centímetros',
       en: 'Length x Width x Height in centimeters'
     },
-    arrivedWarning: {
-      es: 'Esta acción no se puede deshacer. Asegúrese de haber pesado el paquete correctamente.',
-      en: 'This action cannot be undone. Make sure you have weighed the package correctly.'
-    },
     confirmArrived: {
       es: 'Confirmar Llegada',
       en: 'Confirm Arrival'
@@ -727,7 +692,19 @@
     cancel: {
       es: 'Cancelar',
       en: 'Cancel'
-    }
+    },
+    viewDetails: {
+      es: 'Ver Detalles',
+      en: 'View Details'
+    },
+    complete: {
+      es: 'Completo',
+      en: 'Complete'
+    },
+    packageComplete: {
+      es: 'Paquete completo',
+      en: 'Package complete'
+    },
   }
   
   const t = createTranslations(translations)
@@ -896,6 +873,10 @@
       markingArrived.value = false
     }
   }
+
+  const navigateToPackage = (packageId) => {
+  navigateTo(`/app/admin/packages/${packageId}`)
+}
   
   const openAddWeightModal = (pkg) => {
     // Reuse the same modal for adding weight

@@ -26,17 +26,7 @@
               
             </div>
   
-            <!-- Dashboard Link Desktop -->
-            <NuxtLink 
-              to="/app/admin/dashboard" 
-              class="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300 animate-fadeIn"
-              style="animation-delay: 0.1s"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-              </svg>
-              {{ t.dashboard }}
-            </NuxtLink>
+           
           </div>
         </div>
       </div>
@@ -485,10 +475,7 @@
       es: 'Total',
       en: 'Total'
     },
-    readyToQuote: {
-      es: 'Listas para Cotizar',
-      en: 'Ready to Quote'
-    },
+    
     inTransit: {
       es: 'En Tránsito',
       en: 'In Transit'
@@ -496,6 +483,10 @@
     awaitingPackages: {
       es: 'Esperando Paquetes',
       en: 'Awaiting Packages'
+    },
+    deliveredPackages: {
+      es: 'Paquetes Entregados',
+      en: 'Delivered Packages'
     }
   }
   
@@ -518,9 +509,9 @@
     // Use allOrders for stats if available, otherwise use current orders
     const ordersForStats = allOrders.value.length > 0 ? allOrders.value : orders.value
     const totalOrders = ordersForStats.length
-    const readyToQuote = ordersForStats.filter(o => o.status === 'packages_complete').length
     const inTransit = ordersForStats.filter(o => o.status === 'shipped').length
     const awaitingPackages = ordersForStats.filter(o => o.status === 'awaiting_packages').length
+    const deliveredPackages = ordersForStats.filter(o => o.status == 'delivered').length
   
     return [
       {
@@ -530,13 +521,7 @@
         bgColor: 'bg-blue-50',
         iconColor: 'text-blue-600'
       },
-      {
-        label: t.value.readyToQuote,
-        value: readyToQuote,
-        icon: 'M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z',
-        bgColor: 'bg-orange-50',
-        iconColor: 'text-orange-600'
-      },
+      
       {
         label: t.value.awaitingPackages,
         value: awaitingPackages,
@@ -550,7 +535,15 @@
         icon: 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0',
         bgColor: 'bg-indigo-50',
         iconColor: 'text-indigo-600'
+      },
+      {
+        label: t.value.deliveredPackages,
+        value: deliveredPackages,
+        icon: 'M5 13l4 4L19 7',
+        bgColor: 'bg-green-50',
+        iconColor: 'text-green-600'
       }
+
     ]
   })
   
