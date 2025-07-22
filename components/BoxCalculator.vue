@@ -237,10 +237,8 @@
           <div v-if="calculatorResult.canFit && calculatorResult.recommendedBox" class="mb-6">
             <div class="bg-white rounded-xl p-6 border-2 border-primary-200 shadow-sm">
               <div class="flex items-center gap-4 mb-4">
-                <div class="p-3 bg-primary-100 rounded-xl">
-                  <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"/>
-                  </svg>
+                <div class="hidden md:block p-3 bg-primary-100 rounded-xl">
+                  <img src="/logo.svg" alt="Box" class="w-12 h-12 flex-shrink-0">
                 </div>
                 <div>
                   <h4 class="text-xl font-semibold text-gray-900">{{ getBoxTranslations(calculatorResult.recommendedBox).name }}</h4>
@@ -288,24 +286,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Weight Comparison -->
-          <div v-if="calculatorResult.canFit" class="mb-6">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-                <p class="text-sm text-gray-600 mb-1">{{ t.actualWeightLabel }}</p>
-                <p class="text-xl font-bold text-gray-900">{{ weight }} kg</p>
-              </div>
-              <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-                <p class="text-sm text-gray-600 mb-1">{{ t.volumetricWeightLabel }}</p>
-                <p class="text-xl font-bold text-gray-900">{{ calculatorResult.volumetricWeight.toFixed(2) }} kg</p>
-              </div>
-              <div class="bg-white rounded-lg p-4 text-center shadow-sm border-2 border-primary-200">
-                <p class="text-sm text-gray-600 mb-1">{{ t.chargeableWeightLabel }}</p>
-                <p class="text-xl font-bold text-primary-600">{{ calculatorResult.chargeableWeight.toFixed(2) }} kg</p>
               </div>
             </div>
           </div>
@@ -550,7 +530,49 @@ const translations = {
   'Extra Large Box': {
     es: 'Caja Extra Grande',
     en: 'Extra Large Box'
-  }
+  },
+
+  // Add these product translations to your translations object
+  extraSmallBoxName: {
+    es: 'Caja Extra Pequeña',
+    en: 'Extra Small Box'
+  },
+  extraSmallBoxDescription: {
+    es: 'Ideal para: Joyería, Documentos importantes, Electrónicos u otros artículos valiosos compactos y ligeros.',
+    en: 'Best for: Jewelry, Important documents, Electronics or other compact lightweight valuables.'
+  },
+  smallBoxName: {
+    es: 'Caja Pequeña',
+    en: 'Small Box'
+  },
+  smallBoxDescription: {
+    es: 'Ideal para: Libros, Cosméticos, Electrónicos, Suplementos y otros accesorios pequeños.',
+    en: 'Best for: Books, Cosmetics, Electronics, Supplements and other small accessories.'
+  },
+  mediumBoxName: {
+    es: 'Caja Mediana',
+    en: 'Medium Box'
+  },
+  mediumBoxDescription: {
+    es: 'Ideal para: Ropa, Tenis, Bolsas de mano, Libros, Artículos o Equipo deportivo',
+    en: 'Best for: Clothing, Sneakers, Handbags, Books, Sports Gear or Equipment'
+  },
+  largeBoxName: {
+    es: 'Caja Grande',
+    en: 'Large Box'
+  },
+  largeBoxDescription: {
+    es: 'Ideal para: Compras al mayoreo, Electrodomésticos de cocina, Artículos de decoración o consolas de videojuegos y accesorios grandes.',
+    en: 'Best for: Bulk purchases, Kitchen Appliances, Home Decor items, or gaming consoles or large accessories.'
+  },
+  extraLargeBoxName: {
+    es: 'Caja Extra Grande',
+    en: 'Extra Large Box'
+  },
+  extraLargeBoxDescription: {
+    es: 'Ideal para: Muebles pequeños, Electrodomésticos grandes, Equipo de gimnasio o Pedidos consolidados grandes.',
+    en: 'Best for: Small Furniture, Large Home Appliances, Gym Equipment or Large Consolidated orders.'
+  },
 }
 
 // Get reactive translations
@@ -615,11 +637,32 @@ const getRuralSurchargeAmount = () => {
 const getBoxTranslations = (box) => {
   if (!box) return { name: '', description: '' }
   
-  // Use the box name directly as the translation key
-  const translatedName = t.value[box.name] || box.name
+  // Map Stripe product names to our translations
+  const typeMapping = {
+    'Extra Small Box': {
+      name: t.value.extraSmallBoxName,
+      description: t.value.extraSmallBoxDescription
+    },
+    'Small Box': {
+      name: t.value.smallBoxName,
+      description: t.value.smallBoxDescription
+    },
+    'Medium Box': {
+      name: t.value.mediumBoxName,
+      description: t.value.mediumBoxDescription
+    },
+    'Large Box': {
+      name: t.value.largeBoxName,
+      description: t.value.largeBoxDescription
+    },
+    'Extra Large Box': {
+      name: t.value.extraLargeBoxName,
+      description: t.value.extraLargeBoxDescription
+    }
+  }
   
-  return {
-    name: translatedName,
+  return typeMapping[box.name] || {
+    name: box.name,
     description: box.description
   }
 }

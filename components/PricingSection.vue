@@ -416,7 +416,7 @@ const translations = {
     en: 'Large Box'
   },
   largeBoxDescription: {
-    es: 'Ideal para: Compras al mayoreo, Electrodomésticos de cocina, Artículos de decoración o consolas de videojuegos y accesorios grandes.',
+    es: 'Ideal para: Compras al mayoreo, Electrodomésticos de cocina, Artículos de decoración o Consolas de videojuegos y accesorios grandes.',
     en: 'Best for: Bulk purchases, Kitchen Appliances, Home Decor items, or gaming consoles or large accessories.'
   },
   extraSmallBoxName: {
@@ -424,7 +424,7 @@ const translations = {
     en: 'Extra Small Box'
   },
   extraSmallBoxDescription: {
-    es: 'Ideal para: Joyería, Documentos importantes, Electrónicos u otros artículos valiosos compactos y ligeros.',
+    es: 'Ideal para: Joyería, Documentos importantes, Electrónicos y otros artículos valiosos compactos y ligeros.',
     en: 'Best for: Jewelry, Important documents, Electronics or other compact lightweight valuables.'
   },
   extraLargeBoxName: {
@@ -432,7 +432,7 @@ const translations = {
     en: 'Extra Large Box'
   },
   extraLargeBoxDescription: {
-    es: 'Ideal para: Muebles pequeños, Electrodomésticos grandes, Equipo de gimnasio o Pedidos consolidados grandes.',
+    es: 'Ideal para: Muebles pequeños, Electrodomésticos grandes, Equipos de gimnasio o Pedidos consolidados grandes.',
     en: 'Best for: Small Furniture, Large Home Appliances, Gym Equipment or Large Consolidated orders.'
   }
 }
