@@ -38,8 +38,8 @@
   
   const translations = {
     heroTitle: {
-      es: 'Compra en <span class="text-[#2E6BB7]">cualquier tienda</span> del <span class="text-[#2E6BB7]">mundo</span> y recíbelo en <span class="text-[#2E6BB7]">México</span>, sin complicaciones.',
-      en: 'Shop from <span class="text-[#2E6BB7]">any store</span> in the <span class="text-[#2E6BB7]">world</span> and receive in <span class="text-[#2E6BB7]">Mexico</span>, without complications.'
+      es: 'Compra en <span class="text-[#2E6BB7]">cualquier tienda</span> del <span class="text-[#2E6BB7]">mundo</span> y recíbelo en <span class="text-[#2E6BB7]">México</span>',
+      en: 'Shop from <span class="text-[#2E6BB7]">any store</span> in the <span class="text-[#2E6BB7]">world</span> and receive in <span class="text-[#2E6BB7]">Mexico</span>'
     },
     heroSubtitle: {
       es: 'Tu dirección en USA. Para comprar sin límites',
