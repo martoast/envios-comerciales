@@ -22,7 +22,10 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
             </svg>
           </a> -->
-          <a href="#calculator" class="px-8 py-4 rounded-full inline-flex items-center justify-center gap-2.5 font-semibold text-lg no-underline border-2 cursor-pointer transition-all duration-300 border-gray-200 bg-white text-gray-900 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5">
+          <!-- <a href="#calculator" class="px-8 py-4 rounded-full inline-flex items-center justify-center gap-2.5 font-semibold text-lg no-underline border-2 cursor-pointer transition-all duration-300 border-gray-200 bg-white text-gray-900 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5">
+            {{ t.ctaCalculate }}
+          </a> -->
+          <a href="#calculator" class="px-8 py-4 rounded-full inline-flex items-center justify-center gap-2.5 font-semibold text-lg no-underline border-2 border-transparent cursor-pointer transition-all duration-300 bg-primary-500 text-white shadow-md hover:-translate-y-1 hover:shadow-lg hover:bg-primary-600">
             {{ t.ctaCalculate }}
           </a>
         </div>
@@ -35,15 +38,15 @@
   
   const translations = {
     heroTitle: {
-      es: 'Compra en <span class="text-[#2E6BB7]">cualquier tienda del mundo</span> y recíbelo en México',
-      en: 'Shop from <span class="text-[#2E6BB7]">any store in the world</span> and receive in Mexico'
+      es: 'Compra en <span class="text-[#2E6BB7]">cualquier tienda</span> del <span class="text-[#2E6BB7]">mundo</span> y recíbelo en <span class="text-[#2E6BB7]">México</span>, sin complicaciones.',
+      en: 'Shop from <span class="text-[#2E6BB7]">any store</span> in the <span class="text-[#2E6BB7]">world</span> and receive in <span class="text-[#2E6BB7]">Mexico</span>, without complications.'
     },
     heroSubtitle: {
-      es: 'Te damos un domicilio en USA para tus compras online',
+      es: 'Tu dirección en USA. Para comprar sin límites',
       en: 'We give you a US address for your online shopping'
     },
     heroDescription: {
-      es: 'Nosotros recibimos tus paquetes y los consolidamos para enviártelos a cualquier lugar de México al mejor precio',
+      es: 'Junta todas tus compras en una sola caja y recíbelas en México. Facil, seguro y económico.',
       en: 'We receive your packages and consolidate them to ship anywhere in Mexico at the best price'
     },
     ctaRegister: {
