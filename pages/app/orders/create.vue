@@ -190,24 +190,7 @@
                           : 'bg-gray-100',
                       ]"
                     >
-                      <svg
-                        class="w-6 h-6"
-                        :class="
-                          selectedBox?.id === box.id
-                            ? 'text-primary-600'
-                            : 'text-gray-600'
-                        "
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"
-                        />
-                      </svg>
+                    <img src="/logo.svg" alt="Box" class="w-12 h-12 flex-shrink-0">
                     </div>
                     <div
                       v-if="selectedBox?.id === box.id"
@@ -1425,8 +1408,8 @@ const translations = {
     en: "Total Declared Value (USD)",
   },
   declaredValueWarning: {
-    es: "Se preciso - la aduana puede verificar este valor",
-    en: "Be accurate - customs may verify this value",
+    es: "Se preciso - vamos a verificar esto al llegar los paquetes",
+    en: "Be accurate - we will verify this once packages arrive",
   },
   ivaLabel: {
     es: "IVA (16%)",

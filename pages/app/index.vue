@@ -420,10 +420,6 @@ const translations = {
     es: 'Cotización Enviada',
     en: 'Quote Sent'
   },
-  paid: {
-    es: 'Pagado',
-    en: 'Paid'
-  },
   shipped: {
     es: 'Enviado',
     en: 'Shipped'
@@ -518,9 +514,8 @@ const getStatusColor = (status) => {
     awaiting_packages: 'bg-yellow-100 text-yellow-700',
     packages_complete: 'bg-purple-100 text-purple-700',
     quote_sent: 'bg-orange-100 text-orange-700',
-    paid: 'bg-green-100 text-green-700',
-    shipped: 'bg-indigo-100 text-indigo-700',
-    delivered: 'bg-gray-100 text-gray-700'
+    shipped: 'bg-primary-100 text-primary-700',
+    delivered: 'bg-green-100 text-green-700'
   }
   return colors[status] || 'bg-gray-100 text-gray-700'
 }

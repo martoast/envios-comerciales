@@ -111,17 +111,17 @@
               </p>
               <button
                 v-if="order.status === 'packages_complete'"
-                @click="showQuoteModal = true"
-                class="mt-3 px-4 py-2 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition-all"
-              >
-                {{ t.sendQuote }}
-              </button>
-              <button
-                v-if="order.status === 'paid'"
                 @click="showShipModal = true"
                 class="mt-3 px-4 py-2 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition-all"
               >
                 {{ t.markAsShipped }}
+              </button>
+              <button
+                v-if="order.status === 'shipped'"
+                @click="showDeliveredModal = true"
+                class="mt-3 px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-all"
+              >
+                {{ t.markAsDelivered }}
               </button>
             </div>
           </div>
@@ -228,12 +228,13 @@
                   {{ order.total_weight }} kg
                 </p>
               </div>
-              <div v-if="order.recommended_box_size">
-                <p class="text-sm text-gray-500">{{ t.boxSize }}</p>
-                <p class="font-medium text-gray-900 capitalize">
-                  {{ order.recommended_box_size }}
+              <div v-if="order.amount_paid">
+                <p class="text-sm text-gray-500">{{ t.totalPaid }}</p>
+                <p class="font-medium text-gray-900">
+                ${{ formatCurrency(order.amount_paid || 0) }} MXN
                 </p>
               </div>
+              
             </div>
           </div>
 
@@ -310,75 +311,6 @@
           </div>
         </div>
 
-        <!-- Financial Info (if quote sent) -->
-        <div
-          v-if="
-            order.status !== 'collecting' &&
-            order.status !== 'awaiting_packages' &&
-            order.status !== 'packages_complete'
-          "
-          class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn"
-        >
-          <h2
-            class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"
-          >
-            <svg
-              class="w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            {{ t.financialInfo }}
-          </h2>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-gray-50 rounded-lg p-4">
-              <p class="text-sm text-gray-500">{{ t.shippingCost }}</p>
-              <p class="text-xl font-bold text-gray-900">
-                ${{ formatCurrency(order.amount_paid || 0) }} MXN
-              </p>
-            </div>
-            <div class="bg-gray-50 rounded-lg p-4">
-              <p class="text-sm text-gray-500">{{ t.status }}</p>
-              <p class="text-xl font-bold text-gray-900">
-                {{ order.amount_paid ? t.paid : t.pending }}
-              </p>
-            </div>
-            <div
-              v-if="order.stripe_invoice_url"
-              class="bg-gray-50 rounded-lg p-4"
-            >
-              <p class="text-sm text-gray-500">{{ t.invoice }}</p>
-              <a
-                :href="order.stripe_invoice_url"
-                target="_blank"
-                class="text-primary-600 hover:text-primary-700 font-medium inline-flex items-center gap-1"
-              >
-                {{ t.viewInvoice }}
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
-
         <!-- Items List -->
         <div
           class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fadeIn"
@@ -414,11 +346,7 @@
                   >
                     {{ t.item }}
                   </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {{ t.tracking }}
-                  </th>
+                  
                   <th
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
@@ -462,16 +390,7 @@
                       </a>
                     </div>
                   </td>
-                  <td class="px-6 py-4">
-                    <div>
-                      <p class="text-sm text-gray-900">
-                        {{ item.tracking_number || "-" }}
-                      </p>
-                      <p v-if="item.carrier" class="text-xs text-gray-500">
-                        {{ item.carrier }}
-                      </p>
-                    </div>
-                  </td>
+                 
                   <td class="px-6 py-4 text-sm text-gray-900">
                     ${{ item.declared_value }} × {{ item.quantity }}
                   </td>
@@ -653,13 +572,6 @@
                       <p class="text-sm font-medium text-gray-900 mb-1">
                         {{ selectedItem.product_name }}
                       </p>
-                      <p class="text-xs text-gray-500">
-                        {{ t.tracking }}:
-                        {{ selectedItem.tracking_number || "N/A" }}
-                      </p>
-                      <p class="text-xs text-gray-500">
-                        {{ t.order }}: {{ order.order_number }}
-                      </p>
                     </div>
 
                     <!-- Weight Input -->
@@ -736,6 +648,33 @@
                       </div>
                       <p class="mt-1 text-xs text-gray-500">
                         {{ t.dimensionsHint }}
+                      </p>
+                    </div>
+
+                    <!-- Declared Value Input -->
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ t.declaredValue }}
+                        <span class="text-gray-400">({{ t.optional }})</span>
+                      </label>
+                      <div class="relative">
+                        <input
+                          v-model.number="arrivedForm.declared_value"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="99999.99"
+                          class="w-full px-3 py-2 pr-12 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          :placeholder="t.declaredValuePlaceholder"
+                        />
+                        <div
+                          class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
+                        >
+                          <span class="text-gray-500 text-sm">USD</span>
+                        </div>
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">
+                        {{ t.declaredValueHint }}
                       </p>
                     </div>
                   </div>
@@ -957,20 +896,7 @@
                   </DialogTitle>
 
                   <div class="space-y-4">
-                    <div>
-                      <label
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        {{ t.trackingNumber }}
-                      </label>
-                      <input
-                        v-model="shipForm.tracking_number"
-                        type="text"
-                        class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        :placeholder="t.trackingPlaceholder"
-                      />
-                    </div>
-
+                    
                     <div>
                       <label
                         class="block text-sm font-medium text-gray-700 mb-1"
@@ -990,7 +916,6 @@
                     <button
                       @click="markAsShipped"
                       :disabled="
-                        !shipForm.tracking_number ||
                         !shipForm.estimated_delivery_date ||
                         updatingStatus
                       "
@@ -1038,6 +963,101 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- Delivered Modal -->
+    <TransitionRoot :show="showDeliveredModal" as="template">
+      <Dialog as="div" class="relative z-50" @close="showDeliveredModal = false">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all"
+              >
+                <div class="p-6">
+                  <DialogTitle class="text-lg font-semibold text-gray-900 mb-4">
+                    {{ t.confirmDelivery }}
+                  </DialogTitle>
+
+                  <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                      <p class="text-sm text-gray-600">
+                        {{ t.confirmDeliveryMessage }}
+                      </p>
+                      <div class="mt-2 text-sm">
+                        <p class="font-medium">{{ t.trackingNumber }}: {{ order.tracking_number }}</p>
+                        <p class="font-medium">{{ t.customer }}: {{ order.user.name }}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-6 flex gap-3">
+                    <button
+                      @click="markAsDelivered"
+                      :disabled="updatingStatus"
+                      class="flex-1 px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span v-if="!updatingStatus">{{ t.confirmDelivered }}</span>
+                      <span
+                        v-else
+                        class="flex items-center justify-center gap-2"
+                      >
+                        <svg
+                          class="animate-spin h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                          ></circle>
+                          <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        {{ t.updating }}
+                      </span>
+                    </button>
+                    <button
+                      @click="showDeliveredModal = false"
+                      class="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-all"
+                    >
+                      {{ t.cancel }}
+                    </button>
+                  </div>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </section>
 </template>
 
@@ -1071,18 +1091,19 @@ const loading = ref(true);
 const showQuoteModal = ref(false);
 const showShipModal = ref(false);
 const showMarkArrivedModal = ref(false);
+const showDeliveredModal = ref(false);
 const sendingQuote = ref(false);
 const updatingStatus = ref(false);
 const markingArrived = ref(false);
 const selectedItem = ref(null);
 
 const shipForm = ref({
-  tracking_number: "",
   estimated_delivery_date: "",
 });
 
 const arrivedForm = ref({
   weight: null,
+  declared_value: null,
   dimensions: {
     length: null,
     width: null,
@@ -1107,6 +1128,10 @@ const translations = {
   markAsShipped: {
     es: "Marcar como Enviado",
     en: "Mark as Shipped",
+  },
+  markAsDelivered: {
+    es: "Marcar como Entregado",
+    en: "Mark as Delivered",
   },
   customerInfo: {
     es: "Información del Cliente",
@@ -1143,6 +1168,10 @@ const translations = {
   totalWeight: {
     es: "Peso Total",
     en: "Total Weight",
+  },
+  totalPaid: {
+    es: "Total pagado",
+    en: "Total paid",
   },
   boxSize: {
     es: "Tamaño de Caja",
@@ -1338,6 +1367,42 @@ const translations = {
     es: "Entregado",
     en: "Delivered",
   },
+  declaredValue: {
+    es: "Valor del producto",
+    en: "Value of the product",
+  },
+  declaredValuePlaceholder: {
+    es: "Ej: 49.99",
+    en: "Ex: 49.99",
+  },
+  declaredValueHint: {
+    es: "Valor del artículo en USD. Se aplicará IVA del 16% si el total es ≥ $50 USD",
+    en: "Item value in USD. 16% VAT applies if total is ≥ $50 USD",
+  },
+  confirmDelivery: {
+    es: "Confirmar Entrega",
+    en: "Confirm Delivery",
+  },
+  confirmDeliveryMessage: {
+    es: "¿Confirma que este pedido ha sido entregado al cliente?",
+    en: "Please confirm that this order has been delivered to the customer.",
+  },
+  customer: {
+    es: "Cliente",
+    en: "Customer",
+  },
+  confirmDelivered: {
+    es: "Confirmar Entregado",
+    en: "Confirm Delivered",
+  },
+  packagesCompleteMessage: {
+    es: "Todos los paquetes han llegado. Listo para marcar como enviado.",
+    en: "All packages have arrived. Ready to mark as shipped.",
+  },
+  shippedMessage: {
+    es: "El pedido está en tránsito. Marcar como entregado cuando el cliente lo reciba.",
+    en: "Order is in transit. Mark as delivered when customer receives it.",
+  },
 };
 
 const t = createTranslations(translations);
@@ -1346,8 +1411,8 @@ const t = createTranslations(translations);
 const showQuickActions = computed(() => {
   return (
     order.value &&
-    (order.value.status === "packages_complete" ||
-      order.value.status === "paid")
+    (order.value.status === "packages_complete" || 
+     order.value.status === "shipped")
   );
 });
 
@@ -1408,11 +1473,9 @@ const getStatusColor = (status) => {
   const colors = {
     collecting: "bg-primary-100 text-primary-700",
     awaiting_packages: "bg-yellow-100 text-yellow-700",
-    packages_complete: "bg-slate-100 text-slate-700",
-    quote_sent: "bg-orange-100 text-orange-700",
-    paid: "bg-green-100 text-green-700",
-    shipped: "bg-primary-100 text-primary-700",
-    delivered: "bg-gray-100 text-gray-700",
+    packages_complete: "bg-blue-100 text-blue-700",
+    shipped: "bg-orange-100 text-orange-700",
+    delivered: "bg-green-100 text-green-700",
   };
   return colors[status] || "bg-gray-100 text-gray-700";
 };
@@ -1423,9 +1486,9 @@ const getStatusLabel = (status) => {
 
 const getActionMessage = () => {
   if (order.value.status === "packages_complete") {
-    return "All packages have arrived and been weighed. Ready to send quote to customer.";
-  } else if (order.value.status === "paid") {
-    return "Customer has paid. Ready to ship the consolidated package.";
+    return t.value.packagesCompleteMessage;
+  } else if (order.value.status === "shipped") {
+    return t.value.shippedMessage;
   }
   return "";
 };
@@ -1515,7 +1578,6 @@ const markAsShipped = async () => {
         method: "PUT",
         body: {
           status: "shipped",
-          tracking_number: shipForm.value.tracking_number,
           estimated_delivery_date: shipForm.value.estimated_delivery_date,
         },
       }
@@ -1524,7 +1586,31 @@ const markAsShipped = async () => {
     $toast.success("Order marked as shipped");
     order.value = response.data;
     showShipModal.value = false;
-    shipForm.value = { tracking_number: "", estimated_delivery_date: "" };
+    shipForm.value = { estimated_delivery_date: "" };
+  } catch (error) {
+    console.error("Error updating status:", error);
+    $toast.error("Error updating order status");
+  } finally {
+    updatingStatus.value = false;
+  }
+};
+
+const markAsDelivered = async () => {
+  updatingStatus.value = true;
+  try {
+    const response = await $customFetch(
+      `/admin/orders/${order.value.id}/status`,
+      {
+        method: "PUT",
+        body: {
+          status: "delivered",
+        },
+      }
+    );
+
+    $toast.success("Order marked as delivered");
+    order.value = response.data;
+    showDeliveredModal.value = false;
   } catch (error) {
     console.error("Error updating status:", error);
     $toast.error("Error updating order status");
@@ -1537,6 +1623,7 @@ const openMarkArrivedModal = (item) => {
   selectedItem.value = item;
   arrivedForm.value = {
     weight: null,
+    declared_value: item.declared_value || null, // Pre-fill with existing value if available
     dimensions: {
       length: null,
       width: null,
@@ -1551,6 +1638,7 @@ const closeMarkArrivedModal = () => {
   selectedItem.value = null;
   arrivedForm.value = {
     weight: null,
+    declared_value: null,
     dimensions: {
       length: null,
       width: null,
@@ -1568,6 +1656,11 @@ const confirmMarkArrived = async () => {
       arrived: true,
       weight: parseFloat(arrivedForm.value.weight),
     };
+
+    // Add declared value if provided
+    if (arrivedForm.value.declared_value !== null && arrivedForm.value.declared_value !== '') {
+      body.declared_value = parseFloat(arrivedForm.value.declared_value);
+    }
 
     // Only add dimensions if all three values are provided
     if (

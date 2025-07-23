@@ -293,7 +293,7 @@
           <!-- Action Buttons -->
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <!-- Success State - Create Order Button -->
-            <!-- <NuxtLink 
+            <NuxtLink 
               v-if="calculatorResult.canFit && calculatorResult.recommendedBox"
               :to="`/app/orders/create?box=${calculatorResult.recommendedBox.id}`"
               class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
@@ -302,7 +302,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
               </svg>
               {{ t.createOrderWithBox }}
-            </NuxtLink> -->
+            </NuxtLink>
             
             <!-- Error State - WhatsApp Contact Button -->
             <a 

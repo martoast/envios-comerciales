@@ -281,14 +281,10 @@ const availableBoxes = ref([])
 const loadingProducts = ref(true)
 
 // Methods
-// const handleBoxSelection = (box) => {
-//   navigateTo(`/app/orders/create?box=${box.id}`)
-// }
-
 const handleBoxSelection = (box) => {
-  const message = encodeURIComponent(`Hola! Me interesa la ${getBoxTranslations(box).name} (${box.dimensions})`)
-  window.open(`https://wa.me/16195591910?text=${message}`, '_blank')
+  navigateTo(`/app/orders/create?box=${box.id}`)
 }
+
 
 const getDisplayPrice = (box) => {
   // Box prices are in MXN from the API

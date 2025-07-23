@@ -191,7 +191,7 @@
                   {{ t.paymentDetails }}
                 </p>
                 <p class="mt-1 text-lg font-bold text-gray-900">
-                  ${{ order.amount_paid }} {{ order.currency?.toUpperCase() }}
+                  ${{ Number(order.amount_paid).toLocaleString() }} {{ order.currency?.toUpperCase() }}
                 </p>
               </div>
               <div class="p-2 bg-green-100 rounded-lg">
@@ -1685,8 +1685,8 @@ const getStatusColor = (status) => {
     packages_complete: "bg-purple-100 text-purple-700",
     quote_sent: "bg-orange-100 text-orange-700",
     paid: "bg-green-100 text-green-700",
-    shipped: "bg-indigo-100 text-indigo-700",
-    delivered: "bg-gray-100 text-gray-700",
+    shipped: "bg-primary-100 text-primary-700",
+    delivered: "bg-green-100 text-green-700",
   };
   return colors[status] || "bg-gray-100 text-gray-700";
 };
