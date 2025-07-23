@@ -137,8 +137,8 @@
                   
                   <MenuItem v-slot="{ active }">
                     <a
-                      href="/app/account/"
-                      @click.prevent="handleNavigation('/app/account/')"
+                      href="/app/admin/account/"
+                      @click.prevent="handleNavigation('/app/admin/account/')"
                       :class="[
                         active ? 'bg-gray-100' : '',
                         'block px-4 py-2 text-sm text-gray-700',
@@ -241,7 +241,7 @@
           
           <DisclosureButton
             as="button"
-            @click="handleNavigation('/app/account')"
+            @click="handleNavigation('/app/admin/account')"
             class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 sm:px-6 w-full text-left"
           >{{ t.account }}</DisclosureButton>
           <DisclosureButton

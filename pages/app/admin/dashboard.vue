@@ -63,141 +63,7 @@
             </div>
           </div>
   
-          <!-- Order Status Overview -->
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn" style="animation-delay: 0.4s">
-            <h2 class="text-lg font-bold text-gray-900 mb-6">{{ t.orderStatusOverview }}</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
-              <div 
-                v-for="status in orderStatuses" 
-                :key="status.key"
-                class="text-center"
-              >
-                <div :class="[
-                  'mx-auto w-16 h-16 rounded-2xl flex items-center justify-center mb-3',
-                  status.bgColor
-                ]">
-                  <span class="text-2xl font-bold" :class="status.textColor">
-                    {{ dashboardData?.orders[status.key] || 0 }}
-                  </span>
-                </div>
-                <p class="text-xs font-medium text-gray-600">{{ status.label }}</p>
-              </div>
-            </div>
-          </div>
-  
-          <!-- Quick Actions & Package Stats -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Quick Actions -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn" style="animation-delay: 0.5s">
-              <h2 class="text-lg font-bold text-gray-900 mb-4">{{ t.quickActions }}</h2>
-              <div class="space-y-3">
-                <NuxtLink 
-                  to="/app/admin/orders/ready-to-quote"
-                  class="flex items-center justify-between p-4 bg-orange-50 rounded-xl hover:bg-orange-100 transition-all group"
-                >
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-all">
-                      <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-semibold text-gray-900">{{ t.ordersToQuote }}</p>
-                      <p class="text-sm text-gray-600">{{ dashboardData?.orders.ready_to_quote || 0 }} {{ t.pending }}</p>
-                    </div>
-                  </div>
-                  <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                  </svg>
-                </NuxtLink>
-  
-                <NuxtLink 
-                  to="/app/admin/packages/pending"
-                  class="flex items-center justify-between p-4 bg-yellow-50 rounded-xl hover:bg-yellow-100 transition-all group"
-                >
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-yellow-100 rounded-lg group-hover:bg-yellow-200 transition-all">
-                      <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-semibold text-gray-900">{{ t.pendingPackages }}</p>
-                      <p class="text-sm text-gray-600">{{ dashboardData?.packages.awaiting_arrival || 0 }} {{ t.awaitingArrival }}</p>
-                    </div>
-                  </div>
-                  <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                  </svg>
-                </NuxtLink>
-  
-                <NuxtLink 
-                  to="/app/admin/packages/missing-weight"
-                  class="flex items-center justify-between p-4 bg-red-50 rounded-xl hover:bg-red-100 transition-all group"
-                >
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 bg-red-100 rounded-lg group-hover:bg-red-200 transition-all">
-                      <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-semibold text-gray-900">{{ t.missingWeights }}</p>
-                      <p class="text-sm text-gray-600">{{ dashboardData?.packages.missing_weight || 0 }} {{ t.packages }}</p>
-                    </div>
-                  </div>
-                  <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                  </svg>
-                </NuxtLink>
-              </div>
-            </div>
-  
-            <!-- Package Stats -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn" style="animation-delay: 0.6s">
-              <h2 class="text-lg font-bold text-gray-900 mb-4">{{ t.packageStats }}</h2>
-              <div class="space-y-4">
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">{{ t.arrivedToday }}</span>
-                    <span class="text-lg font-bold text-gray-900">{{ dashboardData?.packages.arrived_today || 0 }}</span>
-                  </div>
-                  <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      class="bg-green-500 h-2 rounded-full transition-all duration-300"
-                      :style="`width: ${getPercentage(dashboardData?.packages.arrived_today, dashboardData?.packages.awaiting_arrival)}%`"
-                    ></div>
-                  </div>
-                </div>
-  
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">{{ t.awaitingArrival }}</span>
-                    <span class="text-lg font-bold text-gray-900">{{ dashboardData?.packages.awaiting_arrival || 0 }}</span>
-                  </div>
-                  <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      class="bg-yellow-500 h-2 rounded-full transition-all duration-300"
-                      :style="`width: 100%`"
-                    ></div>
-                  </div>
-                </div>
-  
-                <div>
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-600">{{ t.missingWeight }}</span>
-                    <span class="text-lg font-bold text-gray-900">{{ dashboardData?.packages.missing_weight || 0 }}</span>
-                  </div>
-                  <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      class="bg-red-500 h-2 rounded-full transition-all duration-300"
-                      :style="`width: ${getPercentage(dashboardData?.packages.missing_weight, 50)}%`"
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+         
   
           <!-- Recent Activity & Top Customers -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -323,10 +189,7 @@
       es: 'Bienvenido de vuelta',
       en: 'Welcome back'
     },
-    orderStatusOverview: {
-      es: 'Resumen de Estados de Órdenes',
-      en: 'Order Status Overview'
-    },
+   
     quickActions: {
       es: 'Acciones Rápidas',
       en: 'Quick Actions'

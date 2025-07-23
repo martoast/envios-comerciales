@@ -1359,7 +1359,6 @@ const minDeliveryDate = computed(() => {
 
 const orderTimeline = computed(() => {
   if (!order.value) return [];
-
   const events = [
     {
       label: t.value.collecting,
@@ -1373,24 +1372,8 @@ const orderTimeline = computed(() => {
     },
     {
       label: t.value.packages_complete,
-      date: order.value.status === "packages_complete" ? new Date() : null,
-      completed: [
-        "packages_complete",
-        "quote_sent",
-        "paid",
-        "shipped",
-        "delivered",
-      ].includes(order.value.status),
-    },
-    {
-      label: t.value.quote_sent,
-      date: order.value.quote_sent_at,
-      completed: !!order.value.quote_sent_at,
-    },
-    {
-      label: t.value.paid,
-      date: order.value.paid_at,
-      completed: !!order.value.paid_at,
+      date: order.value.status === 'packages_complete' ? order.value.updated_at : null,
+      completed: ['packages_complete', 'shipped', 'delivered'].includes(order.value.status),
     },
     {
       label: t.value.shipped,
@@ -1403,7 +1386,6 @@ const orderTimeline = computed(() => {
       completed: !!order.value.delivered_at,
     },
   ];
-
   return events;
 });
 
