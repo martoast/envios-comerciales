@@ -40,10 +40,10 @@ const translations = {
 const t = createTranslations(translations)
 
 useSeoMeta({
-  title: 'Envios Comerciales TJ - Compra en cualquier parte del mundo y recibe en México',
-  ogTitle: 'Envios Comerciales TJ - Compra en cualquier parte del mundo y recibe en México',
-  description: 'Compra en cualquier parte del mundo y recibe en México. Te damos un domicilio en USA, consolidamos tus paquetes y enviamos a todo México al mejor precio.',
-  ogDescription: 'Compra en cualquier parte del mundo y recibe en México. Te damos un domicilio en USA, consolidamos tus paquetes y enviamos a todo México al mejor precio.',
+  title: 'Envios Comerciales TJ - Compra en cualquier tienda del mundo y recíbelo en México',
+  ogTitle: 'Envios Comerciales TJ - Compra en cualquier tienda del mundo y recíbelo en México',
+  description: 'Compra en cualquier tienda del mundo y recíbelo en México. Te damos un domicilio en USA, consolidamos tus paquetes y enviamos a todo México al mejor precio.',
+  ogDescription: 'Compra en cualquier tienda del mundo y recíbelo en México. Te damos un domicilio en USA, consolidamos tus paquetes y enviamos a todo México al mejor precio.',
   ogImage: '/logo.jpeg',
   twitterCard: 'summary_large_image',
 })

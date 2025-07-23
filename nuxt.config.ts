@@ -29,11 +29,11 @@ export default defineNuxtConfig({
         },
         { 
           property: 'og:title', 
-          content: 'Envios Comerciales TJ - Compra en cualquier parte del mundo y recibe en México'
+          content: 'Envios Comerciales TJ - Compra en cualquier tienda del mundo y recíbelo en México'
         },
         { 
           property: 'og:description', 
-          content: 'Compra en cualquier parte del mundo y recibe en México. Te damos un domicilio en USA, consolidamos tus paquetes y enviamos a todo México al mejor precio.'
+          content: 'Compra en cualquier tienda del mundo y recíbelo en México. Te damos un domicilio en USA, consolidamos tus paquetes y enviamos a todo México al mejor precio.'
         },
         { 
           property: 'og:image', 
@@ -54,11 +54,11 @@ export default defineNuxtConfig({
         },
         { 
           name: 'twitter:title', 
-          content: 'Propquest - Find & Close Deals 10X Faster'
+          content: 'Envios Comerciales TJ - Compra en cualquier tienda del mundo y recíbelo en México'
         },
         { 
           name: 'twitter:description', 
-          content: 'Ditch the spreadsheets and multiple platform headache. Find creative deals, run comps, analyze properties, and skiptrace - all in one place.'
+          content: 'Compra en cualquier tienda del mundo y recíbelo en México. Te damos un domicilio en USA, consolidamos tus paquetes y enviamos a todo México al mejor precio.'
         },
         { 
           name: 'twitter:image', 
