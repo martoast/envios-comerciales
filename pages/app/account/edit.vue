@@ -1,7 +1,7 @@
 <template>
   <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
     <!-- Loading State -->
-    <div v-if="loading" class="min-h-screen flex items-center justify-center">
+    <div v-if="isInitialLoading" class="min-h-screen flex items-center justify-center">
       <div class="text-center">
         <svg class="inline-block w-16 h-16 text-primary-500 animate-spin" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <!-- Content (shown when not loading) -->
+    <!-- Content (shown when data is loaded) -->
     <div v-else>
       <!-- Header -->
       <div class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100">
@@ -84,7 +84,7 @@
                 </li>
               </ul>
             </div>
-          </div>
+            </div>
           </div>
         </Transition>
 
@@ -203,10 +203,10 @@
             
             <button
               type="submit"
-              :disabled="loading"
+              :disabled="isSubmitting"
               class="px-6 py-2.5 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              <span v-if="!loading">{{ t.saveChanges }}</span>
+              <span v-if="!isSubmitting">{{ t.saveChanges }}</span>
               <span v-else class="flex items-center gap-2">
                 <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -245,7 +245,8 @@ const form = ref({
   preferred_language: 'es'
 })
 
-const loading = ref(false)
+const isInitialLoading = ref(true)
+const isSubmitting = ref(false)
 const showSuccess = ref(false)
 const errorMessage = ref('')
 const errors = ref({})
@@ -336,6 +337,9 @@ const fetchProfile = async () => {
     }
   } catch (error) {
     console.error('Error fetching profile:', error)
+    errorMessage.value = 'Failed to load profile data. Please try again.'
+  } finally {
+    isInitialLoading.value = false
   }
 }
 
@@ -351,7 +355,7 @@ const clearErrors = () => {
 }
 
 const handleSubmit = async () => {
-  loading.value = true
+  isSubmitting.value = true
   clearErrors()
   showSuccess.value = false
 
@@ -382,7 +386,7 @@ const handleSubmit = async () => {
       errorMessage.value = 'An error occurred. Please try again.'
     }
   } finally {
-    loading.value = false
+    isSubmitting.value = false
   }
 }
 
