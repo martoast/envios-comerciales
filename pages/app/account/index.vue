@@ -1,5 +1,18 @@
 <template>
-    <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
+  <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
+    <!-- Loading State -->
+    <div v-if="loading" class="min-h-screen flex items-center justify-center">
+      <div class="text-center">
+        <svg class="inline-block w-16 h-16 text-primary-500 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="mt-4 text-gray-600">{{ t.loading }}</p>
+      </div>
+    </div>
+
+    <!-- Content (shown when not loading) -->
+    <div v-else>
       <!-- Header -->
       <div class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -180,8 +193,9 @@
           </div>
         </div>
       </div>
-    </section>
-  </template>
+    </div>
+  </section>
+</template>
   
   <script setup>
   import { ref, onMounted, computed } from 'vue'
@@ -338,6 +352,10 @@
     editAddress: {
       es: 'Editar',
       en: 'Edit'
+    },
+    loading: {
+      es: 'Cargando...',
+      en: 'Loading...'
     }
   }
   
