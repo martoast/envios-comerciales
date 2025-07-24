@@ -76,7 +76,7 @@
               </p>
 
               <!-- CTA Button - Full width and prominent -->
-              <button
+              <!-- <button
                 @click="handleBoxSelection(box)"
                 class="w-full py-3 px-4 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 bg-primary-500 text-white shadow-sm hover:bg-primary-600 hover:shadow-md active:scale-[0.98]"
               >
@@ -84,7 +84,7 @@
                 <svg class="inline-block w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                 </svg>
-              </button>
+              </button> -->
             </div>
           </div>
         </div>
@@ -109,9 +109,9 @@
                 <div class="col-span-2 text-center">
                   <h3 class="text-sm font-medium opacity-90">{{ t.price }}</h3>
                 </div>
-                <div class="col-span-2 text-center">
+                <!-- <div class="col-span-2 text-center">
                   <h3 class="text-sm font-medium opacity-90">{{ t.action }}</h3>
-                </div>
+                </div> -->
               </div>
             </div>
 
@@ -160,7 +160,7 @@
                   </div>
 
                   <!-- Action -->
-                  <div class="col-span-2 text-center">
+                  <!-- <div class="col-span-2 text-center">
                     <button
                       @click="handleBoxSelection(box)"
                       class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 bg-primary-500 text-white shadow-sm hover:bg-primary-600 hover:shadow-md hover:-translate-y-0.5"
@@ -170,7 +170,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                       </svg>
                     </button>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>

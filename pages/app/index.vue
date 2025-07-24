@@ -342,7 +342,7 @@ import { ref, computed, onMounted } from 'vue'
 // Define page meta
 definePageMeta({
   layout: 'app',
-  middleware: ['auth', 'customer']
+  middleware: ['auth', 'customer', 'complete-profile']
 })
 
 // Nuxt imports

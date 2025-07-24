@@ -1248,7 +1248,7 @@ import { CheckCircleIcon, CheckIcon } from "@heroicons/vue/24/solid";
 // Define page meta
 definePageMeta({
   layout: "app",
-  middleware: ["auth", "customer"],
+  middleware: ["auth", "customer", "complete-profile"],
 });
 
 // Nuxt imports

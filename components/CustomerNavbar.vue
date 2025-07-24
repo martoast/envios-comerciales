@@ -288,17 +288,7 @@
               'block border-l-4 py-2 pl-6 pr-4 text-base font-medium',
             ]"
           >{{ t.allOrders }}</DisclosureButton>
-          <DisclosureButton
-            as="a"
-            href="/app/orders/collecting"
-            @click.prevent="handleNavigation('/app/orders/collecting')"
-            :class="[
-              isActiveRoute('/app/orders/collecting')
-                ? 'bg-primary-50 border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900',
-              'block border-l-4 py-2 pl-6 pr-4 text-base font-medium',
-            ]"
-          >{{ t.collectingOrders }}</DisclosureButton>
+          
           <DisclosureButton
             as="button"
             @click="handleCreateOrder"
@@ -414,14 +404,7 @@ const translations = {
     es: 'Ver historial completo',
     en: 'View complete history'
   },
-  collectingOrders: {
-    es: 'En Recolección',
-    en: 'Collecting'
-  },
-  collectingOrdersDesc: {
-    es: 'Órdenes esperando paquetes',
-    en: 'Orders awaiting packages'
-  },
+
   createNewOrder: {
     es: 'Crear Nueva Orden',
     en: 'Create New Order'

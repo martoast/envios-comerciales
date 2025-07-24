@@ -1,3 +1,4 @@
+// plugins/redirectLogin.ts
 export default defineNuxtPlugin(() => {
     return {
         provide: {

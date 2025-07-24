@@ -252,6 +252,7 @@ definePageMeta({
 
 // Nuxt imports
 const { $customFetch } = useNuxtApp()
+const runtimeConfig = useRuntimeConfig();
 
 // Use the language composable
 const { t: createTranslations } = useLanguage()
@@ -439,7 +440,7 @@ const handleLogin = async () => {
 }
 
 const handleSocialLogin = async (provider) => {
-  console.log(`Login with ${provider}`)
+  window.location.href = `${runtimeConfig.public.apiUrl}/auth/google/redirect`
 }
 
 // Watch email changes for validation

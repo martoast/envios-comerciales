@@ -304,7 +304,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 // Define page meta to use app layout
 definePageMeta({
   layout: 'app',
-  middleware: ['auth', 'customer']
+  middleware: ['auth', 'customer', 'complete-profile']
 })
 
 // Nuxt imports
