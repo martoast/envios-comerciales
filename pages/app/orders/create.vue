@@ -1879,7 +1879,7 @@ const handleCheckout = async () => {
           postal_code: form.value.delivery_address.postal_code,
         },
       });
-      $toast.success(t.value.addressSaved);
+      console.log("address saved successfully")
     } catch (error) {
       console.error("Error saving address:", error);
       // Continue with checkout even if address save fails

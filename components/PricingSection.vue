@@ -76,7 +76,7 @@
               </p>
 
               <!-- CTA Button - Full width and prominent -->
-              <!-- <button
+              <button
                 @click="handleBoxSelection(box)"
                 class="w-full py-3 px-4 rounded-lg font-semibold text-sm sm:text-base transition-all duration-300 bg-primary-500 text-white shadow-sm hover:bg-primary-600 hover:shadow-md active:scale-[0.98]"
               >
@@ -84,7 +84,7 @@
                 <svg class="inline-block w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                 </svg>
-              </button> -->
+              </button>
             </div>
           </div>
         </div>

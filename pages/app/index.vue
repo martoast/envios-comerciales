@@ -231,49 +231,6 @@
 
           <!-- Quick Actions -->
           <div class="space-y-4">
-            <!-- FAQ Card -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn" style="animation-delay: 0.9s">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="p-2 bg-primary-50 rounded-lg">
-                  <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                </div>
-                <h3 class="font-semibold text-gray-900">{{ t.needHelp }}</h3>
-              </div>
-              <p class="text-sm text-gray-600 mb-4">{{ t.checkFAQ }}</p>
-              <a 
-                href="#" 
-                class="text-sm text-primary-600 hover:text-primary-700 font-medium inline-flex items-center gap-1"
-              >
-                {{ t.visitHelpCenter }}
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-              </a>
-            </div>
-
-            <!-- Shipping Calculator -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn" style="animation-delay: 1.0s">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="p-2 bg-green-50 rounded-lg">
-                  <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                  </svg>
-                </div>
-                <h3 class="font-semibold text-gray-900">{{ t.calculateShipping }}</h3>
-              </div>
-              <p class="text-sm text-gray-600 mb-4">{{ t.estimateCosts }}</p>
-              <button 
-                class="text-sm text-primary-600 hover:text-primary-700 font-medium inline-flex items-center gap-1"
-              >
-                {{ t.openCalculator }}
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-              </button>
-            </div>
-
             <!-- Contact Support -->
             <div class="bg-gradient-to-r from-primary-50 to-primary-100/50 rounded-2xl p-6 border border-primary-200/50 animate-fadeIn" style="animation-delay: 1.1s">
               <div class="flex items-center gap-3 mb-3">

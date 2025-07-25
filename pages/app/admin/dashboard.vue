@@ -291,10 +291,6 @@
       es: 'Completos',
       en: 'Complete'
     },
-    quote_sent: {
-      es: 'Cotizado',
-      en: 'Quoted'
-    },
     paid: {
       es: 'Pagado',
       en: 'Paid'
@@ -353,9 +349,6 @@
   const orderStatuses = computed(() => [
     { key: 'collecting', label: t.value.collecting, bgColor: 'bg-primary-50', textColor: 'text-primary-600' },
     { key: 'awaiting_packages', label: t.value.awaiting_packages, bgColor: 'bg-yellow-50', textColor: 'text-yellow-600' },
-    { key: 'ready_to_quote', label: t.value.packages_complete, bgColor: 'bg-purple-50', textColor: 'text-purple-600' },
-    { key: 'quote_sent', label: t.value.quote_sent, bgColor: 'bg-orange-50', textColor: 'text-orange-600' },
-    { key: 'paid', label: t.value.paid, bgColor: 'bg-green-50', textColor: 'text-green-600' },
     { key: 'in_transit', label: t.value.shipped, bgColor: 'bg-indigo-50', textColor: 'text-indigo-600' },
     { key: 'delivered', label: t.value.delivered, bgColor: 'bg-gray-50', textColor: 'text-gray-600' }
   ])
@@ -424,13 +417,11 @@
   
   const getStatusColor = (status) => {
     const colors = {
-      collecting: 'bg-primary-100 text-primary-700',
+      collecting: 'bg-gray-100 text-gray-700',
       awaiting_packages: 'bg-yellow-100 text-yellow-700',
       packages_complete: 'bg-purple-100 text-purple-700',
-      quote_sent: 'bg-orange-100 text-orange-700',
-      paid: 'bg-green-100 text-green-700',
-      shipped: 'bg-indigo-100 text-indigo-700',
-      delivered: 'bg-gray-100 text-gray-700'
+      shipped: 'bg-primary-100 text-primary-700',
+      delivered: 'bg-green-100 text-green-700'
     }
     return colors[status] || 'bg-gray-100 text-gray-700'
   }

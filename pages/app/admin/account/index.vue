@@ -1,5 +1,5 @@
 <template>
-    <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/20">
+    <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
       <!-- Header -->
       <div class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -10,7 +10,7 @@
             </div>
             <NuxtLink
               to="/app/admin/account/edit"
-              class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-all"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -32,7 +32,7 @@
                 <h2 class="text-lg font-bold text-gray-900">{{ t.basicInformation }}</h2>
                 <NuxtLink
                   to="/app/admin/account/edit"
-                  class="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1"
+                  class="text-sm text-primary-600 hover:text-primary-700 font-medium inline-flex items-center gap-1"
                 >
                   {{ t.edit }}
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@
                   <label class="block text-sm font-medium text-gray-500 mb-1">{{ t.email }}</label>
                   <div class="flex items-center gap-2">
                     <p class="text-base text-gray-900">{{ profileData?.email || '-' }}</p>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
                       {{ t.adminRole }}
                     </span>
                   </div>
@@ -134,25 +134,59 @@
             </div>
   
             <!-- Support -->
-            <div class="bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-2xl p-6 border border-blue-200/50">
+            <div class="bg-gradient-to-r from-primary-50 to-primary-100/50 rounded-2xl p-6 border border-primary-200/50">
               <div class="flex items-center gap-3 mb-3">
-                <div class="p-2 bg-blue-100 rounded-lg">
-                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+                <div class="p-2 bg-primary-100 rounded-lg">
+                  <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
                 </div>
-                <h3 class="font-semibold text-gray-900">{{ t.adminSupport }}</h3>
+                <h3 class="font-semibold text-gray-900">{{ t.needHelp }}</h3>
               </div>
-              <p class="text-sm text-gray-700 mb-4">{{ t.adminSupportText }}</p>
-              <a
-                href="mailto:support@paquetecuba.com"
-                class="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1"
-              >
-                {{ t.contactSupport }}
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-              </a>
+              <p class="text-sm text-gray-700 mb-4">{{ t.supportText }}</p>
+              
+              <!-- Contact Options -->
+              <div class="space-y-3">
+                <!-- WhatsApp -->
+                <a
+                  href="https://wa.me/16195591910"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                >
+                  <div class="p-2 bg-green-100 rounded-lg flex-shrink-0">
+                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.98-3.686c-.592-1.02-.9-2.176-.898-3.358.002-3.808 3.105-6.912 6.913-6.912 3.809 0 6.913 3.104 6.913 6.913s-3.104 6.923-6.913 6.923z"/>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">{{ t.whatsapp }}</p>
+                    <p class="text-xs text-gray-500">+1 (619) 559-1910</p>
+                  </div>
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                  </svg>
+                </a>
+                
+                <!-- Email -->
+                <a
+                  href="mailto:envioscomercialestj@gmail.com"
+                  class="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                >
+                  <div class="p-2 bg-primary-100 rounded-lg flex-shrink-0">
+                    <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">{{ t.email }}</p>
+                    <p class="text-xs text-gray-500">envioscomercialestj@gmail.com</p>
+                  </div>
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -265,7 +299,23 @@
     edit: {
       es: 'Editar',
       en: 'Edit'
-    }
+    },
+    whatsapp: {
+      es: 'WhatsApp',
+      en: 'WhatsApp'
+    },
+    email: {
+      es: 'Correo Electrónico',
+      en: 'Email'
+    },
+    needHelp: {
+      es: '¿Necesitas Ayuda?',
+      en: 'Need Help?'
+    },
+    supportText: {
+      es: 'Nuestro equipo está aquí para ayudarte',
+      en: 'Our team is here to help you'
+    },
   }
   
   // Get reactive translations

@@ -546,9 +546,7 @@ const handleSubmit = async () => {
     // Send address data wrapped in an address object
     await $customFetch('/profile', {
       method: 'PUT',
-      body: {
-        address: form.value
-      }
+      body: form.value
     })
 
     await navigateTo('/app/account')
