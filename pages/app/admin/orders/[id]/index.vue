@@ -86,11 +86,21 @@
         <!-- Quick Actions -->
         <div
           v-if="showQuickActions"
-          class="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-6 animate-fadeIn"
+          :class="[
+            'border rounded-2xl p-4 sm:p-6 animate-fadeIn',
+            order.status === 'shipped'
+              ? 'bg-green-50 border-green-200'
+              : 'bg-amber-50 border-amber-200',
+          ]"
         >
           <div class="flex items-start gap-3">
             <svg
-              class="w-6 h-6 text-amber-600 mt-0.5"
+              :class="[
+                'w-6 h-6 mt-0.5',
+                order.status === 'shipped'
+                  ? 'text-green-600'
+                  : 'text-amber-600',
+              ]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -103,10 +113,24 @@
               />
             </svg>
             <div class="flex-1">
-              <h3 class="text-lg font-semibold text-amber-900">
+              <h3
+                :class="[
+                  'text-lg font-semibold',
+                  order.status === 'shipped'
+                    ? 'text-green-900'
+                    : 'text-amber-900',
+                ]"
+              >
                 {{ t.actionRequired }}
               </h3>
-              <p class="text-sm text-amber-700 mt-1">
+              <p
+                :class="[
+                  'text-sm mt-1',
+                  order.status === 'shipped'
+                    ? 'text-green-700'
+                    : 'text-amber-700',
+                ]"
+              >
                 {{ getActionMessage() }}
               </p>
               <button
@@ -222,6 +246,19 @@
                   {{ formatDate(order.completed_at) }}
                 </p>
               </div>
+              <div v-if="matchedProduct">
+                <p class="text-sm text-gray-500">{{ t.boxType }}</p>
+                <p class="font-medium text-gray-900">
+                  {{ getBoxTranslations(matchedProduct).name }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">{{ t.itemCount }}</p>
+                <p class="font-medium text-gray-900">
+                  {{ order.items.length }}
+                  {{ order.items.length === 1 ? t.item : t.items }}
+                </p>
+              </div>
               <div v-if="order.total_weight">
                 <p class="text-sm text-gray-500">{{ t.totalWeight }}</p>
                 <p class="font-medium text-gray-900">
@@ -231,10 +268,9 @@
               <div v-if="order.amount_paid">
                 <p class="text-sm text-gray-500">{{ t.totalPaid }}</p>
                 <p class="font-medium text-gray-900">
-                ${{ formatCurrency(order.amount_paid || 0) }} MXN
+                  ${{ formatCurrency(order.amount_paid || 0) }} MXN
                 </p>
               </div>
-              
             </div>
           </div>
 
@@ -346,7 +382,7 @@
                   >
                     {{ t.item }}
                   </th>
-                  
+
                   <th
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
@@ -390,7 +426,7 @@
                       </a>
                     </div>
                   </td>
-                 
+
                   <td class="px-6 py-4 text-sm text-gray-900">
                     ${{ item.declared_value }} × {{ item.quantity }}
                   </td>
@@ -653,7 +689,9 @@
 
                     <!-- Declared Value Input -->
                     <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         {{ t.declaredValue }}
                         <span class="text-gray-400">({{ t.optional }})</span>
                       </label>
@@ -728,139 +766,6 @@
       </Dialog>
     </TransitionRoot>
 
-    <!-- Quote Modal -->
-    <TransitionRoot :show="showQuoteModal" as="template">
-      <Dialog as="div" class="relative z-50" @close="showQuoteModal = false">
-        <TransitionChild
-          as="template"
-          enter="duration-300 ease-out"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="duration-200 ease-in"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
-          <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" />
-        </TransitionChild>
-
-        <div class="fixed inset-0 overflow-y-auto">
-          <div class="flex min-h-full items-center justify-center p-4">
-            <TransitionChild
-              as="template"
-              enter="duration-300 ease-out"
-              enter-from="opacity-0 scale-95"
-              enter-to="opacity-100 scale-100"
-              leave="duration-200 ease-in"
-              leave-from="opacity-100 scale-100"
-              leave-to="opacity-0 scale-95"
-            >
-              <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all"
-              >
-                <div class="p-6">
-                  <DialogTitle class="text-lg font-semibold text-gray-900 mb-4">
-                    {{ t.confirmSendQuote }}
-                  </DialogTitle>
-
-                  <div class="space-y-4">
-                    <div class="bg-gray-50 rounded-lg p-4">
-                      <p class="text-sm text-gray-600 mb-3">
-                        {{ t.quoteDetails }}
-                      </p>
-                      <div class="space-y-2">
-                        <div class="flex justify-between text-sm">
-                          <span class="text-gray-600">{{ t.boxSize }}:</span>
-                          <span class="font-medium capitalize">{{
-                            order.recommended_box_size || calculateBoxSize()
-                          }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                          <span class="text-gray-600"
-                            >{{ t.totalWeight }}:</span
-                          >
-                          <span class="font-medium"
-                            >{{
-                              order.total_weight || calculateTotalWeight()
-                            }}
-                            kg</span
-                          >
-                        </div>
-                        <div class="flex justify-between text-sm">
-                          <span class="text-gray-600"
-                            >{{ t.shippingCost }}:</span
-                          >
-                          <span class="font-medium"
-                            >${{
-                              formatCurrency(calculateShippingCost())
-                            }}
-                            MXN</span
-                          >
-                        </div>
-                        <div class="flex justify-between text-sm">
-                          <span class="text-gray-600">{{ t.iva }}:</span>
-                          <span class="font-medium"
-                            >${{ formatCurrency(calculateIva()) }} MXN</span
-                          >
-                        </div>
-                        <div class="border-t pt-2 flex justify-between">
-                          <span class="font-medium">{{ t.total }}:</span>
-                          <span class="font-bold text-lg"
-                            >${{ formatCurrency(calculateTotal()) }} MXN</span
-                          >
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="mt-6 flex gap-3">
-                    <button
-                      @click="sendQuote"
-                      :disabled="sendingQuote"
-                      class="flex-1 px-4 py-2 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <span v-if="!sendingQuote">{{ t.sendQuote }}</span>
-                      <span
-                        v-else
-                        class="flex items-center justify-center gap-2"
-                      >
-                        <svg
-                          class="animate-spin h-4 w-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            class="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            stroke-width="4"
-                          ></circle>
-                          <path
-                            class="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        {{ t.sending }}
-                      </span>
-                    </button>
-                    <button
-                      @click="showQuoteModal = false"
-                      class="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-all"
-                    >
-                      {{ t.cancel }}
-                    </button>
-                  </div>
-                </div>
-              </DialogPanel>
-            </TransitionChild>
-          </div>
-        </div>
-      </Dialog>
-    </TransitionRoot>
-
     <!-- Ship Modal -->
     <TransitionRoot :show="showShipModal" as="template">
       <Dialog as="div" class="relative z-50" @close="showShipModal = false">
@@ -896,7 +801,6 @@
                   </DialogTitle>
 
                   <div class="space-y-4">
-                    
                     <div>
                       <label
                         class="block text-sm font-medium text-gray-700 mb-1"
@@ -916,8 +820,7 @@
                     <button
                       @click="markAsShipped"
                       :disabled="
-                        !shipForm.estimated_delivery_date ||
-                        updatingStatus
+                        !shipForm.estimated_delivery_date || updatingStatus
                       "
                       class="flex-1 px-4 py-2 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -966,7 +869,11 @@
 
     <!-- Delivered Modal -->
     <TransitionRoot :show="showDeliveredModal" as="template">
-      <Dialog as="div" class="relative z-50" @close="showDeliveredModal = false">
+      <Dialog
+        as="div"
+        class="relative z-50"
+        @close="showDeliveredModal = false"
+      >
         <TransitionChild
           as="template"
           enter="duration-300 ease-out"
@@ -1004,8 +911,12 @@
                         {{ t.confirmDeliveryMessage }}
                       </p>
                       <div class="mt-2 text-sm">
-                        <p class="font-medium">{{ t.trackingNumber }}: {{ order.tracking_number }}</p>
-                        <p class="font-medium">{{ t.customer }}: {{ order.user.name }}</p>
+                        <p class="font-medium">
+                          {{ t.trackingNumber }}: {{ order.tracking_number }}
+                        </p>
+                        <p class="font-medium">
+                          {{ t.customer }}: {{ order.user.name }}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1016,7 +927,9 @@
                       :disabled="updatingStatus"
                       class="flex-1 px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <span v-if="!updatingStatus">{{ t.confirmDelivered }}</span>
+                      <span v-if="!updatingStatus">{{
+                        t.confirmDelivered
+                      }}</span>
                       <span
                         v-else
                         class="flex items-center justify-center gap-2"
@@ -1096,6 +1009,8 @@ const sendingQuote = ref(false);
 const updatingStatus = ref(false);
 const markingArrived = ref(false);
 const selectedItem = ref(null);
+const availableBoxes = ref([]);
+const loadingProducts = ref(false);
 
 const shipForm = ref({
   estimated_delivery_date: "",
@@ -1121,10 +1036,7 @@ const translations = {
     es: "Acción Requerida",
     en: "Action Required",
   },
-  sendQuote: {
-    es: "Enviar Cotización",
-    en: "Send Quote",
-  },
+
   markAsShipped: {
     es: "Marcar como Enviado",
     en: "Mark as Shipped",
@@ -1265,14 +1177,6 @@ const translations = {
     es: "Línea de Tiempo",
     en: "Order Timeline",
   },
-  confirmSendQuote: {
-    es: "Confirmar Envío de Cotización",
-    en: "Confirm Send Quote",
-  },
-  quoteDetails: {
-    es: "Detalles de la cotización:",
-    en: "Quote details:",
-  },
   iva: {
     es: "IVA (16%)",
     en: "VAT (16%)",
@@ -1403,6 +1307,60 @@ const translations = {
     es: "El pedido está en tránsito. Marcar como entregado cuando el cliente lo reciba.",
     en: "Order is in transit. Mark as delivered when customer receives it.",
   },
+  // Add to translations object:
+  boxType: {
+    es: "Tipo de Caja",
+    en: "Box Type",
+  },
+  itemCount: {
+    es: "Número de Artículos",
+    en: "Number of Items",
+  },
+  items: {
+    es: "artículos",
+    en: "items",
+  },
+  // Box name translations
+  extraSmallBoxName: {
+    es: "Caja Extra Pequeña",
+    en: "Extra Small Box",
+  },
+  smallBoxName: {
+    es: "Caja Pequeña",
+    en: "Small Box",
+  },
+  mediumBoxName: {
+    es: "Caja Mediana",
+    en: "Medium Box",
+  },
+  largeBoxName: {
+    es: "Caja Grande",
+    en: "Large Box",
+  },
+  extraLargeBoxName: {
+    es: "Caja Extra Grande",
+    en: "Extra Large Box",
+  },
+  extraSmallBoxDescription: {
+    es: "Ideal para: Joyería, Documentos importantes, Electrónicos y otros artículos valiosos compactos y ligeros.",
+    en: "Best for: Jewelry, Important documents, Electronics or other compact lightweight valuables.",
+  },
+  smallBoxDescription: {
+    es: "Ideal para: Libros, Cosméticos, Electrónicos, Suplementos y otros accesorios pequeños.",
+    en: "Best for: Books, Cosmetics, Electronics, Supplements and other small accessories.",
+  },
+  mediumBoxDescription: {
+    es: "Ideal para: Ropa, Tenis, Bolsas de mano, Libros, Artículos o Equipo deportivo",
+    en: "Best for: Clothing, Sneakers, Handbags, Books, Sports Gear or Equipment",
+  },
+  largeBoxDescription: {
+    es: "Ideal para: Compras al mayoreo, Electrodomésticos de cocina, Artículos de decoración o Consolas de videojuegos y accesorios grandes.",
+    en: "Best for: Bulk purchases, Kitchen Appliances, Home Decor items, or gaming consoles or large accessories.",
+  },
+  extraLargeBoxDescription: {
+    es: "Ideal para: Muebles pequeños, Electrodomésticos grandes, Equipos de gimnasio o Pedidos consolidados grandes.",
+    en: "Best for: Small Furniture, Large Home Appliances, Gym Equipment or Large Consolidated orders.",
+  },
 };
 
 const t = createTranslations(translations);
@@ -1411,8 +1369,8 @@ const t = createTranslations(translations);
 const showQuickActions = computed(() => {
   return (
     order.value &&
-    (order.value.status === "packages_complete" || 
-     order.value.status === "shipped")
+    (order.value.status === "packages_complete" ||
+      order.value.status === "shipped")
   );
 });
 
@@ -1437,8 +1395,13 @@ const orderTimeline = computed(() => {
     },
     {
       label: t.value.packages_complete,
-      date: order.value.status === 'packages_complete' ? order.value.updated_at : null,
-      completed: ['packages_complete', 'shipped', 'delivered'].includes(order.value.status),
+      date:
+        order.value.status === "packages_complete"
+          ? order.value.updated_at
+          : null,
+      completed: ["packages_complete", "shipped", "delivered"].includes(
+        order.value.status
+      ),
     },
     {
       label: t.value.shipped,
@@ -1454,6 +1417,16 @@ const orderTimeline = computed(() => {
   return events;
 });
 
+// Computed property to find the matched product
+const matchedProduct = computed(() => {
+  if (!order.value || !availableBoxes.value.length) return null;
+
+  // Match by id (which is the stripe product id) with order's stripe_product_id
+  return availableBoxes.value.find(
+    (box) => box.id === order.value.stripe_product_id
+  );
+});
+
 // Methods
 const fetchOrder = async () => {
   loading.value = true;
@@ -1466,6 +1439,18 @@ const fetchOrder = async () => {
     await router.push("/app/admin/orders");
   } finally {
     loading.value = false;
+  }
+};
+
+const fetchProducts = async () => {
+  try {
+    loadingProducts.value = true;
+    const response = await $customFetch("/products");
+    availableBoxes.value = response.data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  } finally {
+    loadingProducts.value = false;
   }
 };
 
@@ -1548,25 +1533,39 @@ const calculateTotal = () => {
   return calculateShippingCost() + calculateIva();
 };
 
-const sendQuote = async () => {
-  sendingQuote.value = true;
-  try {
-    const response = await $customFetch(
-      `/admin/orders/${order.value.id}/send-quote`,
-      {
-        method: "POST",
-      }
-    );
+const getBoxTranslations = (box) => {
+  if (!box) return { name: "", description: "" };
 
-    $toast.success("Quote sent successfully");
-    order.value = response.data.order;
-    showQuoteModal.value = false;
-  } catch (error) {
-    console.error("Error sending quote:", error);
-    $toast.error(error.data?.message || "Error sending quote");
-  } finally {
-    sendingQuote.value = false;
-  }
+  // Map Stripe product names to our translations
+  const typeMapping = {
+    "Extra Small Box": {
+      name: t.value.extraSmallBoxName,
+      description: t.value.extraSmallBoxDescription,
+    },
+    "Small Box": {
+      name: t.value.smallBoxName,
+      description: t.value.smallBoxDescription,
+    },
+    "Medium Box": {
+      name: t.value.mediumBoxName,
+      description: t.value.mediumBoxDescription,
+    },
+    "Large Box": {
+      name: t.value.largeBoxName,
+      description: t.value.largeBoxDescription,
+    },
+    "Extra Large Box": {
+      name: t.value.extraLargeBoxName,
+      description: t.value.extraLargeBoxDescription,
+    },
+  };
+
+  return (
+    typeMapping[box.name] || {
+      name: box.name,
+      description: box.description,
+    }
+  );
 };
 
 const markAsShipped = async () => {
@@ -1658,7 +1657,10 @@ const confirmMarkArrived = async () => {
     };
 
     // Add declared value if provided
-    if (arrivedForm.value.declared_value !== null && arrivedForm.value.declared_value !== '') {
+    if (
+      arrivedForm.value.declared_value !== null &&
+      arrivedForm.value.declared_value !== ""
+    ) {
       body.declared_value = parseFloat(arrivedForm.value.declared_value);
     }
 
@@ -1690,9 +1692,9 @@ const confirmMarkArrived = async () => {
   }
 };
 
-// Fetch order on mount
-onMounted(() => {
-  fetchOrder();
+// Fetch order and products on mount
+onMounted(async () => {
+  await Promise.all([fetchOrder(), fetchProducts()]);
 });
 </script>
 
