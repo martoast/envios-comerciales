@@ -219,18 +219,7 @@
                       {{ t.adminPanel }}
                     </a>
                   </MenuItem>
-                  <MenuItem v-slot="{ active }">
-                    <a
-                      href="/app/help"
-                      @click.prevent="handleNavigation('/app/help')"
-                      :class="[
-                        active ? 'bg-gray-100' : '',
-                        'block px-4 py-2 text-sm text-gray-700',
-                      ]"
-                    >
-                      {{ t.helpSupport }}
-                    </a>
-                  </MenuItem>
+                 
                   <div class="border-t border-gray-100"></div>
                   <MenuItem v-slot="{ active }">
                     <a
@@ -342,11 +331,7 @@
             @click="handleNavigation('/app/admin/dashboard')"
             class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 sm:px-6 w-full text-left"
           >{{ t.adminPanel }}</DisclosureButton>
-          <DisclosureButton
-            as="button"
-            @click="handleNavigation('/app/help')"
-            class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 sm:px-6 w-full text-left"
-          >{{ t.helpSupport }}</DisclosureButton>
+         
           <DisclosureButton
             as="button"
             @click="handleLogout"
@@ -393,11 +378,11 @@ const translations = {
     en: 'Dashboard'
   },
   orders: {
-    es: 'Mis Órdenes',
+    es: 'Mis Envios',
     en: 'My Orders'
   },
   allOrders: {
-    es: 'Todas las Órdenes',
+    es: 'Todos los Envios',
     en: 'All Orders'
   },
   allOrdersDesc: {
@@ -406,7 +391,7 @@ const translations = {
   },
 
   createNewOrder: {
-    es: 'Crear Nueva Orden',
+    es: 'Crear Nuevo Envio',
     en: 'Create New Order'
   },
   yourAddress: {

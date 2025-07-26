@@ -159,7 +159,7 @@
       en: "Order number"
     },
     viewOrders: {
-      es: "Ver mis órdenes",
+      es: "Ver mis envios",
       en: "View my orders"
     },
     errorTitle: {
@@ -171,7 +171,7 @@
       en: "We couldn't find your order. Please check your orders list."
     },
     goToOrders: {
-      es: "Ir a mis órdenes",
+      es: "Ir a mis envios",
       en: "Go to my orders"
     },
     retry: {

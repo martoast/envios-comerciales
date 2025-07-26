@@ -10,7 +10,6 @@
         <p class="mt-4 text-gray-600">{{ t.loadingDashboard }}</p>
       </div>
     </div>
-
     <!-- Content (shown when data is loaded) -->
     <div v-else>
       <!-- Welcome Header -->
@@ -26,11 +25,10 @@
           </div>
         </div>
       </div>
-
       <!-- Main Content -->
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <!-- Missing Address Banner -->
-        <Transition
+        <!-- <Transition
           enter-active-class="transform ease-out duration-300 transition"
           enter-from-class="translate-y-2 opacity-0"
           enter-to-class="translate-y-0 opacity-100"
@@ -66,95 +64,145 @@
               </div>
             </div>
           </div>
-        </Transition>
-
-        <!-- PO Box Card -->
-        <div class="mb-8 bg-gradient-to-r from-primary-50 to-primary-100/50 rounded-2xl p-6 sm:p-8 border border-primary-200/50 animate-fadeIn" style="animation-delay: 0.2s">
-          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div class="flex-1">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="p-3 bg-primary-100 rounded-xl">
-                  <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                  </svg>
-                </div>
-                <h2 class="text-xl font-bold text-gray-900">{{ t.yourUSAddress }}</h2>
+        </Transition> -->
+        
+        <!-- PO Box Card - Redesigned with Clear Steps -->
+        <div class="mb-8 animate-fadeIn" style="animation-delay: 0.2s">
+          <!-- Steps Container -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+            <!-- Step 1: Copy Address -->
+            <div class="relative bg-white rounded-2xl border-2 border-gray-200 p-6 hover:border-primary-300 transition-all duration-300 flex flex-col">
+              <!-- Step Number Badge -->
+              <div class="absolute -top-3 left-6 bg-white px-3">
+                <span class="text-sm font-bold text-primary-600">{{ t.step }} 1</span>
               </div>
-              <div class="space-y-3">
-                <div>
-                  <p class="text-xs uppercase tracking-wider text-gray-500 mb-1">{{ t.nameAtCheckout }}</p>
-                  <p class="text-lg font-semibold text-gray-900">SDSS {{ fullUserName }}</p>
-                </div>
-                <div>
-                  <p class="text-xs uppercase tracking-wider text-gray-500 mb-1">{{ t.shippingAddress }}</p>
-                  <p class="text-gray-700">{{ poBoxAddress.line1 }}</p>
-                  <p class="text-gray-700">{{ poBoxAddress.line2 }}</p>
-                </div>
-                <div class="mt-3 p-3 bg-primary-50 rounded-lg">
-                  <p class="text-sm text-primary-700">
-                    <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              
+              <!-- Step Content -->
+              <div class="flex flex-col h-full">
+                <!-- Step Title -->
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="p-2 bg-primary-100 rounded-lg">
+                    <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
-                    {{ t.checkoutTip }}
-                  </p>
+                  </div>
+                  <h3 class="text-lg font-semibold text-gray-900">{{ t.copyYourAddress }}</h3>
+                </div>
+
+                <!-- Content Area with Fixed Height -->
+                <div class="flex-1 flex flex-col justify-between">
+                  <div class="space-y-4">
+                    <!-- Address Display -->
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                      <div class="space-y-1">
+                        <p class="font-medium text-gray-900">ECTJ {{ fullUserName }}</p>
+                        <p class="text-gray-700">{{ poBoxAddress.line1 }}</p>
+                        <p class="text-gray-700">{{ poBoxAddress.line2 }}</p>
+                      </div>
+                    </div>
+
+                    <!-- Info Text -->
+                    <p class="text-sm text-gray-600">{{ t.useThisAddress }}</p>
+                  </div>
+
+                  <!-- Copy Button - Always at Bottom -->
+                  <button 
+                    @click="copyAddress" 
+                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-all duration-300 group mt-4"
+                  >
+                    <svg v-if="!copied" class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                    </svg>
+                    <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    {{ copied ? t.addressCopied : t.copyAddressButton }}
+                  </button>
                 </div>
               </div>
             </div>
-            <div class="flex flex-col sm:flex-row gap-3">
-              <button 
-                @click="copyAddress" 
-                class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-primary-600 font-semibold rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
-              >
-                <svg v-if="!copied" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
-                </svg>
-                <svg v-else class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                </svg>
-                {{ copied ? t.copied : t.copyAddress }}
-              </button>
-              <NuxtLink 
-                to="/app/orders/create" 
-                class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                {{ t.createOrder }}
-              </NuxtLink>
+
+            <!-- Step 2: Create Order -->
+            <div class="relative bg-white rounded-2xl border-2 border-gray-200 p-6 hover:border-primary-300 transition-all duration-300 flex flex-col">
+              <!-- Step Number Badge -->
+              <div class="absolute -top-3 left-6 bg-white px-3">
+                <span class="text-sm font-bold text-primary-600">{{ t.step }} 2</span>
+              </div>
+              
+              <!-- Step Content -->
+              <div class="flex flex-col h-full">
+                <!-- Step Title -->
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="p-2 bg-primary-100 rounded-lg">
+                    <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-semibold text-gray-900">{{ t.createYourBox }}</h3>
+                </div>
+
+                <!-- Content Area with Fixed Height -->
+                <div class="flex-1 flex flex-col justify-between">
+                  <div class="space-y-4">
+                    <!-- Visual Preview -->
+                    <div class="bg-gradient-to-br from-primary-50 to-primary-100/50 rounded-xl p-4 border border-primary-200/50 h-[104px] flex items-center justify-center">
+                      <div class="flex items-center justify-center gap-3">
+                        <!-- Package Icons -->
+                        <div class="flex -space-x-3">
+                          <div class="w-10 h-10 bg-white border-2 border-primary-300 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/>
+                              <path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                          </div>
+                          <div class="w-10 h-10 bg-white border-2 border-primary-300 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/>
+                              <path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                          </div>
+                          <div class="w-10 h-10 bg-white border-2 border-primary-300 rounded-lg flex items-center justify-center">
+                            <span class="text-primary-600 font-bold text-sm">+</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Info Text -->
+                    <p class="text-sm text-gray-600">{{ t.tellUsWhatYouBought }}</p>
+                  </div>
+
+                  <!-- Create Order Button - Always at Bottom -->
+                  <NuxtLink 
+                    to="/app/orders/create" 
+                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-all duration-300 group mt-4"
+                  >
+                    <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    {{ t.createOrderButton }}
+                  </NuxtLink>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- How It Works -->
-        <div class="mb-12">
-          <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center animate-fadeIn" style="animation-delay: 0.3s">
-            {{ t.howItWorks }}
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div 
-              v-for="(step, index) in howItWorksSteps" 
-              :key="index"
-              class="relative bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-300 animate-fadeIn"
-              :style="`animation-delay: ${(index + 4) * 0.1}s`"
-            >
-              <!-- Step Number -->
-              <div class="absolute -top-3 -left-3 w-10 h-10 bg-primary-500 text-white rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
-                {{ index + 1 }}
-              </div>
-              <!-- Icon -->
-              <div :class="['p-3 rounded-xl mb-4 inline-flex', step.bgColor]">
-                <svg class="w-6 h-6" :class="step.iconColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="step.icon"/>
-                </svg>
-              </div>
-              <h3 class="font-semibold text-gray-900 mb-2">{{ step.title }}</h3>
-              <p class="text-sm text-gray-600">{{ step.description }}</p>
-            </div>
+          <!-- Helper Text -->
+          <div class="mt-6 text-center">
+            <p class="text-sm text-gray-500">
+              <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              {{ t.needHelp }} 
+              <a href="#" class="text-primary-600 hover:text-primary-700 font-medium">{{ t.watchTutorial }}</a>
+            </p>
           </div>
         </div>
-
+        
+        <!-- How It Works Component -->
+        <HowItWorks :animation-delay="0.3" />
+        
         <!-- Recent Orders & Quick Actions -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <!-- Recent Orders -->
@@ -179,14 +227,8 @@
               </div>
               <p class="text-gray-500">{{ t.loadingOrders }}</p>
             </div>
-
             <!-- Empty State -->
             <div v-else-if="recentOrders.length === 0" class="px-6 py-12 text-center">
-              <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-2xl mb-4">
-                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-                </svg>
-              </div>
               <h3 class="text-base font-semibold text-gray-900 mb-1">{{ t.noOrdersYet }}</h3>
               <p class="text-sm text-gray-500 mb-4">{{ t.noOrdersDescription }}</p>
               <NuxtLink 
@@ -199,7 +241,6 @@
                 {{ t.startNow }}
               </NuxtLink>
             </div>
-
             <!-- Orders List -->
             <div v-else class="divide-y divide-gray-100">
               <NuxtLink
@@ -228,7 +269,6 @@
               </NuxtLink>
             </div>
           </div>
-
           <!-- Quick Actions -->
           <div class="space-y-4">
             <!-- Contact Support -->
@@ -295,6 +335,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import HowItWorks from '~/components/HowItWorks.vue'
 
 // Define page meta
 definePageMeta({
@@ -358,47 +399,11 @@ const translations = {
     en: 'Copied!'
   },
   createOrder: {
-    es: 'Crear Orden',
+    es: 'Crear Envio',
     en: 'Create Order'
   },
-  howItWorks: {
-    es: '¿Cómo Funciona?',
-    en: 'How It Works'
-  },
-  step1Title: {
-    es: 'Compra en línea',
-    en: 'Shop Online'
-  },
-  step1Desc: {
-    es: 'Compra en cualquier tienda de EE.UU. usando tu dirección asignada',
-    en: 'Shop at any US store using your assigned address'
-  },
-  step2Title: {
-    es: 'Recibimos tus paquetes',
-    en: 'We receive your packages'
-  },
-  step2Desc: {
-    es: 'Tus compras llegan a nuestro almacén en California',
-    en: 'Your purchases arrive at our California warehouse'
-  },
-  step3Title: {
-    es: 'Consolidamos',
-    en: 'We consolidate'
-  },
-  step3Desc: {
-    es: 'Agrupamos todos tus paquetes en un solo envío',
-    en: 'We group all your packages into one shipment'
-  },
-  step4Title: {
-    es: 'Enviamos a México',
-    en: 'Ship to Mexico'
-  },
-  step4Desc: {
-    es: 'Tu paquete consolidado llega directo a tu puerta',
-    en: 'Your consolidated package arrives right to your door'
-  },
   recentOrders: {
-    es: 'Órdenes Recientes',
+    es: 'Envios Recientes',
     en: 'Recent Orders'
   },
   viewAll: {
@@ -410,44 +415,20 @@ const translations = {
     en: 'Loading orders...'
   },
   noOrdersYet: {
-    es: 'No hay órdenes todavía',
+    es: 'No hay envios todavía',
     en: 'No orders yet'
   },
   noOrdersDescription: {
-    es: 'Comienza comprando en tus tiendas favoritas de EE.UU.',
-    en: 'Start by shopping at your favorite US stores.'
+    es: 'Comienza creando tu primer envio.',
+    en: 'Start by creating your first order.'
   },
   startNow: {
-    es: 'Comenzar Ahora',
-    en: 'Start Now'
+    es: 'Crear Envio',
+    en: 'Create Order'
   },
   items: {
     es: 'artículos',
     en: 'items'
-  },
-  needHelp: {
-    es: '¿Necesitas Ayuda?',
-    en: 'Need Help?'
-  },
-  checkFAQ: {
-    es: 'Consulta nuestras preguntas frecuentes y guías.',
-    en: 'Check our FAQ and guides.'
-  },
-  visitHelpCenter: {
-    es: 'Visitar Centro de Ayuda',
-    en: 'Visit Help Center'
-  },
-  calculateShipping: {
-    es: 'Calculadora de Envío',
-    en: 'Shipping Calculator'
-  },
-  estimateCosts: {
-    es: 'Estima el costo de tu envío antes de comprar.',
-    en: 'Estimate your shipping cost before buying.'
-  },
-  openCalculator: {
-    es: 'Abrir Calculadora',
-    en: 'Open Calculator'
   },
   contactSupport: {
     es: 'Contactar Soporte',
@@ -517,43 +498,60 @@ const translations = {
   loadingDashboard: {
     es: 'Cargando tu panel...',
     en: 'Loading your dashboard...'
+  },
+  // New translations for the redesigned PO Box section
+  startShipping: {
+    es: 'Comienza a Enviar',
+    en: 'Start Shipping'
+  },
+  twoSimpleSteps: {
+    es: 'Solo dos simples pasos para recibir tus compras',
+    en: 'Just two simple steps to receive your purchases'
+  },
+  step: {
+    es: 'PASO',
+    en: 'STEP'
+  },
+  copyYourAddress: {
+    es: 'Copia tu Dirección',
+    en: 'Copy Your Address'
+  },
+  useThisAddress: {
+    es: 'Usa este nombre y dirección en tus compras.',
+    en: 'Use this name and address at checkout when shopping.'
+  },
+  copyAddressButton: {
+    es: 'Copiar Dirección',
+    en: 'Copy Address'
+  },
+  addressCopied: {
+    es: '¡Dirección Copiada!',
+    en: 'Address Copied!'
+  },
+  createYourBox: {
+    es: 'Inicia tu Envio',
+    en: 'Create Your Virtual Box'
+  },
+  tellUsWhatYouBought: {
+    es: 'Selecciona tu caja. Dinos qué compraste. Lo recibimos y te lo enviamos.',
+    en: 'Tell us what you bought. We\'ll receive and ship it to you.'
+  },
+  createOrderButton: {
+    es: 'Crear Envio',
+    en: 'Create Virtual Box'
+  },
+  needHelp: {
+    es: '¿Primera vez?',
+    en: 'First time?'
+  },
+  watchTutorial: {
+    es: 'Ver tutorial',
+    en: 'Watch tutorial'
   }
 }
 
 // Get reactive translations
 const t = createTranslations(translations)
-
-// How it works steps
-const howItWorksSteps = computed(() => [
-  {
-    title: t.value.step1Title,
-    description: t.value.step1Desc,
-    icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
-    bgColor: 'bg-primary-50',
-    iconColor: 'text-primary-600'
-  },
-  {
-    title: t.value.step2Title,
-    description: t.value.step2Desc,
-    icon: 'M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z',
-    bgColor: 'bg-green-50',
-    iconColor: 'text-green-600'
-  },
-  {
-    title: t.value.step3Title,
-    description: t.value.step3Desc,
-    icon: 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4',
-    bgColor: 'bg-yellow-50',
-    iconColor: 'text-yellow-600'
-  },
-  {
-    title: t.value.step4Title,
-    description: t.value.step4Desc,
-    icon: 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0',
-    bgColor: 'bg-primary-50',
-    iconColor: 'text-primary-600'
-  }
-])
 
 // Methods
 const fetchRecentOrders = async () => {
@@ -571,7 +569,7 @@ const fetchRecentOrders = async () => {
 }
 
 const copyAddress = async () => {
-  const address = `SDSS (${user.value?.name})
+  const address = `ECTJ (${user.value?.name})
 ${poBoxAddress.value.line1}
 ${poBoxAddress.value.line2}`
   

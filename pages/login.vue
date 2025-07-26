@@ -274,8 +274,8 @@ const emailValid = ref(false)
 // Define translations
 const translations = {
   loginTitle: {
-    es: 'Bienvenido de vuelta',
-    en: 'Welcome back'
+    es: 'Bienvenido',
+    en: 'Welcome'
   },
   loginSubtitle: {
     es: 'Accede a tu cuenta para gestionar tus envíos',

@@ -351,15 +351,15 @@
   // Translations
   const translations = {
     addItemsTitle: {
-      es: 'Agregar Productos a tu Orden',
-      en: 'Add Products to Your Order'
+      es: 'Has un listado de los productos a enviar',
+      en: 'Add Products to ship in your order'
     },
     addItemsSubtitle: {
-      es: 'Agrega los productos que compraste',
-      en: 'Add the products you purchased'
+      es: 'Crea la lista de productos de van dentro de este envio',
+      en: 'Add the products you purchased to go in this box'
     },
     orderCreatedSuccess: {
-      es: '¡Tu orden ha sido creada exitosamente!',
+      es: '¡Tu envio ha sido registrado exitosamente!',
       en: 'Your order has been created successfully!'
     },
     orderCreatedMessage: {

@@ -383,7 +383,7 @@ const translations = {
     en: 'Create your first order or use our calculator to estimate the exact costs of your shipment.'
   },
   createOrder: {
-    es: 'Crear Orden',
+    es: 'Crear Envio',
     en: 'Create Order'
   },
   priceCalculator: {

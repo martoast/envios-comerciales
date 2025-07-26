@@ -495,7 +495,7 @@ const translations = {
     en: 'Chargeable Weight'
   },
   createOrderWithBox: {
-    es: 'Crear Orden con esta Caja',
+    es: 'Crear Envio con esta Caja',
     en: 'Create Order with this Box'
   },
   calculateAgain: {

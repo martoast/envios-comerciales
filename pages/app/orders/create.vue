@@ -3,53 +3,71 @@
     class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20"
   >
     <!-- Header -->
-    <div
-      class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100"
-    >
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <NuxtLink
-              v-if="currentStep == 1"
-              to="/app/orders"
-              class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg
-                class="w-5 h-5 text-gray-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-            </NuxtLink>
-            <div>
-              <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">
-                {{ t.checkoutTitle }}
-              </h1>
-              <p class="text-sm text-gray-600 mt-1">{{ t.checkoutSubtitle }}</p>
-            </div>
-          </div>
-
-          <!-- Step indicator desktop -->
-          <div class="hidden sm:flex items-center gap-2">
-            <div
-              v-for="i in 5"
-              :key="i"
-              :class="[
-                'w-2 h-2 rounded-full transition-all duration-300',
-                currentStep >= i ? 'bg-primary-500 w-8' : 'bg-gray-300',
-              ]"
-            ></div>
-          </div>
+<div class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <NuxtLink
+          v-if="currentStep == 1"
+          to="/app/orders"
+          class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <svg
+            class="w-5 h-5 text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+        </NuxtLink>
+        <button
+          v-else
+          @click="previousStep"
+          class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <svg
+            class="w-5 h-5 text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+        </button>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 transition-all duration-300">
+            {{ stepHeaders[currentStep - 1].title }}
+          </h1>
+          <p class="text-sm text-gray-600 mt-1 transition-all duration-300">
+            {{ stepHeaders[currentStep - 1].subtitle }}
+          </p>
         </div>
       </div>
+      <!-- Step indicator desktop -->
+      <div class="hidden sm:flex items-center gap-2">
+        <div
+          v-for="i in 5"
+          :key="i"
+          :class="[
+            'w-2 h-2 rounded-full transition-all duration-300',
+            currentStep >= i ? 'bg-primary-500 w-8' : 'bg-gray-300',
+          ]"
+        ></div>
+      </div>
     </div>
+  </div>
+</div>
 
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -126,12 +144,12 @@
             class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
           >
             <div class="p-4 sm:p-6 lg:p-8">
-              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+              <!-- <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                 {{ t.selectBoxSize }}
               </h2>
               <p class="text-sm sm:text-base text-gray-600 mb-6">
                 {{ t.selectBoxSubtitle }}
-              </p>
+              </p> -->
 
               <!-- Loading State -->
               <div
@@ -420,9 +438,9 @@
           <div
             class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8"
           >
-            <h2 class="text-xl font-bold text-gray-900 mb-6">
+            <!-- <h2 class="text-xl font-bold text-gray-900 mb-6">
               {{ t.usaAddressTitle }}
-            </h2>
+            </h2> -->
 
             <!-- USA Address Card -->
             <div
@@ -639,9 +657,9 @@
           <div
             class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8"
           >
-            <h2 class="text-xl font-bold text-gray-900 mb-6">
+            <!-- <h2 class="text-xl font-bold text-gray-900 mb-6">
               {{ t.declaredValueTitle }}
-            </h2>
+            </h2> -->
 
             <!-- Declared Value Section -->
             <div
@@ -756,9 +774,9 @@
           <div
             class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8"
           >
-            <h2 class="text-xl font-bold text-gray-900 mb-6">
+            <!-- <h2 class="text-xl font-bold text-gray-900 mb-6">
               {{ t.deliveryAddressTitle }}
-            </h2>
+            </h2> -->
 
             <!-- Address Form -->
             <div class="space-y-4">
@@ -1056,20 +1074,6 @@
 
                 <!-- Addresses -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <!-- Ship From -->
-                  <div>
-                    <h3
-                      class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3"
-                    >
-                      {{ t.shipFrom }}
-                    </h3>
-                    <div class="text-sm text-gray-700 space-y-1">
-                      <p class="font-medium">SDSS {{ user?.name }}</p>
-                      <p>{{ poBoxAddress.line1 }}</p>
-                      <p>{{ poBoxAddress.line2 }}</p>
-                    </div>
-                  </div>
-
                   <!-- Ship To -->
                   <div>
                     <h3
@@ -1131,20 +1135,12 @@
                       }}</span>
                     </div>
 
-                    <!-- Declared Value Info -->
-                    <div class="flex justify-between text-sm">
-                      <span class="text-gray-600">{{ t.declaredValue }}</span>
-                      <span class="text-gray-900"
-                        >${{ (form.declared_value || 0).toFixed(2) }} USD</span
-                      >
-                    </div>
-
                     <!-- IVA if applicable -->
                     <div
                       v-if="form.declared_value && form.declared_value >= 50"
                       class="flex justify-between text-sm"
                     >
-                      <span class="text-gray-600">{{ t.ivaLabel }} (16%)</span>
+                      <span class="text-gray-600">{{ t.ivaLabel }}</span>
                       <span class="text-gray-900"
                         >${{ ivaAmount.toFixed(2) }} USD</span
                       >
@@ -1392,6 +1388,29 @@ const isFormValid = computed(() => {
   return true;
 });
 
+const stepHeaders = computed(() => [
+  {
+    title: t.value.step1Title,
+    subtitle: t.value.step1Subtitle
+  },
+  {
+    title: t.value.step2Title,
+    subtitle: t.value.step2Subtitle
+  },
+  {
+    title: t.value.step3Title,
+    subtitle: t.value.step3Subtitle
+  },
+  {
+    title: t.value.step4Title,
+    subtitle: t.value.step4Subtitle
+  },
+  {
+    title: t.value.step5Title,
+    subtitle: t.value.step5Subtitle
+  }
+]);
+
 const stepLabels = computed(() => [
   t.value.selectBox,
   t.value.usaAddress,
@@ -1619,7 +1638,7 @@ const translations = {
     en: "Rural delivery fee",
   },
   orderOverview: {
-    es: "Resumen de tu Orden",
+    es: "Resumen de tu Envio",
     en: "Order Overview",
   },
   reviewBeforePayment: {
@@ -1635,7 +1654,7 @@ const translations = {
     en: "Ship From",
   },
   shipTo: {
-    es: "Enviar A",
+    es: "Destino de envio",
     en: "Ship To",
   },
   priceBreakdown: {
@@ -1760,8 +1779,8 @@ const translations = {
     en: 'Need help?'
   },
   helpText: {
-    es: 'Envíanos un mensaje y te ayudamos a elegir el tamaño perfecto.',
-    en: 'Send us a message and we can help you choose the perfect size.'
+    es: 'Contáctanos para ayudarte a elegir o crear una solución personalizada para tu envío.',
+    en: 'Contact us to help you choose or create a custom solution for your shipment.'
   },
   contactWhatsApp: {
     es: 'WhatsApp',
@@ -1770,7 +1789,57 @@ const translations = {
   contactEmail: {
     es: 'Email',
     en: 'Email'
-  }
+  },
+  // Add these to your translations object:
+// Step 1: Select Box
+step1Title: {
+  es: "Selecciona tu Caja",
+  en: "Select Your Box"
+},
+step1Subtitle: {
+  es: "Elige el tamaño de caja perfecta para tu envio",
+  en: "Choose the perfect box size for your shipment"
+},
+
+// Step 2: USA Address
+step2Title: {
+  es: "Usa Esta Dirección al Pagar",
+  en: "Use This Address at Checkout"
+},
+step2Subtitle: {
+  es: "Copia exactamente el nombre y dirección en tus compras",
+  en: "Copy this exact address when checking out at online stores"
+},
+
+// Step 3: Declared Value
+step3Title: {
+  es: "Valor de tus Compras",
+  en: "Value of Your Purchases"
+},
+step3Subtitle: {
+  es: "Declara el valor para calcular impuestos",
+  en: "Declare the value to calculate taxes"
+},
+
+// Step 4: Delivery Address
+step4Title: {
+  es: "¿Dónde Enviamos?",
+  en: "Where Should We Deliver?"
+},
+step4Subtitle: {
+  es: "Ingresa tu dirección de entrega en México",
+  en: "Enter your delivery address in Mexico"
+},
+
+// Step 5: Review & Pay
+step5Title: {
+  es: "Confirma y Paga",
+  en: "Confirm & Pay"
+},
+step5Subtitle: {
+  es: "Revisa tu orden antes de proceder al pago",
+  en: "Review your order before proceeding to payment"
+},
 };
 
 // Get reactive translations
