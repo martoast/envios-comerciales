@@ -33,8 +33,8 @@
       </div>
 
       <div v-else-if="order" class="space-y-6">
-        <!-- Success Banner -->
-        <div class="bg-green-50 rounded-2xl p-6 border border-green-200/50">
+        <!-- Success Banner - Only show if it's a new order -->
+        <div v-if="isNewOrder" class="bg-green-50 rounded-2xl p-6 border border-green-200/50">
           <div class="flex items-start gap-4">
             <div class="p-2 bg-green-100 rounded-lg">
               <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,7 +170,9 @@
             <!-- Empty State -->
             <div v-if="!order.items || order.items.length === 0" class="text-center py-12">
               <div class="w-16 h-16 bg-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <img src="/logo.svg" alt="Box" class="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"/>
+                </svg>
               </div>
               <p class="text-gray-500 font-medium">{{ t.emptyShipment }}</p>
               <p class="text-sm text-gray-400 mt-1">{{ t.startAdding }}</p>
@@ -313,6 +315,10 @@ definePageMeta({
 // Nuxt imports
 const { $customFetch, $toast } = useNuxtApp()
 const route = useRoute()
+const router = useRouter()
+
+// Check if this is a new order from payment success
+const isNewOrder = ref(route.query.new === 'true')
 
 // Use the language composable
 const { t: createTranslations } = useLanguage()
@@ -361,16 +367,12 @@ const translations = {
     en: 'Product name'
   },
   whereDidYouBuyIt: {
-    es: 'Link del producto',
-    en: 'Product link'
+    es: '¿Dónde lo compraste?',
+    en: 'Where did you buy it?'
   },
   productUrlPlaceholder: {
-    es: 'Pega el enlace del producto aquí',
-    en: 'Paste the product link here'
-  },
-  productNamePlaceholder: {
-    es: 'Tenis Nike negros',
-    en: 'Black Nike running shoes'
+    es: 'Pega el enlace de la tienda aquí',
+    en: 'Paste the store link here'
   },
   productUrlHelp: {
     es: 'Ejemplo: www.amazon.com/producto...',
@@ -585,15 +587,13 @@ const handleCompleteOrder = async () => {
     })
 
     $toast.success(t.value.orderCompletedSuccess, {
-      duration: 6000
+      duration:3000
     })
 
     showCompleteModal.value = false
-    
-    // Redirect to order details
-    setTimeout(() => {
-      navigateTo(`/app/orders/${order.value.id}`)
-    }, 1000)
+
+    return navigateTo(`/app/orders/${order.value.id}`)
+
   } catch (error) {
     console.error('Error completing order:', error)
     $toast.error(error.data?.message || t.value.errorCompletingOrder)

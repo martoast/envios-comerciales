@@ -202,7 +202,7 @@
         
         // Show success briefly before redirecting
         setTimeout(() => {
-          navigateTo(`/app/orders/${order.value.id}/add-items`, { replace: true });
+          navigateTo(`/app/orders/${order.value.id}/add-items?new=true`, { replace: true });
         }, 1500);
       } else {
         throw new Error("Order not found");

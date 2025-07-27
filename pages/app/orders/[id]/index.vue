@@ -351,238 +351,53 @@
           </div>
         </div>
 
-        <!-- Add Item Section (only show if order is collecting) -->
-        <div
-          v-if="order.status === 'collecting'"
-          class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8"
-        >
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold text-gray-900">{{ t.addNewItem }}</h2>
-            <button
-              @click="showAddForm = !showAddForm"
-              class="sm:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg
-                :class="[
-                  'w-5 h-5 text-gray-600 transition-transform',
-                  showAddForm ? 'rotate-45' : '',
-                ]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <Transition
-            enter-active-class="transition ease-out duration-200"
-            enter-from-class="opacity-0 scale-95"
-            enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition ease-in duration-150"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
-          >
-            <form
-              v-show="showAddForm || !isMobile"
-              @submit.prevent="handleAddItem"
-              class="space-y-4"
-            >
-              <!-- Product Name -->
-              <div>
-                <label
-                  for="product_name"
-                  class="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  {{ t.productNameLabel }}
-                </label>
-                <input
-                  v-model="itemForm.product_name"
-                  type="text"
-                  id="product_name"
-                  :placeholder="t.productNamePlaceholder"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                  required
-                />
-              </div>
-
-              <!-- Product URL -->
-              <div>
-                <label
-                  for="product_url"
-                  class="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  {{ t.productUrlLabel }}
-                </label>
-                <input
-                  v-model="itemForm.product_url"
-                  type="url"
-                  id="product_url"
-                  :placeholder="t.productUrlPlaceholder"
-                  class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                  required
-                />
-              </div>
-
-              <!-- Quantity and Price -->
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    for="quantity"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
-                  >
-                    {{ t.quantityLabel }}
-                  </label>
-                  <input
-                    v-model.number="itemForm.quantity"
-                    type="number"
-                    id="quantity"
-                    min="1"
-                    max="99"
-                    :placeholder="t.quantityPlaceholder"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    for="declared_value"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
-                  >
-                    {{ t.priceLabel }}
-                  </label>
-                  <input
-                    v-model.number="itemForm.declared_value"
-                    type="number"
-                    id="declared_value"
-                    min="0"
-                    step="0.01"
-                    :placeholder="t.pricePlaceholder"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    required
-                  />
-                </div>
-              </div>
-
-              <!-- Tracking Info (Optional) -->
-              <div class="space-y-4 pt-2">
-                <button
-                  type="button"
-                  @click="showTrackingFields = !showTrackingFields"
-                  class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
-                >
-                  <svg
-                    :class="[
-                      'w-4 h-4 transition-transform',
-                      showTrackingFields ? 'rotate-90' : '',
-                    ]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                  {{ t.addTrackingInfo }}
-                </button>
-
-                <Transition
-                  enter-active-class="transition ease-out duration-200"
-                  enter-from-class="opacity-0 -translate-y-2"
-                  enter-to-class="opacity-100 translate-y-0"
-                  leave-active-class="transition ease-in duration-150"
-                  leave-from-class="opacity-100 translate-y-0"
-                  leave-to-class="opacity-0 -translate-y-2"
-                >
-                  <div
-                    v-if="showTrackingFields"
-                    class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                  >
-                    <div>
-                      <label
-                        for="tracking_number"
-                        class="block text-sm font-semibold text-gray-900 mb-2"
-                      >
-                        {{ t.trackingNumberLabel }}
-                      </label>
-                      <input
-                        v-model="itemForm.tracking_number"
-                        type="text"
-                        id="tracking_number"
-                        :placeholder="t.trackingNumberPlaceholder"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        for="carrier"
-                        class="block text-sm font-semibold text-gray-900 mb-2"
-                      >
-                        {{ t.carrierLabel }}
-                      </label>
-                      <select
-                        v-model="itemForm.carrier"
-                        id="carrier"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                      >
-                        <option value="">{{ t.selectCarrier }}</option>
-                        <option
-                          v-for="(label, value) in carriers"
-                          :key="value"
-                          :value="value"
-                        >
-                          {{ label }}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                </Transition>
-              </div>
-
-              <!-- Submit Button -->
-              <div class="flex justify-end pt-2">
-                <button
-                  type="submit"
-                  :disabled="addingItem || !itemForm.product_url || !itemForm.product_name || !itemForm.declared_value"
-                  class="px-6 py-3 bg-primary-500 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-                >
-                  <svg
-                    v-if="addingItem"
-                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  {{ addingItem ? t.addingItem : t.addItem }}
-                </button>
-              </div>
-            </form>
-          </Transition>
-        </div>
+        <!-- Replace the "Add Item Section" with this clean CTA -->
+<!-- Add Items CTA (only show if order is collecting) -->
+<div
+  v-if="order.status === 'collecting'"
+  class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8"
+>
+  <div class="text-center">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-2xl mb-4">
+      <svg
+        class="w-8 h-8 text-primary-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 4v16m8-8H4"
+        />
+      </svg>
+    </div>
+    <h2 class="text-xl font-bold text-gray-900 mb-2">{{ t.addItemsToOrder }}</h2>
+    <p class="text-sm text-gray-500 mb-6 max-w-md mx-auto">
+      {{ t.addItemsDescription }}
+    </p>
+    <NuxtLink
+      :to="`/app/orders/${order.id}/add-items`"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-700 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+    >
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 4v16m8-8H4"
+        />
+      </svg>
+      {{ t.addItems }}
+    </NuxtLink>
+  </div>
+</div>
 
         <!-- Complete Order Banner (only show if order is collecting and has items) -->
         <div
@@ -1173,37 +988,13 @@ const { t: createTranslations } = useLanguage();
 // State
 const order = ref(null);
 const loading = ref(true);
-const showAddForm = ref(false);
-const showTrackingFields = ref(false);
-const addingItem = ref(false);
 const completingOrder = ref(false);
-const isMobile = ref(false);
 const showCompleteOrderModal = ref(false);
 const selectedItemToDelete = ref(null);
 const showDeleteOrderModal = ref(false);
 const deletingOrder = ref(false);
 const showReopenOrderModal = ref(false);
 const reopeningOrder = ref(false);
-
-// Form for new item
-const itemForm = ref({
-  product_name: "",
-  product_url: "",
-  quantity: 1,
-  declared_value: "",
-  tracking_number: "",
-  carrier: "",
-});
-
-// Carriers
-const carriers = {
-  ups: "UPS",
-  fedex: "FedEx",
-  usps: "USPS",
-  amazon: "Amazon",
-  dhl: "DHL",
-  other: "Other",
-};
 
 // Translations
 const translations = {
@@ -1264,64 +1055,20 @@ const translations = {
     en: "Your order has been created successfully!",
   },
   orderCreatedMessage: {
-    es: "Ya puedes comenzar a agregar los productos que comprarás. Tu caja ya está pagada y lista para recibir tus compras.",
-    en: "You can now start adding products you'll purchase. Your box is already paid and ready to receive your shopping items.",
+    es: "Ya puedes comenzar a agregar los productos que compraste y enviaste a nuestro almacén.",
+    en: "You can now start adding products you've purchased and sent to our warehouse.",
   },
-  addNewItem: {
-    es: "Agregar Nuevo Artículo",
-    en: "Add New Item",
+  addItemsToOrder: {
+    es: "Agregar Artículos a tu Envío",
+    en: "Add Items to Your Shipment",
   },
-  productUrlLabel: {
-    es: "URL del Producto",
-    en: "Product URL",
+  addItemsDescription: {
+    es: "Agrega los productos que compraste y están en camino a nuestro almacén.",
+    en: "Add products you've purchased that are on their way to our warehouse.",
   },
-  productUrlPlaceholder: {
-    es: "https://www.amazon.com/...",
-    en: "https://www.amazon.com/...",
-  },
-  quantityLabel: {
-    es: "Cantidad",
-    en: "Quantity",
-  },
-  quantityPlaceholder: {
-    es: "1",
-    en: "1",
-  },
-  priceLabel: {
-    es: "Precio (USD)",
-    en: "Price (USD)",
-  },
-  pricePlaceholder: {
-    es: "0.00",
-    en: "0.00",
-  },
-  addTrackingInfo: {
-    es: "Agregar información de rastreo (opcional)",
-    en: "Add tracking info (optional)",
-  },
-  trackingNumberLabel: {
-    es: "Número de Rastreo",
-    en: "Tracking Number",
-  },
-  trackingNumberPlaceholder: {
-    es: "1Z999AA1234567890",
-    en: "1Z999AA1234567890",
-  },
-  carrierLabel: {
-    es: "Transportista",
-    en: "Carrier",
-  },
-  selectCarrier: {
-    es: "Selecciona transportista",
-    en: "Select carrier",
-  },
-  addItem: {
-    es: "Agregar Artículo",
-    en: "Add Item",
-  },
-  addingItem: {
-    es: "Agregando...",
-    en: "Adding...",
+  addItems: {
+    es: "Agregar Artículos",
+    en: "Add Items",
   },
   orderItems: {
     es: "Artículos de la Orden",
@@ -1367,10 +1114,6 @@ const translations = {
     es: "Completando...",
     en: "Completing...",
   },
-  itemAddedSuccess: {
-    es: "Artículo agregado exitosamente",
-    en: "Item added successfully",
-  },
   itemDeletedSuccess: {
     es: "Artículo eliminado",
     en: "Item deleted",
@@ -1378,10 +1121,6 @@ const translations = {
   orderCompletedSuccess: {
     es: "¡Orden completada! Te notificaremos cuando lleguen tus paquetes.",
     en: "Order completed! We'll notify you when your packages arrive.",
-  },
-  errorAddingItem: {
-    es: "Error al agregar el artículo",
-    en: "Error adding item",
   },
   errorDeletingItem: {
     es: "Error al eliminar el artículo",
@@ -1399,7 +1138,6 @@ const translations = {
     es: "Editar",
     en: "Edit",
   },
-  // Modal translations
   confirmCompleteOrder: {
     es: "¿Completar orden?",
     en: "Complete order?",
@@ -1525,14 +1263,6 @@ const translations = {
     es: "Entregado",
     en: "Delivered",
   },
-  productNameLabel: {
-    es: "Nombre del Producto",
-    en: "Product Name",
-  },
-  productNamePlaceholder: {
-    es: "Ej: Cepillo de dientes eléctrico Oral-B",
-    en: "Ex: Oral-B Electric Toothbrush",
-  },
 };
 
 // Get reactive translations
@@ -1563,40 +1293,6 @@ const fetchOrder = async () => {
     $toast.error(t.value.errorLoadingOrder || "Error loading order");
   } finally {
     loading.value = false;
-  }
-};
-
-const handleAddItem = async () => {
-  if (!itemForm.value.product_name || !itemForm.value.product_url || !itemForm.value.declared_value) return;
-
-  addingItem.value = true;
-  try {
-    await $customFetch(`/orders/${order.value.id}/items`, {
-      method: "POST",
-      body: itemForm.value,
-    });
-
-    $toast.success(t.value.itemAddedSuccess);
-
-    // Reset form
-    itemForm.value = {
-      product_name: "",
-      product_url: "",
-      quantity: 1,
-      declared_value: "",
-      tracking_number: "",
-      carrier: "",
-    };
-    showTrackingFields.value = false;
-    showAddForm.value = false;
-
-    // Refresh order
-    await fetchOrder();
-  } catch (error) {
-    console.error("Error adding item:", error);
-    $toast.error(error.data?.message || t.value.errorAddingItem);
-  } finally {
-    addingItem.value = false;
   }
 };
 
@@ -1726,21 +1422,9 @@ const formatProductUrl = (url) => {
   }
 };
 
-// Check if mobile
-const checkMobile = () => {
-  isMobile.value = window.innerWidth < 640;
-  showAddForm.value = !isMobile.value;
-};
-
 // Lifecycle
 onMounted(() => {
   fetchOrder();
-  checkMobile();
-  window.addEventListener("resize", checkMobile);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("resize", checkMobile);
 });
 </script>
 
