@@ -146,15 +146,15 @@
             </div>
             
             <!-- Notifications (optional - placeholder) -->
-            <button class="relative p-2 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full">
+            <!-- <button class="relative p-2 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full">
               <span class="absolute -inset-1.5" />
               <span class="sr-only">View notifications</span>
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
-              <!-- Notification badge -->
+
               <span v-if="hasNotifications" class="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-            </button>
+            </button> -->
             
             <!-- Profile dropdown -->
             <Menu as="div" class="relative ml-3">
@@ -305,12 +305,12 @@
               <div class="text-base font-medium text-gray-900">{{ user?.name }}</div>
               <div class="text-sm font-medium text-gray-500">{{ user?.email }}</div>
             </div>
-            <button class="relative ml-auto p-2 text-gray-400 hover:text-gray-500">
+            <!-- <button class="relative ml-auto p-2 text-gray-400 hover:text-gray-500">
               <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
               <span v-if="hasNotifications" class="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-red-500"></span>
-            </button>
+            </button> -->
           </div>
           
           <!-- Language Toggle (Mobile) -->

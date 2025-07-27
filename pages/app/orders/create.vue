@@ -3,71 +3,75 @@
     class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20"
   >
     <!-- Header -->
-<div class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <NuxtLink
-          v-if="currentStep == 1"
-          to="/app/orders"
-          class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <svg
-            class="w-5 h-5 text-gray-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-        </NuxtLink>
-        <button
-          v-else
-          @click="previousStep"
-          class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <svg
-            class="w-5 h-5 text-gray-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-        </button>
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 transition-all duration-300">
-            {{ stepHeaders[currentStep - 1].title }}
-          </h1>
-          <p class="text-sm text-gray-600 mt-1 transition-all duration-300">
-            {{ stepHeaders[currentStep - 1].subtitle }}
-          </p>
+    <div
+      class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100"
+    >
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <NuxtLink
+              v-if="currentStep == 1"
+              to="/app/orders"
+              class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <svg
+                class="w-5 h-5 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+            </NuxtLink>
+            <button
+              v-else
+              @click="previousStep"
+              class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <svg
+                class="w-5 h-5 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+            </button>
+            <div>
+              <h1
+                class="text-2xl sm:text-3xl font-extrabold text-gray-900 transition-all duration-300"
+              >
+                {{ stepHeaders[currentStep - 1].title }}
+              </h1>
+              <p class="text-sm text-gray-600 mt-1 transition-all duration-300">
+                {{ stepHeaders[currentStep - 1].subtitle }}
+              </p>
+            </div>
+          </div>
+          <!-- Step indicator desktop -->
+          <div class="hidden sm:flex items-center gap-2">
+            <div
+              v-for="i in 5"
+              :key="i"
+              :class="[
+                'w-2 h-2 rounded-full transition-all duration-300',
+                currentStep >= i ? 'bg-primary-500 w-8' : 'bg-gray-300',
+              ]"
+            ></div>
+          </div>
         </div>
       </div>
-      <!-- Step indicator desktop -->
-      <div class="hidden sm:flex items-center gap-2">
-        <div
-          v-for="i in 5"
-          :key="i"
-          :class="[
-            'w-2 h-2 rounded-full transition-all duration-300',
-            currentStep >= i ? 'bg-primary-500 w-8' : 'bg-gray-300',
-          ]"
-        ></div>
-      </div>
     </div>
-  </div>
-</div>
 
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -348,57 +352,70 @@
               </div>
 
               <!-- Size Guide - Mobile Optimized -->
-<div class="mt-6 p-4 bg-primary-50 rounded-xl border border-primary-100">
-  <div class="flex gap-3">
-    <svg
-      class="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-    <div class="flex-1 text-sm text-primary-800">
-      <p class="font-medium mb-1">{{ t.needHelp }}</p>
-      <p class="text-xs sm:text-sm mb-3">{{ t.helpText }}</p>
+              <div
+                class="mt-6 p-4 bg-primary-50 rounded-xl border border-primary-100"
+              >
+                <div class="flex gap-3">
+                  <svg
+                    class="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <div class="flex-1 text-sm text-primary-800">
+                    <p class="font-medium mb-1">{{ t.needHelp }}</p>
+                    <p class="text-xs sm:text-sm mb-3">{{ t.helpText }}</p>
 
-      <!-- Contact Options -->
-      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-        <a
-          href="https://wa.me/16195591910"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-primary-700 hover:text-primary-900"
-        >
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.98-3.686c-.592-1.02-.9-2.176-.898-3.358.002-3.808 3.105-6.912 6.913-6.912 3.809 0 6.913 3.104 6.913 6.913s-3.104 6.923-6.913 6.923z"/>
-          </svg>
-          {{ t.contactWhatsApp }}
-        </a>
+                    <!-- Contact Options -->
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                      <a
+                        href="https://wa.me/16195591910"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-primary-700 hover:text-primary-900"
+                      >
+                        <svg
+                          class="w-4 h-4"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.98-3.686c-.592-1.02-.9-2.176-.898-3.358.002-3.808 3.105-6.912 6.913-6.912 3.809 0 6.913 3.104 6.913 6.913s-3.104 6.923-6.913 6.923z"
+                          />
+                        </svg>
+                        {{ t.contactWhatsApp }}
+                      </a>
 
-        <a
-          href="mailto:envioscomercialestj@gmail.com"
-          class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-primary-700 hover:text-primary-900"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-            />
-          </svg>
-          {{ t.contactEmail }}
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
+                      <a
+                        href="mailto:envioscomercialestj@gmail.com"
+                        class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-primary-700 hover:text-primary-900"
+                      >
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                          />
+                        </svg>
+                        {{ t.contactEmail }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -555,7 +572,9 @@
             </div>
 
             <!-- Instructions -->
-            <div class="bg-primary-50 border border-primary-200 rounded-xl p-6 mb-6">
+            <div
+              class="bg-primary-50 border border-primary-200 rounded-xl p-6 mb-6"
+            >
               <h4 class="font-semibold text-primary-900 mb-3">
                 {{ t.importantInstructions }}
               </h4>
@@ -658,8 +677,8 @@
             class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8"
           >
             <!-- <h2 class="text-xl font-bold text-gray-900 mb-6">
-              {{ t.declaredValueTitle }}
-            </h2> -->
+      {{ t.declaredValueTitle }}
+    </h2> -->
 
             <!-- Declared Value Section -->
             <div
@@ -706,14 +725,20 @@
                 v-if="form.declared_value && form.declared_value > 0"
                 class="mt-4 pt-4 border-t border-yellow-200"
               >
-                <div
-                  v-if="form.declared_value >= 50"
-                  class="flex items-center justify-between text-sm"
-                >
-                  <span class="text-gray-600">{{ t.ivaLabel }}:</span>
-                  <span class="font-semibold text-gray-900"
-                    >${{ ivaAmount.toFixed(2) }} USD</span
+                <div v-if="form.declared_value >= 50" class="space-y-2">
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600">{{ t.ivaLabel }}:</span>
+                    <span class="font-semibold text-gray-900">{{
+                      formatPrice(ivaAmountDisplay)
+                    }}</span>
+                  </div>
+                  <!-- Exchange Rate Info -->
+                  <div
+                    v-if="language === 'es'"
+                    class="text-xs text-gray-500 text-right"
                   >
+                    {{ t.exchangeRateInfo }}
+                  </div>
                 </div>
                 <div v-else class="text-sm text-green-600 font-medium">
                   {{ t.noIvaRequired }}
@@ -1124,6 +1149,15 @@
                   >
                     {{ t.priceBreakdown }}
                   </h3>
+                  <!-- Exchange Rate Info Box -->
+                  <div
+                    v-if="language === 'es'"
+                    class="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mb-3"
+                  >
+                    <p class="text-xs text-blue-700 font-medium">
+                      {{ t.exchangeRateInfo }}
+                    </p>
+                  </div>
                   <div class="space-y-2">
                     <!-- Box Price -->
                     <div class="flex justify-between text-sm">
@@ -1141,9 +1175,9 @@
                       class="flex justify-between text-sm"
                     >
                       <span class="text-gray-600">{{ t.ivaLabel }}</span>
-                      <span class="text-gray-900"
-                        >${{ ivaAmount.toFixed(2) }} USD</span
-                      >
+                      <span class="text-gray-900">{{
+                        formatPrice(ivaAmountDisplay)
+                      }}</span>
                     </div>
 
                     <!-- Rural Surcharge if applicable -->
@@ -1391,24 +1425,24 @@ const isFormValid = computed(() => {
 const stepHeaders = computed(() => [
   {
     title: t.value.step1Title,
-    subtitle: t.value.step1Subtitle
+    subtitle: t.value.step1Subtitle,
   },
   {
     title: t.value.step2Title,
-    subtitle: t.value.step2Subtitle
+    subtitle: t.value.step2Subtitle,
   },
   {
     title: t.value.step3Title,
-    subtitle: t.value.step3Subtitle
+    subtitle: t.value.step3Subtitle,
   },
   {
     title: t.value.step4Title,
-    subtitle: t.value.step4Subtitle
+    subtitle: t.value.step4Subtitle,
   },
   {
     title: t.value.step5Title,
-    subtitle: t.value.step5Subtitle
-  }
+    subtitle: t.value.step5Subtitle,
+  },
 ]);
 
 const stepLabels = computed(() => [
@@ -1418,6 +1452,11 @@ const stepLabels = computed(() => [
   t.value.deliveryAddress,
   t.value.overview,
 ]);
+
+const ivaAmountDisplay = computed(() => {
+  const baseIva = ivaAmount.value; // This is always in USD
+  return language.value === "en" ? baseIva : baseIva * exchangeRate;
+});
 
 // Translations
 const translations = {
@@ -1775,71 +1814,75 @@ const translations = {
     en: "Ideal for large appliances, furniture, bulk orders, or family-sized shipments.",
   },
   needHelp: {
-    es: '¿Necesitas ayuda?',
-    en: 'Need help?'
+    es: "¿Necesitas ayuda?",
+    en: "Need help?",
   },
   helpText: {
-    es: 'Contáctanos para ayudarte a elegir o crear una solución personalizada para tu envío.',
-    en: 'Contact us to help you choose or create a custom solution for your shipment.'
+    es: "Contáctanos para ayudarte a elegir o crear una solución personalizada para tu envío.",
+    en: "Contact us to help you choose or create a custom solution for your shipment.",
   },
   contactWhatsApp: {
-    es: 'WhatsApp',
-    en: 'WhatsApp'
+    es: "WhatsApp",
+    en: "WhatsApp",
   },
   contactEmail: {
-    es: 'Email',
-    en: 'Email'
+    es: "Email",
+    en: "Email",
   },
   // Add these to your translations object:
-// Step 1: Select Box
-step1Title: {
-  es: "Selecciona tu Caja",
-  en: "Select Your Box"
-},
-step1Subtitle: {
-  es: "Elige el tamaño de caja perfecta para tu envio",
-  en: "Choose the perfect box size for your shipment"
-},
+  // Step 1: Select Box
+  step1Title: {
+    es: "Selecciona tu Caja",
+    en: "Select Your Box",
+  },
+  step1Subtitle: {
+    es: "Elige el tamaño de caja perfecta para tu envio",
+    en: "Choose the perfect box size for your shipment",
+  },
 
-// Step 2: USA Address
-step2Title: {
-  es: "Usa Esta Dirección al Pagar",
-  en: "Use This Address at Checkout"
-},
-step2Subtitle: {
-  es: "Copia exactamente el nombre y dirección en tus compras",
-  en: "Copy this exact address when checking out at online stores"
-},
+  // Step 2: USA Address
+  step2Title: {
+    es: "Usa Esta Dirección al Pagar",
+    en: "Use This Address at Checkout",
+  },
+  step2Subtitle: {
+    es: "Copia exactamente el nombre y dirección en tus compras",
+    en: "Copy this exact address when checking out at online stores",
+  },
 
-// Step 3: Declared Value
-step3Title: {
-  es: "Valor de tus Compras",
-  en: "Value of Your Purchases"
-},
-step3Subtitle: {
-  es: "Declara el valor para calcular impuestos",
-  en: "Declare the value to calculate taxes"
-},
+  // Step 3: Declared Value
+  step3Title: {
+    es: "Valor de tus Compras",
+    en: "Value of Your Purchases",
+  },
+  step3Subtitle: {
+    es: "Declara el valor para calcular impuestos",
+    en: "Declare the value to calculate taxes",
+  },
 
-// Step 4: Delivery Address
-step4Title: {
-  es: "¿Dónde Enviamos?",
-  en: "Where Should We Deliver?"
-},
-step4Subtitle: {
-  es: "Ingresa tu dirección de entrega en México",
-  en: "Enter your delivery address in Mexico"
-},
+  // Step 4: Delivery Address
+  step4Title: {
+    es: "¿Dónde Enviamos?",
+    en: "Where Should We Deliver?",
+  },
+  step4Subtitle: {
+    es: "Ingresa tu dirección de entrega en México",
+    en: "Enter your delivery address in Mexico",
+  },
 
-// Step 5: Review & Pay
-step5Title: {
-  es: "Confirma y Paga",
-  en: "Confirm & Pay"
-},
-step5Subtitle: {
-  es: "Revisa tu orden antes de proceder al pago",
-  en: "Review your order before proceeding to payment"
-},
+  // Step 5: Review & Pay
+  step5Title: {
+    es: "Confirma y Paga",
+    en: "Confirm & Pay",
+  },
+  step5Subtitle: {
+    es: "Revisa tu orden antes de proceder al pago",
+    en: "Review your order before proceeding to payment",
+  },
+  exchangeRateInfo: {
+    es: "Tipo de cambio: $1 USD = $18 MXN",
+    en: "Exchange rate: $1 USD = $18 MXN",
+  },
 };
 
 // Get reactive translations
@@ -1948,7 +1991,7 @@ const handleCheckout = async () => {
           postal_code: form.value.delivery_address.postal_code,
         },
       });
-      console.log("address saved successfully")
+      console.log("address saved successfully");
     } catch (error) {
       console.error("Error saving address:", error);
       // Continue with checkout even if address save fails

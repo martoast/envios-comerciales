@@ -170,9 +170,7 @@
             <!-- Empty State -->
             <div v-if="!order.items || order.items.length === 0" class="text-center py-12">
               <div class="w-16 h-16 bg-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"/>
-                </svg>
+                  <img src="/logo.svg" alt="Box" class="w-12 h-12 flex-shrink-0">
               </div>
               <p class="text-gray-500 font-medium">{{ t.emptyShipment }}</p>
               <p class="text-sm text-gray-400 mt-1">{{ t.startAdding }}</p>
@@ -367,12 +365,12 @@ const translations = {
     en: 'Product name'
   },
   whereDidYouBuyIt: {
-    es: '¿Dónde lo compraste?',
-    en: 'Where did you buy it?'
+    es: 'Link del producto(url)',
+    en: 'Product link (url)'
   },
   productUrlPlaceholder: {
-    es: 'Pega el enlace de la tienda aquí',
-    en: 'Paste the store link here'
+    es: 'Pega el link del producto aquí',
+    en: 'Paste the product link here'
   },
   productUrlHelp: {
     es: 'Ejemplo: www.amazon.com/producto...',
