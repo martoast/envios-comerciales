@@ -33,8 +33,26 @@
       </div>
 
       <div v-else-if="order" class="space-y-6">
+        <!-- Reopened Order Alert - Show if order was reopened -->
+        <div v-if="isReopenedOrder" class="bg-amber-50 rounded-2xl p-6 border border-amber-200">
+          <div class="flex items-start gap-4">
+            <div class="p-2 bg-amber-100 rounded-lg flex-shrink-0">
+              <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-amber-900 mb-1">{{ t.orderReopenedTitle }}</h3>
+              <p class="text-sm text-amber-700">{{ t.orderReopenedMessage }}</p>
+              <div class="mt-3 bg-amber-100/50 rounded-lg p-3">
+                <p class="text-sm font-medium text-amber-800">{{ t.mustCompleteAgain }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Success Banner - Only show if it's a new order -->
-        <div v-if="isNewOrder" class="bg-green-50 rounded-2xl p-6 border border-green-200/50">
+        <div v-else-if="isNewOrder" class="bg-green-50 rounded-2xl p-6 border border-green-200/50">
           <div class="flex items-start gap-4">
             <div class="p-2 bg-green-100 rounded-lg">
               <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +60,8 @@
               </svg>
             </div>
             <div class="flex-1">
-              <h3 class="font-bold text-green-900 mb-1">{{ t.orderCreatedSuccess }}</h3>
+              <h3 class="font-bold text-green-900">{{ t.orderCreatedSuccess }}</h3>
+              <p class="text-sm text-green-700 mb-2">{{ t.orderCreatedSuccessSubtext }}</p>
               <p class="text-sm text-green-700">{{ t.orderNumber }}: <span class="font-mono font-bold">{{ order.order_number }}</span></p>
             </div>
           </div>
@@ -79,6 +98,7 @@
               <div>
                 <label for="product_url" class="block text-sm font-medium text-gray-700 mb-2">
                   {{ t.whereDidYouBuyIt }}
+                  <span class="text-xs text-gray-500 font-normal ml-1">({{ t.optional }})</span>
                 </label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -95,7 +115,6 @@
                       'pl-10 w-full px-4 py-3 rounded-xl border text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200',
                       errors.product_url ? 'border-red-300' : 'border-gray-200'
                     ]"
-                    required
                   />
                 </div>
                 <p v-if="errors.product_url" class="mt-1 text-sm text-red-600">{{ errors.product_url[0] }}</p>
@@ -121,7 +140,7 @@
                     v-model.number="itemForm.quantity"
                     type="number"
                     min="1"
-                    max="99"
+                    max="99999"
                     class="w-20 text-center text-lg font-semibold px-3 py-2 rounded-xl border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     readonly
                   />
@@ -140,7 +159,7 @@
               <!-- Submit Button -->
               <button
                 type="submit"
-                :disabled="addingItem || !itemForm.product_name.trim() || !itemForm.product_url.trim()"
+                :disabled="addingItem || !itemForm.product_name.trim()"
                 class="w-full px-6 py-4 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <svg v-if="addingItem" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
@@ -203,14 +222,21 @@
             <div v-if="order.items && order.items.length > 0" class="mt-6 pt-6 border-t border-gray-300">
               <button
                 @click="showCompleteModal = true"
-                class="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                :class="[
+                  'w-full px-6 py-3 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2',
+                  isReopenedOrder 
+                    ? 'bg-amber-600 text-white hover:bg-amber-700' 
+                    : 'bg-green-600 text-white hover:bg-green-700'
+                ]"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
-                {{ t.finishAndShip }}
+                {{ isReopenedOrder ? t.completeOrderAgain : t.finishAndShip }}
               </button>
-              <p class="text-xs text-gray-500 text-center mt-2">{{ t.canAddMoreLater }}</p>
+              <p class="text-xs text-gray-500 text-center mt-2">
+                {{ isReopenedOrder ? t.mustCompleteToShip : t.canAddMoreLater }}
+              </p>
             </div>
           </div>
         </div>
@@ -256,17 +282,25 @@
             >
               <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div>
-                  <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-green-100">
-                    <svg class="size-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div :class="[
+                    'mx-auto flex size-12 items-center justify-center rounded-full',
+                    isReopenedOrder ? 'bg-amber-100' : 'bg-green-100'
+                  ]">
+                    <svg :class="[
+                      'size-6',
+                      isReopenedOrder ? 'text-amber-600' : 'text-green-600'
+                    ]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                   </div>
                   <div class="mt-3 text-center sm:mt-5">
                     <DialogTitle as="h3" class="text-base font-semibold text-gray-900">
-                      {{ t.readyToShip }}
+                      {{ isReopenedOrder ? t.readyToCompleteAgain : t.readyToShip }}
                     </DialogTitle>
                     <div class="mt-2">
-                      <p class="text-sm text-gray-500">{{ t.confirmText }}</p>
+                      <p class="text-sm text-gray-500">
+                        {{ isReopenedOrder ? t.confirmCompleteAgainText : t.confirmText }}
+                      </p>
                       <div class="mt-4 bg-gray-50 rounded-lg p-4">
                         <p class="text-2xl font-bold text-gray-900">{{ order?.items?.length || 0 }}</p>
                         <p class="text-sm text-gray-600">{{ order?.items?.length === 1 ? t.productInShipment : t.productsInShipment }}</p>
@@ -277,7 +311,12 @@
                 <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                   <button
                     type="button"
-                    class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:col-start-2"
+                    :class="[
+                      'inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2',
+                      isReopenedOrder 
+                        ? 'bg-amber-600 hover:bg-amber-500 focus-visible:outline-amber-600' 
+                        : 'bg-green-600 hover:bg-green-500 focus-visible:outline-green-600'
+                    ]"
                     @click="handleCompleteOrder"
                     :disabled="completingOrder"
                   >
@@ -301,7 +340,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 // Define page meta
@@ -328,6 +367,13 @@ const addingItem = ref(false)
 const completingOrder = ref(false)
 const showCompleteModal = ref(false)
 
+// Check if order was reopened (has items but status is collecting)
+const isReopenedOrder = computed(() => {
+  return order.value?.status === 'collecting' && 
+         order.value?.items?.length > 0 && 
+         !isNewOrder.value
+})
+
 // Form for new item
 const itemForm = ref({
   product_name: '',
@@ -352,6 +398,10 @@ const translations = {
     es: '¡Tu orden está lista!',
     en: 'Your order is ready!'
   },
+  orderCreatedSuccessSubtext: {
+    es: 'Ahora puedes agregar los productos que compraste a la caja para enviar.',
+    en: 'Now you can add the products you bought to the box to ship.'
+  },
   orderNumber: {
     es: 'Orden',
     en: 'Order'
@@ -364,9 +414,17 @@ const translations = {
     es: 'Nombre del producto',
     en: 'Product name'
   },
+  productNamePlaceholder: {
+    es: 'Ej: Laptop Dell XPS 13',
+    en: 'Ex: Dell XPS 13 Laptop'
+  },
   whereDidYouBuyIt: {
-    es: 'Link del producto(url)',
-    en: 'Product link (url)'
+    es: 'Link del producto',
+    en: 'Product link'
+  },
+  optional: {
+    es: 'Opcional',
+    en: 'Optional'
   },
   productUrlPlaceholder: {
     es: 'Pega el link del producto aquí',
@@ -476,6 +534,35 @@ const translations = {
     es: 'Error al completar la orden',
     en: 'Error completing order'
   },
+  // Reopened order translations
+  orderReopenedTitle: {
+    es: 'Caja Reabierta',
+    en: 'Box Reopened'
+  },
+  orderReopenedMessage: {
+    es: 'Has reabierto esta caja para hacer cambios. Puedes agregar o eliminar productos.',
+    en: 'You\'ve reopened this order to make changes. You can add or remove products.'
+  },
+  mustCompleteAgain: {
+    es: 'Debes completar la orden nuevamente cuando termines de hacer cambios.',
+    en: 'You must complete the order again when you\'re done making changes.'
+  },
+  completeOrderAgain: {
+    es: 'Completar Orden Nuevamente',
+    en: 'Complete Order Again'
+  },
+  mustCompleteToShip: {
+    es: 'Debes completar la orden para poder enviar',
+    en: 'You must complete the order to ship'
+  },
+  readyToCompleteAgain: {
+    es: '¿Listo para completar nuevamente?',
+    en: 'Ready to complete again?'
+  },
+  confirmCompleteAgainText: {
+    es: 'Tu orden quedará lista nuevamente para recibir estos productos.',
+    en: 'Your order will be ready again to receive these products.'
+  },
   'extra-small': {
     es: 'Extra Pequeña',
     en: 'Extra Small'
@@ -528,7 +615,7 @@ const handleAddItem = async () => {
       method: 'POST',
       body: {
         product_name: itemForm.value.product_name.trim(),
-        product_url: itemForm.value.product_url.trim(),
+        product_url: itemForm.value.product_url.trim() || null, // Send null if empty
         quantity: itemForm.value.quantity
       }
     })

@@ -271,8 +271,8 @@ const translations = {
     en: 'By using our service, you agree to:'
   },
   useItem1: {
-    es: 'Usar la dirección asignada con el formato "SDSS [Su Nombre]" en todas sus compras',
-    en: 'Use the assigned address with the format "SDSS [Your Name]" in all your purchases'
+    es: 'Usar la dirección asignada con el formato "ECTJ [Su Nombre]" en todas sus compras',
+    en: 'Use the assigned address with the format "ECTJ [Your Name]" in all your purchases'
   },
   useItem2: {
     es: 'No realizar compras de artículos prohibidos o restringidos',

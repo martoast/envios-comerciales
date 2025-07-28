@@ -1,562 +1,384 @@
 <template>
-  <section
-    class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20"
-  >
-    <!-- Header -->
-    <div
-      class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100"
-    >
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-        <div
-          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-        >
+  <section class="min-h-screen bg-gray-50">
+    <!-- Header - Clean & Modern -->
+    <div class="sticky top-0 z-40 bg-white border-b border-gray-200">
+      <div class="px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Back & Title -->
           <div class="flex items-center gap-4">
-            <NuxtLink
-              to="/app/admin/orders"
-              class="p-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-300"
+            <NuxtLink 
+              to="/app/admin/orders" 
+              class="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 19l-7-7 7-7"
-                />
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
               </svg>
             </NuxtLink>
             <div>
-              <p class="text-sm text-gray-500 mt-1">
-                {{ order?.order_number }}
-              </p>
+              <h1 class="text-lg font-semibold text-gray-900">{{ order?.order_number }}</h1>
+              <p class="text-sm text-gray-500">{{ order?.user?.name }}</p>
             </div>
           </div>
 
           <!-- Status Badge -->
-          <div v-if="order" class="flex items-center gap-3">
-            <span
-              :class="[
-                'inline-flex items-center px-4 py-2 rounded-full text-sm font-medium',
-                getStatusColor(order.status),
-              ]"
-            >
-              {{ getStatusLabel(order.status) }}
-            </span>
-          </div>
+          <span v-if="order" :class="[
+            'px-3 py-1 rounded-full text-xs font-medium',
+            getStatusColor(order.status)
+          ]">
+            {{ getStatusLabel(order.status) }}
+          </span>
         </div>
       </div>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="loading" class="flex items-center justify-center min-h-[60vh]">
+      <div class="text-center">
+        <div class="w-12 h-12 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p class="mt-4 text-sm text-gray-600">{{ t.loading }}</p>
+      </div>
+    </div>
+
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <!-- Loading State -->
-      <div v-if="loading" class="flex items-center justify-center py-16">
-        <div
-          class="inline-flex items-center justify-center w-16 h-16 bg-primary-50 rounded-2xl"
-        >
-          <svg
-            class="animate-spin h-8 w-8 text-primary-500"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
+    <div v-else-if="order" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <!-- Alert Banner for Incomplete Orders -->
+      <div
+        v-if="order.status === 'collecting'"
+        class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3"
+      >
+        <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div>
+          <h3 class="font-medium text-amber-900">{{ t.orderIncomplete }}</h3>
+          <p class="text-sm text-amber-700 mt-1">{{ t.orderIncompleteMessage }}</p>
         </div>
       </div>
 
-      <!-- Order Content -->
-      <div v-else-if="order" class="space-y-6">
-        <!-- Quick Actions -->
-        <div
-          v-if="showQuickActions"
-          :class="[
-            'border rounded-2xl p-4 sm:p-6 animate-fadeIn',
-            order.status === 'shipped'
-              ? 'bg-green-50 border-green-200'
-              : 'bg-amber-50 border-amber-200',
-          ]"
-        >
-          <div class="flex items-start gap-3">
-            <svg
-              :class="[
-                'w-6 h-6 mt-0.5',
-                order.status === 'shipped'
-                  ? 'text-green-600'
-                  : 'text-amber-600',
-              ]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-            <div class="flex-1">
-              <h3
-                :class="[
-                  'text-lg font-semibold',
-                  order.status === 'shipped'
-                    ? 'text-green-900'
-                    : 'text-amber-900',
-                ]"
-              >
-                {{ t.actionRequired }}
-              </h3>
-              <p
-                :class="[
-                  'text-sm mt-1',
-                  order.status === 'shipped'
-                    ? 'text-green-700'
-                    : 'text-amber-700',
-                ]"
-              >
-                {{ getActionMessage() }}
-              </p>
-              <button
-                v-if="order.status === 'packages_complete'"
-                @click="showShipModal = true"
-                class="mt-3 px-4 py-2 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition-all"
-              >
-                {{ t.markAsShipped }}
-              </button>
-              <button
-                v-if="order.status === 'shipped'"
-                @click="showDeliveredModal = true"
-                class="mt-3 px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-all"
-              >
-                {{ t.markAsDelivered }}
-              </button>
+      <!-- Quick Action Banner -->
+      <div
+        v-if="showQuickActions"
+        :class="[
+          'rounded-xl p-6 flex items-start gap-4',
+          order.status === 'shipped'
+            ? 'bg-gradient-to-r from-green-50 to-green-100 border border-green-200'
+            : 'bg-gradient-to-r from-primary-50 to-primary-100 border border-primary-200'
+        ]"
+      >
+        <div :class="[
+          'w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0',
+          order.status === 'shipped' ? 'bg-green-200' : 'bg-primary-200'
+        ]">
+          <svg :class="[
+            'w-6 h-6',
+            order.status === 'shipped' ? 'text-green-700' : 'text-primary-700'
+          ]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 :class="[
+            'text-lg font-semibold',
+            order.status === 'shipped' ? 'text-green-900' : 'text-primary-900'
+          ]">
+            {{ t.actionRequired }}
+          </h3>
+          <p :class="[
+            'text-sm mt-1',
+            order.status === 'shipped' ? 'text-green-700' : 'text-primary-700'
+          ]">
+            {{ getActionMessage() }}
+          </p>
+          <button
+            v-if="order.status === 'packages_complete'"
+            @click="showShipModal = true"
+            class="mt-3 px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors"
+          >
+            {{ t.markAsShipped }}
+          </button>
+          <button
+            v-if="order.status === 'shipped'"
+            @click="showDeliveredModal = true"
+            class="mt-3 px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+          >
+            {{ t.markAsDelivered }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Key Metrics Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <!-- Customer -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-sm text-gray-600">{{ t.customer }}</p>
+            <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
             </div>
           </div>
+          <p class="text-sm font-medium text-gray-900 truncate">{{ order.user.name }}</p>
+          <p class="text-xs text-gray-500 truncate">{{ order.user.email }}</p>
         </div>
 
-        <!-- Info Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- Customer Info -->
-          <div
-            class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn"
-          >
-            <h2
-              class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"
-            >
-              <svg
-                class="w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
+        <!-- Total Paid -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-sm text-gray-600">{{ t.totalPaid }}</p>
+            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-xl font-bold text-gray-900">${{ formatCurrency(order.amount_paid || 0) }}</p>
+          <p class="text-xs text-gray-500 mt-1">{{ order.currency?.toUpperCase() }}</p>
+        </div>
+
+        <!-- Items Count -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-sm text-gray-600">{{ t.items }}</p>
+            <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-xl font-bold text-gray-900">{{ order.items?.length || 0 }}</p>
+          <p class="text-xs text-gray-500 mt-1">{{ arrivedCount }}/{{ order.items?.length || 0 }} {{ t.arrived }}</p>
+        </div>
+
+        <!-- Weight -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-sm text-gray-600">{{ t.totalWeight }}</p>
+            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-xl font-bold text-gray-900">{{ order.total_weight || '-' }}</p>
+          <p class="text-xs text-gray-500 mt-1">kg</p>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Customer & Order Info -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Customer Details -->
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
               {{ t.customerInfo }}
             </h2>
-            <div class="space-y-3">
+            <div class="grid sm:grid-cols-2 gap-4">
               <div>
                 <p class="text-sm text-gray-500">{{ t.name }}</p>
                 <p class="font-medium text-gray-900">{{ order.user.name }}</p>
               </div>
               <div>
                 <p class="text-sm text-gray-500">{{ t.email }}</p>
-                <p class="font-medium text-gray-900">{{ order.user.email }}</p>
+                <p class="font-medium text-gray-900 truncate">{{ order.user.email }}</p>
               </div>
               <div v-if="order.user.phone">
                 <p class="text-sm text-gray-500">{{ t.phone }}</p>
                 <p class="font-medium text-gray-900">{{ order.user.phone }}</p>
               </div>
-              <NuxtLink
-                :to="`/app/admin/customers/${order.user.id}`"
-                class="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium mt-2"
-              >
-                {{ t.viewCustomer }}
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              <div>
+                <NuxtLink
+                  :to="`/app/admin/customers/${order.user.id}`"
+                  class="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </NuxtLink>
+                  {{ t.viewCustomer }}
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </NuxtLink>
+              </div>
             </div>
           </div>
 
-          <!-- Order Details -->
-          <div
-            class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn"
-            style="animation-delay: 0.1s"
-          >
-            <h2
-              class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"
-            >
-              <svg
-                class="w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          <!-- Delivery Address -->
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              {{ t.deliveryAddress }}
+            </h2>
+            <div v-if="order.delivery_address">
+              <p class="text-sm font-medium text-gray-900">
+                {{ order.delivery_address.street }}
+                {{ order.delivery_address.exterior_number }}
+                <span v-if="order.delivery_address.interior_number">
+                  Int. {{ order.delivery_address.interior_number }}
+                </span>
+              </p>
+              <p class="text-sm text-gray-600 mt-1">
+                {{ order.delivery_address.colonia }}<br>
+                {{ order.delivery_address.municipio }}, {{ order.delivery_address.estado }}<br>
+                C.P. {{ order.delivery_address.postal_code }}
+              </p>
+              <span
+                v-if="order.is_rural"
+                class="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full mt-3"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                </svg>
+                {{ t.ruralArea }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline & Actions -->
+        <div class="space-y-6">
+          <!-- Order Details -->
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
               {{ t.orderDetails }}
             </h2>
             <div class="space-y-3">
               <div>
+                <p class="text-sm text-gray-500">{{ t.boxType }}</p>
+                <p class="font-medium text-gray-900 capitalize">{{ order.box_size?.replace('-', ' ') }}</p>
+              </div>
+              <div>
                 <p class="text-sm text-gray-500">{{ t.created }}</p>
-                <p class="font-medium text-gray-900">
-                  {{ formatDate(order.created_at) }}
-                </p>
+                <p class="font-medium text-gray-900">{{ formatDate(order.created_at) }}</p>
               </div>
               <div v-if="order.completed_at">
                 <p class="text-sm text-gray-500">{{ t.completedAt }}</p>
-                <p class="font-medium text-gray-900">
-                  {{ formatDate(order.completed_at) }}
-                </p>
-              </div>
-              <div v-if="matchedProduct">
-                <p class="text-sm text-gray-500">{{ t.boxType }}</p>
-                <p class="font-medium text-gray-900">
-                  {{ getBoxTranslations(matchedProduct).name }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-gray-500">{{ t.itemCount }}</p>
-                <p class="font-medium text-gray-900">
-                  {{ order.items.length }}
-                  {{ order.items.length === 1 ? t.item : t.items }}
-                </p>
-              </div>
-              <div v-if="order.total_weight">
-                <p class="text-sm text-gray-500">{{ t.totalWeight }}</p>
-                <p class="font-medium text-gray-900">
-                  {{ order.total_weight }} kg
-                </p>
-              </div>
-              <div v-if="order.amount_paid">
-                <p class="text-sm text-gray-500">{{ t.totalPaid }}</p>
-                <p class="font-medium text-gray-900">
-                  ${{ formatCurrency(order.amount_paid || 0) }} MXN
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Shipping Details -->
-          <div
-            class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn"
-            style="animation-delay: 0.2s"
-          >
-            <h2
-              class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"
-            >
-              <svg
-                class="w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              {{ t.shippingInfo }}
-            </h2>
-            <div class="space-y-3">
-              <div v-if="order.delivery_address">
-                <p class="text-sm text-gray-500 mb-1">
-                  {{ t.deliveryAddress }}
-                </p>
-                <div class="text-sm text-gray-900 space-y-1">
-                  <p>
-                    {{ order.delivery_address.street }}
-                    {{ order.delivery_address.exterior_number }}
-                  </p>
-                  <p v-if="order.delivery_address.interior_number">
-                    Int. {{ order.delivery_address.interior_number }}
-                  </p>
-                  <p>{{ order.delivery_address.colonia }}</p>
-                  <p>
-                    {{ order.delivery_address.municipio }},
-                    {{ order.delivery_address.estado }}
-                  </p>
-                  <p>C.P. {{ order.delivery_address.postal_code }}</p>
-                </div>
-                <span
-                  v-if="order.is_rural"
-                  class="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full mt-2"
-                >
-                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fill-rule="evenodd"
-                      d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  {{ t.ruralArea }}
-                </span>
+                <p class="font-medium text-gray-900">{{ formatDate(order.completed_at) }}</p>
               </div>
               <div v-if="order.tracking_number">
                 <p class="text-sm text-gray-500">{{ t.trackingNumber }}</p>
-                <p class="font-medium text-gray-900">
-                  {{ order.tracking_number }}
-                </p>
+                <p class="font-medium text-gray-900 font-mono text-xs">{{ order.tracking_number }}</p>
               </div>
             </div>
           </div>
+
+          <!-- Timeline -->
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              {{ t.orderTimeline }}
+            </h2>
+            <div class="space-y-3">
+              <div
+                v-for="(event, index) in orderTimeline"
+                :key="index"
+                class="flex gap-3"
+              >
+                <div class="flex flex-col items-center">
+                  <div :class="[
+                    'w-3 h-3 rounded-full',
+                    event.completed ? 'bg-primary-500' : 'bg-gray-300'
+                  ]"></div>
+                  <div v-if="index < orderTimeline.length - 1" class="w-0.5 h-12 bg-gray-200"></div>
+                </div>
+                <div class="flex-1 pb-3">
+                  <p class="text-sm font-medium text-gray-900">{{ event.label }}</p>
+                  <p v-if="event.date" class="text-xs text-gray-500">{{ formatDate(event.date) }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items List -->
+      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-gray-900">{{ t.orderItems }}</h2>
+          <span class="text-sm text-gray-500">
+            {{ order.items.length }} {{ order.items.length === 1 ? t.item : t.items }}
+          </span>
+        </div>
+
+        <!-- Empty State -->
+        <div v-if="!order.items || order.items.length === 0" class="px-6 py-16 text-center">
+          <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"/>
+            </svg>
+          </div>
+          <h3 class="font-medium text-gray-900 mb-1">{{ t.noItemsYet }}</h3>
+          <p class="text-sm text-gray-500">{{ t.customerHasNotAddedItems }}</p>
         </div>
 
         <!-- Items List -->
-        <div
-          class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fadeIn"
-        >
-          <div class="px-6 py-4 border-b border-gray-100">
-            <h2
-              class="text-lg font-semibold text-gray-900 flex items-center gap-2"
-            >
-              <svg
-                class="w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                />
-              </svg>
-              {{ t.orderItems }} ({{ order.items.length }})
-            </h2>
-          </div>
-
-          <!-- Desktop Table -->
-          <div class="hidden sm:block overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-gray-50 border-b border-gray-100">
-                <tr>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {{ t.item }}
-                  </th>
-
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {{ t.value }}
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {{ t.weight }}
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {{ t.status }}
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    {{ t.actions }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-100">
-                <tr
-                  v-for="item in order.items"
-                  :key="item.id"
-                  class="hover:bg-gray-50 transition-colors"
-                >
-                  <td class="px-6 py-4">
-                    <div>
-                      <p class="text-sm font-medium text-gray-900">
-                        {{ item.product_name }}
-                      </p>
-                      <a
-                        v-if="item.product_url"
-                        :href="item.product_url"
-                        target="_blank"
-                        class="text-xs text-primary-600 hover:text-primary-700"
-                      >
-                        {{ t.viewProduct }}
-                      </a>
+        <div v-else class="divide-y divide-gray-100">
+          <div
+            v-for="item in order.items"
+            :key="item.id"
+            class="p-6 hover:bg-gray-50 transition-colors"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <!-- Item Info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-start gap-3">
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">{{ item.product_name }}</p>
+                    <a
+                      v-if="item.product_url"
+                      :href="item.product_url"
+                      target="_blank"
+                      class="text-xs text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 mt-1"
+                    >
+                      {{ t.viewProduct }}
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                      </svg>
+                    </a>
+                    <div class="flex flex-wrap items-center gap-4 mt-2 text-sm">
+                      <span class="text-gray-500">{{ t.quantity }}: {{ item.quantity }}</span>
+                      <span v-if="item.declared_value" class="text-gray-500">
+                        {{ t.value }}: ${{ item.declared_value }}
+                      </span>
+                      <span v-if="item.weight" class="text-gray-500">
+                        {{ t.weight }}: {{ item.weight }} kg
+                      </span>
                     </div>
-                  </td>
-
-                  <td class="px-6 py-4 text-sm text-gray-900">
-                    ${{ item.declared_value }} × {{ item.quantity }}
-                  </td>
-                  <td class="px-6 py-4 text-sm text-gray-900">
-                    {{ item.weight ? `${item.weight} kg` : "-" }}
-                  </td>
-                  <td class="px-6 py-4">
-                    <span
-                      :class="[
-                        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                        item.arrived
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-yellow-100 text-yellow-700',
-                      ]"
-                    >
-                      {{ item.arrived ? t.arrived : t.pending }}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4">
-                    <button
-                      v-if="!item.arrived"
-                      @click="openMarkArrivedModal(item)"
-                      class="text-primary-600 hover:text-primary-700 text-sm font-medium"
-                    >
-                      {{ t.markArrived }}
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Mobile Cards -->
-          <div class="sm:hidden divide-y divide-gray-100">
-            <div v-for="item in order.items" :key="item.id" class="p-4">
-              <div class="flex items-start justify-between mb-2">
-                <div class="flex-1">
-                  <p class="font-medium text-gray-900">
-                    {{ item.product_name }}
-                  </p>
-                  <a
-                    v-if="item.product_url"
-                    :href="item.product_url"
-                    target="_blank"
-                    class="text-sm text-primary-600 hover:text-primary-700"
-                  >
-                    {{ t.viewProduct }}
-                  </a>
+                  </div>
                 </div>
-                <span
-                  :class="[
-                    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                    item.arrived
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-yellow-100 text-yellow-700',
-                  ]"
-                >
+              </div>
+
+              <!-- Status & Actions -->
+              <div class="flex items-start gap-3">
+                <span :class="[
+                  'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium',
+                  item.arrived
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-gray-100 text-gray-700'
+                ]">
                   {{ item.arrived ? t.arrived : t.pending }}
                 </span>
-              </div>
-              <div class="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p class="text-gray-500">{{ t.value }}</p>
-                  <p class="font-medium">
-                    ${{ item.declared_value }} × {{ item.quantity }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-gray-500">{{ t.weight }}</p>
-                  <p class="font-medium">
-                    {{ item.weight ? `${item.weight} kg` : "-" }}
-                  </p>
-                </div>
-              </div>
-              <button
-                v-if="!item.arrived"
-                @click="openMarkArrivedModal(item)"
-                class="mt-3 w-full px-4 py-2 bg-primary-50 text-primary-600 font-medium rounded-lg hover:bg-primary-100 transition-all"
-              >
-                {{ t.markArrived }}
-              </button>
-            </div>
-          </div>
-        </div>
 
-        <!-- Timeline -->
-        <div
-          class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn"
-        >
-          <h2
-            class="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2"
-          >
-            <svg
-              class="w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            {{ t.orderTimeline }}
-          </h2>
-          <div class="space-y-4">
-            <div
-              v-for="(event, index) in orderTimeline"
-              :key="index"
-              class="flex gap-4"
-            >
-              <div class="flex flex-col items-center">
-                <div
-                  :class="[
-                    'w-4 h-4 rounded-full',
-                    event.completed ? 'bg-primary-500' : 'bg-gray-300',
-                  ]"
-                ></div>
-                <div
-                  v-if="index < orderTimeline.length - 1"
-                  class="w-0.5 h-16 bg-gray-200"
-                ></div>
-              </div>
-              <div class="flex-1 pb-8">
-                <p class="font-medium text-gray-900">{{ event.label }}</p>
-                <p v-if="event.date" class="text-sm text-gray-500">
-                  {{ formatDate(event.date) }}
-                </p>
+                <!-- Only show Mark Arrived button if order is completed -->
+                <button
+                  v-if="!item.arrived && order.status !== 'collecting'"
+                  @click="openMarkArrivedModal(item)"
+                  class="p-2 text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-all"
+                  :title="t.markArrived"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
@@ -566,11 +388,7 @@
 
     <!-- Mark Arrived Modal -->
     <TransitionRoot :show="showMarkArrivedModal" as="template">
-      <Dialog
-        as="div"
-        class="relative z-50"
-        @close="showMarkArrivedModal = false"
-      >
+      <Dialog class="relative z-50" @close="showMarkArrivedModal = false">
         <TransitionChild
           as="template"
           enter="duration-300 ease-out"
@@ -594,9 +412,7 @@
               leave-from="opacity-100 scale-100"
               leave-to="opacity-0 scale-95"
             >
-              <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all"
-              >
+              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all">
                 <div class="p-6">
                   <DialogTitle class="text-lg font-semibold text-gray-900 mb-4">
                     {{ t.markPackageArrived }}
@@ -605,16 +421,13 @@
                   <div v-if="selectedItem" class="space-y-4">
                     <!-- Package Info -->
                     <div class="bg-gray-50 rounded-lg p-4">
-                      <p class="text-sm font-medium text-gray-900 mb-1">
-                        {{ selectedItem.product_name }}
-                      </p>
+                      <p class="text-sm font-medium text-gray-900">{{ selectedItem.product_name }}</p>
+                      <p class="text-xs text-gray-500 mt-1">{{ t.quantity }}: {{ selectedItem.quantity }}</p>
                     </div>
 
                     <!-- Weight Input -->
                     <div>
-                      <label
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                      >
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
                         {{ t.packageWeight }}
                         <span class="text-red-500">*</span>
                       </label>
@@ -628,70 +441,45 @@
                           class="w-full px-3 py-2 pr-8 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                           :placeholder="t.weightPlaceholder"
                         />
-                        <div
-                          class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
-                        >
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                           <span class="text-gray-500 text-sm">kg</span>
                         </div>
                       </div>
-                      <p class="mt-1 text-xs text-gray-500">
-                        {{ t.weightHint }}
-                      </p>
+                      <p class="mt-1 text-xs text-gray-500">{{ t.weightHint }}</p>
                     </div>
 
                     <!-- Dimensions (Optional) -->
                     <div>
-                      <label
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                      >
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
                         {{ t.dimensions }}
                         <span class="text-gray-400">({{ t.optional }})</span>
                       </label>
                       <div class="grid grid-cols-3 gap-2">
-                        <div>
-                          <input
-                            v-model.number="arrivedForm.dimensions.length"
-                            type="number"
-                            step="1"
-                            min="1"
-                            max="999"
-                            class="w-full px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                            placeholder="L"
-                          />
-                        </div>
-                        <div>
-                          <input
-                            v-model.number="arrivedForm.dimensions.width"
-                            type="number"
-                            step="1"
-                            min="1"
-                            max="999"
-                            class="w-full px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                            placeholder="W"
-                          />
-                        </div>
-                        <div>
-                          <input
-                            v-model.number="arrivedForm.dimensions.height"
-                            type="number"
-                            step="1"
-                            min="1"
-                            max="999"
-                            class="w-full px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                            placeholder="H"
-                          />
-                        </div>
+                        <input
+                          v-model.number="arrivedForm.dimensions.length"
+                          type="number"
+                          placeholder="L"
+                          class="w-full px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        />
+                        <input
+                          v-model.number="arrivedForm.dimensions.width"
+                          type="number"
+                          placeholder="W"
+                          class="w-full px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        />
+                        <input
+                          v-model.number="arrivedForm.dimensions.height"
+                          type="number"
+                          placeholder="H"
+                          class="w-full px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        />
                       </div>
-                      <p class="mt-1 text-xs text-gray-500">
-                        {{ t.dimensionsHint }}
-                      </p>
+                      <p class="mt-1 text-xs text-gray-500">{{ t.dimensionsHint }}</p>
                     </div>
 
-                    <!-- Declared Value Input -->
-                    <div>
-                      <label
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                      >
+                    <!-- Declared Value -->
+                    <!-- <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
                         {{ t.declaredValue }}
                         <span class="text-gray-400">({{ t.optional }})</span>
                       </label>
@@ -701,52 +489,28 @@
                           type="number"
                           step="0.01"
                           min="0"
-                          max="99999.99"
-                          class="w-full px-3 py-2 pr-12 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          class="w-full px-3 py-2 pr-12 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                           :placeholder="t.declaredValuePlaceholder"
                         />
-                        <div
-                          class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
-                        >
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                           <span class="text-gray-500 text-sm">USD</span>
                         </div>
                       </div>
-                      <p class="mt-1 text-xs text-gray-500">
-                        {{ t.declaredValueHint }}
-                      </p>
-                    </div>
+                      <p class="mt-1 text-xs text-gray-500">{{ t.declaredValueHint }}</p>
+                    </div> -->
                   </div>
 
                   <div class="mt-6 flex gap-3">
                     <button
                       @click="confirmMarkArrived"
                       :disabled="!arrivedForm.weight || markingArrived"
-                      class="flex-1 px-4 py-2 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      class="flex-1 px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-all disabled:opacity-50"
                     >
                       <span v-if="!markingArrived">{{ t.confirmArrived }}</span>
-                      <span
-                        v-else
-                        class="flex items-center justify-center gap-2"
-                      >
-                        <svg
-                          class="animate-spin h-4 w-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            class="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            stroke-width="4"
-                          ></circle>
-                          <path
-                            class="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
+                      <span v-else class="inline-flex items-center justify-center gap-2">
+                        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                         </svg>
                         {{ t.marking }}
                       </span>
@@ -768,7 +532,7 @@
 
     <!-- Ship Modal -->
     <TransitionRoot :show="showShipModal" as="template">
-      <Dialog as="div" class="relative z-50" @close="showShipModal = false">
+      <Dialog class="relative z-50" @close="showShipModal = false">
         <TransitionChild
           as="template"
           enter="duration-300 ease-out"
@@ -792,9 +556,7 @@
               leave-from="opacity-100 scale-100"
               leave-to="opacity-0 scale-95"
             >
-              <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all"
-              >
+              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all">
                 <div class="p-6">
                   <DialogTitle class="text-lg font-semibold text-gray-900 mb-4">
                     {{ t.markAsShipped }}
@@ -802,16 +564,14 @@
 
                   <div class="space-y-4">
                     <div>
-                      <label
-                        class="block text-sm font-medium text-gray-700 mb-1"
-                      >
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
                         {{ t.estimatedDelivery }}
                       </label>
                       <input
                         v-model="shipForm.estimated_delivery_date"
                         type="date"
                         :min="minDeliveryDate"
-                        class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
                   </div>
@@ -819,35 +579,14 @@
                   <div class="mt-6 flex gap-3">
                     <button
                       @click="markAsShipped"
-                      :disabled="
-                        !shipForm.estimated_delivery_date || updatingStatus
-                      "
-                      class="flex-1 px-4 py-2 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      :disabled="!shipForm.estimated_delivery_date || updatingStatus"
+                      class="flex-1 px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-all disabled:opacity-50"
                     >
                       <span v-if="!updatingStatus">{{ t.confirmShip }}</span>
-                      <span
-                        v-else
-                        class="flex items-center justify-center gap-2"
-                      >
-                        <svg
-                          class="animate-spin h-4 w-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            class="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            stroke-width="4"
-                          ></circle>
-                          <path
-                            class="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
+                      <span v-else class="inline-flex items-center justify-center gap-2">
+                        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                         </svg>
                         {{ t.updating }}
                       </span>
@@ -869,11 +608,7 @@
 
     <!-- Delivered Modal -->
     <TransitionRoot :show="showDeliveredModal" as="template">
-      <Dialog
-        as="div"
-        class="relative z-50"
-        @close="showDeliveredModal = false"
-      >
+      <Dialog class="relative z-50" @close="showDeliveredModal = false">
         <TransitionChild
           as="template"
           enter="duration-300 ease-out"
@@ -897,27 +632,17 @@
               leave-from="opacity-100 scale-100"
               leave-to="opacity-0 scale-95"
             >
-              <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all"
-              >
+              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all">
                 <div class="p-6">
                   <DialogTitle class="text-lg font-semibold text-gray-900 mb-4">
                     {{ t.confirmDelivery }}
                   </DialogTitle>
 
-                  <div class="space-y-4">
-                    <div class="bg-gray-50 rounded-lg p-4">
-                      <p class="text-sm text-gray-600">
-                        {{ t.confirmDeliveryMessage }}
-                      </p>
-                      <div class="mt-2 text-sm">
-                        <p class="font-medium">
-                          {{ t.trackingNumber }}: {{ order.tracking_number }}
-                        </p>
-                        <p class="font-medium">
-                          {{ t.customer }}: {{ order.user.name }}
-                        </p>
-                      </div>
+                  <div class="bg-gray-50 rounded-lg p-4">
+                    <p class="text-sm text-gray-600">{{ t.confirmDeliveryMessage }}</p>
+                    <div class="mt-3 space-y-1 text-sm">
+                      <p><span class="font-medium">{{ t.trackingNumber }}:</span> {{ order.order_number }}</p>
+                      <p><span class="font-medium">{{ t.customer }}:</span> {{ order.user.name }}</p>
                     </div>
                   </div>
 
@@ -925,34 +650,13 @@
                     <button
                       @click="markAsDelivered"
                       :disabled="updatingStatus"
-                      class="flex-1 px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      class="flex-1 px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-all disabled:opacity-50"
                     >
-                      <span v-if="!updatingStatus">{{
-                        t.confirmDelivered
-                      }}</span>
-                      <span
-                        v-else
-                        class="flex items-center justify-center gap-2"
-                      >
-                        <svg
-                          class="animate-spin h-4 w-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            class="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            stroke-width="4"
-                          ></circle>
-                          <path
-                            class="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
+                      <span v-if="!updatingStatus">{{ t.confirmDelivered }}</span>
+                      <span v-else class="inline-flex items-center justify-center gap-2">
+                        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                         </svg>
                         {{ t.updating }}
                       </span>
@@ -1001,16 +705,12 @@ const { t: createTranslations } = useLanguage();
 // State
 const order = ref(null);
 const loading = ref(true);
-const showQuoteModal = ref(false);
 const showShipModal = ref(false);
 const showMarkArrivedModal = ref(false);
 const showDeliveredModal = ref(false);
-const sendingQuote = ref(false);
 const updatingStatus = ref(false);
 const markingArrived = ref(false);
 const selectedItem = ref(null);
-const availableBoxes = ref([]);
-const loadingProducts = ref(false);
 
 const shipForm = ref({
   estimated_delivery_date: "",
@@ -1029,14 +729,21 @@ const arrivedForm = ref({
 // Translations
 const translations = {
   loading: {
-    es: "Cargando...",
-    en: "Loading...",
+    es: "Cargando detalles de la orden...",
+    en: "Loading order details...",
+  },
+  orderIncomplete: {
+    es: "Orden No Completada",
+    en: "Order Not Completed",
+  },
+  orderIncompleteMessage: {
+    es: "El cliente aún está agregando artículos a esta orden. No puedes marcar artículos como llegados hasta que el cliente complete la orden.",
+    en: "The customer is still adding items to this order. You cannot mark items as arrived until the customer completes the order.",
   },
   actionRequired: {
     es: "Acción Requerida",
     en: "Action Required",
   },
-
   markAsShipped: {
     es: "Marcar como Enviado",
     en: "Mark as Shipped",
@@ -1044,6 +751,10 @@ const translations = {
   markAsDelivered: {
     es: "Marcar como Entregado",
     en: "Mark as Delivered",
+  },
+  customer: {
+    es: "Cliente",
+    en: "Customer",
   },
   customerInfo: {
     es: "Información del Cliente",
@@ -1062,8 +773,8 @@ const translations = {
     en: "Phone",
   },
   viewCustomer: {
-    es: "Ver Cliente",
-    en: "View Customer",
+    es: "Ver Perfil del Cliente",
+    en: "View Customer Profile",
   },
   orderDetails: {
     es: "Detalles de la Orden",
@@ -1082,16 +793,20 @@ const translations = {
     en: "Total Weight",
   },
   totalPaid: {
-    es: "Total pagado",
-    en: "Total paid",
+    es: "Total Pagado",
+    en: "Total Paid",
   },
-  boxSize: {
-    es: "Tamaño de Caja",
-    en: "Box Size",
+  items: {
+    es: "Artículos",
+    en: "Items",
   },
-  shippingInfo: {
-    es: "Información de Envío",
-    en: "Shipping Information",
+  item: {
+    es: "artículo",
+    en: "item",
+  },
+  boxType: {
+    es: "Tipo de Caja",
+    en: "Box Type",
   },
   deliveryAddress: {
     es: "Dirección de Entrega",
@@ -1102,48 +817,32 @@ const translations = {
     en: "Rural Area",
   },
   trackingNumber: {
-    es: "Número de Rastreo",
-    en: "Tracking Number",
+    es: "Número de Orden",
+    en: "Order Number",
   },
-  financialInfo: {
-    es: "Información Financiera",
-    en: "Financial Information",
-  },
-  shippingCost: {
-    es: "Costo de Envío",
-    en: "Shipping Cost",
-  },
-  status: {
-    es: "Estado",
-    en: "Status",
-  },
-  paid: {
-    es: "Pagado",
-    en: "Paid",
-  },
-  pending: {
-    es: "Pendiente",
-    en: "Pending",
-  },
-  invoice: {
-    es: "Factura",
-    en: "Invoice",
-  },
-  viewInvoice: {
-    es: "Ver Factura",
-    en: "View Invoice",
+  orderTimeline: {
+    es: "Línea de Tiempo",
+    en: "Order Timeline",
   },
   orderItems: {
     es: "Artículos de la Orden",
     en: "Order Items",
   },
-  item: {
-    es: "Artículo",
-    en: "Item",
+  noItemsYet: {
+    es: "No hay artículos todavía",
+    en: "No items yet",
   },
-  tracking: {
-    es: "Rastreo",
-    en: "Tracking",
+  customerHasNotAddedItems: {
+    es: "El cliente no ha agregado artículos a esta orden.",
+    en: "The customer has not added items to this order.",
+  },
+  viewProduct: {
+    es: "Ver producto",
+    en: "View product",
+  },
+  quantity: {
+    es: "Cantidad",
+    en: "Quantity",
   },
   value: {
     es: "Valor",
@@ -1153,49 +852,21 @@ const translations = {
     es: "Peso",
     en: "Weight",
   },
-  actions: {
-    es: "Acciones",
-    en: "Actions",
-  },
   arrived: {
     es: "Llegó",
     en: "Arrived",
+  },
+  pending: {
+    es: "Pendiente",
+    en: "Pending",
   },
   markArrived: {
     es: "Marcar como Llegado",
     en: "Mark as Arrived",
   },
-  noName: {
-    es: "Sin nombre",
-    en: "No name",
-  },
-  viewProduct: {
-    es: "Ver producto",
-    en: "View product",
-  },
-  orderTimeline: {
-    es: "Línea de Tiempo",
-    en: "Order Timeline",
-  },
-  iva: {
-    es: "IVA (16%)",
-    en: "VAT (16%)",
-  },
-  total: {
-    es: "Total",
-    en: "Total",
-  },
-  sending: {
-    es: "Enviando...",
-    en: "Sending...",
-  },
   cancel: {
     es: "Cancelar",
     en: "Cancel",
-  },
-  trackingPlaceholder: {
-    es: "Ej: 1Z999AA10123456784",
-    en: "Ex: 1Z999AA10123456784",
   },
   estimatedDelivery: {
     es: "Fecha Estimada de Entrega",
@@ -1209,7 +880,6 @@ const translations = {
     es: "Actualizando...",
     en: "Updating...",
   },
-  // Mark Arrived Modal translations
   markPackageArrived: {
     es: "Marcar Paquete como Llegado",
     en: "Mark Package as Arrived",
@@ -1238,6 +908,18 @@ const translations = {
     es: "Largo x Ancho x Alto en centímetros",
     en: "Length x Width x Height in centimeters",
   },
+  declaredValue: {
+    es: "Valor Declarado",
+    en: "Declared Value",
+  },
+  declaredValuePlaceholder: {
+    es: "Ej: 49.99",
+    en: "Ex: 49.99",
+  },
+  declaredValueHint: {
+    es: "Valor del artículo en USD para cálculo de impuestos",
+    en: "Item value in USD for tax calculation",
+  },
   confirmArrived: {
     es: "Confirmar Llegada",
     en: "Confirm Arrival",
@@ -1245,6 +927,26 @@ const translations = {
   marking: {
     es: "Marcando...",
     en: "Marking...",
+  },
+  confirmDelivery: {
+    es: "Confirmar Entrega",
+    en: "Confirm Delivery",
+  },
+  confirmDeliveryMessage: {
+    es: "¿Confirma que este pedido ha sido entregado al cliente?",
+    en: "Please confirm that this order has been delivered to the customer.",
+  },
+  confirmDelivered: {
+    es: "Confirmar Entregado",
+    en: "Confirm Delivered",
+  },
+  packagesCompleteMessage: {
+    es: "Todos los paquetes han llegado. Puedes marcar este pedido como enviado.",
+    en: "All packages have arrived. You can mark this order as shipped.",
+  },
+  shippedMessage: {
+    es: "El pedido está en tránsito. Márcalo como entregado cuando el cliente lo reciba.",
+    en: "Order is in transit. Mark as delivered when customer receives it.",
   },
   // Status translations
   collecting: {
@@ -1271,107 +973,14 @@ const translations = {
     es: "Entregado",
     en: "Delivered",
   },
-  declaredValue: {
-    es: "Valor del producto",
-    en: "Value of the product",
-  },
-  declaredValuePlaceholder: {
-    es: "Ej: 49.99",
-    en: "Ex: 49.99",
-  },
-  declaredValueHint: {
-    es: "Valor del artículo en USD. Se aplicará IVA del 16% si el total es ≥ $50 USD",
-    en: "Item value in USD. 16% VAT applies if total is ≥ $50 USD",
-  },
-  confirmDelivery: {
-    es: "Confirmar Entrega",
-    en: "Confirm Delivery",
-  },
-  confirmDeliveryMessage: {
-    es: "¿Confirma que este pedido ha sido entregado al cliente?",
-    en: "Please confirm that this order has been delivered to the customer.",
-  },
-  customer: {
-    es: "Cliente",
-    en: "Customer",
-  },
-  confirmDelivered: {
-    es: "Confirmar Entregado",
-    en: "Confirm Delivered",
-  },
-  packagesCompleteMessage: {
-    es: "Todos los paquetes han llegado. Listo para marcar como enviado.",
-    en: "All packages have arrived. Ready to mark as shipped.",
-  },
-  shippedMessage: {
-    es: "El pedido está en tránsito. Marcar como entregado cuando el cliente lo reciba.",
-    en: "Order is in transit. Mark as delivered when customer receives it.",
-  },
-  // Add to translations object:
-  boxType: {
-    es: "Tipo de Caja",
-    en: "Box Type",
-  },
-  itemCount: {
-    es: "Número de Artículos",
-    en: "Number of Items",
-  },
-  items: {
-    es: "artículos",
-    en: "items",
-  },
-  // Box name translations
-  extraSmallBoxName: {
-    es: "Caja Extra Pequeña",
-    en: "Extra Small Box",
-  },
-  smallBoxName: {
-    es: "Caja Pequeña",
-    en: "Small Box",
-  },
-  mediumBoxName: {
-    es: "Caja Mediana",
-    en: "Medium Box",
-  },
-  largeBoxName: {
-    es: "Caja Grande",
-    en: "Large Box",
-  },
-  extraLargeBoxName: {
-    es: "Caja Extra Grande",
-    en: "Extra Large Box",
-  },
-  extraSmallBoxDescription: {
-    es: "Ideal para: Joyería, Documentos importantes, Electrónicos y otros artículos valiosos compactos y ligeros.",
-    en: "Best for: Jewelry, Important documents, Electronics or other compact lightweight valuables.",
-  },
-  smallBoxDescription: {
-    es: "Ideal para: Libros, Cosméticos, Electrónicos, Suplementos y otros accesorios pequeños.",
-    en: "Best for: Books, Cosmetics, Electronics, Supplements and other small accessories.",
-  },
-  mediumBoxDescription: {
-    es: "Ideal para: Ropa, Tenis, Bolsas de mano, Libros, Artículos o Equipo deportivo",
-    en: "Best for: Clothing, Sneakers, Handbags, Books, Sports Gear or Equipment",
-  },
-  largeBoxDescription: {
-    es: "Ideal para: Compras al mayoreo, Electrodomésticos de cocina, Artículos de decoración o Consolas de videojuegos y accesorios grandes.",
-    en: "Best for: Bulk purchases, Kitchen Appliances, Home Decor items, or gaming consoles or large accessories.",
-  },
-  extraLargeBoxDescription: {
-    es: "Ideal para: Muebles pequeños, Electrodomésticos grandes, Equipos de gimnasio o Pedidos consolidados grandes.",
-    en: "Best for: Small Furniture, Large Home Appliances, Gym Equipment or Large Consolidated orders.",
-  },
 };
 
 const t = createTranslations(translations);
 
 // Computed
 const showQuickActions = computed(() => {
-  return (
-    order.value &&
-    (order.value.status === "packages_complete" ||
-      order.value.status === "shipped")
-  );
+  return order.value && 
+    (order.value.status === "packages_complete" || order.value.status === "shipped");
 });
 
 const minDeliveryDate = computed(() => {
@@ -1380,8 +989,13 @@ const minDeliveryDate = computed(() => {
   return tomorrow.toISOString().split("T")[0];
 });
 
+const arrivedCount = computed(() => {
+  return order.value?.items?.filter((item) => item.arrived).length || 0;
+});
+
 const orderTimeline = computed(() => {
   if (!order.value) return [];
+  
   const events = [
     {
       label: t.value.collecting,
@@ -1395,13 +1009,8 @@ const orderTimeline = computed(() => {
     },
     {
       label: t.value.packages_complete,
-      date:
-        order.value.status === "packages_complete"
-          ? order.value.updated_at
-          : null,
-      completed: ["packages_complete", "shipped", "delivered"].includes(
-        order.value.status
-      ),
+      date: order.value.status === "packages_complete" ? order.value.updated_at : null,
+      completed: ["packages_complete", "shipped", "delivered"].includes(order.value.status),
     },
     {
       label: t.value.shipped,
@@ -1414,17 +1023,8 @@ const orderTimeline = computed(() => {
       completed: !!order.value.delivered_at,
     },
   ];
+  
   return events;
-});
-
-// Computed property to find the matched product
-const matchedProduct = computed(() => {
-  if (!order.value || !availableBoxes.value.length) return null;
-
-  // Match by id (which is the stripe product id) with order's stripe_product_id
-  return availableBoxes.value.find(
-    (box) => box.id === order.value.stripe_product_id
-  );
 });
 
 // Methods
@@ -1442,24 +1042,13 @@ const fetchOrder = async () => {
   }
 };
 
-const fetchProducts = async () => {
-  try {
-    loadingProducts.value = true;
-    const response = await $customFetch("/products");
-    availableBoxes.value = response.data;
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  } finally {
-    loadingProducts.value = false;
-  }
-};
-
 const getStatusColor = (status) => {
   const colors = {
     collecting: "bg-primary-100 text-primary-700",
-    awaiting_packages: "bg-yellow-100 text-yellow-700",
-    packages_complete: "bg-blue-100 text-blue-700",
-    shipped: "bg-orange-100 text-orange-700",
+    awaiting_packages: "bg-amber-100 text-amber-700",
+    packages_complete: "bg-purple-100 text-purple-700",
+    quote_sent: "bg-orange-100 text-orange-700",
+    shipped: "bg-primary-100 text-primary-700",
     delivered: "bg-green-100 text-green-700",
   };
   return colors[status] || "bg-gray-100 text-gray-700";
@@ -1496,91 +1085,16 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 
-const calculateBoxSize = () => {
-  const weight = calculateTotalWeight();
-  if (weight <= 10) return "small";
-  if (weight <= 25) return "medium";
-  if (weight <= 40) return "large";
-  if (weight <= 60) return "xl";
-  return null;
-};
-
-const calculateTotalWeight = () => {
-  return order.value.items.reduce((sum, item) => sum + (item.weight || 0), 0);
-};
-
-const calculateShippingCost = () => {
-  const boxSize = order.value.recommended_box_size || calculateBoxSize();
-  const boxPrices = {
-    small: 2200,
-    medium: 3800,
-    large: 5500,
-    xl: 7000,
-  };
-  let cost = boxPrices[boxSize] || 0;
-  if (order.value.is_rural) cost += 400;
-  return cost;
-};
-
-const calculateIva = () => {
-  const declaredTotal = order.value.items.reduce((sum, item) => {
-    return sum + item.declared_value * item.quantity;
-  }, 0);
-  return declaredTotal * 0.16;
-};
-
-const calculateTotal = () => {
-  return calculateShippingCost() + calculateIva();
-};
-
-const getBoxTranslations = (box) => {
-  if (!box) return { name: "", description: "" };
-
-  // Map Stripe product names to our translations
-  const typeMapping = {
-    "Extra Small Box": {
-      name: t.value.extraSmallBoxName,
-      description: t.value.extraSmallBoxDescription,
-    },
-    "Small Box": {
-      name: t.value.smallBoxName,
-      description: t.value.smallBoxDescription,
-    },
-    "Medium Box": {
-      name: t.value.mediumBoxName,
-      description: t.value.mediumBoxDescription,
-    },
-    "Large Box": {
-      name: t.value.largeBoxName,
-      description: t.value.largeBoxDescription,
-    },
-    "Extra Large Box": {
-      name: t.value.extraLargeBoxName,
-      description: t.value.extraLargeBoxDescription,
-    },
-  };
-
-  return (
-    typeMapping[box.name] || {
-      name: box.name,
-      description: box.description,
-    }
-  );
-};
-
 const markAsShipped = async () => {
   updatingStatus.value = true;
   try {
-    const response = await $customFetch(
-      `/admin/orders/${order.value.id}/status`,
-      {
-        method: "PUT",
-        body: {
-          status: "shipped",
-          estimated_delivery_date: shipForm.value.estimated_delivery_date,
-        },
-      }
-    );
+    const response = await $customFetch(`/admin/orders/${order.value.id}/status`, {
+      method: "PUT",
+      body: {
+        status: "shipped",
+        estimated_delivery_date: shipForm.value.estimated_delivery_date,
+      },
+    });
 
     $toast.success("Order marked as shipped");
     order.value = response.data;
@@ -1597,15 +1111,12 @@ const markAsShipped = async () => {
 const markAsDelivered = async () => {
   updatingStatus.value = true;
   try {
-    const response = await $customFetch(
-      `/admin/orders/${order.value.id}/status`,
-      {
-        method: "PUT",
-        body: {
-          status: "delivered",
-        },
-      }
-    );
+    const response = await $customFetch(`/admin/orders/${order.value.id}/status`, {
+      method: "PUT",
+      body: {
+        status: "delivered",
+      },
+    });
 
     $toast.success("Order marked as delivered");
     order.value = response.data;
@@ -1622,7 +1133,7 @@ const openMarkArrivedModal = (item) => {
   selectedItem.value = item;
   arrivedForm.value = {
     weight: null,
-    declared_value: item.declared_value || null, // Pre-fill with existing value if available
+    declared_value: item.declared_value || null,
     dimensions: {
       length: null,
       width: null,
@@ -1656,15 +1167,10 @@ const confirmMarkArrived = async () => {
       weight: parseFloat(arrivedForm.value.weight),
     };
 
-    // Add declared value if provided
-    if (
-      arrivedForm.value.declared_value !== null &&
-      arrivedForm.value.declared_value !== ""
-    ) {
+    if (arrivedForm.value.declared_value !== null && arrivedForm.value.declared_value !== "") {
       body.declared_value = parseFloat(arrivedForm.value.declared_value);
     }
 
-    // Only add dimensions if all three values are provided
     if (
       arrivedForm.value.dimensions.length &&
       arrivedForm.value.dimensions.width &&
@@ -1682,7 +1188,7 @@ const confirmMarkArrived = async () => {
     );
 
     $toast.success("Item marked as arrived");
-    await fetchOrder(); // Refresh order data
+    await fetchOrder();
     closeMarkArrivedModal();
   } catch (error) {
     console.error("Error marking item arrived:", error);
@@ -1692,26 +1198,40 @@ const confirmMarkArrived = async () => {
   }
 };
 
-// Fetch order and products on mount
-onMounted(async () => {
-  await Promise.all([fetchOrder(), fetchProducts()]);
+// Fetch order on mount
+onMounted(() => {
+  fetchOrder();
 });
 </script>
 
 <style scoped>
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
+/* Smooth loading animation */
+@keyframes spin {
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: rotate(360deg);
   }
 }
 
-.animate-fadeIn {
-  animation: fadeIn 0.6s ease-out forwards;
-  opacity: 0;
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 </style>

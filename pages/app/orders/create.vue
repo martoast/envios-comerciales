@@ -212,7 +212,7 @@
                       <div class="flex items-center gap-3">
                         <img
                           src="/logo.svg"
-                          alt="SDSS"
+                          alt="ECTJ"
                           class="w-10 h-10 flex-shrink-0"
                         />
                         <div>
@@ -261,7 +261,7 @@
                       <div class="relative flex-shrink-0">
                         <img
                           src="/logo.svg"
-                          alt="SDSS"
+                          alt="ECTJ"
                           class="w-14 h-14 lg:w-16 lg:h-16"
                         />
                         <div
@@ -501,7 +501,7 @@
                         {{ t.nameAtCheckout }}
                       </p>
                       <p class="text-lg font-semibold text-gray-900">
-                        SDSS {{ user?.name || "Loading..." }}
+                        ECTJ {{ user?.name || "Loading..." }}
                       </p>
                     </div>
                     <div>
@@ -1549,8 +1549,8 @@ const translations = {
     en: "Important Instructions",
   },
   instruction1: {
-    es: 'Usa el nombre "SDSS" seguido de tu nombre completo cuando compres',
-    en: 'Use the name "SDSS" followed by your full name when shopping',
+    es: 'Usa el nombre "ECTJ" seguido de tu nombre completo cuando compres',
+    en: 'Use the name "ECTJ" followed by your full name when shopping',
   },
   instruction2: {
     es: "Copia la dirección exactamente como se muestra arriba",
@@ -1949,7 +1949,7 @@ const nextStep = () => {
 };
 
 const copyAddress = async () => {
-  const address = `SDSS ${user?.name}
+  const address = `ECTJ ${user?.name}
 ${poBoxAddress.value.line1}
 ${poBoxAddress.value.line2}`;
 
