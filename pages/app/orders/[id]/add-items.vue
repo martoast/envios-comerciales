@@ -1,20 +1,128 @@
 <template>
   <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
-    <!-- Header -->
+    <!-- Header with Progress Indicator -->
     <div class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div>
-              <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">{{ t.addItemsTitle }}</h1>
-              <p class="text-sm text-gray-600 mt-1">{{ t.addItemsSubtitle }}</p>
+        <!-- Header Content -->
+        <div class="flex items-start sm:items-center justify-between gap-3">
+          <div class="flex items-start sm:items-center gap-3">
+            <NuxtLink
+              to="/app/orders"
+              class="p-1.5 sm:p-2 -ml-1.5 sm:-ml-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </NuxtLink>
+            <div class="flex-1">
+              <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900 leading-tight">
+                {{ t.addItemsTitle }}
+              </h1>
+              <p class="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">
+                {{ t.addItemsSubtitle }}
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Progress Steps - Mobile Optimized -->
+        <div class="mt-6">
+          <!-- Mobile: Vertical Steps -->
+          <div class="sm:hidden space-y-3">
+            <!-- Step 1: Payment -->
+            <div class="flex items-center gap-3">
+              <div class="flex-shrink-0 w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">{{ t.stepPayment }}</p>
+                <p class="text-xs text-green-600">{{ t.completed }}</p>
+              </div>
+            </div>
+            
+            <!-- Connector -->
+            <div class="ml-4 w-px h-4 bg-green-600"></div>
+            
+            <!-- Step 2: Add Items (Current) -->
+            <div class="flex items-center gap-3">
+              <div class="flex-shrink-0 w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center ring-4 ring-primary-100">
+                <span class="text-white font-semibold text-sm">2</span>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-primary-900">{{ t.stepAddItems }}</p>
+                <p class="text-xs text-primary-600">{{ t.current }}</p>
+              </div>
+            </div>
+            
+            <!-- Connector -->
+            <div class="ml-4 w-px h-4 bg-gray-300"></div>
+            
+            <!-- Step 3: Complete -->
+            <div class="flex items-center gap-3">
+              <div class="flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                <span class="text-white font-semibold text-sm">3</span>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-500">{{ t.stepComplete }}</p>
+                <p class="text-xs text-gray-400">{{ t.pending }}</p>
+              </div>
             </div>
           </div>
           
-          <!-- Progress indicator -->
-          <div class="hidden sm:flex items-center gap-2">
-            <div class="w-8 h-2 bg-primary-500 rounded-full"></div>
-            <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+          <!-- Desktop/Tablet: Horizontal Steps -->
+          <div class="hidden sm:flex items-center justify-center">
+            <div class="flex items-center">
+              <!-- Step 1: Payment -->
+              <div class="flex items-center">
+                <div class="flex items-center justify-center w-10 h-10 bg-green-600 rounded-full">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                </div>
+                <span class="ml-3 text-sm font-medium text-gray-900 hidden lg:inline">{{ t.stepPayment }}</span>
+              </div>
+              
+              <!-- Connector -->
+              <div class="w-8 sm:w-12 lg:w-20 h-0.5 bg-green-600 mx-2"></div>
+              
+              <!-- Step 2: Add Items (Current) -->
+              <div class="flex items-center">
+                <div class="flex items-center justify-center w-10 h-10 bg-primary-600 rounded-full ring-4 ring-primary-100">
+                  <span class="text-white font-semibold">2</span>
+                </div>
+                <span class="ml-3 text-sm font-medium text-primary-900 hidden lg:inline">{{ t.stepAddItems }}</span>
+              </div>
+              
+              <!-- Connector -->
+              <div class="w-8 sm:w-12 lg:w-20 h-0.5 bg-gray-300 mx-2"></div>
+              
+              <!-- Step 3: Complete -->
+              <div class="flex items-center">
+                <div class="flex items-center justify-center w-10 h-10 bg-gray-300 rounded-full">
+                  <span class="text-white font-semibold">3</span>
+                </div>
+                <span class="ml-3 text-sm font-medium text-gray-500 hidden lg:inline">{{ t.stepComplete }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Tablet: Step Labels -->
+          <div class="hidden sm:flex lg:hidden justify-center mt-3 gap-8 sm:gap-16 text-xs">
+            <span class="font-medium text-gray-900">{{ t.stepPayment }}</span>
+            <span class="font-medium text-primary-900">{{ t.stepAddItems }}</span>
+            <span class="font-medium text-gray-500">{{ t.stepComplete }}</span>
           </div>
         </div>
       </div>
@@ -33,8 +141,8 @@
       </div>
 
       <div v-else-if="order" class="space-y-6">
-        <!-- Reopened Order Alert - Show if order was reopened -->
-        <div v-if="isReopenedOrder" class="bg-amber-50 rounded-2xl p-6 border border-amber-200">
+        <!-- Reopened Order Alert - Only show for truly reopened orders, not new ones -->
+        <div v-if="isReopenedOrder && !isNewOrder" class="bg-amber-50 rounded-2xl p-6 border border-amber-200">
           <div class="flex items-start gap-4">
             <div class="p-2 bg-amber-100 rounded-lg flex-shrink-0">
               <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,18 +159,16 @@
           </div>
         </div>
 
-        <!-- Success Banner - Only show if it's a new order -->
-        <div v-else-if="isNewOrder" class="bg-green-50 rounded-2xl p-6 border border-green-200/50">
-          <div class="flex items-start gap-4">
-            <div class="p-2 bg-green-100 rounded-lg">
-              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
+        <!-- Order Info Card -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-600">{{ t.orderNumber }}</p>
+              <p class="font-mono font-semibold text-gray-900">{{ order.order_number }}</p>
             </div>
-            <div class="flex-1">
-              <h3 class="font-bold text-green-900">{{ t.orderCreatedSuccess }}</h3>
-              <p class="text-sm text-green-700 mb-2">{{ t.orderCreatedSuccessSubtext }}</p>
-              <p class="text-sm text-green-700">{{ t.orderNumber }}: <span class="font-mono font-bold">{{ order.order_number }}</span></p>
+            <div class="text-right">
+              <p class="text-sm text-gray-600">{{ t.boxSize }}</p>
+              <p class="font-semibold text-gray-900">{{ getBoxSizeLabel(order.box_size) }}</p>
             </div>
           </div>
         </div>
@@ -254,7 +360,9 @@
             <!-- Empty State -->
             <div v-if="!order.items || order.items.length === 0" class="text-center py-12">
               <div class="w-16 h-16 bg-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <img src="/logo.svg" alt="Box" class="w-12 h-12 flex-shrink-0">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"/>
+                </svg>
               </div>
               <p class="text-gray-500 font-medium">{{ t.emptyShipment }}</p>
               <p class="text-sm text-gray-400 mt-1">{{ t.startAdding }}</p>
@@ -295,19 +403,19 @@
               <button
                 @click="showCompleteModal = true"
                 :class="[
-                  'w-full px-6 py-3 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2',
-                  isReopenedOrder 
-                    ? 'bg-amber-600 text-white hover:bg-amber-700' 
-                    : 'bg-green-600 text-white hover:bg-green-700'
+                  'w-full px-6 py-3 font-semibold rounded-xl transition-all flex items-center justify-center gap-2 group',
+                  isReopenedOrder && !isNewOrder
+                    ? 'bg-amber-600 text-white hover:bg-amber-700 hover:shadow-lg' 
+                    : 'bg-green-600 text-white hover:bg-green-700 hover:shadow-lg'
                 ]"
               >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
-                {{ isReopenedOrder ? t.completeOrderAgain : t.finishAndShip }}
+                {{ getCompleteButtonText() }}
               </button>
               <p class="text-xs text-gray-500 text-center mt-2">
-                {{ isReopenedOrder ? t.mustCompleteToShip : t.canAddMoreLater }}
+                {{ t.youCanAlwaysReopenLater }}
               </p>
             </div>
           </div>
@@ -356,26 +464,32 @@
                 <div>
                   <div :class="[
                     'mx-auto flex size-12 items-center justify-center rounded-full',
-                    isReopenedOrder ? 'bg-amber-100' : 'bg-green-100'
+                    isReopenedOrder && !isNewOrder ? 'bg-amber-100' : 'bg-green-100'
                   ]">
                     <svg :class="[
                       'size-6',
-                      isReopenedOrder ? 'text-amber-600' : 'text-green-600'
+                      isReopenedOrder && !isNewOrder ? 'text-amber-600' : 'text-green-600'
                     ]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                   </div>
                   <div class="mt-3 text-center sm:mt-5">
                     <DialogTitle as="h3" class="text-base font-semibold text-gray-900">
-                      {{ isReopenedOrder ? t.readyToCompleteAgain : t.readyToShip }}
+                      {{ isReopenedOrder && !isNewOrder ? t.readyToCompleteAgain : t.confirmCompleteTitle }}
                     </DialogTitle>
                     <div class="mt-2">
                       <p class="text-sm text-gray-500">
-                        {{ isReopenedOrder ? t.confirmCompleteAgainText : t.confirmText }}
+                        {{ isReopenedOrder && !isNewOrder ? t.confirmCompleteAgainText : t.confirmCompleteText }}
                       </p>
                       <div class="mt-4 bg-gray-50 rounded-lg p-4">
                         <p class="text-2xl font-bold text-gray-900">{{ order?.items?.length || 0 }}</p>
                         <p class="text-sm text-gray-600">{{ order?.items?.length === 1 ? t.productInShipment : t.productsInShipment }}</p>
+                      </div>
+                      <div class="mt-3 text-left bg-blue-50 rounded-lg p-3">
+                        <p class="text-xs text-blue-800">
+                          <span class="font-semibold">{{ t.whatHappensNext }}</span>
+                          {{ t.whatHappensNextText }}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -385,14 +499,14 @@
                     type="button"
                     :class="[
                       'inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2',
-                      isReopenedOrder 
+                      isReopenedOrder && !isNewOrder
                         ? 'bg-amber-600 hover:bg-amber-500 focus-visible:outline-amber-600' 
                         : 'bg-green-600 hover:bg-green-500 focus-visible:outline-green-600'
                     ]"
                     @click="handleCompleteOrder"
                     :disabled="completingOrder"
                   >
-                    {{ completingOrder ? t.completing : t.yesFinish }}
+                    {{ completingOrder ? t.completing : t.yesComplete }}
                   </button>
                   <button
                     type="button"
@@ -426,9 +540,6 @@ const { $customFetch, $toast } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
 
-// Check if this is a new order from payment success
-const isNewOrder = ref(route.query.new === 'true')
-
 // Use the language composable
 const { t: createTranslations } = useLanguage()
 
@@ -441,11 +552,13 @@ const showCompleteModal = ref(false)
 const selectedFile = ref(null)
 const isDragging = ref(false)
 
+// Check if this is a new order from the query param
+const isNewOrder = computed(() => route.query.new === 'true')
+
 // Check if order was reopened (has items but status is collecting)
 const isReopenedOrder = computed(() => {
   return order.value?.status === 'collecting' && 
-         order.value?.items?.length > 0 && 
-         !isNewOrder.value
+         order.value?.items?.length > 0
 })
 
 // Form for new item
@@ -460,6 +573,7 @@ const errors = ref({})
 
 // Translations
 const translations = {
+  // Header
   addItemsTitle: {
     es: 'Agrega tus Productos',
     en: 'Add Your Products'
@@ -468,18 +582,29 @@ const translations = {
     es: 'Lista los productos que estás enviando en esta orden',
     en: 'List the products you\'re shipping in this order'
   },
-  orderCreatedSuccess: {
-    es: '¡Tu orden está lista!',
-    en: 'Your order is ready!'
+  // Progress Steps
+  stepPayment: {
+    es: 'Pago',
+    en: 'Payment'
   },
-  orderCreatedSuccessSubtext: {
-    es: 'Ahora puedes agregar los productos que compraste a la caja para enviar.',
-    en: 'Now you can add the products you bought to the box to ship.'
+  stepAddItems: {
+    es: 'Agregar Productos',
+    en: 'Add Items'
   },
+  stepComplete: {
+    es: 'Completar Caja',
+    en: 'Complete Box'
+  },
+  // Order info
   orderNumber: {
     es: 'Orden',
     en: 'Order'
   },
+  boxSize: {
+    es: 'Tamaño de caja',
+    en: 'Box size'
+  },
+  // Form
   whatDidYouBuy: {
     es: '¿Qué compraste?',
     en: 'What did you buy?'
@@ -548,6 +673,7 @@ const translations = {
     es: 'Agregar al Envío',
     en: 'Add to Shipment'
   },
+  // Shipment list
   yourShipment: {
     es: 'Tu Envío',
     en: 'Your Shipment'
@@ -568,25 +694,48 @@ const translations = {
     es: 'Agrega productos para comenzar',
     en: 'Add products to get started'
   },
-  finishAndShip: {
-    es: 'Finalizar y Enviar',
-    en: 'Finish & Ship'
+  // Complete button - NEW
+  completeAndStartTracking: {
+    es: 'Completar Caja y Empezar Envio',
+    en: 'Complete Box & Start Shipment'
   },
-  canAddMoreLater: {
-    es: 'Puedes agregar más productos después',
-    en: 'You can add more products later'
+  saveChangesAndComplete: {
+    es: 'Guardar Cambios y Completar Orden',
+    en: 'Save Changes & Complete Order'
   },
+  youCanAlwaysReopenLater: {
+    es: 'Siempre puedes reabrir la orden después si necesitas cambios',
+    en: 'You can always reopen the order later if you need changes'
+  },
+  // Help
   reminder: {
     es: 'Recuerda usar tu dirección USA al comprar. Nosotros recibimos todo y lo enviamos a México.',
     en: 'Remember to use your USA address when shopping. We receive everything and ship it to Mexico.'
   },
-  readyToShip: {
-    es: '¿Listo para enviar?',
-    en: 'Ready to ship?'
+  // Modal
+  confirmCompleteTitle: {
+    es: '¿Completar orden?',
+    en: 'Complete order?'
   },
-  confirmText: {
+  confirmCompleteText: {
     es: 'Tu orden quedará lista para recibir estos productos.',
     en: 'Your order will be ready to receive these products.'
+  },
+  readyToCompleteAgain: {
+    es: '¿Listo para completar nuevamente?',
+    en: 'Ready to complete again?'
+  },
+  confirmCompleteAgainText: {
+    es: 'Tu orden quedará lista nuevamente para recibir estos productos.',
+    en: 'Your order will be ready again to receive these products.'
+  },
+  whatHappensNext: {
+    es: '¿Qué sigue?',
+    en: 'What happens next?'
+  },
+  whatHappensNextText: {
+    es: 'Te notificaremos cuando cada paquete llegue a nuestro almacén. Una vez que todos lleguen, te enviaremos todo.',
+    en: 'We\'ll notify you as each package arrives at our warehouse. Once all arrive, we\'ll ship you everything.'
   },
   productInShipment: {
     es: 'producto en tu envío',
@@ -596,18 +745,19 @@ const translations = {
     es: 'productos en tu envío',
     en: 'products in your shipment'
   },
-  yesFinish: {
-    es: 'Sí, Finalizar',
-    en: 'Yes, Finish'
+  yesComplete: {
+    es: 'Sí, Completar',
+    en: 'Yes, Complete'
   },
   keepAdding: {
     es: 'Seguir Agregando',
     en: 'Keep Adding'
   },
   completing: {
-    es: 'Finalizando...',
+    es: 'Completando...',
     en: 'Completing...'
   },
+  // Messages
   itemAddedSuccess: {
     es: '¡Producto agregado!',
     en: 'Product added!'
@@ -617,8 +767,8 @@ const translations = {
     en: 'Product removed'
   },
   orderCompletedSuccess: {
-    es: '¡Orden completada! Te avisaremos cuando lleguen tus productos.',
-    en: 'Order completed! We\'ll let you know when your products arrive.'
+    es: '¡Orden completada exitosamente!',
+    en: 'Order completed successfully!'
   },
   errorAddingItem: {
     es: 'Error al agregar el producto',
@@ -640,34 +790,51 @@ const translations = {
     es: 'Tipo de archivo no válido. Solo se permiten PDF, JPG, JPEG y PNG.',
     en: 'Invalid file type. Only PDF, JPG, JPEG and PNG are allowed.'
   },
-  // Reopened order translations
+  // Reopened order
   orderReopenedTitle: {
     es: 'Caja Reabierta',
     en: 'Box Reopened'
   },
   orderReopenedMessage: {
     es: 'Has reabierto esta caja para hacer cambios. Puedes agregar o eliminar productos.',
-    en: 'You\'ve reopened this order to make changes. You can add or remove products.'
+    en: 'You\'ve reopened this box to make changes. You can add or remove products.'
   },
   mustCompleteAgain: {
     es: 'Debes completar la orden nuevamente cuando termines de hacer cambios.',
     en: 'You must complete the order again when you\'re done making changes.'
   },
-  completeOrderAgain: {
-    es: 'Completar Orden Nuevamente',
-    en: 'Complete Order Again'
+  // Box sizes
+  'extra-small': {
+    es: 'Extra Pequeña',
+    en: 'Extra Small'
   },
-  mustCompleteToShip: {
-    es: 'Debes completar la orden para poder enviar',
-    en: 'You must complete the order to ship'
+  small: {
+    es: 'Pequeña',
+    en: 'Small'
   },
-  readyToCompleteAgain: {
-    es: '¿Listo para completar nuevamente?',
-    en: 'Ready to complete again?'
+  medium: {
+    es: 'Mediana',
+    en: 'Medium'
   },
-  confirmCompleteAgainText: {
-    es: 'Tu orden quedará lista nuevamente para recibir estos productos.',
-    en: 'Your order will be ready again to receive these products.'
+  large: {
+    es: 'Grande',
+    en: 'Large'
+  },
+  'extra-large': {
+    es: 'Extra Grande',
+    en: 'Extra Large'
+  },
+  completed: {
+    es: "Completado",
+    en: "Completed"
+  },
+  current: {
+    es: "Actual",
+    en: "Current"
+  },
+  pending: {
+    es: "Pendiente",
+    en: "Pending"
   }
 }
 
@@ -675,6 +842,19 @@ const translations = {
 const t = createTranslations(translations)
 
 // Methods
+const getBoxSizeLabel = (size) => {
+  return t.value[size] || size
+}
+
+const getCompleteButtonText = () => {
+  // If it's a reopened order (not new), show "Save Changes"
+  if (isReopenedOrder.value && !isNewOrder.value) {
+    return t.value.saveChangesAndComplete
+  }
+  // Otherwise show "Complete Order"
+  return t.value.completeAndStartTracking
+}
+
 const formatFileSize = (bytes) => {
   if (!bytes) return '0 Bytes'
   const k = 1024
@@ -824,12 +1004,10 @@ const handleCompleteOrder = async () => {
       method: 'PUT'
     })
 
-    $toast.success(t.value.orderCompletedSuccess, {
-      duration:3000
-    })
-
+    // Don't show success message here - it will be shown on the order details page
     showCompleteModal.value = false
 
+    // Redirect to order details page
     return navigateTo(`/app/orders/${order.value.id}`)
 
   } catch (error) {

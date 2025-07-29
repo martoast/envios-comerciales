@@ -127,29 +127,312 @@
       v-else-if="order"
       class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6"
     >
-      <!-- Success Banner (New Order) -->
-      <div
-        v-if="isNewOrder"
-        class="bg-green-50 border border-green-200 rounded-xl p-4 flex items-start gap-3"
-      >
-        <svg
-          class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <div>
-          <h3 class="font-medium text-green-900">
-            {{ t.orderCreatedSuccess }}
-          </h3>
-          <p class="text-sm text-green-700 mt-1">{{ t.orderCreatedMessage }}</p>
+    <SuccessBanner
+      :show="showSuccessBanner"
+      :order="order"
+      :trigger="bannerTrigger"
+      @dismiss="dismissSuccessBanner"
+    />
+
+      <!-- Progress Timeline - Fixed version -->
+      <div class="bg-white rounded-xl p-6 border border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">
+          {{ t.orderProgress }}
+        </h2>
+        <div class="relative">
+          <!-- Timeline Steps -->
+          <div class="space-y-6 relative">
+            <!-- Payment Step -->
+            <div class="flex items-start gap-4">
+              <div
+                class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center bg-green-600"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <p class="font-medium text-gray-900">
+                  {{ t.paymentCompleted }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  {{ formatDate(order.paid_at) }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Items Added Step -->
+            <div class="flex items-start gap-4">
+              <div
+                :class="[
+                  'relative z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all',
+                  order.items?.length > 0 ? 'bg-green-600' : 'bg-gray-300',
+                ]"
+              >
+                <svg
+                  v-if="order.items?.length > 0"
+                  class="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span v-else class="text-white text-xs font-semibold">2</span>
+              </div>
+              <div class="flex-1">
+                <p
+                  class="font-medium"
+                  :class="
+                    order.items?.length > 0 ? 'text-gray-900' : 'text-gray-500'
+                  "
+                >
+                  {{ t.itemsAdded }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  {{ order.items?.length || 0 }}
+                  {{ order.items?.length === 1 ? t.item : t.items }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Order Completed Step -->
+            <div class="flex items-start gap-4">
+              <div
+                :class="[
+                  'relative z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all',
+                  order.status !== 'collecting'
+                    ? 'bg-green-600'
+                    : 'bg-gray-300',
+                ]"
+              >
+                <svg
+                  v-if="order.status !== 'collecting'"
+                  class="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span v-else class="text-white text-xs font-semibold">3</span>
+              </div>
+              <div class="flex-1">
+                <p
+                  class="font-medium"
+                  :class="
+                    order.status !== 'collecting'
+                      ? 'text-gray-900'
+                      : 'text-gray-500'
+                  "
+                >
+                  {{ t.orderCompleted }}
+                </p>
+                <p v-if="order.completed_at" class="text-sm text-gray-500">
+                  {{ formatDate(order.completed_at) }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Awaiting Packages Step -->
+            <div class="flex items-start gap-4">
+              <div
+                :class="[
+                  'relative z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all',
+                  [
+                    'awaiting_packages',
+                    'packages_complete',
+                    'shipped',
+                    'delivered',
+                  ].includes(order.status)
+                    ? order.status === 'awaiting_packages'
+                      ? 'bg-primary-600 ring-4 ring-primary-100'
+                      : 'bg-green-600'
+                    : 'bg-gray-300',
+                ]"
+              >
+                <svg
+                  v-if="
+                    ['packages_complete', 'shipped', 'delivered'].includes(
+                      order.status
+                    )
+                  "
+                  class="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <div
+                  v-else-if="order.status === 'awaiting_packages'"
+                  class="w-3 h-3 bg-white rounded-full animate-pulse"
+                ></div>
+                <span v-else class="text-white text-xs font-semibold">4</span>
+              </div>
+              <div class="flex-1">
+                <p
+                  class="font-medium"
+                  :class="
+                    [
+                      'awaiting_packages',
+                      'packages_complete',
+                      'shipped',
+                      'delivered',
+                    ].includes(order.status)
+                      ? 'text-gray-900'
+                      : 'text-gray-500'
+                  "
+                >
+                  {{ t.awaitingPackages }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  <span v-if="order.status === 'awaiting_packages'">
+                    {{ t.currentStatus }}: {{ arrivedCount }}/{{
+                      order.items?.length || 0
+                    }}
+                    {{ t.arrived }}
+                  </span>
+                  <span
+                    v-else-if="
+                      ['packages_complete', 'shipped', 'delivered'].includes(
+                        order.status
+                      )
+                    "
+                  >
+                    {{ t.allPackagesReceived }}
+                  </span>
+                  <span v-else>{{ t.pendingCompletion }}</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Ready to Ship Step -->
+            <div class="flex items-start gap-4">
+              <div
+                :class="[
+                  'relative z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all',
+                  ['packages_complete', 'shipped', 'delivered'].includes(
+                    order.status
+                  )
+                    ? order.status === 'packages_complete'
+                      ? 'bg-primary-600 ring-4 ring-primary-100'
+                      : 'bg-green-600'
+                    : 'bg-gray-300',
+                ]"
+              >
+                <svg
+                  v-if="['shipped', 'delivered'].includes(order.status)"
+                  class="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <div
+                  v-else-if="order.status === 'packages_complete'"
+                  class="w-3 h-3 bg-white rounded-full animate-pulse"
+                ></div>
+                <span v-else class="text-white text-xs font-semibold">5</span>
+              </div>
+              <div class="flex-1">
+                <p
+                  class="font-medium"
+                  :class="
+                    ['packages_complete', 'shipped', 'delivered'].includes(
+                      order.status
+                    )
+                      ? 'text-gray-900'
+                      : 'text-gray-500'
+                  "
+                >
+                  {{ t.readyToShip }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  <span v-if="order.status === 'packages_complete'">{{
+                    t.preparingShipment
+                  }}</span>
+                  <span
+                    v-else-if="['shipped', 'delivered'].includes(order.status)"
+                    >{{ t.packageConsolidated }}</span
+                  >
+                  <span v-else>{{ t.waitingForPackages }}</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Delivered Step -->
+            <div class="flex items-start gap-4">
+              <div
+                :class="[
+                  'relative z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all',
+                  order.status === 'delivered' ? 'bg-green-600' : 'bg-gray-300',
+                ]"
+              >
+                <svg
+                  v-if="order.status === 'delivered'"
+                  class="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span v-else class="text-white text-xs font-semibold">6</span>
+              </div>
+              <div class="flex-1">
+                <p
+                  class="font-medium"
+                  :class="
+                    order.status === 'delivered'
+                      ? 'text-gray-900'
+                      : 'text-gray-500'
+                  "
+                >
+                  {{ t.delivered }}
+                </p>
+                <p v-if="order.delivered_at" class="text-sm text-gray-500">
+                  {{ formatDate(order.delivered_at) }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -217,7 +500,7 @@
         <!-- Order Status -->
         <div class="bg-white rounded-xl p-6 border border-gray-200">
           <div class="flex items-center justify-between mb-2">
-            <p class="text-sm text-gray-600">{{ t.status }}</p>
+            <p class="text-sm text-gray-600">{{ t.currentStatusLabel }}</p>
             <div
               :class="[
                 'w-8 h-8 rounded-lg flex items-center justify-center',
@@ -304,39 +587,11 @@
               </svg>
             </div>
           </div>
-          <p class="text-2xl font-bold text-gray-900">
+          <p class="text-lg font-bold text-gray-900">
             {{ getStatusLabel(order.status) }}
           </p>
-          <!-- Show contextual info based on status -->
-          <div
-            v-if="
-              order.status === 'awaiting_packages' ||
-              order.status === 'packages_complete'
-            "
-            class="mt-2"
-          >
-            <p class="text-xs text-gray-500">
-              {{ arrivedCount }}/{{ order.items?.length || 0 }}
-              {{ t.itemsArrived }}
-            </p>
-          </div>
-          <p
-            v-else-if="order.status === 'shipped'"
-            class="text-xs text-gray-500 mt-1"
-          >
-            {{ t.shippedDate }}: {{ formatDate(order.shipped_at) }}
-          </p>
-          <p
-            v-else-if="order.status === 'delivered'"
-            class="text-xs text-gray-500 mt-1"
-          >
-            {{ t.deliveredDate }}: {{ formatDate(order.delivered_at) }}
-          </p>
-          <p
-            v-else-if="order.status === 'collecting'"
-            class="text-xs text-gray-500 mt-1"
-          >
-            {{ t.createdOn }}: {{ formatDate(order.created_at) }}
+          <p class="text-xs text-gray-500 mt-1">
+            {{ getStatusDescription(order.status) }}
           </p>
         </div>
       </div>
@@ -468,8 +723,10 @@
             </svg>
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-semibold">{{ t.readyToShip }}</h3>
-            <p class="text-sm text-white/90 mt-1">{{ t.readyToShipText }}</p>
+            <h3 class="text-lg font-semibold">{{ t.needToCompleteOrder }}</h3>
+            <p class="text-sm text-white/90 mt-1">
+              {{ t.needToCompleteOrderText }}
+            </p>
           </div>
           <button
             @click="showCompleteOrderModal = true"
@@ -524,56 +781,31 @@
       </div>
 
       <!-- Items List -->
-      <div class="divide-y divide-gray-100">
-        <div
-          v-for="item in order.items"
-          :key="item.id"
-          class="p-6 hover:bg-gray-50 transition-colors"
-        >
-          <div class="flex items-start justify-between gap-4">
-            <!-- Item Info -->
-            <div class="flex-1 min-w-0">
-              <!-- Product name with conditional link -->
-              <a
-                v-if="item.product_url"
-                :href="item.product_url"
-                target="_blank"
-                class="text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors line-clamp-2 inline-flex items-center gap-1"
-              >
-                {{ item.product_name }}
-                <svg
-                  class="w-3 h-3 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              </a>
-              <p v-else class="text-sm font-medium text-gray-900 line-clamp-2">
-                {{ item.product_name }}
-              </p>
-
-              <!-- Quantity and other info -->
-              <div class="flex items-center gap-3 mt-1">
-                <p class="text-sm text-gray-500">
-                  {{ t.quantity }}: {{ item.quantity }}
-                </p>
-
-                <!-- Proof of Purchase Link -->
+      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">
+            {{ t.orderItems }}
+          </h2>
+        </div>
+        <div class="divide-y divide-gray-100">
+          <div
+            v-for="item in order.items"
+            :key="item.id"
+            class="p-6 hover:bg-gray-50 transition-colors"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <!-- Item Info -->
+              <div class="flex-1 min-w-0">
+                <!-- Product name with conditional link -->
                 <a
-                  v-if="item.proof_of_purchase_url"
-                  :href="item.proof_of_purchase_url"
+                  v-if="item.product_url"
+                  :href="item.product_url"
                   target="_blank"
-                  class="inline-flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  class="text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors line-clamp-2 inline-flex items-center gap-1"
                 >
+                  {{ item.product_name }}
                   <svg
-                    class="w-4 h-4"
+                    class="w-3 h-3 flex-shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -582,43 +814,140 @@
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                     />
                   </svg>
-                  {{ t.receipt }}
                 </a>
+                <p
+                  v-else
+                  class="text-sm font-medium text-gray-900 line-clamp-2"
+                >
+                  {{ item.product_name }}
+                </p>
+
+                <!-- Quantity and other info -->
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="text-sm text-gray-500">
+                    {{ t.quantity }}: {{ item.quantity }}
+                  </p>
+
+                  <!-- Arrived Status Badge -->
+                  <span
+                    v-if="order.status !== 'collecting' && item.arrived"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full"
+                  >
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {{ t.arrivedAtWarehouse }}
+                  </span>
+                  <span
+                    v-else-if="order.status !== 'collecting' && !item.arrived"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full"
+                  >
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    {{ t.inTransit }}
+                  </span>
+
+                  <!-- Proof of Purchase Link -->
+                  <a
+                    v-if="item.proof_of_purchase_url"
+                    :href="item.proof_of_purchase_url"
+                    target="_blank"
+                    class="inline-flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    {{ t.receipt }}
+                  </a>
+                </div>
+
+                <!-- Show file details on hover/click -->
+                <div
+                  v-if="item.proof_of_purchase_filename"
+                  class="text-xs text-gray-500 mt-1"
+                >
+                  {{ item.proof_of_purchase_filename }}
+                </div>
               </div>
 
-              <!-- Show file details on hover/click -->
-              <div
-                v-if="item.proof_of_purchase_filename"
-                class="text-xs text-gray-500 mt-1"
+              <!-- Delete Button -->
+              <button
+                v-if="order.status === 'collecting'"
+                @click="selectedItemToDelete = item"
+                class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
               >
-                {{ item.proof_of_purchase_filename }}
-              </div>
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
             </div>
-
-            <!-- Delete Button -->
-            <button
-              v-if="order.status === 'collecting'"
-              @click="selectedItemToDelete = item"
-              class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-            >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
-            </button>
           </div>
+        </div>
+
+        <!-- Empty state -->
+        <div
+          v-if="!order.items || order.items.length === 0"
+          class="p-12 text-center"
+        >
+          <svg
+            class="w-12 h-12 text-gray-400 mx-auto mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"
+            />
+          </svg>
+          <p class="text-gray-500">{{ t.noItemsYet }}</p>
+          <p class="text-sm text-gray-400 mt-1">{{ t.startAddingItems }}</p>
         </div>
       </div>
     </div>
@@ -870,9 +1199,8 @@
     </TransitionRoot>
   </section>
 </template>
-
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import {
   Dialog,
@@ -881,6 +1209,9 @@ import {
   TransitionChild,
   TransitionRoot,
 } from "@headlessui/vue";
+
+// Import the SuccessBanner component
+import SuccessBanner from "~/components/SuccessBanner.vue";
 
 // Define page meta
 definePageMeta({
@@ -906,12 +1237,77 @@ const showDeleteOrderModal = ref(false);
 const deletingOrder = ref(false);
 const showReopenOrderModal = ref(false);
 const reopeningOrder = ref(false);
+const showSuccessBanner = ref(false);
+const bannerTrigger = ref('auto');
+
 
 // Translations
 const translations = {
+  // Progress Timeline
+  orderProgress: {
+    es: "Progreso de la Orden",
+    en: "Order Progress",
+  },
+  paymentCompleted: {
+    es: "Pago Completado",
+    en: "Payment Completed",
+  },
+  itemsAdded: {
+    es: "Productos Agregados",
+    en: "Items Added",
+  },
+  orderCompleted: {
+    es: "Caja Completada",
+    en: "Box Completed",
+  },
+  awaitingPackages: {
+    es: "Esperando Paquetes",
+    en: "Awaiting Packages",
+  },
+  readyToShip: {
+    es: "En Tránsito",
+    en: "In Transit",
+  },
+  delivered: {
+    es: "Entregado",
+    en: "Delivered",
+  },
+  currentStatus: {
+    es: "Estado actual",
+    en: "Current status",
+  },
+  arrived: {
+    es: "llegados",
+    en: "arrived",
+  },
+  allPackagesReceived: {
+    es: "Todos los paquetes recibidos",
+    en: "All packages received",
+  },
+  pendingCompletion: {
+    es: "Pendiente de completar",
+    en: "Pending completion",
+  },
+  preparingShipment: {
+    es: "Preparando envío a México",
+    en: "Preparing shipment to Mexico",
+  },
+  packageConsolidated: {
+    es: "Paquetes consolidados",
+    en: "Packages consolidated",
+  },
+  waitingForPackages: {
+    es: "Esperando que lleguen todos los paquetes",
+    en: "Waiting for all packages to arrive",
+  },
+  // Status
   status: {
     es: "Estado",
     en: "Status",
+  },
+  currentStatusLabel: {
+    es: "Estado Actual",
+    en: "Current Status",
   },
   createdOn: {
     es: "Creado el",
@@ -925,18 +1321,6 @@ const translations = {
     es: "Tamaño de caja",
     en: "Box size",
   },
-  declaredValue: {
-    es: "Valor declarado",
-    en: "Declared value",
-  },
-  iva: {
-    es: "IVA (16%)",
-    en: "VAT (16%)",
-  },
-  ruralSurcharge: {
-    es: "Cargo rural",
-    en: "Rural surcharge",
-  },
   itemsProgress: {
     es: "Artículos",
     en: "Items",
@@ -945,13 +1329,13 @@ const translations = {
     es: "artículos",
     en: "items",
   },
-  arrived: {
-    es: "En nuestro almacén",
-    en: "At our warehouse",
+  item: {
+    es: "artículo",
+    en: "item",
   },
-  inTransit: {
-    es: "En Tránsito",
-    en: "In Transit",
+  orderItems: {
+    es: "Productos de la Orden",
+    en: "Order Items",
   },
   deliveryAddress: {
     es: "Dirección de Entrega",
@@ -961,13 +1345,14 @@ const translations = {
     es: "Referencias",
     en: "References",
   },
-  orderCreatedSuccess: {
-    es: "¡Tu orden ha sido creada exitosamente!",
-    en: "Your order has been created successfully!",
+  // Actions
+  needToCompleteOrder: {
+    es: "¡Completa tu orden!",
+    en: "Complete your order!",
   },
-  orderCreatedMessage: {
-    es: "Ya puedes comenzar a agregar los productos que compraste.",
-    en: "You can now start adding products you've purchased.",
+  needToCompleteOrderText: {
+    es: "Has agregado productos pero aún no has completado la orden. Complétala para empezar el rastreo.",
+    en: "You've added products but haven't completed the order yet. Complete it to start tracking.",
   },
   addItemsToOrder: {
     es: "Agregar Artículos a tu Orden",
@@ -981,10 +1366,35 @@ const translations = {
     es: "Agregar Artículos",
     en: "Add Items",
   },
-  orderItems: {
-    es: "Artículos de la Orden",
-    en: "Order Items",
+  completeOrder: {
+    es: "Completar Orden",
+    en: "Complete Order",
   },
+  completing: {
+    es: "Completando...",
+    en: "Completing...",
+  },
+  editOrder: {
+    es: "Editar Orden",
+    en: "Edit Order",
+  },
+  needToMakeChanges: {
+    es: "¿Necesitas hacer cambios?",
+    en: "Need to make changes?",
+  },
+  needToMakeChangesText: {
+    es: "Puedes reabrir tu caja para agregar o eliminar artículos.",
+    en: "You can reopen your box to add or remove items.",
+  },
+  reopenOrder: {
+    es: "Reabrir Orden",
+    en: "Reopen Order",
+  },
+  reopening: {
+    es: "Reabriendo...",
+    en: "Reopening...",
+  },
+  // Items
   noItemsYet: {
     es: "No hay artículos todavía",
     en: "No items yet",
@@ -997,58 +1407,19 @@ const translations = {
     es: "Cantidad",
     en: "Quantity",
   },
-  price: {
-    es: "Precio",
-    en: "Price",
+  receipt: {
+    es: "Recibo",
+    en: "Receipt",
   },
-  total: {
-    es: "Total",
-    en: "Total",
+  arrivedAtWarehouse: {
+    es: "En almacén",
+    en: "At warehouse",
   },
-  deleteItem: {
-    es: "Eliminar artículo",
-    en: "Delete item",
+  inTransit: {
+    es: "En tránsito",
+    en: "In transit",
   },
-  readyToShip: {
-    es: "¿Listo para enviar?",
-    en: "Ready to ship?",
-  },
-  readyToShipText: {
-    es: "Completa tu caja y te notificaremos cuando lleguen tus paquetes.",
-    en: "Complete your box and we'll notify you when your packages arrive.",
-  },
-  completeOrder: {
-    es: "Completar Caja",
-    en: "Complete Box",
-  },
-  completing: {
-    es: "Completando...",
-    en: "Completing...",
-  },
-  itemDeletedSuccess: {
-    es: "Artículo eliminado",
-    en: "Item deleted",
-  },
-  orderCompletedSuccess: {
-    es: "¡Orden completada! Te notificaremos cuando lleguen tus paquetes.",
-    en: "Order completed! We'll notify you when your packages arrive.",
-  },
-  errorDeletingItem: {
-    es: "Error al eliminar el artículo",
-    en: "Error deleting item",
-  },
-  errorCompletingOrder: {
-    es: "Error al completar la orden",
-    en: "Error completing order",
-  },
-  confirmDelete: {
-    es: "Eliminar",
-    en: "Delete",
-  },
-  editOrder: {
-    es: "Editar Orden",
-    en: "Edit Order",
-  },
+  // Modals
   confirmCompleteOrder: {
     es: "¿Completar orden?",
     en: "Complete order?",
@@ -1073,53 +1444,9 @@ const translations = {
     es: "Esta acción no se puede deshacer.",
     en: "This action cannot be undone.",
   },
-  deleteOrder: {
+  confirmDelete: {
     es: "Eliminar",
     en: "Delete",
-  },
-  confirmDeleteOrderTitle: {
-    es: "¿Eliminar orden?",
-    en: "Delete order?",
-  },
-  confirmDeleteOrderText: {
-    es: "Esta acción no se puede deshacer. La orden y todos sus artículos serán eliminados permanentemente.",
-    en: "This action cannot be undone. The order and all its items will be permanently deleted.",
-  },
-  confirmDeleteOrder: {
-    es: "Sí, eliminar orden",
-    en: "Yes, delete order",
-  },
-  deleting: {
-    es: "Eliminando...",
-    en: "Deleting...",
-  },
-  orderContains: {
-    es: "Esta orden contiene",
-    en: "This order contains",
-  },
-  item: {
-    es: "artículo",
-    en: "item",
-  },
-  orderDeletedSuccess: {
-    es: "Orden eliminada exitosamente",
-    en: "Order deleted successfully",
-  },
-  errorDeletingOrder: {
-    es: "Error al eliminar la orden",
-    en: "Error deleting order",
-  },
-  needToMakeChanges: {
-    es: "¿Necesitas hacer cambios?",
-    en: "Need to make changes?",
-  },
-  needToMakeChangesText: {
-    es: "Puedes reabrir tu caja para agregar o eliminar artículos.",
-    en: "You can reopen your box to add or remove items.",
-  },
-  reopenOrder: {
-    es: "Reabrir Orden",
-    en: "Reopen Order",
   },
   confirmReopenOrder: {
     es: "¿Reabrir orden?",
@@ -1133,17 +1460,34 @@ const translations = {
     es: "Sí, reabrir",
     en: "Yes, reopen",
   },
-  reopening: {
-    es: "Reabriendo...",
-    en: "Reopening...",
+  // Messages
+  itemDeletedSuccess: {
+    es: "Artículo eliminado",
+    en: "Item deleted",
+  },
+  orderCompletedSuccess: {
+    es: "¡Orden completada! Te notificaremos cuando lleguen tus paquetes.",
+    en: "Order completed! We'll notify you when your packages arrive.",
   },
   orderReopenedSuccess: {
     es: "Caja reabierta exitosamente",
     en: "Box reopened successfully",
   },
+  errorDeletingItem: {
+    es: "Error al eliminar el artículo",
+    en: "Error deleting item",
+  },
+  errorCompletingOrder: {
+    es: "Error al completar la orden",
+    en: "Error completing order",
+  },
   errorReopeningOrder: {
     es: "Error al reabrir la orden",
     en: "Error reopening order",
+  },
+  errorLoadingOrder: {
+    es: "Error al cargar la orden",
+    en: "Error loading order",
   },
   // Status translations
   collecting: {
@@ -1170,11 +1514,11 @@ const translations = {
     es: "Enviado",
     en: "Shipped",
   },
-  delivered: {
-    es: "Entregado",
-    en: "Delivered",
-  },
   // Box size translations
+  'extra-small': {
+    es: "Extra Pequeña",
+    en: "Extra Small",
+  },
   small: {
     es: "Pequeña",
     en: "Small",
@@ -1187,33 +1531,9 @@ const translations = {
     es: "Grande",
     en: "Large",
   },
-  extra_large: {
+  'extra-large': {
     es: "Extra Grande",
     en: "Extra Large",
-  },
-  itemsArrived: {
-    es: "artículos en almacén",
-    en: "items at warehouse",
-  },
-  trackingNumber: {
-    es: "Guía",
-    en: "Tracking",
-  },
-  shippedDate: {
-    es: "Enviado",
-    en: "Shipped",
-  },
-  deliveredDate: {
-    es: "Entregado",
-    en: "Delivered",
-  },
-  receipt: {
-    es: "Recibo",
-    en: "Receipt",
-  },
-  viewReceipt: {
-    es: "Ver Recibo",
-    en: "View Receipt",
   },
 };
 
@@ -1225,27 +1545,40 @@ const arrivedCount = computed(() => {
   return order.value?.items?.filter((item) => item.arrived).length || 0;
 });
 
-const isNewOrder = computed(() => {
-  // Check if order was created in the last 5 minutes
-  if (!order.value?.created_at) return false;
-  const createdAt = new Date(order.value.created_at);
-  const now = new Date();
-  const diffMinutes = (now - createdAt) / 1000 / 60;
-  return diffMinutes < 1;
-});
-
 // Methods
 const fetchOrder = async () => {
   loading.value = true;
   try {
     const response = await $customFetch(`/orders/${route.params.id}`);
     order.value = response.data;
+    
+    // Show banner for certain statuses if not dismissed
+    const showBannerStatuses = ['awaiting_packages', 'packages_complete', 'shipped'];
+    
+    if (showBannerStatuses.includes(order.value?.status)) {
+      // Check if banner was dismissed for this status
+      if (!localStorage.getItem(`order-${order.value.id}-${order.value.status}-dismissed`)) {
+        // For awaiting_packages with completed_at, show with confetti
+        if (order.value.status === 'awaiting_packages' && order.value.completed_at) {
+          bannerTrigger.value = 'just_completed';
+        } else {
+          bannerTrigger.value = 'auto';
+        }
+        showSuccessBanner.value = true;
+      }
+    }
   } catch (error) {
     console.error("Error fetching order:", error);
-    $toast.error(t.value.errorLoadingOrder || "Error loading order");
+    $toast.error(t.value.errorLoadingOrder);
   } finally {
     loading.value = false;
   }
+};
+
+const dismissSuccessBanner = () => {
+  showSuccessBanner.value = false;
+  // Remember that user dismissed the banner for this specific status
+  localStorage.setItem(`order-${order.value.id}-${order.value.status}-dismissed`, 'true');
 };
 
 const handleDeleteItem = async (itemId) => {
@@ -1276,6 +1609,10 @@ const handleCompleteOrder = async () => {
 
     showCompleteOrderModal.value = false;
     await fetchOrder();
+    
+    // Show success banner with confetti after completion
+    bannerTrigger.value = 'just_completed';
+    showSuccessBanner.value = true;
   } catch (error) {
     console.error("Error completing order:", error);
     $toast.error(error.data?.message || t.value.errorCompletingOrder);
@@ -1294,8 +1631,7 @@ const handleReopenOrder = async () => {
     $toast.success(t.value.orderReopenedSuccess);
     showReopenOrderModal.value = false;
 
-    // Refresh order
-    await fetchOrder();
+    // Redirect to add items page
     return await navigateTo(`/app/orders/${order.value.id}/add-items`);
   } catch (error) {
     console.error("Error reopening order:", error);
@@ -1305,6 +1641,7 @@ const handleReopenOrder = async () => {
   }
 };
 
+// Status helper methods
 const getStatusColor = (status) => {
   const colors = {
     collecting: "bg-primary-100 text-primary-700",
@@ -1348,11 +1685,46 @@ const getStatusLabel = (status) => {
   return t.value[status] || status;
 };
 
+const getStatusDescription = (status) => {
+  const descriptions = {
+    collecting: {
+      es: "Agrega los productos que compraste",
+      en: "Add the products you purchased",
+    },
+    awaiting_packages: {
+      es: "Tus paquetes están en camino a nuestro almacén",
+      en: "Your packages are on their way to our warehouse",
+    },
+    packages_complete: {
+      es: "Todos tus paquetes han llegado",
+      en: "All your packages have arrived",
+    },
+    quote_sent: {
+      es: "Te enviamos la cotización final",
+      en: "We sent you the final quote",
+    },
+    paid: {
+      es: "Pago recibido, preparando envío",
+      en: "Payment received, preparing shipment",
+    },
+    shipped: {
+      es: "Tu paquete va en camino a México",
+      en: "Your package is on its way to Mexico",
+    },
+    delivered: {
+      es: "Entregado en tu dirección",
+      en: "Delivered to your address",
+    },
+  };
+  return descriptions[status]?.[user?.preferred_language || 'es'] || '';
+};
+
 const getBoxSizeLabel = (size) => {
   return t.value[size] || size;
 };
 
 const formatDate = (date) => {
+  if (!date) return '';
   return new Date(date).toLocaleDateString("es-MX", {
     year: "numeric",
     month: "short",
@@ -1387,6 +1759,7 @@ const formatProductUrl = (url) => {
 onMounted(() => {
   fetchOrder();
 });
+
 </script>
 
 <style scoped>
@@ -1407,6 +1780,21 @@ onMounted(() => {
 
 .animate-spin {
   animation: spin 1s linear infinite;
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Custom scrollbar for better UX */
