@@ -6,34 +6,65 @@
         <div class="flex items-center justify-between h-16">
           <!-- Back & Title -->
           <div class="flex items-center gap-4">
-            <NuxtLink 
-              to="/app/orders" 
+            <NuxtLink
+              to="/app/orders"
               class="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </NuxtLink>
             <div>
-              <h1 class="text-lg font-semibold text-gray-900">{{ order?.order_number }}</h1>
+              <h1 class="text-lg font-semibold text-gray-900">
+                {{ order?.order_number }}
+              </h1>
             </div>
           </div>
 
           <!-- Actions -->
           <div class="flex items-center gap-2">
             <!-- Status Badge -->
-            <span v-if="order" :class="[
-              'px-3 py-1 rounded-full text-xs font-medium',
-              getStatusColor(order.status)
-            ]">
+            <span
+              v-if="order"
+              :class="[
+                'px-3 py-1 rounded-full text-xs font-medium',
+                getStatusColor(order.status),
+              ]"
+            >
               {{ getStatusLabel(order.status) }}
             </span>
 
             <!-- More Actions -->
-            <Menu as="div" class="relative" v-if="order?.status === 'collecting'">
-              <MenuButton class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+            <Menu
+              as="div"
+              class="relative"
+              v-if="order?.status === 'collecting'"
+            >
+              <MenuButton
+                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                  />
                 </svg>
               </MenuButton>
               <transition
@@ -44,18 +75,30 @@
                 leave-from-class="transform scale-100 opacity-100"
                 leave-to-class="transform scale-95 opacity-0"
               >
-                <MenuItems class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 divide-y divide-gray-100">
+                <MenuItems
+                  class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 divide-y divide-gray-100"
+                >
                   <div class="p-1">
                     <MenuItem v-slot="{ active }">
                       <NuxtLink
                         :to="`/app/orders/${order.id}/edit`"
                         :class="[
                           active ? 'bg-gray-50' : '',
-                          'flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors'
+                          'flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors',
                         ]"
                       >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                          />
                         </svg>
                         {{ t.editOrder }}
                       </NuxtLink>
@@ -72,23 +115,40 @@
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center min-h-[60vh]">
       <div class="text-center">
-        <div class="w-12 h-12 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <div
+          class="w-12 h-12 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"
+        ></div>
         <p class="mt-4 text-sm text-gray-600">Loading order details...</p>
       </div>
     </div>
 
     <!-- Main Content -->
-    <div v-else-if="order" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div
+      v-else-if="order"
+      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6"
+    >
       <!-- Success Banner (New Order) -->
       <div
         v-if="isNewOrder"
         class="bg-green-50 border border-green-200 rounded-xl p-4 flex items-start gap-3"
       >
-        <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <svg
+          class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
         <div>
-          <h3 class="font-medium text-green-900">{{ t.orderCreatedSuccess }}</h3>
+          <h3 class="font-medium text-green-900">
+            {{ t.orderCreatedSuccess }}
+          </h3>
           <p class="text-sm text-green-700 mt-1">{{ t.orderCreatedMessage }}</p>
         </div>
       </div>
@@ -99,27 +159,58 @@
         <div class="bg-white rounded-xl p-6 border border-gray-200">
           <div class="flex items-center justify-between mb-2">
             <p class="text-sm text-gray-600">{{ t.paymentDetails }}</p>
-            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-              <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <div
+              class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"
+            >
+              <svg
+                class="w-4 h-4 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-2xl font-bold text-gray-900">${{ Number(order.amount_paid).toLocaleString() }} {{ order.currency?.toUpperCase() }}</p>
-          <p class="text-xs text-gray-500 mt-1">{{ t.boxSize }}: {{ getBoxSizeLabel(order.box_size) }}</p>
+          <p class="text-2xl font-bold text-gray-900">
+            ${{ Number(order.amount_paid).toLocaleString() }}
+            {{ order.currency?.toUpperCase() }}
+          </p>
+          <p class="text-xs text-gray-500 mt-1">
+            {{ t.boxSize }}: {{ getBoxSizeLabel(order.box_size) }}
+          </p>
         </div>
 
         <!-- Items Count -->
         <div class="bg-white rounded-xl p-6 border border-gray-200">
           <div class="flex items-center justify-between mb-2">
             <p class="text-sm text-gray-600">{{ t.itemsProgress }}</p>
-            <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
-              <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"/>
+            <div
+              class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center"
+            >
+              <svg
+                class="w-4 h-4 text-primary-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-2xl font-bold text-gray-900">{{ order.items?.length || 0 }}</p>
+          <p class="text-2xl font-bold text-gray-900">
+            {{ order.items?.length || 0 }}
+          </p>
           <p class="text-xs text-gray-500 mt-1">{{ t.items }}</p>
         </div>
 
@@ -127,39 +218,124 @@
         <div class="bg-white rounded-xl p-6 border border-gray-200">
           <div class="flex items-center justify-between mb-2">
             <p class="text-sm text-gray-600">{{ t.status }}</p>
-            <div :class="[
-              'w-8 h-8 rounded-lg flex items-center justify-center',
-              getStatusIconBg(order.status)
-            ]">
-              <svg v-if="order.status === 'shipped'" class="w-4 h-4" :class="getStatusIconColor(order.status)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"/>
+            <div
+              :class="[
+                'w-8 h-8 rounded-lg flex items-center justify-center',
+                getStatusIconBg(order.status),
+              ]"
+            >
+              <svg
+                v-if="order.status === 'shipped'"
+                class="w-4 h-4"
+                :class="getStatusIconColor(order.status)"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"
+                />
               </svg>
-              <svg v-else-if="order.status === 'delivered'" class="w-4 h-4" :class="getStatusIconColor(order.status)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              <svg
+                v-else-if="order.status === 'delivered'"
+                class="w-4 h-4"
+                :class="getStatusIconColor(order.status)"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
-              <svg v-else-if="order.status === 'paid'" class="w-4 h-4" :class="getStatusIconColor(order.status)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              <svg
+                v-else-if="order.status === 'paid'"
+                class="w-4 h-4"
+                :class="getStatusIconColor(order.status)"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
-              <svg v-else-if="order.status === 'awaiting_packages' || order.status === 'packages_complete'" class="w-4 h-4" :class="getStatusIconColor(order.status)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"/>
+              <svg
+                v-else-if="
+                  order.status === 'awaiting_packages' ||
+                  order.status === 'packages_complete'
+                "
+                class="w-4 h-4"
+                :class="getStatusIconColor(order.status)"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"
+                />
               </svg>
-              <svg v-else class="w-4 h-4" :class="getStatusIconColor(order.status)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              <svg
+                v-else
+                class="w-4 h-4"
+                :class="getStatusIconColor(order.status)"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
               </svg>
             </div>
           </div>
-          <p class="text-2xl font-bold text-gray-900">{{ getStatusLabel(order.status) }}</p>
+          <p class="text-2xl font-bold text-gray-900">
+            {{ getStatusLabel(order.status) }}
+          </p>
           <!-- Show contextual info based on status -->
-          <div v-if="order.status === 'awaiting_packages' || order.status === 'packages_complete'" class="mt-2">
-            <p class="text-xs text-gray-500">{{ arrivedCount }}/{{ order.items?.length || 0 }} {{ t.itemsArrived }}</p>
+          <div
+            v-if="
+              order.status === 'awaiting_packages' ||
+              order.status === 'packages_complete'
+            "
+            class="mt-2"
+          >
+            <p class="text-xs text-gray-500">
+              {{ arrivedCount }}/{{ order.items?.length || 0 }}
+              {{ t.itemsArrived }}
+            </p>
           </div>
-          <p v-else-if="order.status === 'shipped'" class="text-xs text-gray-500 mt-1">
+          <p
+            v-else-if="order.status === 'shipped'"
+            class="text-xs text-gray-500 mt-1"
+          >
             {{ t.shippedDate }}: {{ formatDate(order.shipped_at) }}
           </p>
-          <p v-else-if="order.status === 'delivered'" class="text-xs text-gray-500 mt-1">
+          <p
+            v-else-if="order.status === 'delivered'"
+            class="text-xs text-gray-500 mt-1"
+          >
             {{ t.deliveredDate }}: {{ formatDate(order.delivered_at) }}
           </p>
-          <p v-else-if="order.status === 'collecting'" class="text-xs text-gray-500 mt-1">
+          <p
+            v-else-if="order.status === 'collecting'"
+            class="text-xs text-gray-500 mt-1"
+          >
             {{ t.createdOn }}: {{ formatDate(order.created_at) }}
           </p>
         </div>
@@ -168,13 +344,32 @@
       <!-- Delivery Address -->
       <div class="bg-white rounded-xl p-6 border border-gray-200">
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <div
+            class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center"
+          >
+            <svg
+              class="w-5 h-5 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
           </div>
-          <h2 class="text-lg font-semibold text-gray-900">{{ t.deliveryAddress }}</h2>
+          <h2 class="text-lg font-semibold text-gray-900">
+            {{ t.deliveryAddress }}
+          </h2>
         </div>
         <div class="grid sm:grid-cols-2 gap-4">
           <div>
@@ -186,14 +381,19 @@
               </span>
             </p>
             <p class="text-sm text-gray-600 mt-1">
-              {{ order.delivery_address.colonia }}<br>
-              {{ order.delivery_address.municipio }}, {{ order.delivery_address.estado }}<br>
+              {{ order.delivery_address.colonia }}<br />
+              {{ order.delivery_address.municipio }},
+              {{ order.delivery_address.estado }}<br />
               C.P. {{ order.delivery_address.postal_code }}
             </p>
           </div>
           <div v-if="order.delivery_address.referencias">
-            <p class="text-sm font-medium text-gray-900 mb-1">{{ t.references }}</p>
-            <p class="text-sm text-gray-600">{{ order.delivery_address.referencias }}</p>
+            <p class="text-sm font-medium text-gray-900 mb-1">
+              {{ t.references }}
+            </p>
+            <p class="text-sm text-gray-600">
+              {{ order.delivery_address.referencias }}
+            </p>
           </div>
         </div>
       </div>
@@ -201,18 +401,37 @@
       <!-- Action Banners -->
       <!-- Add Items CTA (Collecting Status) -->
       <div
-        v-if="order.status === 'collecting' && (!order.items || order.items.length === 0)"
+        v-if="
+          order.status === 'collecting' &&
+          (!order.items || order.items.length === 0)
+        "
         class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 text-white"
       >
-        <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-          <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
           </div>
           <div class="flex-1">
             <h3 class="text-lg font-semibold">{{ t.addItemsToOrder }}</h3>
-            <p class="text-sm text-white/90 mt-1">{{ t.addItemsDescription }}</p>
+            <p class="text-sm text-white/90 mt-1">
+              {{ t.addItemsDescription }}
+            </p>
           </div>
           <NuxtLink
             :to="`/app/orders/${order.id}/add-items`"
@@ -228,10 +447,24 @@
         v-if="order.status === 'collecting' && order.items?.length > 0"
         class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white"
       >
-        <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-          <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
           <div class="flex-1">
@@ -253,15 +486,33 @@
         v-if="order.status === 'awaiting_packages'"
         class="bg-amber-50 border border-amber-200 rounded-xl p-6"
       >
-        <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-          <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6 text-amber-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
             </svg>
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-semibold text-amber-900">{{ t.needToMakeChanges }}</h3>
-            <p class="text-sm text-amber-700 mt-1">{{ t.needToMakeChangesText }}</p>
+            <h3 class="text-lg font-semibold text-amber-900">
+              {{ t.needToMakeChanges }}
+            </h3>
+            <p class="text-sm text-amber-700 mt-1">
+              {{ t.needToMakeChangesText }}
+            </p>
           </div>
           <button
             @click="showReopenOrderModal = true"
@@ -273,71 +524,100 @@
       </div>
 
       <!-- Items List -->
-      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h2 class="text-lg font-semibold text-gray-900">{{ t.orderItems }}</h2>
-          <NuxtLink
-            v-if="order.status === 'collecting' && order.items?.length > 0"
-            :to="`/app/orders/${order.id}/add-items`"
-            class="text-sm text-primary-600 hover:text-primary-700 font-medium"
-          >
-            + {{ t.addItems }}
-          </NuxtLink>
-        </div>
-
-        <!-- Empty State -->
-        <div v-if="!order.items || order.items.length === 0" class="px-6 py-16 text-center">
-          <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"/>
-            </svg>
-          </div>
-          <h3 class="font-medium text-gray-900 mb-1">{{ t.noItemsYet }}</h3>
-          <p class="text-sm text-gray-500">{{ t.startAddingItems }}</p>
-        </div>
-
-        <!-- Items List -->
-        <div v-else class="divide-y divide-gray-100">
-          <div
-            v-for="item in order.items"
-            :key="item.id"
-            class="p-6 hover:bg-gray-50 transition-colors"
-          >
-            <div class="flex items-start justify-between gap-4">
-              <!-- Item Info -->
-              <div class="flex-1 min-w-0">
-                <!-- Product name with conditional link -->
-                <a
-                  v-if="item.product_url"
-                  :href="item.product_url"
-                  target="_blank"
-                  class="text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors line-clamp-2 inline-flex items-center gap-1"
+      <div class="divide-y divide-gray-100">
+        <div
+          v-for="item in order.items"
+          :key="item.id"
+          class="p-6 hover:bg-gray-50 transition-colors"
+        >
+          <div class="flex items-start justify-between gap-4">
+            <!-- Item Info -->
+            <div class="flex-1 min-w-0">
+              <!-- Product name with conditional link -->
+              <a
+                v-if="item.product_url"
+                :href="item.product_url"
+                target="_blank"
+                class="text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors line-clamp-2 inline-flex items-center gap-1"
+              >
+                {{ item.product_name }}
+                <svg
+                  class="w-3 h-3 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  {{ item.product_name }}
-                  <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                  </svg>
-                </a>
-                <p v-else class="text-sm font-medium text-gray-900 line-clamp-2">
-                  {{ item.product_name }}
-                </p>
-                <!-- Quantity info -->
-                <p class="text-sm text-gray-500 mt-1">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </a>
+              <p v-else class="text-sm font-medium text-gray-900 line-clamp-2">
+                {{ item.product_name }}
+              </p>
+
+              <!-- Quantity and other info -->
+              <div class="flex items-center gap-3 mt-1">
+                <p class="text-sm text-gray-500">
                   {{ t.quantity }}: {{ item.quantity }}
                 </p>
+
+                <!-- Proof of Purchase Link -->
+                <a
+                  v-if="item.proof_of_purchase_url"
+                  :href="item.proof_of_purchase_url"
+                  target="_blank"
+                  class="inline-flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  {{ t.receipt }}
+                </a>
               </div>
 
-              <!-- Delete Button -->
-              <button
-                v-if="order.status === 'collecting'"
-                @click="selectedItemToDelete = item"
-                class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+              <!-- Show file details on hover/click -->
+              <div
+                v-if="item.proof_of_purchase_filename"
+                class="text-xs text-gray-500 mt-1"
               >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-              </button>
+                {{ item.proof_of_purchase_filename }}
+              </div>
             </div>
+
+            <!-- Delete Button -->
+            <button
+              v-if="order.status === 'collecting'"
+              @click="selectedItemToDelete = item"
+              class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -370,14 +650,31 @@
               leave-from="opacity-100 scale-100"
               leave-to="opacity-0 scale-95"
             >
-              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+              <DialogPanel
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
+              >
                 <div class="text-center">
-                  <div class="mx-auto w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  <div
+                    class="mx-auto w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4"
+                  >
+                    <svg
+                      class="w-6 h-6 text-green-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   </div>
-                  <DialogTitle as="h3" class="text-lg font-semibold text-gray-900 mb-2">
+                  <DialogTitle
+                    as="h3"
+                    class="text-lg font-semibold text-gray-900 mb-2"
+                  >
                     {{ t.confirmCompleteOrder }}
                   </DialogTitle>
                   <p class="text-sm text-gray-600 mb-6">
@@ -432,21 +729,44 @@
               leave-from="opacity-100 scale-100"
               leave-to="opacity-0 scale-95"
             >
-              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+              <DialogPanel
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
+              >
                 <div class="text-center">
-                  <div class="mx-auto w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                  <div
+                    class="mx-auto w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4"
+                  >
+                    <svg
+                      class="w-6 h-6 text-red-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
                     </svg>
                   </div>
-                  <DialogTitle as="h3" class="text-lg font-semibold text-gray-900 mb-2">
+                  <DialogTitle
+                    as="h3"
+                    class="text-lg font-semibold text-gray-900 mb-2"
+                  >
                     {{ t.confirmDeleteTitle }}
                   </DialogTitle>
                   <p class="text-sm text-gray-600 mb-3">
                     {{ t.confirmDeleteText }}
                   </p>
-                  <p v-if="selectedItemToDelete" class="text-sm font-medium text-gray-900 mb-6 line-clamp-2">
-                    {{ selectedItemToDelete.product_name || formatProductUrl(selectedItemToDelete.product_url) }}
+                  <p
+                    v-if="selectedItemToDelete"
+                    class="text-sm font-medium text-gray-900 mb-6 line-clamp-2"
+                  >
+                    {{
+                      selectedItemToDelete.product_name ||
+                      formatProductUrl(selectedItemToDelete.product_url)
+                    }}
                   </p>
                   <div class="flex gap-3">
                     <button
@@ -496,14 +816,31 @@
               leave-from="opacity-100 scale-100"
               leave-to="opacity-0 scale-95"
             >
-              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+              <DialogPanel
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
+              >
                 <div class="text-center">
-                  <div class="mx-auto w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                  <div
+                    class="mx-auto w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-4"
+                  >
+                    <svg
+                      class="w-6 h-6 text-amber-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
                     </svg>
                   </div>
-                  <DialogTitle as="h3" class="text-lg font-semibold text-gray-900 mb-2">
+                  <DialogTitle
+                    as="h3"
+                    class="text-lg font-semibold text-gray-900 mb-2"
+                  >
                     {{ t.confirmReopenOrder }}
                   </DialogTitle>
                   <p class="text-sm text-gray-600 mb-6">
@@ -536,7 +873,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
+import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import {
   Dialog,
   DialogPanel,
@@ -548,7 +885,7 @@ import {
 // Define page meta
 definePageMeta({
   layout: "app",
-  middleware: ['auth', 'customer', 'complete-profile']
+  middleware: ["auth", "customer", "complete-profile"],
 });
 
 // Nuxt imports
@@ -870,6 +1207,14 @@ const translations = {
     es: "Entregado",
     en: "Delivered",
   },
+  receipt: {
+    es: "Recibo",
+    en: "Receipt",
+  },
+  viewReceipt: {
+    es: "Ver Recibo",
+    en: "View Receipt",
+  },
 };
 
 // Get reactive translations
@@ -939,8 +1284,6 @@ const handleCompleteOrder = async () => {
   }
 };
 
-
-
 const handleReopenOrder = async () => {
   reopeningOrder.value = true;
   try {
@@ -953,7 +1296,7 @@ const handleReopenOrder = async () => {
 
     // Refresh order
     await fetchOrder();
-    return await navigateTo(`/app/orders/${order.value.id}/add-items`)
+    return await navigateTo(`/app/orders/${order.value.id}/add-items`);
   } catch (error) {
     console.error("Error reopening order:", error);
     $toast.error(error.data?.message || t.value.errorReopeningOrder);
@@ -966,7 +1309,7 @@ const getStatusColor = (status) => {
   const colors = {
     collecting: "bg-primary-100 text-primary-700",
     awaiting_packages: "bg-amber-100 text-amber-700",
-    packages_complete: "bg-purple-100 text-purple-700",
+    packages_complete: "bg-primary-100 text-primary-700",
     quote_sent: "bg-orange-100 text-orange-700",
     paid: "bg-green-100 text-green-700",
     shipped: "bg-primary-100 text-primary-700",
@@ -979,7 +1322,7 @@ const getStatusIconBg = (status) => {
   const colors = {
     collecting: "bg-primary-100",
     awaiting_packages: "bg-amber-100",
-    packages_complete: "bg-purple-100",
+    packages_complete: "bg-primary-100",
     quote_sent: "bg-orange-100",
     paid: "bg-green-100",
     shipped: "bg-primary-100",
@@ -992,7 +1335,7 @@ const getStatusIconColor = (status) => {
   const colors = {
     collecting: "text-primary-600",
     awaiting_packages: "text-amber-600",
-    packages_complete: "text-purple-600",
+    packages_complete: "text-primary-600",
     quote_sent: "text-orange-600",
     paid: "text-green-600",
     shipped: "text-primary-600",

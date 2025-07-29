@@ -121,6 +121,71 @@
                 <p v-else class="mt-1 text-xs text-gray-500">{{ t.productUrlHelp }}</p>
               </div>
 
+              <!-- Proof of Purchase Upload -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  {{ t.proofOfPurchaseLabel }}
+                  <span class="text-xs text-gray-500 font-normal ml-1">({{ t.optional }})</span>
+                </label>
+                
+                <!-- File Input Area -->
+                <div 
+                  @click="$refs.fileInput.click()"
+                  @dragover.prevent="isDragging = true"
+                  @dragleave.prevent="isDragging = false"
+                  @drop.prevent="handleFileDrop"
+                  :class="[
+                    'relative cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-all',
+                    isDragging ? 'border-primary-500 bg-primary-50' : 'border-gray-300 hover:border-gray-400',
+                    errors.proof_of_purchase ? 'border-red-300' : ''
+                  ]"
+                >
+                  <input
+                    ref="fileInput"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    @change="handleFileSelect"
+                    class="hidden"
+                  />
+                  
+                  <!-- No file selected state -->
+                  <div v-if="!selectedFile" class="space-y-2">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    <p class="text-sm text-gray-600">
+                      {{ t.clickOrDragFile }}
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      {{ t.acceptedFormats }}
+                    </p>
+                  </div>
+                  
+                  <!-- File selected state -->
+                  <div v-else class="space-y-2">
+                    <div class="flex items-center justify-center space-x-2">
+                      <svg class="h-8 w-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                      </svg>
+                      <div class="text-left">
+                        <p class="text-sm font-medium text-gray-900">{{ selectedFile.name }}</p>
+                        <p class="text-xs text-gray-500">{{ formatFileSize(selectedFile.size) }}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      @click.stop="removeFile"
+                      class="text-sm text-red-600 hover:text-red-700 font-medium"
+                    >
+                      {{ t.removeFile }}
+                    </button>
+                  </div>
+                </div>
+                
+                <p v-if="errors.proof_of_purchase" class="mt-1 text-sm text-red-600">{{ errors.proof_of_purchase[0] }}</p>
+                <p v-else class="mt-1 text-xs text-gray-500">{{ t.proofOfPurchaseHelp }}</p>
+              </div>
+
               <!-- Quantity with visual counter -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -204,6 +269,13 @@
                     <div class="flex-1 min-w-0">
                       <p class="font-medium text-gray-900 truncate">{{ item.product_name }}</p>
                       <p class="text-sm text-gray-500 mt-1">{{ t.quantity }}: {{ item.quantity }}</p>
+                      <!-- Show proof of purchase if exists -->
+                      <div v-if="item.proof_of_purchase_url" class="flex items-center gap-1 mt-2">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-xs text-green-600 font-medium">{{ t.receiptAttached }}</span>
+                      </div>
                     </div>
                     <button
                       @click="removeItem(item.id)"
@@ -366,6 +438,8 @@ const loading = ref(true)
 const addingItem = ref(false)
 const completingOrder = ref(false)
 const showCompleteModal = ref(false)
+const selectedFile = ref(null)
+const isDragging = ref(false)
 
 // Check if order was reopened (has items but status is collecting)
 const isReopenedOrder = computed(() => {
@@ -433,6 +507,30 @@ const translations = {
   productUrlHelp: {
     es: 'Ejemplo: www.amazon.com/producto...',
     en: 'Example: www.amazon.com/product...'
+  },
+  proofOfPurchaseLabel: {
+    es: 'Comprobante de compra',
+    en: 'Proof of purchase'
+  },
+  clickOrDragFile: {
+    es: 'Haz clic o arrastra tu archivo aquí',
+    en: 'Click or drag your file here'
+  },
+  acceptedFormats: {
+    es: 'PDF, JPG, JPEG o PNG (máx. 10MB)',
+    en: 'PDF, JPG, JPEG or PNG (max. 10MB)'
+  },
+  proofOfPurchaseHelp: {
+    es: 'Sube tu recibo o factura de compra',
+    en: 'Upload your receipt or purchase invoice'
+  },
+  removeFile: {
+    es: 'Quitar archivo',
+    en: 'Remove file'
+  },
+  receiptAttached: {
+    es: 'Recibo adjunto',
+    en: 'Receipt attached'
   },
   howMany: {
     es: '¿Cuántos?',
@@ -534,6 +632,14 @@ const translations = {
     es: 'Error al completar la orden',
     en: 'Error completing order'
   },
+  fileTooLarge: {
+    es: 'El archivo es demasiado grande. El tamaño máximo es 10MB.',
+    en: 'File is too large. Maximum size is 10MB.'
+  },
+  invalidFileType: {
+    es: 'Tipo de archivo no válido. Solo se permiten PDF, JPG, JPEG y PNG.',
+    en: 'Invalid file type. Only PDF, JPG, JPEG and PNG are allowed.'
+  },
   // Reopened order translations
   orderReopenedTitle: {
     es: 'Caja Reabierta',
@@ -562,26 +668,6 @@ const translations = {
   confirmCompleteAgainText: {
     es: 'Tu orden quedará lista nuevamente para recibir estos productos.',
     en: 'Your order will be ready again to receive these products.'
-  },
-  'extra-small': {
-    es: 'Extra Pequeña',
-    en: 'Extra Small'
-  },
-  small: {
-    es: 'Pequeña',
-    en: 'Small'
-  },
-  medium: {
-    es: 'Mediana',
-    en: 'Medium'
-  },
-  large: {
-    es: 'Grande',
-    en: 'Large'
-  },
-  'extra-large': {
-    es: 'Extra Grande',
-    en: 'Extra Large'
   }
 }
 
@@ -589,6 +675,61 @@ const translations = {
 const t = createTranslations(translations)
 
 // Methods
+const formatFileSize = (bytes) => {
+  if (!bytes) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+const handleFileSelect = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    validateAndSetFile(file)
+  }
+}
+
+const handleFileDrop = (event) => {
+  isDragging.value = false
+  const file = event.dataTransfer.files[0]
+  if (file) {
+    validateAndSetFile(file)
+  }
+}
+
+const validateAndSetFile = (file) => {
+  // Reset errors
+  if (errors.value.proof_of_purchase) {
+    delete errors.value.proof_of_purchase
+  }
+
+  // Validate file size (10MB max)
+  if (file.size > 10 * 1024 * 1024) {
+    errors.value.proof_of_purchase = [t.value.fileTooLarge]
+    return
+  }
+
+  // Validate file type
+  const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png']
+  if (!allowedTypes.includes(file.type)) {
+    errors.value.proof_of_purchase = [t.value.invalidFileType]
+    return
+  }
+
+  selectedFile.value = file
+}
+
+const removeFile = () => {
+  selectedFile.value = null
+  if ($refs.fileInput) {
+    $refs.fileInput.value = ''
+  }
+  if (errors.value.proof_of_purchase) {
+    delete errors.value.proof_of_purchase
+  }
+}
+
 const fetchOrder = async () => {
   loading.value = true
   try {
@@ -611,13 +752,24 @@ const handleAddItem = async () => {
   addingItem.value = true
   
   try {
+    // Create FormData for file upload
+    const formData = new FormData()
+    formData.append('product_name', itemForm.value.product_name.trim())
+    
+    if (itemForm.value.product_url.trim()) {
+      formData.append('product_url', itemForm.value.product_url.trim())
+    }
+    
+    formData.append('quantity', itemForm.value.quantity)
+    
+    // Add file if selected
+    if (selectedFile.value) {
+      formData.append('proof_of_purchase', selectedFile.value)
+    }
+
     await $customFetch(`/orders/${order.value.id}/items`, {
       method: 'POST',
-      body: {
-        product_name: itemForm.value.product_name.trim(),
-        product_url: itemForm.value.product_url.trim() || null, // Send null if empty
-        quantity: itemForm.value.quantity
-      }
+      body: formData
     })
 
     $toast.success(t.value.itemAddedSuccess)
@@ -628,6 +780,7 @@ const handleAddItem = async () => {
       product_url: '',
       quantity: 1
     }
+    selectedFile.value = null
 
     // Refresh order
     await fetchOrder()

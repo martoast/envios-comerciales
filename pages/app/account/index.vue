@@ -342,14 +342,14 @@
     </div>
 
     <!-- Additional Info -->
-    <div class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+    <div class="mt-6 p-4 bg-gradient-to-r from-primary-50 to-indigo-50 rounded-xl border border-primary-100">
       <div class="flex items-start gap-3">
-        <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 text-primary-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <div class="flex-1">
-          <p class="text-sm text-blue-900 font-medium mb-1">{{ t.acceptedCards }}</p>
-          <p class="text-xs text-blue-700">{{ t.securePayments }}</p>
+          <p class="text-sm text-primary-900 font-medium mb-1">{{ t.acceptedCards }}</p>
+          <p class="text-xs text-primary-700">{{ t.securePayments }}</p>
         </div>
       </div>
     </div>

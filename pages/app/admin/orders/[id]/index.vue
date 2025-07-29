@@ -154,8 +154,8 @@
         <div class="bg-white rounded-xl p-6 border border-gray-200">
           <div class="flex items-center justify-between mb-2">
             <p class="text-sm text-gray-600">{{ t.totalWeight }}</p>
-            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-              <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
               </svg>
             </div>
@@ -331,19 +331,38 @@
               <!-- Item Info -->
               <div class="flex-1 min-w-0">
                 <div class="flex items-start gap-3">
-                  <div>
+                  <div class="flex-1">
                     <p class="text-sm font-medium text-gray-900">{{ item.product_name }}</p>
-                    <a
-                      v-if="item.product_url"
-                      :href="item.product_url"
-                      target="_blank"
-                      class="text-xs text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 mt-1"
-                    >
-                      {{ t.viewProduct }}
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                      </svg>
-                    </a>
+                    
+                    <!-- Product URL & Proof of Purchase Links -->
+                    <div class="flex flex-wrap items-center gap-3 mt-1">
+                      <a
+                        v-if="item.product_url"
+                        :href="item.product_url"
+                        target="_blank"
+                        class="text-xs text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
+                      >
+                        {{ t.viewProduct }}
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                      </a>
+                      
+                      <!-- Proof of Purchase Link -->
+                      <a
+                        v-if="item.proof_of_purchase_url"
+                        :href="item.proof_of_purchase_url"
+                        target="_blank"
+                        class="text-xs text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
+                      >
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        {{ t.viewProofOfPurchase }}
+                      </a>
+                    </div>
+                    
+                    <!-- Item Details -->
                     <div class="flex flex-wrap items-center gap-4 mt-2 text-sm">
                       <span class="text-gray-500">{{ t.quantity }}: {{ item.quantity }}</span>
                       <span v-if="item.declared_value" class="text-gray-500">
@@ -352,6 +371,20 @@
                       <span v-if="item.weight" class="text-gray-500">
                         {{ t.weight }}: {{ item.weight }} kg
                       </span>
+                    </div>
+                    
+                    <!-- Proof of Purchase File Info -->
+                    <div v-if="item.proof_of_purchase_filename" class="mt-2 p-2 bg-gray-50 rounded-lg">
+                      <div class="flex items-center gap-2 text-xs text-gray-600">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="font-medium">{{ t.proofOfPurchase }}:</span>
+                        <span class="truncate">{{ item.proof_of_purchase_filename }}</span>
+                        <span v-if="item.proof_of_purchase_size" class="text-gray-400">
+                          ({{ formatFileSize(item.proof_of_purchase_size) }})
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -476,28 +509,6 @@
                       </div>
                       <p class="mt-1 text-xs text-gray-500">{{ t.dimensionsHint }}</p>
                     </div>
-
-                    <!-- Declared Value -->
-                    <!-- <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ t.declaredValue }}
-                        <span class="text-gray-400">({{ t.optional }})</span>
-                      </label>
-                      <div class="relative">
-                        <input
-                          v-model.number="arrivedForm.declared_value"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          class="w-full px-3 py-2 pr-12 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                          :placeholder="t.declaredValuePlaceholder"
-                        />
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                          <span class="text-gray-500 text-sm">USD</span>
-                        </div>
-                      </div>
-                      <p class="mt-1 text-xs text-gray-500">{{ t.declaredValueHint }}</p>
-                    </div> -->
                   </div>
 
                   <div class="mt-6 flex gap-3">
@@ -948,6 +959,14 @@ const translations = {
     es: "El pedido está en tránsito. Márcalo como entregado cuando el cliente lo reciba.",
     en: "Order is in transit. Mark as delivered when customer receives it.",
   },
+  proofOfPurchase: {
+    es: "Comprobante",
+    en: "Proof of Purchase",
+  },
+  viewProofOfPurchase: {
+    es: "Ver comprobante",
+    en: "View proof",
+  },
   // Status translations
   collecting: {
     es: "Agregando Artículos",
@@ -1046,7 +1065,7 @@ const getStatusColor = (status) => {
   const colors = {
     collecting: "bg-primary-100 text-primary-700",
     awaiting_packages: "bg-amber-100 text-amber-700",
-    packages_complete: "bg-purple-100 text-purple-700",
+    packages_complete: "bg-primary-100 text-primary-700",
     quote_sent: "bg-orange-100 text-orange-700",
     shipped: "bg-primary-100 text-primary-700",
     delivered: "bg-green-100 text-green-700",
@@ -1083,6 +1102,13 @@ const formatCurrency = (amount) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
+};
+
+const formatFileSize = (bytes) => {
+  if (!bytes) return "";
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
 };
 
 const markAsShipped = async () => {

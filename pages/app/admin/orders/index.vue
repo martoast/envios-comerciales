@@ -508,8 +508,8 @@
         label: t.value.totalOrders,
         value: totalOrders,
         icon: 'M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z',
-        bgColor: 'bg-blue-50',
-        iconColor: 'text-blue-600'
+        bgColor: 'bg-primary-50',
+        iconColor: 'text-primary-600'
       },
       
       {
@@ -595,7 +595,7 @@
     const colors = {
       collecting: 'bg-gray-100 text-gray-700',
       awaiting_packages: 'bg-yellow-100 text-yellow-700',
-      packages_complete: 'bg-purple-100 text-purple-700',
+      packages_complete: 'bg-primary-100 text-primary-700',
       shipped: 'bg-primary-100 text-primary-700',
       delivered: 'bg-green-100 text-green-700'
     }
