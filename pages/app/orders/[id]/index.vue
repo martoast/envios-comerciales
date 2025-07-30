@@ -138,6 +138,297 @@
       <!-- Progress Timeline Component -->
       <OrderProgressTimeline :order="order" />
 
+      <!-- Action Banners -->
+      <!-- Add Items CTA (Collecting Status) -->
+      <div
+        v-if="
+          order.status === 'collecting' &&
+          (!order.items || order.items.length === 0)
+        "
+        class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 text-white"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold">{{ t.addItemsToOrder }}</h3>
+            <p class="text-sm text-white/90 mt-1">
+              {{ t.addItemsDescription }}
+            </p>
+          </div>
+          <NuxtLink
+            :to="`/app/orders/${order.id}/add-items`"
+            class="px-6 py-3 bg-white text-primary-600 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            {{ t.addItems }}
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- Complete Order Banner (Collecting Status with Items) -->
+      <div
+        v-if="order.status === 'collecting' && order.items?.length > 0"
+        class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold">{{ t.needToCompleteOrder }}</h3>
+            <p class="text-sm text-white/90 mt-1">
+              {{ t.needToCompleteOrderText }}
+            </p>
+          </div>
+          <button
+            @click="showCompleteOrderModal = true"
+            :disabled="completingOrder"
+            class="px-6 py-3 bg-white text-green-600 font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            {{ completingOrder ? t.completing : t.completeOrder }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Reopen Order Banner (Awaiting Packages) -->
+      <div
+        v-if="order.status === 'awaiting_packages'"
+        class="bg-amber-50 border border-amber-200 rounded-xl p-6"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6 text-amber-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-amber-900">
+              {{ t.needToMakeChanges }}
+            </h3>
+            <p class="text-sm text-amber-700 mt-1">
+              {{ t.needToMakeChangesText }}
+            </p>
+          </div>
+          <button
+            @click="showReopenOrderModal = true"
+            class="px-6 py-3 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition-colors"
+          >
+            {{ t.reopenOrder }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Items List -->
+      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">
+            {{ t.orderItems }}
+          </h2>
+        </div>
+        <div class="divide-y divide-gray-100">
+          <div
+            v-for="item in order.items"
+            :key="item.id"
+            class="p-6 hover:bg-gray-50 transition-colors"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <!-- Item Info -->
+              <div class="flex-1 min-w-0">
+                <!-- Product name with conditional link -->
+                <a
+                  v-if="item.product_url"
+                  :href="item.product_url"
+                  target="_blank"
+                  class="text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors line-clamp-2 inline-flex items-center gap-1"
+                >
+                  {{ item.product_name }}
+                  <svg
+                    class="w-3 h-3 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </a>
+                <p
+                  v-else
+                  class="text-sm font-medium text-gray-900 line-clamp-2"
+                >
+                  {{ item.product_name }}
+                </p>
+
+                <!-- Quantity and other info -->
+                <div class="flex items-center gap-3 mt-1">
+                  <p class="text-sm text-gray-500">
+                    {{ t.quantity }}: {{ item.quantity }}
+                  </p>
+
+                  <!-- Arrived Status Badge -->
+                  <span
+                    v-if="order.status !== 'collecting' && item.arrived"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full"
+                  >
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    v-else-if="order.status !== 'collecting' && !item.arrived"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full"
+                  >
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    {{ t.inTransit }}
+                  </span>
+
+                  <!-- Proof of Purchase Link -->
+                  <a
+                    v-if="item.proof_of_purchase_url"
+                    :href="item.proof_of_purchase_url"
+                    target="_blank"
+                    class="inline-flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    {{ t.receipt }}
+                  </a>
+                </div>
+
+                
+              </div>
+
+              <!-- Delete Button -->
+              <button
+                v-if="order.status === 'collecting'"
+                @click="selectedItemToDelete = item"
+                class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div
+          v-if="!order.items || order.items.length === 0"
+          class="p-12 text-center"
+        >
+          <svg
+            class="w-12 h-12 text-gray-400 mx-auto mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"
+            />
+          </svg>
+          <p class="text-gray-500">{{ t.noItemsYet }}</p>
+          <p class="text-sm text-gray-400 mt-1">{{ t.startAddingItems }}</p>
+        </div>
+      </div>
+
       <!-- Key Metrics Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <!-- Total Paid -->
@@ -355,303 +646,7 @@
         </div>
       </div>
 
-      <!-- Action Banners -->
-      <!-- Add Items CTA (Collecting Status) -->
-      <div
-        v-if="
-          order.status === 'collecting' &&
-          (!order.items || order.items.length === 0)
-        "
-        class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 text-white"
-      >
-        <div
-          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
-        >
-          <div
-            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-semibold">{{ t.addItemsToOrder }}</h3>
-            <p class="text-sm text-white/90 mt-1">
-              {{ t.addItemsDescription }}
-            </p>
-          </div>
-          <NuxtLink
-            :to="`/app/orders/${order.id}/add-items`"
-            class="px-6 py-3 bg-white text-primary-600 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            {{ t.addItems }}
-          </NuxtLink>
-        </div>
-      </div>
-
-      <!-- Complete Order Banner (Collecting Status with Items) -->
-      <div
-        v-if="order.status === 'collecting' && order.items?.length > 0"
-        class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white"
-      >
-        <div
-          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
-        >
-          <div
-            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-semibold">{{ t.needToCompleteOrder }}</h3>
-            <p class="text-sm text-white/90 mt-1">
-              {{ t.needToCompleteOrderText }}
-            </p>
-          </div>
-          <button
-            @click="showCompleteOrderModal = true"
-            :disabled="completingOrder"
-            class="px-6 py-3 bg-white text-green-600 font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-          >
-            {{ completingOrder ? t.completing : t.completeOrder }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Reopen Order Banner (Awaiting Packages) -->
-      <div
-        v-if="order.status === 'awaiting_packages'"
-        class="bg-amber-50 border border-amber-200 rounded-xl p-6"
-      >
-        <div
-          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
-        >
-          <div
-            class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0"
-          >
-            <svg
-              class="w-6 h-6 text-amber-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-semibold text-amber-900">
-              {{ t.needToMakeChanges }}
-            </h3>
-            <p class="text-sm text-amber-700 mt-1">
-              {{ t.needToMakeChangesText }}
-            </p>
-          </div>
-          <button
-            @click="showReopenOrderModal = true"
-            class="px-6 py-3 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition-colors"
-          >
-            {{ t.reopenOrder }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Items List -->
-      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-gray-900">
-            {{ t.orderItems }}
-          </h2>
-        </div>
-        <div class="divide-y divide-gray-100">
-          <div
-            v-for="item in order.items"
-            :key="item.id"
-            class="p-6 hover:bg-gray-50 transition-colors"
-          >
-            <div class="flex items-start justify-between gap-4">
-              <!-- Item Info -->
-              <div class="flex-1 min-w-0">
-                <!-- Product name with conditional link -->
-                <a
-                  v-if="item.product_url"
-                  :href="item.product_url"
-                  target="_blank"
-                  class="text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors line-clamp-2 inline-flex items-center gap-1"
-                >
-                  {{ item.product_name }}
-                  <svg
-                    class="w-3 h-3 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                    />
-                  </svg>
-                </a>
-                <p
-                  v-else
-                  class="text-sm font-medium text-gray-900 line-clamp-2"
-                >
-                  {{ item.product_name }}
-                </p>
-
-                <!-- Quantity and other info -->
-                <div class="flex items-center gap-3 mt-1">
-                  <p class="text-sm text-gray-500">
-                    {{ t.quantity }}: {{ item.quantity }}
-                  </p>
-
-                  <!-- Arrived Status Badge -->
-                  <span
-                    v-if="order.status !== 'collecting' && item.arrived"
-                    class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full"
-                  >
-                    <svg
-                      class="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    {{ t.arrivedAtWarehouse }}
-                  </span>
-                  <span
-                    v-else-if="order.status !== 'collecting' && !item.arrived"
-                    class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full"
-                  >
-                    <svg
-                      class="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    {{ t.inTransit }}
-                  </span>
-
-                  <!-- Proof of Purchase Link -->
-                  <a
-                    v-if="item.proof_of_purchase_url"
-                    :href="item.proof_of_purchase_url"
-                    target="_blank"
-                    class="inline-flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
-                  >
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                    {{ t.receipt }}
-                  </a>
-                </div>
-
-                <!-- Show file details on hover/click -->
-                <div
-                  v-if="item.proof_of_purchase_filename"
-                  class="text-xs text-gray-500 mt-1"
-                >
-                  {{ item.proof_of_purchase_filename }}
-                </div>
-              </div>
-
-              <!-- Delete Button -->
-              <button
-                v-if="order.status === 'collecting'"
-                @click="selectedItemToDelete = item"
-                class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-              >
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Empty state -->
-        <div
-          v-if="!order.items || order.items.length === 0"
-          class="p-12 text-center"
-        >
-          <svg
-            class="w-12 h-12 text-gray-400 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"
-            />
-          </svg>
-          <p class="text-gray-500">{{ t.noItemsYet }}</p>
-          <p class="text-sm text-gray-400 mt-1">{{ t.startAddingItems }}</p>
-        </div>
-      </div>
+      
     </div>
 
     <!-- Modals -->
@@ -1053,10 +1048,6 @@ const translations = {
     es: "Recibo",
     en: "Receipt",
   },
-  arrivedAtWarehouse: {
-    es: "En almacén",
-    en: "At warehouse",
-  },
   inTransit: {
     es: "En tránsito",
     en: "In transit",
@@ -1194,7 +1185,7 @@ const fetchOrder = async () => {
     order.value = response.data;
     
     // Show banner for certain statuses if not dismissed
-    const showBannerStatuses = ['awaiting_packages', 'packages_complete', 'shipped'];
+    const showBannerStatuses = ['awaiting_packages', 'packages_complete', 'shipped', 'delivered'];
     
     if (showBannerStatuses.includes(order.value?.status)) {
       // Check if banner was dismissed for this status

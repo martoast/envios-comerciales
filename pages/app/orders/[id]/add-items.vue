@@ -482,8 +482,8 @@
                         {{ isReopenedOrder && !isNewOrder ? t.confirmCompleteAgainText : t.confirmCompleteText }}
                       </p>
                       <div class="mt-4 bg-gray-50 rounded-lg p-4">
-                        <p class="text-2xl font-bold text-gray-900">{{ order?.items?.length || 0 }}</p>
-                        <p class="text-sm text-gray-600">{{ order?.items?.length === 1 ? t.productInShipment : t.productsInShipment }}</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ totalItemQuantity }}</p>
+                        <p class="text-sm text-gray-600">{{ totalItemQuantity === 1 ? t.productInShipment : t.productsInShipment }}</p>
                       </div>
                       <div class="mt-3 text-left bg-blue-50 rounded-lg p-3">
                         <p class="text-xs text-blue-800">
@@ -559,6 +559,12 @@ const isNewOrder = computed(() => route.query.new === 'true')
 const isReopenedOrder = computed(() => {
   return order.value?.status === 'collecting' && 
          order.value?.items?.length > 0
+})
+
+// Add this computed property
+const totalItemQuantity = computed(() => {
+  if (!order.value?.items) return 0
+  return order.value.items.reduce((total, item) => total + item.quantity, 0)
 })
 
 // Form for new item
