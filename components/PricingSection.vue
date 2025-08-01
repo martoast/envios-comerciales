@@ -303,8 +303,8 @@ const formatPrice = (amount) => {
 // Translations
 const translations = {
   pricingTitle: {
-    es: 'Precios por caja',
-    en: 'Pricing per box'
+    es: 'Precios por caja consolidada',
+    en: 'Pricing per consolidated box'
   },
   pricingSubtitle: {
     es: 'Elige la caja perfecta para tu envio. Sin costos ocultos.',
