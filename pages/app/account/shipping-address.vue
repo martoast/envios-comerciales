@@ -1,3 +1,4 @@
+<!-- pages/app/account/shipping-address.vue -->
 <template>
   <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
     <!-- Loading State -->
@@ -87,6 +88,22 @@
             </div>
           </div>
         </Transition>
+
+        <!-- Autocomplete Section (always available as a helper) -->
+        <div class="mb-6">
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100">
+              <h2 class="text-lg font-bold text-gray-900">{{ t.quickAddressSearch }}</h2>
+              <p class="text-sm text-gray-600 mt-1">{{ hasExistingAddress ? t.changeAddressDescription : t.searchAddressDescription }}</p>
+            </div>
+            <div class="p-6">
+              <CustomPlacesAutoComplete 
+                @updateAddress="handleAutocompleteSelect"
+                :placeholder="t.searchPlaceholder"
+              />
+            </div>
+          </div>
+        </div>
   
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <!-- Shipping Address Form -->
@@ -96,6 +113,28 @@
               <p class="text-sm text-gray-600 mt-1">{{ t.completeAddressNote }}</p>
             </div>
             <div class="p-6 space-y-4">
+              <!-- Success Message for Autocomplete -->
+              <Transition
+                enter-active-class="transform ease-out duration-300 transition"
+                enter-from-class="translate-y-2 opacity-0"
+                enter-to-class="translate-y-0 opacity-100"
+                leave-active-class="transition ease-in duration-200"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+              >
+                <div v-if="showAutocompleteSuccess" class="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div class="flex">
+                    <div class="flex-shrink-0">
+                      <svg class="h-4 w-4 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div class="ml-3">
+                      <p class="text-sm font-medium text-blue-800">{{ t.addressFound }}</p>
+                    </div>
+                  </div>
+                </div>
+              </Transition>
               <!-- Street -->
               <div>
                 <label for="street" class="block text-sm font-medium text-gray-700 mb-1">
@@ -304,7 +343,7 @@
 </template>
   
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 definePageMeta({
   layout: 'app',
@@ -333,8 +372,10 @@ const form = ref({
 const isInitialLoading = ref(true)
 const isSubmitting = ref(false)
 const showSuccess = ref(false)
+const showAutocompleteSuccess = ref(false)
 const errorMessage = ref('')
 const errors = ref({})
+const hasExistingAddress = ref(false)
 
 // Mexican states
 const mexicanStates = [
@@ -357,6 +398,30 @@ const translations = {
     es: 'Esta es la dirección donde recibirás tus paquetes en México',
     en: 'This is the address where you will receive your packages in Mexico'
   },
+  quickAddressSearch: {
+    es: 'Búsqueda Rápida de Dirección',
+    en: 'Quick Address Search'
+  },
+  searchAddressDescription: {
+    es: 'Busca tu dirección para autocompletar los campos automáticamente',
+    en: 'Search for your address to automatically fill in the fields'
+  },
+  changeAddressDescription: {
+    es: 'Busca una nueva dirección para actualizar tus datos',
+    en: 'Search for a new address to update your information'
+  },
+  searchPlaceholder: {
+    es: 'Buscar dirección, ciudad o código postal',
+    en: 'Search address, city or zip code'
+  },
+  enterManually: {
+    es: 'Ingresar dirección manualmente',
+    en: 'Enter address manually'
+  },
+  useAddressSearch: {
+    es: 'Usar búsqueda de dirección',
+    en: 'Use address search'
+  },
   addressDetails: {
     es: 'Detalles de la Dirección',
     en: 'Address Details'
@@ -364,6 +429,10 @@ const translations = {
   completeAddressNote: {
     es: 'Asegúrate de proporcionar una dirección completa y precisa para evitar problemas de entrega',
     en: 'Make sure to provide a complete and accurate address to avoid delivery issues'
+  },
+  addressFound: {
+    es: 'Dirección encontrada. Por favor revisa y completa los campos faltantes.',
+    en: 'Address found. Please review and complete any missing fields.'
   },
   street: {
     es: 'Calle',
@@ -480,8 +549,11 @@ const fetchAddress = async () => {
     const response = await $customFetch('/profile')
     const data = response.data
     
-    // Populate form with existing address data
-    if (data.address) {
+    // Check if user has existing address
+    if (data.address && (data.address.street || data.address.municipio)) {
+      hasExistingAddress.value = true
+      
+      // Populate form with existing address data
       form.value = {
         street: data.address.street || '',
         exterior_number: data.address.exterior_number || '',
@@ -536,6 +608,7 @@ const handleSubmit = async () => {
   isSubmitting.value = true
   clearErrors()
   showSuccess.value = false
+  showAutocompleteSuccess.value = false
 
   if (!validateForm()) {
     isSubmitting.value = false
@@ -549,7 +622,12 @@ const handleSubmit = async () => {
       body: form.value
     })
 
-    await navigateTo('/app/account')
+    // Show success message before navigating
+    showSuccess.value = true
+    
+    setTimeout(() => {
+      navigateTo('/app/account')
+    }, 1500)
 
   } catch (error) {
     console.error('Update error:', error)
@@ -567,6 +645,88 @@ const handleSubmit = async () => {
   } finally {
     isSubmitting.value = false
   }
+}
+
+// Handle autocomplete selection
+const handleAutocompleteSelect = (addressData) => {
+  console.log('Autocomplete data received:', addressData)
+  
+  // Parse the address from Mapbox
+  const { address, latitude, longitude } = addressData
+  
+  // Clear form first
+  form.value = {
+    street: '',
+    exterior_number: '',
+    interior_number: '',
+    colonia: '',
+    municipio: '',
+    estado: '',
+    postal_code: '',
+    reference: ''
+  }
+  
+  // Parse address format: "Avenida Jalisco 3415, 22046 Tijuana, Baja California, México"
+  const parts = address.split(',').map(part => part.trim())
+  
+  if (parts.length >= 2) {
+    // First part: "Avenida Jalisco 3415"
+    const streetAndNumber = parts[0]
+    // Try to extract street and number - number is usually at the end
+    const streetMatch = streetAndNumber.match(/^(.+?)\s+(\d+)$/)
+    
+    if (streetMatch) {
+      form.value.street = streetMatch[1].trim() // "Avenida Jalisco"
+      form.value.exterior_number = streetMatch[2] // "3415"
+    } else {
+      // If no number found, put entire thing in street
+      form.value.street = streetAndNumber
+    }
+    
+    // Second part: "22046 Tijuana" - contains postal code and city
+    if (parts[1]) {
+      const cityPart = parts[1]
+      // Extract postal code (5 digits at the beginning)
+      const postalMatch = cityPart.match(/^(\d{5})\s+(.+)/)
+      
+      if (postalMatch) {
+        form.value.postal_code = postalMatch[1] // "22046"
+        form.value.municipio = postalMatch[2] // "Tijuana"
+      } else {
+        // If no postal code pattern, assume it's just the city
+        form.value.municipio = cityPart
+      }
+    }
+    
+    // Third part: "Baja California" - state
+    if (parts[2]) {
+      const stateName = parts[2].trim()
+      // Find matching state in our list
+      const matchedState = mexicanStates.find(state => 
+        state.toLowerCase() === stateName.toLowerCase() ||
+        stateName.toLowerCase().includes(state.toLowerCase()) ||
+        state.toLowerCase().includes(stateName.toLowerCase())
+      )
+      if (matchedState) {
+        form.value.estado = matchedState
+      } else {
+        // If exact match not found, try to set as is
+        form.value.estado = stateName
+      }
+    }
+    
+    // Fourth part: "México" - country (we can ignore this)
+    
+    // Try to extract colonia from the address if possible
+    // Sometimes it might be included in the street part or city part
+    // For now, leave it empty for user to fill
+  }
+  
+  // Show autocomplete success message
+  showAutocompleteSuccess.value = true
+  setTimeout(() => {
+    showAutocompleteSuccess.value = false
+  }, 3000)
 }
 
 // Fetch address on mount

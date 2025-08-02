@@ -68,10 +68,16 @@ export default defineNuxtConfig({
     }
   },
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
+  vue: {  
+    compilerOptions: {
+      isCustomElement: (tag) => ['mapbox-search-box'].includes(tag),
+    },
+  },
   runtimeConfig: {
     public: {
       apiUrl: process.env.API_URL,
       cookieDomain: process.env.COOKIE_DOMAIN,
+      MAPBOX_API_TOKEN: process.env.MAPBOX_API_TOKEN,
     }
   }
 })

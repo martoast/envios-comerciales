@@ -992,12 +992,12 @@ const translations = {
     en: "You've added products but haven't completed the order yet. Complete it to start tracking.",
   },
   addItemsToOrder: {
-    es: "Agregar Artículos a tu Orden",
-    en: "Add Items to Your Order",
+    es: "Agregar Artículos a tu Envio",
+    en: "Add Items to Your Shipment",
   },
   addItemsDescription: {
-    es: "Agrega los productos que compraste y están en camino.",
-    en: "Add products you've purchased that are on their way.",
+    es: "Agrega los productos que nos enviaste y quieres incluir en tu envio.",
+    en: "Add products you've purchased and want to include in the shipment.",
   },
   addItems: {
     es: "Agregar Artículos",
