@@ -20,8 +20,7 @@
       background-color="bg-white"
     />
 
-    <!-- Trust Section -->
-    <TrustSection />
+    
 
     <CTACarouselBanner/>
     

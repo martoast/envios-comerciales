@@ -187,12 +187,6 @@ const slides = computed(() => {
       title: 'Recibe todos tus paquetes en México',
       subtitle: 'Consolidamos tus compras y ahorramos en envío',
       ctaText: 'Regístrate Gratis'
-    },
-    {
-      image: '/hero3.jpeg',
-      title: '0% de impuestos en tus compras',
-      subtitle: 'Nuestra dirección en California está libre de impuestos',
-      ctaText: 'Obtén Tu Dirección'
     }
   ] : [
     {
@@ -206,12 +200,6 @@ const slides = computed(() => {
       title: 'Receive all your packages in Mexico',
       subtitle: 'We consolidate your purchases and save on shipping',
       ctaText: 'Register Free'
-    },
-    {
-      image: '/hero3.jpeg',
-      title: '0% sales tax on your purchases',
-      subtitle: 'Our California address is tax-free',
-      ctaText: 'Get Your Address'
     }
   ]
   

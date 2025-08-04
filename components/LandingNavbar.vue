@@ -125,7 +125,7 @@
             </div>
   
             <NuxtLink 
-              to="/#how-it-works"
+              to="/how-it-works"
               class="text-gray-700 hover:text-primary-600 transition-colors duration-200"
             >
               {{ t.howItWorks }}
@@ -257,7 +257,7 @@
             </div>
   
             <NuxtLink
-              to="/#how-it-works"
+              to="/how-it-works"
               @click="mobileMenuOpen = false"
               class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900"
             >
@@ -332,9 +332,10 @@
       es: 'Inicio',
       en: 'Home'
     },
+    
     services: {
-      es: 'Servicios',
-      en: 'Services'
+      es: '¿Para quién?',
+      en: 'Who is it for?'
     },
     forExpats: {
       es: 'Para Expatriados',

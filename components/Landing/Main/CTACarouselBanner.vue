@@ -136,8 +136,8 @@
         image: '/cta2.jpeg',
         title: 'Ahorra hasta 60% en envíos',
         description: 'Consolidamos todos tus paquetes en uno solo. Paga un solo envío a México.',
-        buttonText: 'Calcular Ahorro',
-        link: '#calculator'
+        buttonText: 'Calcular Envio',
+        link: '/shipping-calculator'
       }
     ] : [
       {
