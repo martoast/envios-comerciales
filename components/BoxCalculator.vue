@@ -379,8 +379,8 @@ const translations = {
     en: 'Shipping Calculator'
   },
   calculatorSubtitle: {
-    es: 'Ingresa los detalles de tu envío para obtener una cotización exacta',
-    en: 'Enter your shipment details to get an exact quote'
+    es: 'Ingresa los detalles de tu envío para obtener una cotización estimada',
+    en: 'Enter your shipment details to get an estimated quote'
   },
   loadingBoxes: {
     es: 'Cargando opciones de cajas...',

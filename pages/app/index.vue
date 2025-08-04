@@ -335,7 +335,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import HowItWorks from '~/components/HowItWorks.vue'
+import HowItWorks from '~/components/Landing/Main/HowItWorks.vue'
 
 // Define page meta
 definePageMeta({

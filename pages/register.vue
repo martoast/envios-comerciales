@@ -22,7 +22,6 @@
           {{ t.registerSubtitle }}
         </p>
       </div>
-
       <!-- Error Alert -->
       <Transition
         enter-active-class="transform ease-out duration-300 transition"
@@ -58,10 +57,59 @@
           </div>
         </div>
       </Transition>
-
       <!-- Register Form -->
       <div class="bg-white/90 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-100 animate-fadeIn">
         <form @submit.prevent="handleRegister" class="space-y-5">
+          <!-- User Type Selection -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-900 mb-3">
+              {{ t.userTypeLabel }} <span class="text-red-500">*</span>
+            </label>
+            <div class="grid grid-cols-1 gap-3">
+              <button
+                v-for="userType in translatedUserTypes"
+                :key="userType.value"
+                type="button"
+                @click="form.user_type = userType.value; clearFieldError('user_type')"
+                :class="[
+                  'relative flex items-start p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer group',
+                  form.user_type === userType.value 
+                    ? 'border-primary-500 bg-primary-50/50' 
+                    : errors.user_type 
+                      ? 'border-red-300 hover:border-red-400 bg-white'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                ]"
+              >
+                <div class="flex items-center h-5">
+                  <div :class="[
+                    'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all',
+                    form.user_type === userType.value 
+                      ? 'border-primary-500' 
+                      : 'border-gray-300 group-hover:border-gray-400'
+                  ]">
+                    <div v-if="form.user_type === userType.value" class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                  </div>
+                </div>
+                <div class="ml-3 flex-1">
+                  <div class="flex items-center gap-2">
+                    <svg v-if="userType.icon === 'globe'" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <svg v-else-if="userType.icon === 'briefcase'" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <svg v-else-if="userType.icon === 'shopping-cart'" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="font-semibold text-gray-900">{{ userType.label }}</span>
+                  </div>
+                  <p class="text-sm text-gray-600 mt-1">{{ userType.description }}</p>
+                </div>
+              </button>
+            </div>
+            <p v-if="errors.user_type" class="mt-2 text-sm text-red-600">{{ errors.user_type[0] }}</p>
+          </div>
+          
           <!-- Name Field -->
           <div>
             <label for="name" class="block text-sm font-semibold text-gray-900 mb-2">
@@ -89,7 +137,6 @@
             </div>
             <p v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name[0] }}</p>
           </div>
-
           <!-- Email Field -->
           <div>
             <label for="email" class="block text-sm font-semibold text-gray-900 mb-2">
@@ -117,7 +164,6 @@
             </div>
             <p v-if="errors.email" class="mt-1 text-sm text-red-600">{{ errors.email[0] }}</p>
           </div>
-
           <!-- Phone Field -->
           <div>
             <label for="phone" class="block text-sm font-semibold text-gray-900 mb-2">
@@ -146,7 +192,6 @@
             <p v-if="errors.phone" class="mt-1 text-sm text-red-600">{{ errors.phone[0] }}</p>
             <p class="mt-1 text-xs text-gray-500">{{ t.phoneHelp }}</p>
           </div>
-
           <!-- Password Field -->
           <div>
             <label for="password" class="block text-sm font-semibold text-gray-900 mb-2">
@@ -199,7 +244,6 @@
               </p>
             </div>
           </div>
-
           <!-- Password Confirmation Field -->
           <div>
             <label for="password_confirmation" class="block text-sm font-semibold text-gray-900 mb-2">
@@ -244,7 +288,6 @@
               {{ t.passwordMismatch }}
             </p>
           </div>
-
           <!-- Submit Button -->
           <button
             type="submit"
@@ -259,7 +302,6 @@
             <span v-else>{{ t.registeringButton }}</span>
           </button>
         </form>
-
         <!-- Divider -->
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">
@@ -269,7 +311,6 @@
             <span class="px-4 bg-white text-gray-500">{{ t.orContinueWith }}</span>
           </div>
         </div>
-
         <!-- Google Sign Up Button -->
         <button
           type="button"
@@ -284,7 +325,6 @@
           </svg>
           {{ t.continueWithGoogle }}
         </button>
-
         <!-- Divider -->
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">
@@ -294,7 +334,6 @@
             <span class="px-4 bg-white text-gray-500">{{ t.orText }}</span>
           </div>
         </div>
-
         <!-- Login Link -->
         <p class="text-center text-sm sm:text-base text-gray-600">
           {{ t.alreadyHaveAccount }}
@@ -303,7 +342,6 @@
           </NuxtLink>
         </p>
       </div>
-
       <!-- Back to Home -->
       <div class="text-center">
         <NuxtLink to="/" class="text-gray-500 hover:text-gray-700 text-sm inline-flex items-center gap-2 group transition-colors">
@@ -333,13 +371,19 @@ const runtimeConfig = useRuntimeConfig();
 // Use the language composable
 const { t: createTranslations, language } = useLanguage()
 
+// User types state
+const userTypes = ref([])
+const loadingUserTypes = ref(false)
+
 // Form state
 const form = ref({
   name: '',
   email: '',
   phone: '',
   password: '',
-  password_confirmation: ''
+  password_confirmation: '',
+  user_type: '',
+  registration_source: ''
 })
 
 // UI state
@@ -369,6 +413,39 @@ const translations = {
   registerSubtitle: {
     es: 'Únete para empezar a enviar desde USA a México',
     en: 'Join to start shipping from USA to Mexico'
+  },
+  userTypeLabel: {
+    es: '¿Qué tipo de usuario eres?',
+    en: 'What type of user are you?'
+  },
+  userTypeRequired: {
+    es: 'Por favor selecciona un tipo de usuario',
+    en: 'Please select a user type'
+  },
+  // User type translations
+  expatLabel: {
+    es: 'Expatriado',
+    en: 'Expat'
+  },
+  expatDescription: {
+    es: 'Extranjeros viviendo en México',
+    en: 'Foreign nationals living in Mexico'
+  },
+  businessLabel: {
+    es: 'Empresa',
+    en: 'Business'
+  },
+  businessDescription: {
+    es: 'Empresas que necesitan soluciones B2B',
+    en: 'Companies needing B2B solutions'
+  },
+  shopperLabel: {
+    es: 'Comprador en Línea',
+    en: 'Online Shopper'
+  },
+  shopperDescription: {
+    es: 'Compra en tiendas en línea de USA/internacionales',
+    en: 'Shop from US/international online stores'
   },
   nameLabel: {
     es: 'Nombre Completo',
@@ -483,6 +560,94 @@ const translations = {
 // Get reactive translations
 const t = createTranslations(translations)
 
+// Computed property for translated user types
+const translatedUserTypes = computed(() => {
+  return userTypes.value.map(type => {
+    // Get the translated label and description based on the type value
+    let label = ''
+    let description = ''
+    
+    switch(type.value) {
+      case 'expat':
+        label = t.value.expatLabel
+        description = t.value.expatDescription
+        break
+      case 'business':
+        label = t.value.businessLabel
+        description = t.value.businessDescription
+        break
+      case 'shopper':
+        label = t.value.shopperLabel
+        description = t.value.shopperDescription
+        break
+    }
+    
+    return {
+      value: type.value,
+      icon: type.icon,
+      label,
+      description
+    }
+  })
+})
+
+// Fetch user types
+const fetchUserTypes = async () => {
+  loadingUserTypes.value = true
+  try {
+    const response = await $customFetch('/user-types')
+    if (response.success && response.data) {
+      // We only need the values and icons from the API
+      // Labels and descriptions come from our translations
+      userTypes.value = response.data.map(type => ({
+        value: type.value,
+        icon: type.icon
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching user types:', error)
+    // Fallback to hardcoded types if API fails
+    userTypes.value = [
+      { value: 'expat', icon: 'globe' },
+      { value: 'business', icon: 'briefcase' },
+      { value: 'shopper', icon: 'shopping-cart' }
+    ]
+  } finally {
+    loadingUserTypes.value = false
+  }
+}
+
+// Get registration source and preselection from URL parameters
+const getRegistrationSourceAndPreselect = () => {
+  const params = route.query
+  
+  // Build comprehensive tracking data object
+  const trackingData = {
+    utm_source: params.utm_source || null,
+    utm_medium: params.utm_medium || null,
+    utm_campaign: params.utm_campaign || null,
+    utm_content: params.utm_content || null,
+    utm_term: params.utm_term || null,
+    fbclid: params.fbclid || null,
+    gclid: params.gclid || null,
+    landing_page: params.source || null,
+    referrer: document.referrer || null,
+    timestamp: new Date().toISOString()
+  }
+  
+  // Only set registration_source if we have tracking data
+  const hasTrackingData = Object.values(trackingData).some(value => value !== null)
+  if (hasTrackingData) {
+    form.value.registration_source = JSON.stringify(trackingData)
+  }
+  
+  // Check for preselected user type
+  const preselect = params.preselect
+  if (preselect && ['expat', 'business', 'shopper'].includes(preselect)) {
+    form.value.user_type = preselect
+  }
+}
+
 // Password strength calculation
 const passwordStrength = computed(() => {
   const password = form.value.password
@@ -519,6 +684,7 @@ const isFormValid = computed(() => {
     form.value.phone &&
     form.value.password &&
     form.value.password_confirmation &&
+    form.value.user_type && // Now required
     form.value.password === form.value.password_confirmation &&
     passwordStrength.value >= 2
 })
@@ -538,9 +704,16 @@ const clearFieldError = (field) => {
 const handleRegister = async () => {
   loading.value = true
   clearErrors()
-
+  
+  // Validate user type is selected
+  if (!form.value.user_type) {
+    errors.value.user_type = [t.value.userTypeRequired]
+    loading.value = false
+    return
+  }
+  
   try {
-    // Make registration request
+    // Make registration request with user_type and registration_source
     await $customFetch('/auth/register', {
       method: 'POST',
       body: {
@@ -548,10 +721,12 @@ const handleRegister = async () => {
         email: form.value.email,
         phone: form.value.phone,
         password: form.value.password,
-        password_confirmation: form.value.password_confirmation
+        password_confirmation: form.value.password_confirmation,
+        user_type: form.value.user_type,
+        registration_source: form.value.registration_source || undefined
       }
     })
-
+    
     // Success - check for redirect query parameter
     if (redirectTo && typeof redirectTo === 'string') {
       // Ensure the redirect is a relative path for security
@@ -568,7 +743,6 @@ const handleRegister = async () => {
       console.log('No redirect parameter, going to default app page')
       await navigateTo('/app/')
     }
-
   } catch (error) {
     console.error('Registration error:', error)
     
@@ -589,15 +763,27 @@ const handleRegister = async () => {
 }
 
 const handleGoogleSignUp = () => { 
-  window.location.href = `${runtimeConfig.public.apiUrl}/auth/google/redirect`
+  // Build the OAuth URL with state parameter containing tracking data
+  const state = btoa(JSON.stringify({
+    tracking: form.value.registration_source || null,
+    redirect: redirectTo || null
+  }))
+  
+  window.location.href = `${runtimeConfig.public.apiUrl}/auth/google/redirect?state=${encodeURIComponent(state)}`
 }
 
-// Check for errors on mount
+// Check for errors and fetch user types on mount
 onMounted(() => {
   // Check if redirected from Google OAuth with no account error
   if (route.query.error === 'no_account') {
     errorMessage.value = t.value.noAccountError
   }
+  
+  // Fetch user types
+  fetchUserTypes()
+  
+  // Get registration source and preselected user type from URL
+  getRegistrationSourceAndPreselect()
 })
 </script>
 

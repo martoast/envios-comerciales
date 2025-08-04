@@ -1,8 +1,14 @@
 <!-- layouts/default.vue -->
 <template>
   <div class="min-h-screen">
-    <!-- Top Right Controls -->
-    <div class="fixed top-4 right-4 sm:top-5 sm:right-5 z-[1001] flex items-center gap-3">
+    <!-- Landing Pages Navbar (shown on non-auth and non-app pages) -->
+    <LandingNavbar v-if="showLandingNavbar" />
+    
+    <!-- Top Right Controls (shown on auth pages and when no navbar) -->
+    <div 
+      v-if="!showLandingNavbar"
+      class="fixed top-4 right-4 sm:top-5 sm:right-5 z-[1001] flex items-center gap-3"
+    >
       <!-- Login Button - Hidden on login/register pages -->
       <NuxtLink 
         v-if="!isAuthPage"
@@ -79,6 +85,8 @@
   
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import FunnelCapture from '~/components/Landing/FunnelCapture.vue'
+import LandingNavbar from '~/components/LandingNavbar.vue'
 
 const route = useRoute()
 const { t: createTranslations } = useLanguage()
@@ -88,9 +96,19 @@ const isAuthPage = computed(() => {
   return route.path === '/login' || route.path === '/register'
 })
 
-// Check if we should show funnel capture (not on auth or app pages)
+// Check if we're on an app page
+const isAppPage = computed(() => {
+  return route.path.startsWith('/app')
+})
+
+// Show landing navbar on landing pages (not auth or app pages)
+const showLandingNavbar = computed(() => {
+  return !isAuthPage.value && !isAppPage.value
+})
+
+// Check if we should show funnel capture (landing pages only)
 const shouldShowFunnelCapture = computed(() => {
-  return !isAuthPage.value && !route.path.startsWith('/app')
+  return showLandingNavbar.value
 })
 
 const translations = {

@@ -1,0 +1,38 @@
+<template>
+    <div>
+        <div>
+        <!-- Header -->
+      <div class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <NuxtLink to="/" class="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors">
+            <ArrowLeftIcon class="w-5 h-5 mr-2" />
+            {{ t.backToHome }}
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
+    <div class="py-6">
+        <BoxCalculator />
+    </div>
+    </div>
+</template>
+
+<script setup>
+
+import { 
+    ArrowLeftIcon
+  } from '@heroicons/vue/24/outline'
+
+const { t: createTranslations, language } = useLanguage()
+
+const translations = {
+    backToHome: {
+      es: 'Volver al inicio',
+      en: 'Back to home'
+    }
+}
+
+// Get reactive translations
+const t = createTranslations(translations)
+
+</script>
