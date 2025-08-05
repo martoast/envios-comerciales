@@ -415,8 +415,8 @@ const translations = {
     en: 'Join to start shipping from USA to Mexico'
   },
   userTypeLabel: {
-    es: '¿Qué tipo de usuario eres?',
-    en: 'What type of user are you?'
+    es: 'Ayúdanos a personalizar tu experiencia',
+    en: 'Help us personalize your experience'
   },
   userTypeRequired: {
     es: 'Por favor selecciona un tipo de usuario',

@@ -117,8 +117,8 @@
       en: 'Transparent Pricing'
     },
     pricingSubtitle: {
-      es: 'Elige la caja perfecta para tus compras. Sin costos ocultos.',
-      en: 'Choose the perfect box for your purchases. No hidden costs.'
+      es: 'Elige la caja perfecta para tu compras.',
+      en: 'Choose the perfect box for your purchases.'
     },
     additionalCosts: {
       es: 'Costos Adicionales',

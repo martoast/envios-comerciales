@@ -24,7 +24,7 @@
     
     <!-- Page Content -->
     <slot />
-
+    
     <!-- Funnel Capture Popup -->
     <Teleport to="body">
       <Transition
@@ -68,7 +68,7 @@
                     <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clip-rule="evenodd" />
                   </svg>
                 </button>
-
+                
                 <!-- Funnel Capture Component -->
                 <FunnelCapture 
                   @success="handleCaptureSuccess"
@@ -138,6 +138,7 @@ let timeInterval = null
 // Configuration
 const TIME_TRIGGER_SECONDS = 10 // Show after 10 seconds
 const SCROLL_TRIGGER_PERCENTAGE = 30 // Show after 30% scroll
+const COOLDOWN_MINUTES = 10 // Don't show again for 10 minutes after closing
 
 const calculateScrollPercentage = () => {
   const windowHeight = window.innerHeight
@@ -147,23 +148,48 @@ const calculateScrollPercentage = () => {
   scrollPercentage.value = Math.min(percentage, 100)
 }
 
+// Check if we're in cooldown period
+const isInCooldownPeriod = () => {
+  if (typeof window === 'undefined') return false
+  
+  const lastClosed = localStorage.getItem('funnelCaptureLastClosed')
+  if (!lastClosed) return false
+  
+  const lastClosedTime = new Date(lastClosed).getTime()
+  const now = new Date().getTime()
+  const minutesPassed = (now - lastClosedTime) / (1000 * 60)
+  
+  return minutesPassed < COOLDOWN_MINUTES
+}
+
+// Check if user has permanently completed the form
+const hasCompletedForm = () => {
+  if (typeof window === 'undefined') return false
+  return localStorage.getItem('funnelCaptureCompleted') === 'true'
+}
+
 // Unified function to show the funnel capture
 const showFunnelCapturePopup = (triggerType) => {
-  if (!shouldShowFunnelCapture.value || hasShownFunnelCapture.value || showFunnelCapture.value) {
-    return
-  }
-
+  // Don't show if not on appropriate page
+  if (!shouldShowFunnelCapture.value) return
+  
+  // Don't show if already showing
+  if (showFunnelCapture.value) return
+  
+  // Don't show if user has completed the form
+  if (hasCompletedForm()) return
+  
+  // Don't show if in cooldown period
+  if (isInCooldownPeriod()) return
+  
+  // Don't show if already shown in this page view
+  if (hasShownFunnelCapture.value) return
+  
   console.log(`Funnel capture triggered by: ${triggerType}`)
   
   showFunnelCapture.value = true
   hasShownFunnelCapture.value = true
   
-  // Save to session storage so it doesn't show again in this session
-  if (typeof window !== 'undefined') {
-    sessionStorage.setItem('funnelCaptureShown', 'true')
-    sessionStorage.setItem('funnelCaptureTrigger', triggerType)
-  }
-
   // Clear the timer if it was triggered by scroll
   if (timeInterval && triggerType === 'scroll') {
     clearInterval(timeInterval)
@@ -174,9 +200,10 @@ const showFunnelCapturePopup = (triggerType) => {
 const handleScroll = () => {
   // Only calculate if we should show funnel capture and haven't shown it yet
   if (!shouldShowFunnelCapture.value || hasShownFunnelCapture.value) return
-
+  if (hasCompletedForm() || isInCooldownPeriod()) return
+  
   calculateScrollPercentage()
-
+  
   // Show popup when user scrolls 30% of the page
   if (scrollPercentage.value >= SCROLL_TRIGGER_PERCENTAGE) {
     showFunnelCapturePopup('scroll')
@@ -188,10 +215,13 @@ const startTimeTracking = () => {
   if (timeInterval) {
     clearInterval(timeInterval)
   }
-
+  
+  // Don't start if user completed form or in cooldown
+  if (hasCompletedForm() || isInCooldownPeriod()) return
+  
   // Reset time on page
   timeOnPage.value = 0
-
+  
   // Start tracking time
   timeInterval = setInterval(() => {
     if (!shouldShowFunnelCapture.value || hasShownFunnelCapture.value) {
@@ -199,9 +229,15 @@ const startTimeTracking = () => {
       timeInterval = null
       return
     }
-
+    
+    if (hasCompletedForm() || isInCooldownPeriod()) {
+      clearInterval(timeInterval)
+      timeInterval = null
+      return
+    }
+    
     timeOnPage.value++
-
+    
     // Show after configured seconds
     if (timeOnPage.value >= TIME_TRIGGER_SECONDS) {
       showFunnelCapturePopup('time')
@@ -213,6 +249,11 @@ const startTimeTracking = () => {
 
 const closeFunnelCapture = () => {
   showFunnelCapture.value = false
+  
+  // Save the time when the popup was closed for cooldown
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('funnelCaptureLastClosed', new Date().toISOString())
+  }
 }
 
 const handleCaptureSuccess = (data) => {
@@ -222,7 +263,7 @@ const handleCaptureSuccess = (data) => {
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', 'lead_capture', {
       event_category: 'engagement',
-      event_label: sessionStorage.getItem('funnelCaptureTrigger') || 'unknown'
+      event_label: 'funnel_capture'
     })
   }
   
@@ -235,6 +276,8 @@ const handleCaptureSuccess = (data) => {
   if (typeof window !== 'undefined') {
     localStorage.setItem('funnelCaptureCompleted', 'true')
     localStorage.setItem('funnelCaptureDate', new Date().toISOString())
+    // Remove the cooldown since they completed the form
+    localStorage.removeItem('funnelCaptureLastClosed')
   }
 }
 
@@ -242,40 +285,37 @@ const handleCaptureError = (error) => {
   console.error('Capture failed:', error)
 }
 
-// Check if user has already completed funnel capture
+// Check if user has already completed funnel capture or is in cooldown
 const checkFunnelCaptureStatus = () => {
   if (typeof window !== 'undefined') {
     // Check if user has already completed the form
-    const completed = localStorage.getItem('funnelCaptureCompleted')
-    if (completed) {
+    if (hasCompletedForm()) {
       hasShownFunnelCapture.value = true
       return
     }
     
-    // Check if already shown in this session
-    const shownInSession = sessionStorage.getItem('funnelCaptureShown')
-    if (shownInSession) {
+    // Check if in cooldown period
+    if (isInCooldownPeriod()) {
       hasShownFunnelCapture.value = true
+      return
     }
   }
 }
 
 // Watch for route changes
 watch(() => route.path, (newPath, oldPath) => {
-  // Reset session-based showing when navigating to a new page
-  if (typeof window !== 'undefined') {
-    const completed = localStorage.getItem('funnelCaptureCompleted')
-    if (!completed && newPath !== oldPath) {
-      // Only reset if not completed and actually changed pages
-      hasShownFunnelCapture.value = false
-      showFunnelCapture.value = false
-      sessionStorage.removeItem('funnelCaptureShown')
-      sessionStorage.removeItem('funnelCaptureTrigger')
-      
-      // Restart time tracking on new page
-      if (shouldShowFunnelCapture.value) {
-        startTimeTracking()
-      }
+  // Only reset the per-page-view flag when actually changing pages
+  if (newPath !== oldPath) {
+    // Reset the flag for this page view only
+    hasShownFunnelCapture.value = false
+    showFunnelCapture.value = false
+    
+    // Check status again for the new page
+    checkFunnelCaptureStatus()
+    
+    // Restart time tracking on new page if appropriate
+    if (shouldShowFunnelCapture.value && !hasShownFunnelCapture.value && !hasCompletedForm() && !isInCooldownPeriod()) {
+      startTimeTracking()
     }
   }
 })
@@ -304,7 +344,7 @@ onMounted(() => {
   calculateScrollPercentage()
   
   // Start time tracking if appropriate
-  if (shouldShowFunnelCapture.value && !hasShownFunnelCapture.value) {
+  if (shouldShowFunnelCapture.value && !hasShownFunnelCapture.value && !hasCompletedForm() && !isInCooldownPeriod()) {
     startTimeTracking()
   }
 })

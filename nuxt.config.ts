@@ -78,6 +78,7 @@ export default defineNuxtConfig({
       apiUrl: process.env.API_URL,
       cookieDomain: process.env.COOKIE_DOMAIN,
       MAPBOX_API_TOKEN: process.env.MAPBOX_API_TOKEN,
+      gtagId: process.env.GTAG_ID,
     }
   }
 })

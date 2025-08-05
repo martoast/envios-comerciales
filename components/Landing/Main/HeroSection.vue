@@ -17,11 +17,18 @@
           :key="index"
           class="absolute inset-0 w-full h-full"
         >
-          <!-- Background Image -->
+          <!-- Desktop Background Image -->
           <img
             :src="slide.image"
             :alt="slide.title"
-            class="absolute inset-0 w-full h-full object-cover"
+            class="hidden md:block absolute inset-0 w-full h-full object-cover"
+          />
+          
+          <!-- Mobile Background Image -->
+          <img
+            :src="slide.mobileImage"
+            :alt="slide.title"
+            class="md:hidden absolute inset-0 w-full h-full object-cover"
           />
           
           <!-- Gradient Overlay for better text readability -->
@@ -54,7 +61,7 @@
                   </NuxtLink>
                   
                   <a
-                    href="#calculator"
+                    href="/shipping-calculator"
                     class="px-8 py-4 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold rounded-full transition-all duration-300 border border-white/30"
                   >
                     {{ t.ctaCalculate }}
@@ -173,17 +180,19 @@ const translations = {
 
 const t = createTranslations(translations)
 
-// Slides data
+// Slides data with both desktop and mobile images
 const slides = computed(() => {
   const baseSlides = language.value === 'es' ? [
     {
       image: '/hero1.jpeg',
+      mobileImage: '/mobilehero1test.jpeg',
       title: 'Compra en cualquier tienda del mundo',
       subtitle: 'Tu dirección en USA para comprar sin límites',
       ctaText: 'Empieza Ahora'
     },
     {
       image: '/hero2.jpeg',
+      mobileImage: '/mobilehero2.jpeg',
       title: 'Recibe todos tus paquetes en México',
       subtitle: 'Consolidamos tus compras y ahorramos en envío',
       ctaText: 'Regístrate Gratis'
@@ -191,12 +200,14 @@ const slides = computed(() => {
   ] : [
     {
       image: '/hero1.jpeg',
+      mobileImage: '/mobilehero1.jpeg',
       title: 'Shop from any store in the world',
       subtitle: 'Your US address for unlimited shopping',
       ctaText: 'Start Now'
     },
     {
       image: '/hero2.jpeg',
+      mobileImage: '/mobilehero2.jpeg',
       title: 'Receive all your packages in Mexico',
       subtitle: 'We consolidate your purchases and save on shipping',
       ctaText: 'Register Free'

@@ -307,8 +307,8 @@ const translations = {
     en: 'Pricing per consolidated box'
   },
   pricingSubtitle: {
-    es: 'Elige la caja perfecta para tu envio. Sin costos ocultos.',
-    en: 'Choose the perfect box for your shipping. No hidden costs.'
+    es: 'Elige la caja perfecta para tu envio.',
+    en: 'Choose the perfect box for your shipping.'
   },
   loadingPricing: {
     es: 'Cargando precios...',

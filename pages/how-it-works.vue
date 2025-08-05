@@ -158,8 +158,8 @@
                     <p class="font-bold text-gray-900 text-base">
                       ECTJ Juan Pérez
                     </p>
-                    <p class="text-gray-700">2220 Otay Lakes Road</p>
-                    <p class="text-gray-700">San Diego, CA 92113 Suite #95</p>
+                    <p class="text-gray-700">123 Main Street</p>
+                    <p class="text-gray-700">San Diego, CA</p>
                   </div>
                 </div>
               </div>
@@ -171,8 +171,6 @@
 
     <CTACarouselBanner />
 
-    <!-- FAQ Section -->
-    <MainFAQSection />
 
     <!-- Footer -->
     <FooterSection />
@@ -184,7 +182,6 @@ import { computed } from "vue";
 
 import CTACarouselBanner from "~/components/Landing/Main/CTACarouselBanner.vue";
 import FooterSection from "~/components/Landing/FooterSection.vue";
-import CTAFooter from "~/components/Landing/CTAFooter.vue";
 import MainFAQSection from "~/components/Landing/Main/FAQSection.vue";
 
 const { t: createTranslations, language } = useLanguage();

@@ -27,8 +27,7 @@
     <!-- Testimonials Section -->
     <MainTestimonialsSection />
     
-    <!-- FAQ Section -->
-    <MainFAQSection />
+
     
     <!-- CTA Footer -->
     <CTAFooter />
@@ -45,7 +44,6 @@ import MainHeroSection from '~/components/Landing/Main/HeroSection.vue'
 import LogoCarousel from '~/components/Landing/LogoCarousel.vue'
 import MainHowItWorksSection from '~/components/Landing/Main/HowItWorksSection.vue'
 import MainTestimonialsSection from '~/components/Landing/Main/TestimonialsSection.vue'
-import MainFAQSection from '~/components/Landing/Main/FAQSection.vue'
 import CTACarouselBanner from '~/components/Landing/Main/CTACarouselBanner.vue'
 import FooterSection from '~/components/Landing/FooterSection.vue'
 import CTAFooter from '~/components/Landing/CTAFooter.vue'
