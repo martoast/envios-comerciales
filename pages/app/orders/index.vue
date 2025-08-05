@@ -148,7 +148,7 @@
             >
               <div class="flex items-start justify-between mb-3">
                 <div>
-                  <p class="font-semibold text-gray-900">{{ order.order_number }}</p>
+                  <p class="font-semibold text-gray-900">{{ order.tracking_number}}</p>
                 </div>
                 <span :class="[
                   'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
@@ -216,7 +216,7 @@
                 >
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <p class="text-sm font-semibold text-gray-900">{{ order.order_number }}</p>
+                      <p class="text-sm font-semibold text-gray-900">{{ order.tracking_number }}</p>
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
@@ -362,8 +362,8 @@ const translations = {
     en: 'Create your first order'
   },
   orderInfo: {
-    es: 'Información de Orden',
-    en: 'Order Info'
+    es: 'Tracking Number',
+    en: 'Tracking Number'
   },
   status: {
     es: 'Estado',
@@ -476,15 +476,15 @@ const stats = computed(() => {
       label: t.value.totalOrders,
       value: totalOrders,
       icon: 'M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z',
-      bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600'
+      bgColor: 'bg-primary-50',
+      iconColor: 'text-primary-600'
     },
     {
       label: t.value.activeOrders,
       value: activeOrders,
       icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-      bgColor: 'bg-green-50',
-      iconColor: 'text-green-600'
+      bgColor: 'bg-amber-50',
+      iconColor: 'text-amber-600'
     },
     {
       label: t.value.inTransit,
@@ -497,8 +497,8 @@ const stats = computed(() => {
       label: t.value.delivered,
       value: delivered,
       icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-      bgColor: 'bg-purple-50',
-      iconColor: 'text-purple-600'
+      bgColor: 'bg-green-50',
+      iconColor: 'text-green-600'
     }
   ]
 })
@@ -552,9 +552,9 @@ const changePage = (page) => {
 
 const getStatusColor = (status) => {
   const colors = {
-    collecting: 'bg-blue-100 text-blue-700',
+    collecting: 'bg-primary-100 text-primary-700',
     awaiting_packages: 'bg-yellow-100 text-yellow-700',
-    packages_complete: 'bg-purple-100 text-purple-700',
+    packages_complete: 'bg-primary-100 text-primary-700',
     quote_sent: 'bg-orange-100 text-orange-700',
     shipped: 'bg-primary-100 text-primary-700',
     delivered: 'bg-green-100 text-green-700'

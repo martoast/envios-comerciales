@@ -16,7 +16,6 @@
         >
           <div class="absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-4 border-l-gray-200"></div>
         </div>
-
         <!-- Card -->
         <div class="relative bg-white rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300 border border-gray-100 group-hover:border-primary-200">
           <!-- Icon Circle -->
@@ -39,10 +38,8 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { computed } from 'vue'
-
 // Props
 const props = defineProps({
   animationDelay: {
@@ -50,10 +47,8 @@ const props = defineProps({
     default: 0.3
   }
 })
-
 // Use the language composable
 const { t: createTranslations } = useLanguage()
-
 // Simplified translations
 const translations = {
   howItWorks: {
@@ -77,10 +72,8 @@ const translations = {
     en: 'Receive'
   }
 }
-
 // Get reactive translations
 const t = createTranslations(translations)
-
 // Steps data - much simpler
 const steps = computed(() => [
   {
@@ -91,13 +84,13 @@ const steps = computed(() => [
   },
   {
     title: t.value.step2Title,
-    icon: 'M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4',
-    bgColor: 'bg-blue-50',
-    iconColor: 'text-blue-600'
+    icon: 'M3 21V8l9-4 9 4v13M3 21h18M3 21v-8m18 8v-8m0 0H3m18 0v-5M3 13V8m6 5v8m6-8v8m-3-8v8',
+    bgColor: 'bg-primary-50',
+    iconColor: 'text-primary-600'
   },
   {
     title: t.value.step3Title,
-    icon: 'M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z',
+    icon: 'M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12',
     bgColor: 'bg-amber-50',
     iconColor: 'text-amber-600'
   },

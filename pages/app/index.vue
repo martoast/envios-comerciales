@@ -189,7 +189,7 @@
           </div>
 
           <!-- Helper Text -->
-          <div class="mt-6 text-center">
+          <!-- <div class="mt-6 text-center">
             <p class="text-sm text-gray-500">
               <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -197,7 +197,7 @@
               {{ t.needHelp }} 
               <a href="#" class="text-primary-600 hover:text-primary-700 font-medium">{{ t.watchTutorial }}</a>
             </p>
-          </div>
+          </div> -->
         </div>
         
         <!-- How It Works Component -->
@@ -251,7 +251,7 @@
               >
                 <div class="flex items-center justify-between mb-2">
                   <div>
-                    <p class="font-medium text-gray-900">{{ order.order_number }}</p>
+                    <p class="font-medium text-gray-900">{{ order.tracking_number }}</p>
                   </div>
                   <span :class="[
                     'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
@@ -372,19 +372,19 @@ const fullUserName = computed(() => {
 
 // PO Box Address
 const poBoxAddress = computed(() => ({
-  line1: `2220 Otay Lakes Rd. Suite 502 #${user.value?.id || 'XX'}`,
+  line1: `2220 Otay Lakes Rd. Suite 502 #95`,
   line2: 'Chula Vista CA 91915'
 }))
 
 // Translations
 const translations = {
   welcome: {
-    es: '¡Bienvenido',
+    es: '¡Hola',
     en: 'Welcome'
   },
   tagline: {
-    es: 'Tu puente de compras entre Estados Unidos y México',
-    en: 'Your shopping bridge between USA and Mexico'
+    es: 'Envía a México sin complicaciones',
+    en: 'Ship to Mexico without complications'
   },
   yourUSAddress: {
     es: 'Tu Dirección en Estados Unidos',
@@ -513,8 +513,8 @@ const translations = {
     en: 'STEP'
   },
   copyYourAddress: {
-    es: 'Copia tu Dirección',
-    en: 'Copy Your Address'
+    es: 'Compra y envía a nuestra bodega en USA',
+    en: 'Buy and ship to our USA warehouse'
   },
   useThisAddress: {
     es: 'Usa este nombre y dirección en tus compras.',
@@ -529,9 +529,10 @@ const translations = {
     en: 'Address Copied!'
   },
   createYourBox: {
-    es: 'Inicia tu Envio',
-    en: 'Create Your Virtual Box'
+    es: 'Inicia tu envío a México',
+    en: 'Start your shipment to Mexico'
   },
+
   tellUsWhatYouBought: {
     es: 'Selecciona tu caja. Dinos qué compraste. Lo recibimos y te lo enviamos.',
     en: 'Tell us what you bought. We\'ll receive and ship it to you.'
@@ -569,10 +570,7 @@ const fetchRecentOrders = async () => {
 }
 
 const copyAddress = async () => {
-  const address = `ECTJ (${user.value?.name})
-${poBoxAddress.value.line1}
-${poBoxAddress.value.line2}`
-  
+  const address = `${poBoxAddress.value.line1} ${poBoxAddress.value.line2}`
   try {
     await navigator.clipboard.writeText(address)
     copied.value = true
