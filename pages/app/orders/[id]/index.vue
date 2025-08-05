@@ -921,6 +921,7 @@ definePageMeta({
 // Nuxt imports
 const { $customFetch, $toast } = useNuxtApp();
 const route = useRoute();
+const router = useRouter()
 const user = useUser().value;
 
 // Use the language composable
@@ -1190,14 +1191,42 @@ const fetchOrder = async () => {
     if (showBannerStatuses.includes(order.value?.status)) {
       // Check if banner was dismissed for this status
       if (!localStorage.getItem(`order-${order.value.id}-${order.value.status}-dismissed`)) {
-        // For awaiting_packages with completed_at, show with confetti
+        // For awaiting_packages with completed_at, check if it's the first time showing confetti
         if (order.value.status === 'awaiting_packages' && order.value.completed_at) {
-          bannerTrigger.value = 'just_completed';
+          // Check if confetti has been shown for this order completion
+          const confettiKey = `order-${order.value.id}-confetti-shown`;
+          const hasShownConfetti = localStorage.getItem(confettiKey);
+          
+          if (!hasShownConfetti) {
+            bannerTrigger.value = 'just_completed';
+            // Mark that confetti has been shown for this order
+            localStorage.setItem(confettiKey, 'true');
+          } else {
+            bannerTrigger.value = 'auto';
+          }
         } else {
           bannerTrigger.value = 'auto';
         }
         showSuccessBanner.value = true;
       }
+    }
+    
+    // Check if coming from add-items page after completion
+    if (route.query.completed === 'true' && order.value?.status === 'awaiting_packages') {
+      const confettiKey = `order-${order.value.id}-confetti-shown`;
+      const hasShownConfetti = localStorage.getItem(confettiKey);
+      
+      if (!hasShownConfetti) {
+        bannerTrigger.value = 'just_completed';
+        showSuccessBanner.value = true;
+        localStorage.setItem(confettiKey, 'true');
+      }
+      
+      // Remove the query parameter from URL to prevent re-triggering on refresh
+      router.replace({
+        path: route.path,
+        query: {} // Remove all query params, or you can keep others if needed
+      });
     }
   } catch (error) {
     console.error("Error fetching order:", error);

@@ -365,9 +365,9 @@ const StatusIcon = computed(() => {
 
 // Trigger confetti on mount for certain statuses
 onMounted(() => {
-  if (props.show) {
-    // Confetti for awaiting_packages when just completed
-    if (props.order?.status === 'awaiting_packages' && props.order?.completed_at) {
+  if (props.show && props.trigger === 'just_completed') {
+    // Only show confetti when explicitly triggered with 'just_completed'
+    if (props.order?.status === 'awaiting_packages' || props.order?.status === 'packages_complete') {
       setTimeout(() => {
         $confetti()
       }, 300)

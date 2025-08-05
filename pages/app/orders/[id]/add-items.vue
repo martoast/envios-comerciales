@@ -371,7 +371,7 @@
             <!-- Items List -->
             <div v-else class="space-y-3">
               <TransitionGroup name="list">
-                <div v-for="(item, index) in order.items" :key="item.id" 
+                <div v-for="item in order.items" :key="item.id" 
                      class="group relative bg-white rounded-xl p-4 border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all">
                   <div class="flex items-start justify-between gap-3">
                     <div class="flex-1 min-w-0">
@@ -1009,13 +1009,14 @@ const handleCompleteOrder = async () => {
     await $customFetch(`/orders/${order.value.id}/complete`, {
       method: 'PUT'
     })
-
-    // Don't show success message here - it will be shown on the order details page
+    
     showCompleteModal.value = false
-
-    // Redirect to order details page
-    return navigateTo(`/app/orders/${order.value.id}`)
-
+    
+    // Redirect to order details page with a query param to indicate completion
+    return navigateTo({
+      path: `/app/orders/${order.value.id}`,
+      query: { completed: 'true' }
+    })
   } catch (error) {
     console.error('Error completing order:', error)
     $toast.error(error.data?.message || t.value.errorCompletingOrder)
@@ -1023,6 +1024,7 @@ const handleCompleteOrder = async () => {
     completingOrder.value = false
   }
 }
+
 
 // Lifecycle
 onMounted(() => {
