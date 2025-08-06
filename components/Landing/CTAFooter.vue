@@ -19,8 +19,8 @@
       en: 'Your Next Shipment Starts Here'
     },
     ctaFooterSubtitle: {
-      es: 'Obtén tu cotización personalizada en minutos y empieza a comprar en cualquier tienda de USA hoy mismo.',
-      en: 'Get your custom quote in minutes and start shopping from any US store today.'
+      es: 'Obtén tu cotización personalizada en minutos y empieza a comprar en cualquier tienda de USA hoy mismo',
+      en: 'Get your custom quote in minutes and start shopping from any US store today'
     },
     ctaFooterLink: {
       es: 'https://wa.me/16195591910?text=Hola!%20Quiero%20mi%20cotizaci%C3%B3n%20personalizada%20ahora.',

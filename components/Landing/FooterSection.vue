@@ -1,3 +1,4 @@
+<!-- components/Landing/FooterSection.vue -->
 <template>
   <footer class="bg-dark-500 text-white/70 py-8 sm:py-12 px-4 sm:px-5 text-sm sm:text-base border-t border-white/10">
     <div class="max-w-6xl mx-auto">
@@ -104,6 +105,10 @@
           <NuxtLink to="/privacy-policy" class="text-white/70 no-underline hover:text-white transition-colors text-sm sm:text-base">
             {{ t.privacyLink }}
           </NuxtLink>
+          <span class="hidden sm:inline text-white/30">|</span>
+          <NuxtLink to="/sitemap" class="text-white/70 no-underline hover:text-white transition-colors text-sm sm:text-base">
+            {{ t.sitemapLink }}
+          </NuxtLink>
         </div>
         <p class="m-0 text-xs sm:text-sm text-white/50">{{ t.copyright }}</p>
       </div>
@@ -142,6 +147,10 @@ const translations = {
   privacyLink: {
     es: 'Política de Privacidad',
     en: 'Privacy Policy'
+  },
+  sitemapLink: {
+    es: 'Mapa del Sitio',
+    en: 'Sitemap'
   },
   copyright: {
     es: '© 2025 Envios Comerciales Tijuana - Todos los derechos reservados.',

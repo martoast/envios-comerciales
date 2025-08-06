@@ -51,8 +51,8 @@ const translations = {
     en: 'In 3 simple steps'
   },
   howItWorksSubtitle: {
-    es: 'Regístrate gratis y empieza a comprar en cualquier tienda del mundo',
-    en: 'Register for free and start shopping at any store in the world'
+    es: 'Recibe tus compras en México',
+    en: 'Receive your purchases in Mexico'
   }
 }
 

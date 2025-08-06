@@ -77,9 +77,10 @@
   // Translations
   const translations = {
     logosHeader: {
-      es: 'Compra en las Mejores Tiendas de Estados Unidos',
-      en: 'Shop from Top US Retailers'
+      es: 'Compra en tus tiendas favoritas y recibe tu producto seguro y rápido',
+      en: 'Shop at your favorite stores and receive your product safely and quickly'
     }
+
   }
   
   const t = createTranslations(translations)

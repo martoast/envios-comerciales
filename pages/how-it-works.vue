@@ -169,7 +169,6 @@
       </div>
     </section>
 
-    <CTACarouselBanner />
 
 
     <!-- Footer -->
@@ -180,7 +179,6 @@
 <script setup>
 import { computed } from "vue";
 
-import CTACarouselBanner from "~/components/Landing/Main/CTACarouselBanner.vue";
 import FooterSection from "~/components/Landing/FooterSection.vue";
 import MainFAQSection from "~/components/Landing/Main/FAQSection.vue";
 
