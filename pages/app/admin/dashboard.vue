@@ -288,8 +288,8 @@
       en: 'Awaiting'
     },
     packages_complete: {
-      es: 'Completos',
-      en: 'Complete'
+      es: 'Paquetes Completos',
+      en: 'Packages Complete'
     },
     paid: {
       es: 'Pagado',
@@ -417,14 +417,16 @@
   
   const getStatusColor = (status) => {
     const colors = {
-      collecting: 'bg-gray-100 text-gray-700',
-      awaiting_packages: 'bg-yellow-100 text-yellow-700',
-      packages_complete: 'bg-purple-100 text-purple-700',
-      shipped: 'bg-primary-100 text-primary-700',
-      delivered: 'bg-green-100 text-green-700'
-    }
-    return colors[status] || 'bg-gray-100 text-gray-700'
-  }
+      collecting: "bg-primary-100 text-primary-700",
+      awaiting_packages: "bg-amber-100 text-amber-700",
+      packages_complete: "bg-primary-100 text-primary-700",
+      quote_sent: "bg-orange-100 text-orange-700",
+      paid: "bg-green-100 text-green-700",
+      shipped: "bg-primary-100 text-primary-700",
+      delivered: "bg-green-100 text-green-700",
+    };
+    return colors[status] || "bg-gray-100 text-gray-700";
+  };
   
   const getStatusLabel = (status) => {
     return t.value[status] || status

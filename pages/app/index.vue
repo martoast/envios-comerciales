@@ -27,44 +27,7 @@
       </div>
       <!-- Main Content -->
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <!-- Missing Address Banner -->
-        <!-- <Transition
-          enter-active-class="transform ease-out duration-300 transition"
-          enter-from-class="translate-y-2 opacity-0"
-          enter-to-class="translate-y-0 opacity-100"
-          leave-active-class="transition ease-in duration-200"
-          leave-from-class="opacity-100"
-          leave-to-class="opacity-0"
-        >
-          <div v-if="!hasCompleteAddress && showAddressBanner" class="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4 relative animate-fadeIn" style="animation-delay: 0.15s">
-            <button 
-              @click="showAddressBanner = false"
-              class="absolute top-2 right-2 text-amber-600 hover:text-amber-700"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-              </div>
-              <div class="ml-3 flex-1">
-                <p class="text-sm font-medium text-amber-800">
-                  {{ t.missingAddressTitle }}
-                </p>
-                <p class="mt-1 text-sm text-amber-700">
-                  {{ t.missingAddressDesc }}
-                  <NuxtLink to="/app/account/shipping-address" class="font-medium underline hover:text-amber-800">
-                    {{ t.addAddressNow }}
-                  </NuxtLink>
-                </p>
-              </div>
-            </div>
-          </div>
-        </Transition> -->
+       
         
         <!-- PO Box Card - Redesigned with Clear Steps -->
         <div class="mb-8 animate-fadeIn" style="animation-delay: 0.2s">
@@ -96,7 +59,7 @@
                     <!-- Address Display -->
                     <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
                       <div class="space-y-1">
-                        <p class="font-medium text-gray-900">ECTJ {{ fullUserName }}</p>
+                        <p class="font-medium text-gray-900">ECTJ {{ fullUserName }} {{user.id}}</p>
                         <p class="text-gray-700">{{ poBoxAddress.line1 }}</p>
                         <p class="text-gray-700">{{ poBoxAddress.line2 }}</p>
                       </div>
@@ -200,8 +163,7 @@
           </div> -->
         </div>
         
-        <!-- How It Works Component -->
-        <HowItWorks :animation-delay="0.3" />
+      
         
         <!-- Recent Orders & Quick Actions -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -407,7 +369,7 @@ const translations = {
     en: 'Recent Orders'
   },
   viewAll: {
-    es: 'Ver Todas',
+    es: 'Ver Todos',
     en: 'View All'
   },
   loadingOrders: {
@@ -456,12 +418,16 @@ const translations = {
     en: 'Awaiting Packages'
   },
   packages_complete: {
-    es: 'Paquetes Completos',
-    en: 'Packages Complete'
+    es: 'Paquetes en almacen',
+    en: 'Packages in warehouse'
   },
   quote_sent: {
     es: 'Cotización Enviada',
     en: 'Quote Sent'
+  },
+  paid: {
+    es: 'Pagado',
+    en: 'Paid'
   },
   shipped: {
     es: 'Enviado',
@@ -583,16 +549,17 @@ const copyAddress = async () => {
 }
 
 const getStatusColor = (status) => {
-  const colors = {
-    collecting: 'bg-primary-100 text-primary-700',
-    awaiting_packages: 'bg-yellow-100 text-yellow-700',
-    packages_complete: 'bg-purple-100 text-purple-700',
-    quote_sent: 'bg-orange-100 text-orange-700',
-    shipped: 'bg-primary-100 text-primary-700',
-    delivered: 'bg-green-100 text-green-700'
-  }
-  return colors[status] || 'bg-gray-100 text-gray-700'
-}
+    const colors = {
+      collecting: "bg-primary-100 text-primary-700",
+      awaiting_packages: "bg-amber-100 text-amber-700",
+      packages_complete: "bg-primary-100 text-primary-700",
+      quote_sent: "bg-orange-100 text-orange-700",
+      paid: "bg-green-100 text-green-700",
+      shipped: "bg-primary-100 text-primary-700",
+      delivered: "bg-green-100 text-green-700",
+    };
+    return colors[status] || "bg-gray-100 text-gray-700";
+  };
 
 const getStatusLabel = (status) => {
   return t.value[status] || status

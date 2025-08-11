@@ -198,7 +198,7 @@
                   </thead>
                   <tbody class="divide-y divide-gray-100">
                     <tr v-for="order in customerData.customer.orders" :key="order.id" class="hover:bg-gray-50 transition-colors">
-                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ order.order_number }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ order.tracking_number }}</td>
                     
                       <td class="px-6 py-4 whitespace-nowrap">
                         <span :class="[
@@ -243,7 +243,7 @@
                 >
                   <div class="flex items-start justify-between mb-2">
                     <div>
-                      <p class="font-medium text-gray-900">{{ order.order_number }}</p>
+                      <p class="font-medium text-gray-900">{{ order.tracking_number }}</p>
                     </div>
                     <span :class="[
                       'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',

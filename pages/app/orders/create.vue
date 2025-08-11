@@ -1,47 +1,25 @@
+<!-- pages/app/orders/create.vue -->
 <template>
   <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
     <!-- Header -->
     <div class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <NuxtLink
-              v-if="currentStep == 1"
-              to="/app/orders"
-              class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </NuxtLink>
-            <button
-              v-else
-              @click="previousStep"
-              class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </button>
-            <div>
-              <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 transition-all duration-300">
-                {{ stepHeaders[currentStep - 1].title }}
-              </h1>
-              <p class="text-sm text-gray-600 mt-1 transition-all duration-300">
-                {{ stepHeaders[currentStep - 1].subtitle }}
-              </p>
-            </div>
-          </div>
-          <!-- Step indicator desktop -->
-          <div class="hidden sm:flex items-center gap-2">
-            <div
-              v-for="i in 5"
-              :key="i"
-              :class="[
-                'w-2 h-2 rounded-full transition-all duration-300',
-                currentStep >= i ? 'bg-primary-500 w-8' : 'bg-gray-300',
-              ]"
-            ></div>
+        <div class="flex items-center gap-4">
+          <NuxtLink
+            to="/app/orders"
+            class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </NuxtLink>
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">
+              {{ t.createOrderTitle }}
+            </h1>
+            <p class="text-sm text-gray-600 mt-1">
+              {{ t.createOrderSubtitle }}
+            </p>
           </div>
         </div>
       </div>
@@ -49,135 +27,97 @@
 
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <!-- Progress bar mobile -->
-      <div class="sm:hidden mb-6">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm font-medium text-gray-700">{{ t.step }} {{ currentStep }} {{ t.of }} 5</span>
-          <span class="text-sm text-gray-500">{{ stepLabels[currentStep - 1] }}</span>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-2">
-          <div
-            class="bg-primary-500 h-2 rounded-full transition-all duration-300"
-            :style="`width: ${(currentStep / 5) * 100}%`"
-          ></div>
+      <!-- Loading State -->
+      <div v-if="loadingProfile" class="flex items-center justify-center py-12">
+        <div class="text-center">
+          <svg class="inline-block w-12 h-12 text-primary-500 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="mt-4 text-gray-600">{{ t.loadingAddress }}</p>
         </div>
       </div>
 
-      <!-- Error Alert -->
-      <Transition
-        enter-active-class="transform ease-out duration-300 transition"
-        enter-from-class="translate-y-2 opacity-0"
-        enter-to-class="translate-y-0 opacity-100"
-        leave-active-class="transition ease-in duration-200"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
-        <div
-          v-if="errorMessage"
-          class="mb-6 bg-red-50 border-l-4 border-red-500 rounded-lg p-4 shadow-sm animate-shake"
+      <!-- Form Content (shown when not loading profile) -->
+      <div v-else>
+        <!-- Saved Address Notice -->
+        
+
+        <!-- Error Alert -->
+        <Transition
+          enter-active-class="transform ease-out duration-300 transition"
+          enter-from-class="translate-y-2 opacity-0"
+          enter-to-class="translate-y-0 opacity-100"
+          leave-active-class="transition ease-in duration-200"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
         >
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg class="w-5 h-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+          <div
+            v-if="errorMessage"
+            class="mb-6 bg-red-50 border-l-4 border-red-500 rounded-lg p-4 shadow-sm"
+          >
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="w-5 h-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div class="ml-3 flex-1">
+                <p class="text-sm font-medium text-red-800">{{ errorMessage }}</p>
+              </div>
             </div>
-            <div class="ml-3 flex-1">
-              <p class="text-sm font-medium text-red-800">{{ errorMessage }}</p>
-            </div>
-            <button @click="errorMessage = ''" class="ml-3 flex-shrink-0">
-              <svg class="w-5 h-5 text-red-400 hover:text-red-600 transition-colors" viewBox="0 0 20 20" fill="currentColor">
-                <path
-                  fill-rule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+          </div>
+        </Transition>
+
+        <!-- Delivery Address Form -->
+        <form @submit.prevent="handleCreateOrder">
+          <DeliveryAddressStep
+            :delivery-address="form.delivery_address"
+            :is-rural="form.is_rural"
+            :save-address="form.save_address"
+            :rural-surcharge="null"
+            :mexican-states="mexicanStates"
+            :t="t"
+            @update:delivery-address="form.delivery_address = $event"
+            @update:is-rural="form.is_rural = $event"
+            @update:save-address="form.save_address = $event"
+          />
+
+          <!-- Submit Button -->
+          <div class="mt-8 flex justify-end">
+            <button
+              type="submit"
+              :disabled="!isFormValid || loading"
+              class="px-8 py-3 bg-primary-500 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+            >
+              <span v-if="loading" class="flex items-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ t.creating }}
+              </span>
+              <span v-else>
+                {{ t.createOrder }}
+                <svg class="inline-block w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
             </button>
           </div>
-        </div>
-      </Transition>
-
-      <!-- Form Steps -->
-      <form @submit.prevent="handleCheckout" class="space-y-6">
-        <!-- Step 1: Box Selection -->
-        <CheckoutStep1
-          v-show="currentStep === 1"
-          :available-boxes="availableBoxes"
-          :selected-box-id="selectedBoxId"
-          :loading-products="loadingProducts"
-          :exchange-rate="exchangeRate"
-          :language="language"
-          :t="t"
-          @update:selected-box-id="selectedBoxId = $event"
-          @next="nextStep"
-        />
-
-        <!-- Step 2: USA Address Info -->
-        <CheckoutStep2
-          v-show="currentStep === 2"
-          :user="user"
-          :po-box-address="poBoxAddress"
-          :t="t"
-          @previous="previousStep"
-          @next="nextStep"
-        />
-
-        <!-- Step 3: Declared Value -->
-        <CheckoutStep3
-          v-show="currentStep === 3"
-          :declared-value="form.declared_value"
-          :language="language"
-          :exchange-rate="exchangeRate"
-          :t="t"
-          @update:declared-value="form.declared_value = $event"
-          @previous="previousStep"
-          @next="nextStep"
-        />
-
-        <!-- Step 4: Mexico Delivery Address -->
-        <CheckoutStep4
-          v-show="currentStep === 4"
-          :delivery-address="form.delivery_address"
-          :is-rural="form.is_rural"
-          :save-address="form.save_address"
-          :rural-surcharge="ruralSurcharge"
-          :mexican-states="mexicanStates"
-          :t="t"
-          @update:delivery-address="form.delivery_address = $event"
-          @update:is-rural="form.is_rural = $event"
-          @update:save-address="form.save_address = $event"
-          @previous="previousStep"
-          @next="nextStep"
-        />
-
-        <!-- Step 5: Overview & Checkout -->
-        <CheckoutStep5
-          v-show="currentStep === 5"
-          :selected-box="selectedBox"
-          :delivery-address="form.delivery_address"
-          :declared-value="form.declared_value"
-          :is-rural="form.is_rural"
-          :rural-surcharge="ruralSurcharge"
-          :loading="loading"
-          :is-form-valid="isFormValid"
-          :language="language"
-          :exchange-rate="exchangeRate"
-          :t="t"
-          @previous="previousStep"
-          @submit="handleCheckout"
-        />
-      </form>
+        </form>
+      </div>
     </div>
   </section>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import DeliveryAddressStep from "~/components/CheckoutStep4.vue";
 
 // Define page meta
 definePageMeta({
@@ -188,28 +128,19 @@ definePageMeta({
 // Nuxt imports
 const { $customFetch } = useNuxtApp();
 const { $toast } = useNuxtApp();
-const route = useRoute();
 const user = useUser().value;
 
 // Use the language composable
 const { t: createTranslations, language } = useLanguage();
 
-// Exchange rate constant
-const exchangeRate = 18;
-
 // State
-const currentStep = ref(1);
 const loading = ref(false);
-const loadingProducts = ref(true);
+const loadingProfile = ref(true);
 const errorMessage = ref("");
-const availableBoxes = ref([]);
-const ruralSurcharge = ref(null);
-const selectedBoxId = ref(route.query.box || null);
+const hasLoadedSavedAddress = ref(false);
 
-// Form data
+// Form data - Initialize with empty values first
 const form = ref({
-  declared_value: null,
-  save_address: false,
   delivery_address: {
     street: "",
     exterior_number: "",
@@ -221,13 +152,9 @@ const form = ref({
     referencias: "",
   },
   is_rural: false,
+  save_address: false,
+  notes: "",
 });
-
-// PO Box Address
-const poBoxAddress = computed(() => ({
-  line1: "2220 Otay Lakes Rd. Suite 502 #95",
-  line2: "Chula Vista CA 91915",
-}));
 
 // Mexican states
 const mexicanStates = [
@@ -266,194 +193,77 @@ const mexicanStates = [
 ];
 
 // Computed
-const selectedBox = computed(() => {
-  return availableBoxes.value.find((box) => box.id === selectedBoxId.value);
-});
-
 const isFormValid = computed(() => {
-  if (currentStep.value === 4) {
-    const addr = form.value.delivery_address;
-    return (
-      addr.street &&
-      addr.exterior_number &&
-      addr.colonia &&
-      addr.municipio &&
-      addr.estado &&
-      addr.postal_code &&
-      /^\d{5}$/.test(addr.postal_code)
-    );
-  }
-  return true;
+  const addr = form.value.delivery_address;
+  return (
+    addr.street &&
+    addr.exterior_number &&
+    addr.colonia &&
+    addr.municipio &&
+    addr.estado &&
+    addr.postal_code &&
+    /^\d{5}$/.test(addr.postal_code)
+  );
 });
-
-const stepHeaders = computed(() => [
-  {
-    title: t.value.step1Title,
-    subtitle: t.value.step1Subtitle,
-  },
-  {
-    title: t.value.step2Title,
-    subtitle: t.value.step2Subtitle,
-  },
-  {
-    title: t.value.step3Title,
-    subtitle: t.value.step3Subtitle,
-  },
-  {
-    title: t.value.step4Title,
-    subtitle: t.value.step4Subtitle,
-  },
-  {
-    title: t.value.step5Title,
-    subtitle: t.value.step5Subtitle,
-  },
-]);
-
-const stepLabels = computed(() => [
-  t.value.selectBox,
-  t.value.usaAddress,
-  t.value.declaredValue,
-  t.value.deliveryAddress,
-  t.value.overview,
-]);
 
 // Translations
 const translations = {
-  checkoutTitle: {
-    es: "Crear Nueva Orden",
-    en: "Create New Order",
+  createOrderTitle: {
+    es: "Crear Nuevo Envio",
+    en: "Create New Shipment",
   },
-  checkoutSubtitle: {
-    es: "Selecciona tu caja y completa tu información",
-    en: "Select your box and complete your information",
+  createOrderSubtitle: {
+    es: "Ingresa tu dirección de entrega en México",
+    en: "Enter your delivery address in Mexico",
   },
-  step: {
-    es: "Paso",
-    en: "Step",
+  declaredValueOptional: {
+    es: "Valor Declarado (Opcional)",
+    en: "Declared Value (Optional)",
   },
-  of: {
-    es: "de",
-    en: "of",
+  declaredValueDescription: {
+    es: "Ingresa el valor estimado de tus compras para calcular impuestos. Puedes actualizarlo después.",
+    en: "Enter the estimated value of your purchases for tax calculation. You can update it later.",
   },
-  selectBox: {
-    es: "Seleccionar Caja",
-    en: "Select Box",
+  ivaWarning: {
+    es: "Se aplicará IVA del 16% para valores superiores a $50 USD",
+    en: "16% VAT will apply for values over $50 USD",
   },
-  usaAddress: {
-    es: "Dirección USA",
-    en: "USA Address",
-  },
-  declaredValue: {
-    es: "Valor Declarado",
-    en: "Declared Value",
-  },
-  deliveryAddress: {
-    es: "Dirección de Entrega",
-    en: "Delivery Address",
-  },
-  overview: {
-    es: "Resumen",
-    en: "Overview",
-  },
-  selectBoxSize: {
-    es: "Selecciona el Tamaño de tu Caja",
-    en: "Select Your Box Size",
-  },
-  maxDimensions: {
-    es: "Dimensiones máximas",
-    en: "Maximum dimensions",
-  },
-  maxWeight: {
-    es: "Peso máximo",
-    en: "Max weight",
-  },
-  maximum: {
-    es: "máximo",
-    en: "maximum",
-  },
-  continue: {
+  createOrder: {
     es: "Continuar",
     en: "Continue",
   },
-  back: {
-    es: "Atrás",
-    en: "Back",
+  creating: {
+    es: "Creando envio...",
+    en: "Creating shipment...",
   },
-  declaredValueTitle: {
-    es: "Valor Declarado para Aduana",
-    en: "Declared Value for Customs",
+  loadingAddress: {
+    es: "Cargando tu dirección guardada...",
+    en: "Loading your saved address...",
   },
-  declaredValueSubtitle: {
-    es: "Valor Declarado",
-    en: "Declared Value",
+  savedAddressLoaded: {
+    es: "Dirección guardada cargada",
+    en: "Saved address loaded",
   },
-  usaAddressTitle: {
-    es: "Tu Dirección en Estados Unidos",
-    en: "Your USA Address",
+  savedAddressLoadedDescription: {
+    es: "Hemos cargado tu dirección guardada. Puedes modificarla si es necesario.",
+    en: "We've loaded your saved address. You can modify it if needed.",
   },
-  yourUSAddress: {
-    es: "Tu Dirección en USA",
-    en: "Your USA Address",
+  // Include all the translations from DeliveryAddressStep
+  quickAddressSearchTitle: {
+    es: 'Búsqueda Rápida de Dirección',
+    en: 'Quick Address Search'
   },
-  copyAddress: {
-    es: "Copiar Dirección",
-    en: "Copy Address",
+  quickAddressSearchDescription: {
+    es: 'Busca tu dirección para completar los campos automáticamente',
+    en: 'Search for your address to automatically fill the fields'
   },
-  copied: {
-    es: "Copiado",
-    en: "Copied",
+  searchPlaceholder: {
+    es: 'Buscar dirección, ciudad o código postal',
+    en: 'Search address, city or zip code'
   },
-  importantInstructions: {
-    es: "Instrucciones Importantes",
-    en: "Important Instructions",
-  },
-  instruction1: {
-    es: 'Usa el nombre "ECTJ" seguido de tu nombre completo cuando compres',
-    en: 'Use the name "ECTJ" followed by your full name when shopping',
-  },
-  instruction2: {
-    es: "Copia la dirección exactamente como se muestra arriba",
-    en: "Copy the address exactly as shown above",
-  },
-  instruction3: {
-    es: "Una vez que tus paquetes lleguen, los consolidaremos y enviaremos a México",
-    en: "Once your packages arrive, we will consolidate and ship them to Mexico",
-  },
-  nameAtCheckout: {
-    es: "Nombre para el checkout",
-    en: "Name at checkout",
-  },
-  shippingAddress: {
-    es: "Dirección de envío",
-    en: "Shipping address",
-  },
-  checkoutTip: {
-    es: "Usa exactamente este nombre y dirección cuando compres en línea",
-    en: "Use exactly this name and address when shopping online",
-  },
-  declaredValueDescription: {
-    es: "Ingresa el valor total estimado de los productos que planeas enviar en esta orden. El IVA (16%) solo aplica para valores de $50 USD o más.",
-    en: "Enter the estimated total value of all items you plan to ship in this order. The 16% import tax (IVA) only applies to values of $50 USD or more.",
-  },
-  totalDeclaredValue: {
-    es: "Valor Total Declarado (USD)",
-    en: "Total Declared Value (USD)",
-  },
-  declaredValueWarning: {
-    es: "Se preciso - vamos a verificar esto al llegar los paquetes",
-    en: "Be accurate - we will verify this once packages arrive",
-  },
-  ivaLabel: {
-    es: "IVA (16%)",
-    en: "VAT (16%)",
-  },
-  noIvaRequired: {
-    es: "✓ No se requiere IVA para valores menores a $50 USD",
-    en: "✓ No VAT required for values under $50 USD",
-  },
-  deliveryAddressTitle: {
-    es: "Dirección de Entrega en México",
-    en: "Delivery Address in Mexico",
+  addressFoundMessage: {
+    es: 'Dirección encontrada. Por favor revisa y completa los campos faltantes.',
+    en: 'Address found. Please review and complete any missing fields.'
   },
   streetLabel: {
     es: "Calle",
@@ -524,81 +334,8 @@ const translations = {
     en: "Rural Area",
   },
   ruralAreaDescription: {
-    es: "Marca esta casilla si tu dirección está en una zona rural. Se aplicará un cargo adicional.",
-    en: "Check this box if your address is in a rural area. An additional charge will apply.",
-  },
-  ruralArea: {
-    es: "Zona Rural",
-    en: "Rural Area",
-  },
-  ruralDeliveryFee: {
-    es: "Cargo por zona rural",
-    en: "Rural delivery fee",
-  },
-  orderOverview: {
-    es: "Resumen de tu Envio",
-    en: "Order Overview",
-  },
-  reviewBeforePayment: {
-    es: "Revisa tu orden antes de proceder al pago",
-    en: "Review your order before proceeding to payment",
-  },
-  orderDetails: {
-    es: "Detalles de la Orden",
-    en: "Order Details",
-  },
-  shipFrom: {
-    es: "Enviar Desde",
-    en: "Ship From",
-  },
-  shipTo: {
-    es: "Destino de envio",
-    en: "Ship To",
-  },
-  priceBreakdown: {
-    es: "Desglose de Precios",
-    en: "Price Breakdown",
-  },
-  declaredValue: {
-    es: "Valor Declarado",
-    en: "Declared Value",
-  },
-  total: {
-    es: "Total",
-    en: "Total",
-  },
-  proceedToPayment: {
-    es: "Proceder al Pago",
-    en: "Proceed to Payment",
-  },
-  processing: {
-    es: "Procesando...",
-    en: "Processing...",
-  },
-  generalError: {
-    es: "Ocurrió un error. Por favor, intenta de nuevo.",
-    en: "An error occurred. Please try again.",
-  },
-  // Product translations
-  extraSmallBoxName: {
-    es: "Caja Extra Pequeña",
-    en: "Extra Small Box",
-  },
-  smallBoxName: {
-    es: "Caja Pequeña",
-    en: "Small Box",
-  },
-  mediumBoxName: {
-    es: "Caja Mediana",
-    en: "Medium Box",
-  },
-  largeBoxName: {
-    es: "Caja Grande",
-    en: "Large Box",
-  },
-  extraLargeBoxName: {
-    es: "Caja Extra Grande",
-    en: "Extra Large Box",
+    es: "Marca esta casilla si tu dirección está en una zona rural.",
+    en: "Check this box if your address is in a rural area.",
   },
   saveAddressLabel: {
     es: "Guardar esta dirección para futuros pedidos",
@@ -608,159 +345,80 @@ const translations = {
     es: "Guarda tu dirección de entrega para no tener que ingresarla nuevamente",
     en: "Save your delivery address so you don't have to enter it again",
   },
-  addressSaved: {
-    es: "Dirección guardada exitosamente",
-    en: "Address saved successfully",
-  },
-  selectBoxSubtitle: {
-    es: "Elige el tamaño que mejor se adapte a tus compras",
-    en: "Choose the size that best fits your purchases",
-  },
-  upTo: {
-    es: "Hasta",
-    en: "Up to",
-  },
-  needHelp: {
-    es: "¿No estás seguro qué tamaño elegir?",
-    en: "Not sure which size to choose?",
-  },
-  sizeGuideText: {
-    es: "Extra Pequeña para documentos. Mediana para ropa. Grande o Extra Grande para múltiples artículos.",
-    en: "Extra Small for documents. Medium for clothing. Large or Extra Large for multiple items.",
-  },
-  extraSmallBoxDesc: {
-    es: "Perfecta para joyas, documentos, electrónicos pequeños o accesorios ligeros.",
-    en: "Perfect for jewelry, documents, small electronics, or lightweight accessories.",
-  },
-  smallBoxDesc: {
-    es: "Perfecta para compras pequeñas como electrónicos, cosméticos o accesorios.",
-    en: "Perfect for small purchases like electronics, cosmetics, or accessories.",
-  },
-  mediumBoxDesc: {
-    es: "Ideal para compras de ropa, zapatos o múltiples artículos pequeños.",
-    en: "Ideal for clothing hauls, shoes, or multiple small items.",
-  },
-  largeBoxDesc: {
-    es: "Excelente para compras al por mayor, artículos del hogar o electrónicos grandes.",
-    en: "Great for bulk purchases, home goods, or large electronics.",
-  },
-  extraLargeBoxDesc: {
-    es: "Ideal para electrodomésticos grandes, muebles, pedidos al por mayor o envíos familiares.",
-    en: "Ideal for large appliances, furniture, bulk orders, or family-sized shipments.",
-  },
-  helpText: {
-    es: "Contáctanos para ayudarte a elegir o crear una solución personalizada para tu envío.",
-    en: "Contact us to help you choose or create a custom solution for your shipment.",
-  },
-  contactWhatsApp: {
-    es: "WhatsApp",
-    en: "WhatsApp",
-  },
-  contactEmail: {
-    es: "Email",
-    en: "Email",
-  },
-  step1Title: {
-    es: "Selecciona tu Caja",
-    en: "Select Your Box",
-  },
-  step1Subtitle: {
-    es: "Elige el tamaño de caja perfecta para tu envio",
-    en: "Choose the perfect box size for your shipment",
-  },
-  step2Title: {
-    es: "Usa Esta Dirección al Pagar",
-    en: "Use This Address at Checkout",
-  },
-  step2Subtitle: {
-    es: "Copia exactamente el nombre y dirección en tus compras",
-    en: "Copy this exact address when checking out at online stores",
-  },
-  step3Title: {
-    es: "Valor de tus Compras",
-    en: "Value of Your Purchases",
-  },
-  step3Subtitle: {
-    es: "Declara el valor para calcular impuestos",
-    en: "Declare the value to calculate taxes",
-  },
-  step4Title: {
-    es: "¿Dónde Enviamos?",
-    en: "Where Should We Deliver?",
-  },
-  step4Subtitle: {
-    es: "Ingresa tu dirección de entrega en México",
-    en: "Enter your delivery address in Mexico",
-  },
-  step5Title: {
-    es: "Confirma y Paga",
-    en: "Confirm & Pay",
-  },
-  step5Subtitle: {
-    es: "Revisa tu orden antes de proceder al pago",
-    en: "Review your order before proceeding to payment",
-  },
-  exchangeRateInfo: {
-    es: "Tipo de cambio: $1 USD = $18 MXN",
-    en: "Exchange rate: $1 USD = $18 MXN",
-  },
-  quickAddressSearchTitle: {
-    es: 'Búsqueda Rápida de Dirección',
-    en: 'Quick Address Search'
-  },
-  quickAddressSearchDescription: {
-    es: 'Busca tu dirección para completar los campos automáticamente',
-    en: 'Search for your address to automatically fill the fields'
-  },
-  searchPlaceholder: {
-    es: 'Buscar dirección, ciudad o código postal',
-    en: 'Search address, city or zip code'
-  },
-  addressFoundMessage: {
-    es: 'Dirección encontrada. Por favor revisa y completa los campos faltantes.',
-    en: 'Address found. Please review and complete any missing fields.'
-  }
 };
 
 // Get reactive translations
 const t = createTranslations(translations);
 
 // Methods
-const fetchProducts = async () => {
+const fetchUserProfile = async () => {
+  loadingProfile.value = true;
   try {
-    loadingProducts.value = true;
-    const response = await $customFetch("/products");
-
-    // The response has data array and rural_surcharge
-    availableBoxes.value = response.data;
-    ruralSurcharge.value = response.rural_surcharge;
-
-    // If box was pre-selected from query, validate it exists
-    if (selectedBoxId.value && !selectedBox.value) {
-      selectedBoxId.value = null;
+    const response = await $customFetch('/profile');
+    
+    if (response.success && response.data) {
+      const profileData = response.data;
+      
+      // Check if user has a complete address
+      if (profileData.has_complete_address && profileData.address) {
+        // Pre-populate the form with the saved address
+        form.value.delivery_address = {
+          street: profileData.address.street || "",
+          exterior_number: profileData.address.exterior_number || "",
+          interior_number: profileData.address.interior_number || "",
+          colonia: profileData.address.colonia || "",
+          municipio: profileData.address.municipio || "",
+          estado: profileData.address.estado || "",
+          postal_code: profileData.address.postal_code || "",
+          referencias: "", // Referencias is not stored in profile, so leave empty
+        };
+        
+        // Mark that we've loaded a saved address
+        hasLoadedSavedAddress.value = true;
+        
+        // Since we have a saved address, don't check "save address" by default
+        form.value.save_address = false;
+      } else {
+        // No saved address, use user data if available (fallback to old approach)
+        if (user) {
+          form.value.delivery_address = {
+            street: user.street || "",
+            exterior_number: user.exterior_number || "",
+            interior_number: user.interior_number || "",
+            colonia: user.colonia || "",
+            municipio: user.municipio || "",
+            estado: user.estado || "",
+            postal_code: user.postal_code || "",
+            referencias: "",
+          };
+        }
+        
+        // Suggest saving address if they don't have one
+        form.value.save_address = true;
+      }
     }
   } catch (error) {
-    console.error("Error fetching products:", error);
-    $toast.error("Error loading box options");
+    console.error('Error fetching user profile:', error);
+    // If error fetching profile, fallback to user data if available
+    if (user) {
+      form.value.delivery_address = {
+        street: user.street || "",
+        exterior_number: user.exterior_number || "",
+        interior_number: user.interior_number || "",
+        colonia: user.colonia || "",
+        municipio: user.municipio || "",
+        estado: user.estado || "",
+        postal_code: user.postal_code || "",
+        referencias: "",
+      };
+    }
   } finally {
-    loadingProducts.value = false;
+    loadingProfile.value = false;
   }
 };
 
-const nextStep = () => {
-  if (currentStep.value < 5) {
-    currentStep.value++;
-  }
-};
-
-const previousStep = () => {
-  if (currentStep.value > 1) {
-    currentStep.value--;
-  }
-};
-
-const handleCheckout = async () => {
-  if (!isFormValid.value || !selectedBox.value) return;
+const handleCreateOrder = async () => {
+  if (!isFormValid.value) return;
 
   loading.value = true;
   errorMessage.value = "";
@@ -780,34 +438,37 @@ const handleCheckout = async () => {
           postal_code: form.value.delivery_address.postal_code,
         },
       });
-      console.log("address saved successfully");
     } catch (error) {
       console.error("Error saving address:", error);
-      // Continue with checkout even if address save fails
+      // Continue with order creation even if address save fails
     }
   }
 
   try {
-    const response = await $customFetch("/checkout", {
+    // Create the order with the new endpoint
+    const response = await $customFetch("/orders", {
       method: "POST",
       body: {
-        price_id: selectedBox.value.stripe_price_id,
-        declared_value: form.value.declared_value,
         delivery_address: form.value.delivery_address,
         is_rural: form.value.is_rural,
+        notes: form.value.notes,
       },
     });
 
-    if (response.success && response.checkout_url) {
-      // Redirect to Stripe Checkout
-      window.location.href = response.checkout_url;
-    } else {
-      throw new Error("Invalid response from server");
+    if (response.success) {
+      // Show success message
+      $toast.success(language.value === 'es' 
+        ? '¡Orden creada! Ahora agrega los productos que vas a comprar.'
+        : 'Order created! Now add the products you plan to buy.');
+      
+      // Redirect to add items page
+      await navigateTo(`/app/orders/${response.data.order.id}/items`);
     }
   } catch (error) {
-    console.error("Error creating checkout session:", error);
-
-    const errorMsg = error.data?.message || t.value.generalError;
+    console.error("Error creating order:", error);
+    const errorMsg = error.data?.message || (language.value === 'es' 
+      ? 'Error al crear la orden. Por favor intenta de nuevo.'
+      : 'Error creating order. Please try again.');
     $toast.error(errorMsg);
     errorMessage.value = errorMsg;
   } finally {
@@ -815,63 +476,8 @@ const handleCheckout = async () => {
   }
 };
 
-// Lifecycle
+// Fetch user profile on mount to pre-populate address
 onMounted(() => {
-  fetchProducts();
-
-  // Prefill delivery address if user has saved address
-  if (user) {
-    form.value.delivery_address = {
-      street: user.street || "",
-      exterior_number: user.exterior_number || "",
-      interior_number: user.interior_number || "",
-      colonia: user.colonia || "",
-      municipio: user.municipio || "",
-      estado: user.estado || "",
-      postal_code: user.postal_code || "",
-      referencias: "",
-    };
-  }
+  fetchUserProfile();
 });
 </script>
-
-<style scoped>
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translateX(-2px);
-  }
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translateX(2px);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.6s ease-out;
-}
-
-.animate-shake {
-  animation: shake 0.5s ease-in-out;
-}
-</style>

@@ -160,7 +160,7 @@
               >
                 <div class="flex items-start justify-between mb-3">
                   <div>
-                    <p class="font-semibold text-gray-900">{{ order.order_number }}</p>
+                    <p class="font-semibold text-gray-900">{{ order.tracking_number }}</p>
                     <p class="text-xs text-gray-500 mt-1">{{ order.user?.name }}</p>
                   </div>
                   <span :class="[
@@ -232,7 +232,7 @@
                   >
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <p class="text-sm font-semibold text-gray-900">{{ order.order_number }}</p>
+                        <p class="text-sm font-semibold text-gray-900">{{ order.tracking_number }}</p>
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -454,6 +454,14 @@
       es: 'Paquetes Completos',
       en: 'Packages Complete'
     },
+    quote_sent: {
+      es: "Cotización Enviada",
+      en: "Quote Sent",
+    },
+    paid: {
+      es: "Pagado",
+      en: "Paid",
+    },
     shipped: {
       es: 'Enviado',
       en: 'Shipped'
@@ -591,16 +599,21 @@
     fetchOrders(1)
   }
   
-  const getStatusColor = (status) => {
-    const colors = {
-      collecting: 'bg-gray-100 text-gray-700',
-      awaiting_packages: 'bg-yellow-100 text-yellow-700',
-      packages_complete: 'bg-primary-100 text-primary-700',
-      shipped: 'bg-primary-100 text-primary-700',
-      delivered: 'bg-green-100 text-green-700'
-    }
-    return colors[status] || 'bg-gray-100 text-gray-700'
-  }
+  
+const getStatusColor = (status) => {
+  const colors = {
+    collecting: "bg-primary-100 text-primary-700",
+    awaiting_packages: "bg-amber-100 text-amber-700",
+    packages_complete: "bg-primary-100 text-primary-700",
+    processing: "bg-primary-100 text-primary-700",
+    quote_sent: "bg-orange-100 text-orange-700",
+    paid: "bg-green-100 text-green-700",
+    shipped: "bg-primary-100 text-primary-700",
+    delivered: "bg-green-100 text-green-700",
+    cancelled: "bg-red-100 text-red-700",
+  };
+  return colors[status] || "bg-gray-100 text-gray-700";
+};
   
   const getStatusLabel = (status) => {
     return t.value[status] || status

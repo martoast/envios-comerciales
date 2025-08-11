@@ -36,7 +36,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: 'Buscar dirección, ciudad o código postal'
+    default: 'Buscar dirección en Mexico'
   }
 })
 

@@ -12,15 +12,6 @@
     <!-- How It Works Section -->
     <MainHowItWorksSection />
     
-    <!-- Pricing Section -->
-    <PricingSection 
-      :show-header="true" 
-      :show-features="false" 
-      :show-c-t-a="false"
-      background-color="bg-white"
-    />
-
-    
 
     <CTACarouselBanner/>
     

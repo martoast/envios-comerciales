@@ -213,31 +213,6 @@
       </div>
     </div>
 
-    <!-- Navigation -->
-    <div class="flex justify-between mt-6">
-      <button
-        type="button"
-        @click="$emit('previous')"
-        class="px-6 py-3 bg-white text-gray-700 font-semibold rounded-xl border border-gray-300 hover:bg-gray-50 transition-all duration-300"
-      >
-        <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
-        </svg>
-        {{ t.back }}
-      </button>
-
-      <button
-        type="button"
-        @click="$emit('next')"
-        :disabled="!isFormValid"
-        class="px-6 py-3 bg-primary-500 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-      >
-        {{ t.continue }}
-        <svg class="inline-block w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-        </svg>
-      </button>
-    </div>
   </div>
 </template>
 

@@ -26,7 +26,7 @@
             </NuxtLink>
             <div>
               <h1 class="text-lg font-semibold text-gray-900">
-                {{ order?.order_number }}
+                {{ order?.tracking_number }}
               </h1>
             </div>
           </div>
@@ -135,9 +135,6 @@
         @dismiss="dismissSuccessBanner"
       />
 
-      <!-- Progress Timeline Component -->
-      <OrderProgressTimeline :order="order" />
-
       <!-- Action Banners -->
       <!-- Add Items CTA (Collecting Status) -->
       <div
@@ -174,7 +171,7 @@
             </p>
           </div>
           <NuxtLink
-            :to="`/app/orders/${order.id}/add-items`"
+            :to="`/app/orders/${order.id}/items`"
             class="px-6 py-3 bg-white text-primary-600 font-medium rounded-lg hover:bg-gray-50 transition-colors"
           >
             {{ t.addItems }}
@@ -411,181 +408,13 @@
           v-if="!order.items || order.items.length === 0"
           class="p-12 text-center"
         >
-          <svg
-            class="w-12 h-12 text-gray-400 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"
-            />
-          </svg>
+        <img
+                  src="/empty-box.svg"
+                  alt="empty box"
+                  class="w-12 h-12 flex items-center justify-center mx-auto"
+                />
           <p class="text-gray-500">{{ t.noItemsYet }}</p>
           <p class="text-sm text-gray-400 mt-1">{{ t.startAddingItems }}</p>
-        </div>
-      </div>
-
-      <!-- Key Metrics Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <!-- Total Paid -->
-        <div class="bg-white rounded-xl p-6 border border-gray-200">
-          <div class="flex items-center justify-between mb-2">
-            <p class="text-sm text-gray-600">{{ t.paymentDetails }}</p>
-            <div
-              class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"
-            >
-              <svg
-                class="w-4 h-4 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-          </div>
-          <p class="text-2xl font-bold text-gray-900">
-            ${{ Number(order.amount_paid).toLocaleString() }}
-            {{ order.currency?.toUpperCase() }}
-          </p>
-          <p class="text-xs text-gray-500 mt-1">
-            {{ t.boxSize }}: {{ getBoxSizeLabel(order.box_size) }}
-          </p>
-        </div>
-
-        <!-- Items Count -->
-        <div class="bg-white rounded-xl p-6 border border-gray-200">
-          <div class="flex items-center justify-between mb-2">
-            <p class="text-sm text-gray-600">{{ t.itemsProgress }}</p>
-            <div
-              class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center"
-            >
-              <svg
-                class="w-4 h-4 text-primary-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"
-                />
-              </svg>
-            </div>
-          </div>
-          <p class="text-2xl font-bold text-gray-900">
-            {{ order.items?.length || 0 }}
-          </p>
-          <p class="text-xs text-gray-500 mt-1">{{ t.items }}</p>
-        </div>
-
-        <!-- Order Status -->
-        <div class="bg-white rounded-xl p-6 border border-gray-200">
-          <div class="flex items-center justify-between mb-2">
-            <p class="text-sm text-gray-600">{{ t.currentStatusLabel }}</p>
-            <div
-              :class="[
-                'w-8 h-8 rounded-lg flex items-center justify-center',
-                getStatusIconBg(order.status),
-              ]"
-            >
-              <svg
-                v-if="order.status === 'shipped'"
-                class="w-4 h-4"
-                :class="getStatusIconColor(order.status)"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"
-                />
-              </svg>
-              <svg
-                v-else-if="order.status === 'delivered'"
-                class="w-4 h-4"
-                :class="getStatusIconColor(order.status)"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <svg
-                v-else-if="order.status === 'paid'"
-                class="w-4 h-4"
-                :class="getStatusIconColor(order.status)"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <svg
-                v-else-if="
-                  order.status === 'awaiting_packages' ||
-                  order.status === 'packages_complete'
-                "
-                class="w-4 h-4"
-                :class="getStatusIconColor(order.status)"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM9 12H5V9h4v3z"
-                />
-              </svg>
-              <svg
-                v-else
-                class="w-4 h-4"
-                :class="getStatusIconColor(order.status)"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-            </div>
-          </div>
-          <p class="text-lg font-bold text-gray-900">
-            {{ getStatusLabel(order.status) }}
-          </p>
-          <p class="text-xs text-gray-500 mt-1">
-            {{ getStatusDescription(order.status) }}
-          </p>
         </div>
       </div>
 
@@ -645,6 +474,9 @@
           </div>
         </div>
       </div>
+
+      <!-- Progress Timeline Component -->
+      <OrderProgressTimeline :order="order" />
 
       
     </div>
@@ -719,93 +551,6 @@
                       class="flex-1 px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                     >
                       {{ completingOrder ? t.completing : t.confirmComplete }}
-                    </button>
-                  </div>
-                </div>
-              </DialogPanel>
-            </TransitionChild>
-          </div>
-        </div>
-      </Dialog>
-    </TransitionRoot>
-
-    <!-- Delete Item Modal -->
-    <TransitionRoot as="template" :show="!!selectedItemToDelete">
-      <Dialog class="relative z-50" @close="selectedItemToDelete = null">
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="ease-in duration-200"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
-          <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" />
-        </TransitionChild>
-
-        <div class="fixed inset-0 z-10 overflow-y-auto">
-          <div class="flex min-h-full items-center justify-center p-4">
-            <TransitionChild
-              as="template"
-              enter="ease-out duration-300"
-              enter-from="opacity-0 scale-95"
-              enter-to="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leave-from="opacity-100 scale-100"
-              leave-to="opacity-0 scale-95"
-            >
-              <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
-              >
-                <div class="text-center">
-                  <div
-                    class="mx-auto w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4"
-                  >
-                    <svg
-                      class="w-6 h-6 text-red-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                      />
-                    </svg>
-                  </div>
-                  <DialogTitle
-                    as="h3"
-                    class="text-lg font-semibold text-gray-900 mb-2"
-                  >
-                    {{ t.confirmDeleteTitle }}
-                  </DialogTitle>
-                  <p class="text-sm text-gray-600 mb-3">
-                    {{ t.confirmDeleteText }}
-                  </p>
-                  <p
-                    v-if="selectedItemToDelete"
-                    class="text-sm font-medium text-gray-900 mb-6 line-clamp-2"
-                  >
-                    {{
-                      selectedItemToDelete.product_name ||
-                      formatProductUrl(selectedItemToDelete.product_url)
-                    }}
-                  </p>
-                  <div class="flex gap-3">
-                    <button
-                      @click="selectedItemToDelete = null"
-                      class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      {{ t.cancel }}
-                    </button>
-                    <button
-                      @click="handleDeleteItem(selectedItemToDelete.id)"
-                      class="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
-                    >
-                      {{ t.confirmDelete }}
                     </button>
                   </div>
                 </div>
@@ -932,9 +677,7 @@ const order = ref(null);
 const loading = ref(true);
 const completingOrder = ref(false);
 const showCompleteOrderModal = ref(false);
-const selectedItemToDelete = ref(null);
-const showDeleteOrderModal = ref(false);
-const deletingOrder = ref(false);
+
 const showReopenOrderModal = ref(false);
 const reopeningOrder = ref(false);
 const showSuccessBanner = ref(false);
@@ -972,7 +715,7 @@ const translations = {
     en: "items",
   },
   orderItems: {
-    es: "Productos de la Orden",
+    es: "Productos del Envio",
     en: "Order Items",
   },
   deliveryAddress: {
@@ -1211,7 +954,7 @@ const fetchOrder = async () => {
       }
     }
     
-    // Check if coming from add-items page after completion
+    // Check if coming from items page after completion
     if (route.query.completed === 'true' && order.value?.status === 'awaiting_packages') {
       const confettiKey = `order-${order.value.id}-confetti-shown`;
       const hasShownConfetti = localStorage.getItem(confettiKey);
@@ -1240,21 +983,6 @@ const dismissSuccessBanner = () => {
   showSuccessBanner.value = false;
   // Remember that user dismissed the banner for this specific status
   localStorage.setItem(`order-${order.value.id}-${order.value.status}-dismissed`, 'true');
-};
-
-const handleDeleteItem = async (itemId) => {
-  try {
-    await $customFetch(`/orders/${order.value.id}/items/${itemId}`, {
-      method: "DELETE",
-    });
-
-    $toast.success(t.value.itemDeletedSuccess);
-    selectedItemToDelete.value = null;
-    await fetchOrder();
-  } catch (error) {
-    console.error("Error deleting item:", error);
-    $toast.error(t.value.errorDeletingItem);
-  }
 };
 
 const handleCompleteOrder = async () => {
@@ -1293,7 +1021,7 @@ const handleReopenOrder = async () => {
     showReopenOrderModal.value = false;
 
     // Redirect to add items page
-    return await navigateTo(`/app/orders/${order.value.id}/add-items`);
+    return await navigateTo(`/app/orders/${order.value.id}/items`);
   } catch (error) {
     console.error("Error reopening order:", error);
     $toast.error(error.data?.message || t.value.errorReopeningOrder);

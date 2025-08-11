@@ -186,15 +186,15 @@ const slides = computed(() => {
     {
       image: '/hero1.jpeg',
       mobileImage: '/mobilehero1test.jpeg',
-      title: 'Compra en cualquier tienda del mundo',
-      subtitle: 'Tu dirección en USA para comprar sin límites',
+      title: 'Vive el shopping sin fronteras',
+      subtitle: 'Compra en cualquier tienda de USA y recíbelo en México, todo en una sola caja.',
       ctaText: 'Empieza Ahora'
     },
     {
       image: '/hero2.jpeg',
       mobileImage: '/mobilehero2.jpeg',
-      title: 'Recibe todos tus paquetes en México',
-      subtitle: 'Consolidamos tus compras y ahorramos en envío',
+      title: 'Tu dirección en USA para comprar sin límites',
+      subtitle: 'Consolidamos tus compras, las enviamos a México y tú ahorras más.',
       ctaText: 'Regístrate Gratis'
     }
   ] : [

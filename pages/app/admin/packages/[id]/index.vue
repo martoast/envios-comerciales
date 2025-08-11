@@ -253,7 +253,7 @@
               <div>
                 <p class="text-sm text-gray-500">{{ t.orderNumber }}</p>
                 <NuxtLink :to="`/app/admin/orders/${packageItem.order.id}`" class="font-medium text-primary-600 hover:text-primary-700">
-                  {{ packageItem.order.order_number }}
+                  {{ packageItem.order.tracking_number }}
                 </NuxtLink>
               </div>
               <div>
