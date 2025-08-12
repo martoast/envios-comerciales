@@ -472,8 +472,8 @@ const translations = {
     en: '+1 555 123 4567'
   },
   phoneHelp: {
-    es: 'Incluye el código de país. Ej: +52 para México',
-    en: 'Include country code. Ex: +1 for USA, +52 for Mexico'
+    es: 'Incluye el código de país. Ej: +52 para México, +1 para USA',
+    en: 'Include country code. Ex: +1 for USA, +52 for Mexico, +1 for USA'
   },
   passwordLabel: {
     es: 'Contraseña',

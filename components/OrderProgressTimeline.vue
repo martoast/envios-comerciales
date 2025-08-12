@@ -470,8 +470,8 @@ const translations = {
     en: "Items Added",
   },
   orderSubmitted: {
-    es: "Orden Enviada",
-    en: "Order Submitted",
+    es: "Orden Creada",
+    en: "Order Created",
   },
   packagesArrived: {
     es: "Paquetes en Almacén",

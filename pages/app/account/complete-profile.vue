@@ -344,18 +344,20 @@ const translatedUserTypes = computed(() => {
     let description = ''
     
     switch(type.value) {
-      case 'expat':
-        label = t.value.expatLabel
-        description = t.value.expatDescription
+      case 'shopper':
+        label = t.value.shopperLabel
+        description = t.value.shopperDescription
         break
       case 'business':
         label = t.value.businessLabel
         description = t.value.businessDescription
         break
-      case 'shopper':
-        label = t.value.shopperLabel
-        description = t.value.shopperDescription
+      case 'expat':
+        label = t.value.expatLabel
+        description = t.value.expatDescription
         break
+      
+      
     }
     
     return {
