@@ -364,7 +364,7 @@ definePageMeta({
 })
 
 // Nuxt imports
-const { $customFetch } = useNuxtApp()
+const { $customFetch, $fbq } = useNuxtApp()
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig();
 
@@ -726,6 +726,10 @@ const handleRegister = async () => {
         registration_source: form.value.registration_source || undefined
       }
     })
+
+    if ($fbq) {
+      $fbq('track', 'CompleteRegistration')
+    }
     
     // Success - check for redirect query parameter
     if (redirectTo && typeof redirectTo === 'string') {

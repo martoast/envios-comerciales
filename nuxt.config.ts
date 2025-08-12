@@ -67,7 +67,11 @@ export default defineNuxtConfig({
       ]
     }
   },
-  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
+  modules: [
+    '@nuxtjs/tailwindcss', 
+    '@pinia/nuxt',
+    'nuxt-meta-pixel'
+  ],
   vue: {  
     compilerOptions: {
       isCustomElement: (tag) => ['mapbox-search-box'].includes(tag),
@@ -79,6 +83,13 @@ export default defineNuxtConfig({
       cookieDomain: process.env.COOKIE_DOMAIN,
       MAPBOX_API_TOKEN: process.env.MAPBOX_API_TOKEN,
       gtagId: process.env.GTAG_ID,
+      // Meta Pixel configuration
+      metapixel: {
+        default: { 
+          id: process.env.META_PIXEL_ID || '1259587282078463',
+          pageView: '**' // Track all pages by default
+        }
+      }
     }
   }
 })
