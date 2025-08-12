@@ -135,6 +135,22 @@
               </div>
             </div>
 
+            <div>
+              <label for="declared_value_desktop" class="block text-sm font-medium text-gray-700 mb-1">
+                {{ t.declaredValue }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
+              </label>
+              <input
+                v-model="itemForm.declared_value"
+                type="number"
+                step="0.01"
+                min="0"
+                max="999999.99"
+                id="declared_value_desktop"
+                :placeholder="t.declaredValuePlaceholder"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              />
+            </div>
+
             <!-- Receipt -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -363,6 +379,23 @@
                       </div>
                     </div>
 
+                    <!-- Declared Value -->
+                    <div>
+                      <label for="declared_value_mobile" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ t.declaredValue }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
+                      </label>
+                      <input
+                        v-model="itemForm.declared_value"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="999999.99"
+                        id="declared_value_mobile"
+                        :placeholder="t.declaredValuePlaceholder"
+                        class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      />
+                    </div>
+
                     <!-- Receipt -->
                     <div>
                       <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -534,7 +567,8 @@ const totalItemQuantity = computed(() => {
 // Form
 const itemForm = ref({
   product_name: '',
-  quantity: 1
+  quantity: 1,
+  declared_value: ''
 })
 
 // Translations
@@ -663,7 +697,15 @@ const translations = {
   productAdded: {
     es: '¡Producto agregado!',
     en: 'Product added!'
-  }
+  },
+  declaredValue: {
+  es: 'Valor declarado',
+  en: 'Declared value'
+},
+declaredValuePlaceholder: {
+  es: 'ej: 999.99',
+  en: 'e.g. 999.99'
+},
 }
 
 // Get reactive translations
@@ -737,6 +779,10 @@ const handleAddItem = async () => {
     const formData = new FormData()
     formData.append('product_name', itemForm.value.product_name.trim())
     formData.append('quantity', itemForm.value.quantity)
+
+    if (itemForm.value.declared_value) {
+      formData.append('declared_value', itemForm.value.declared_value)
+    }
     
     if (selectedFile.value) {
       formData.append('proof_of_purchase', selectedFile.value)
@@ -756,7 +802,8 @@ const handleAddItem = async () => {
     // Reset form
     itemForm.value = {
       product_name: '',
-      quantity: 1
+      quantity: 1,
+      declared_value: ''
     }
     selectedFile.value = null
 

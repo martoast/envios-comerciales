@@ -160,12 +160,18 @@
             <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <div class="text-center">
                 <div class="text-3xl font-bold text-primary-600 mb-2">
-                  ${{ formatPrice(calculatorResult.totalCostDisplay) }}
+                  ${{ calculatorResult.price.toFixed(2) }} MXN
                 </div>
-                <div class="text-sm text-gray-500 mb-4">
-                  ≈ ${{ formatPrice(calculatorResult.totalCostAlternate, true) }}
+                
+                <!-- Volumetric Weight Only -->
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                  <div class="text-sm">
+                    <span class="text-gray-500">{{ t.volumetricWeight }}:</span>
+                    <span class="font-semibold text-gray-700 ml-2">{{ calculatorResult.volumetricWeight }} kg</span>
+                  </div>
                 </div>
-                <p class="text-sm text-gray-600">{{ t.additionalFees }}</p>
+                
+                <p class="text-sm text-gray-600 mt-4">{{ t.additionalFees }}</p>
               </div>
             </div>
           </div>
@@ -207,20 +213,19 @@ const { $customFetch } = useNuxtApp()
 // Use the language composable
 const { t: createTranslations, language } = useLanguage()
 
-// Exchange rate constant
-const exchangeRate = 18
-
 // State
 const dimensions = ref({ length: 0, width: 0, height: 0 })
 const weight = ref(0)
 const currentUnit = ref('cm')
-const availableBoxes = ref([])
+const weightProducts = ref([])
 const loadingProducts = ref(true)
 
 const calculatorResult = ref({
   show: false,
-  totalCostDisplay: 0,
-  totalCostAlternate: 0
+  price: 0,
+  volumetricWeight: 0,
+  chargeableWeight: 0,
+  weightRange: ''
 })
 
 // Translations
@@ -281,6 +286,22 @@ const translations = {
     es: 'Costo Estimado',
     en: 'Estimated Cost'
   },
+  actualWeight: {
+    es: 'Peso Real',
+    en: 'Actual Weight'
+  },
+  volumetricWeight: {
+    es: 'Peso Volumétrico',
+    en: 'Volumetric Weight'
+  },
+  chargeableWeight: {
+    es: 'Peso Cobrable',
+    en: 'Chargeable Weight'
+  },
+  priceRange: {
+    es: 'Rango de Precio',
+    en: 'Price Range'
+  },
   additionalFees: {
     es: 'Costos adicionales pueden aplicar',
     en: 'Additional fees may apply'
@@ -307,24 +328,14 @@ const canCalculate = computed(() => {
 })
 
 // Methods
-const formatPrice = (amount, isAlternate = false) => {
-  const isSpanish = language.value === 'es'
-  
-  let currency
-  if (isAlternate) {
-    currency = isSpanish ? 'USD' : 'MXN'
-  } else {
-    currency = isSpanish ? 'MXN' : 'USD'
-  }
-  
-  return `${amount.toFixed(2)} ${currency}`
-}
-
 const fetchProducts = async () => {
   try {
     loadingProducts.value = true
     const response = await $customFetch('/products')
-    availableBoxes.value = response.data
+    // Filter and sort products by min_weight
+    weightProducts.value = response.data
+      .filter(product => product.min_weight !== undefined && product.max_weight !== undefined)
+      .sort((a, b) => a.min_weight - b.min_weight)
   } catch (error) {
     console.error('Error fetching products:', error)
   } finally {
@@ -341,44 +352,45 @@ const calculateShipping = () => {
   const widthCm = toCm(dimensions.value.width)
   const heightCm = toCm(dimensions.value.height)
 
-  // Calculate volumetric weight
+  // Calculate volumetric weight (L x W x H / 5000)
   const volumetricWeight = (lengthCm * widthCm * heightCm) / 5000
-  const chargeableWeight = Math.max(weight.value, volumetricWeight)
+  
+  // Round volumetric weight to 2 decimal places
+  const roundedVolumetricWeight = Math.round(volumetricWeight * 100) / 100
+  
+  // Chargeable weight is the greater of actual weight or volumetric weight
+  const chargeableWeight = Math.max(weight.value, roundedVolumetricWeight)
 
-  // Find suitable box
-  const suitableBox = availableBoxes.value.find(box => {
-    const boxDims = box.dimensions.split('x').map(d => parseInt(d.replace('cm', '')))
-    const packageDims = [lengthCm, widthCm, heightCm].sort((a, b) => b - a)
-    const sortedBoxDims = boxDims.sort((a, b) => b - a)
-    
-    const dimensionsFit = packageDims[0] <= sortedBoxDims[0] && 
-                         packageDims[1] <= sortedBoxDims[1] && 
-                         packageDims[2] <= sortedBoxDims[2]
-    
-    const weightFits = chargeableWeight <= parseFloat(box.max_weight)
-    
-    return dimensionsFit && weightFits
+  // Find the appropriate weight range product
+  const matchingProduct = weightProducts.value.find(product => {
+    return chargeableWeight >= product.min_weight && chargeableWeight <= product.max_weight
   })
 
-  // Calculate price based on suitable box or use highest price as estimate
-  const isSpanish = language.value === 'es'
-  let boxPriceMXN = 0
+  let priceMXN = 0
+  let weightRange = ''
   
-  if (suitableBox) {
-    boxPriceMXN = suitableBox.price
+  if (matchingProduct) {
+    priceMXN = matchingProduct.price
+    weightRange = `${matchingProduct.min_weight}-${matchingProduct.max_weight} kg`
   } else {
-    // Use the highest priced box as a base estimate
-    const maxPricedBox = availableBoxes.value.reduce((max, box) => 
-      box.price > max.price ? box : max, availableBoxes.value[0])
-    boxPriceMXN = maxPricedBox ? maxPricedBox.price : 500 // fallback price
+    // If weight exceeds all ranges, use the highest tier price as a base
+    const highestTier = weightProducts.value[weightProducts.value.length - 1]
+    if (highestTier) {
+      priceMXN = highestTier.price
+      weightRange = `>${highestTier.max_weight} kg (${t.value.estimatedCost})`
+    } else {
+      // Fallback price if no products found
+      priceMXN = 6500
+      weightRange = 'N/A'
+    }
   }
-  
-  const boxPriceUSD = boxPriceMXN / exchangeRate
 
   calculatorResult.value = {
     show: true,
-    totalCostDisplay: isSpanish ? boxPriceMXN : boxPriceUSD,
-    totalCostAlternate: isSpanish ? boxPriceUSD : boxPriceMXN
+    price: priceMXN,
+    volumetricWeight: roundedVolumetricWeight.toFixed(2),
+    chargeableWeight: chargeableWeight.toFixed(2),
+    weightRange: weightRange
   }
 }
 

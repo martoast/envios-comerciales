@@ -127,7 +127,7 @@
   const copied = ref(false);
   
   const copyAddress = async () => {
-    const address = `ECTJ ${props.user?.name} ${props.user?.id}
+    const address = `ECTJ ${props.user?.name}
   ${props.poBoxAddress.line1}
   ${props.poBoxAddress.line2}`;
   
