@@ -389,10 +389,13 @@ const clearFieldError = (field) => {
   }
 }
 
+// In pages/app/account/complete-profile.vue
+// Update the handleSubmit function to include Meta Pixel tracking
+
 const handleSubmit = async () => {
   loading.value = true
   clearErrors()
-
+  
   try {
     // Build update payload
     const updateData = {
@@ -408,19 +411,24 @@ const handleSubmit = async () => {
     if (registrationSource.value && (!userState.value.registration_source || userState.value.registration_source === null)) {
       updateData.registration_source = registrationSource.value
     }
-
+    
     // Update profile
     await $customFetch('/profile', {
       method: 'PUT',
       body: updateData
     })
     
+    // Track completed registration with Meta Pixel
+    const { $fbq } = useNuxtApp()
+    if ($fbq) {
+      $fbq('track', 'CompleteRegistration')
+    }
+    
     // Refresh user data
     await $retriveUser()
-
+    
     // Success - redirect to intended page
     return navigateTo(redirectTo)
-
   } catch (error) {
     console.error('Profile update error:', error)
     
