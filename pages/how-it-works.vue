@@ -156,7 +156,7 @@
                   </div>
                   <div class="space-y-2 font-mono text-sm">
                     <p class="font-bold text-gray-900 text-base">
-                      ECTJ Juan Pérez 1
+                      ECTJ Juan Pérez
                     </p>
                     <p class="text-gray-700">123 Main Street</p>
                     <p class="text-gray-700">San Diego, CA</p>
