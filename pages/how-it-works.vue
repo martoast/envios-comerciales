@@ -175,10 +175,8 @@
     <FooterSection />
   </main>
 </template>
-
 <script setup>
 import { computed } from "vue";
-
 import FooterSection from "~/components/Landing/FooterSection.vue";
 import MainFAQSection from "~/components/Landing/Main/FAQSection.vue";
 
@@ -190,12 +188,12 @@ const translations = {
     en: "HOW IT WORKS",
   },
   heroTitle: {
-    es: "Lo que necesitas para que tus compras lleguen a tu puerta",
-    en: "Everything you need to get your purchases delivered to your door",
+    es: "Tu dirección en USA para comprar en cualquier tienda",
+    en: "Your US address to shop from any store",
   },
   heroSubtitle: {
-    es: "Hacemos el proceso de envio a Mexico, rápido y seguro.",
-    en: "We make the shipping to Mexico process easy, fast and safe.",
+    es: "Compra en tiendas de USA y recibe todo en México. Sin complicaciones.",
+    en: "Shop from US stores and receive everything in Mexico. No hassle.",
   },
   step1Title: {
     es: "Selecciona tus productos",
@@ -206,8 +204,8 @@ const translations = {
     en: "Visit your favorite online store and buy whatever you like.",
   },
   step2Title: {
-    es: "Usa tu dirección",
-    en: "Use your address",
+    es: "Usa nuestra dirección",
+    en: "Use our address",
   },
   step2Desc: {
     es: "Para la dirección de envío, usa tu dirección de Envíos Comerciales TJ en San Diego.",
@@ -222,48 +220,48 @@ const translations = {
     en: "We consolidate your packages and ship them directly to your home in Mexico.",
   },
   addressSectionTag: {
-    es: "TU DIRECCIÓN EN USA",
-    en: "YOUR ADDRESS IN USA",
+    es: "TU DIRECCIÓN PERSONAL",
+    en: "YOUR PERSONAL ADDRESS",
   },
   addressTitle: {
-    es: "Usar tu dirección de USA es fácil",
-    en: "Using your U.S. address is easy",
+    es: "Te damos una dirección en USA para tus compras",
+    en: "We give you a US address for your shopping",
   },
   addressIntro: {
-    es: "Cuando hagas una compra en línea, usa tu dirección de Envíos Comerciales TJ como dirección de envío. Asegúrate de completar todos los campos como se muestra.",
-    en: "When you make a purchase online, use your Envios Comerciales TJ address as your shipping address. Make sure all fields are completed as shown.",
+    es: "Al registrarte, recibes una dirección física en San Diego, California. Úsala como cualquier dirección de envío cuando compres en línea. Nosotros recibimos tus paquetes y te los enviamos a México.",
+    en: "When you register, you get a physical address in San Diego, California. Use it as any shipping address when shopping online. We receive your packages and ship them to Mexico.",
   },
   howToUseTitle: {
-    es: "Instrucciones al momento de comprar:",
-    en: "Instructions when purchasing:",
+    es: "Al momento de pagar en cualquier tienda:",
+    en: "At checkout on any store:",
   },
   nameField: {
     es: "Nombre",
     en: "Name",
   },
   nameInstructions: {
-    es: "Agrega ECTJ seguido de tu nombre completo y tu número de cuenta.",
-    en: "Add ECTJ followed by your full name and your account number.",
+    es: "Escribe ECTJ + tu nombre completo (esto identifica tu paquete)",
+    en: "Write ECTJ + your full name (this identifies your package)",
   },
   addressField: {
     es: "Dirección de envío",
     en: "Shipping address",
   },
   addressInstructions: {
-    es: "Usa la dirección completa de USA que te proporcionamos",
-    en: "Use the complete USA address we provide you.",
+    es: "Copia la dirección de San Diego que te damos al registrarte",
+    en: "Copy the San Diego address we give you when you register",
   },
   getAddressButton: {
-    es: "Obtén tu Dirección",
-    en: "Get Your Address",
+    es: "Obtén tu Dirección Gratis",
+    en: "Get Your Free Address",
   },
   learnMoreButton: {
-    es: "Aprende más",
-    en: "Learn more",
+    es: "Ver preguntas frecuentes",
+    en: "See FAQs",
   },
   exampleAddress: {
-    es: "EJEMPLO DE DIRECCIÓN",
-    en: "ADDRESS EXAMPLE",
+    es: "ASÍ LLENAS EL CHECKOUT",
+    en: "HOW TO FILL CHECKOUT",
   },
   copyTip: {
     es: "Copia exactamente como se muestra",
