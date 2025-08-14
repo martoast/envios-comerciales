@@ -359,7 +359,13 @@ const calculateShipping = () => {
   const roundedVolumetricWeight = Math.round(volumetricWeight * 100) / 100
   
   // Chargeable weight is the greater of actual weight or volumetric weight
-  const chargeableWeight = Math.max(weight.value, roundedVolumetricWeight)
+  let chargeableWeight = Math.max(weight.value, roundedVolumetricWeight)
+  
+  // IMPORTANT FIX: If chargeable weight is less than 1kg, round up to 1kg minimum
+  // This ensures we always match at least the 1-3kg tier
+  if (chargeableWeight < 1) {
+    chargeableWeight = 1
+  }
 
   // Find the appropriate weight range product
   const matchingProduct = weightProducts.value.find(product => {
@@ -375,13 +381,14 @@ const calculateShipping = () => {
   } else {
     // If weight exceeds all ranges, use the highest tier price as a base
     const highestTier = weightProducts.value[weightProducts.value.length - 1]
-    if (highestTier) {
+    if (highestTier && chargeableWeight > highestTier.max_weight) {
+      // Only use highest tier if weight actually exceeds the maximum
       priceMXN = highestTier.price
       weightRange = `>${highestTier.max_weight} kg (${t.value.estimatedCost})`
     } else {
-      // Fallback price if no products found
-      priceMXN = 6500
-      weightRange = 'N/A'
+      // This shouldn't happen with the 1kg minimum, but keep as safety fallback
+      priceMXN = 980 // Use the minimum tier price as fallback
+      weightRange = '1-3 kg'
     }
   }
 

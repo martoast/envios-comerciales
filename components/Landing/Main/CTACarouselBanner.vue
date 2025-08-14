@@ -126,7 +126,7 @@
   const slides = computed(() => {
     const baseSlides = language.value === 'es' ? [
       {
-        image: '/cta1.jpeg',
+        image: '/banner.jpeg',
         title: '¿Primera vez comprando?',
         description: 'Te guiamos paso a paso en tu primera compra internacional. Soporte 24/7 en español.',
         buttonText: 'Comenzar Ahora',
@@ -141,7 +141,7 @@
       }
     ] : [
       {
-        image: '/cta1.jpeg',
+        image: '/banner.jpeg',
         title: 'First time shopping abroad?',
         description: 'We guide you step by step in your first international purchase. 24/7 support.',
         buttonText: 'Start Now',
