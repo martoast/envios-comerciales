@@ -90,32 +90,7 @@
       <!-- Edit Form -->
       <form v-if="order" @submit.prevent="handleSubmit" class="space-y-6">
         <!-- Order Info Banner -->
-        <div class="bg-primary-50 rounded-2xl p-6 border border-primary-200/50 animate-fadeIn">
-          <div class="flex items-start gap-4">
-            <div class="p-2 bg-primary-100 rounded-lg">
-              <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
-            </div>
-            <div class="flex-1">
-              <h3 class="font-bold text-primary-900 mb-1">{{ t.editingOrder }}</h3>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                <div>
-                  <span class="text-primary-700 font-medium">{{ t.orderNumber }}:</span>
-                  <span class="text-primary-900 ml-1">{{ order.order_number }}</span>
-                </div>
-                <div>
-                  <span class="text-primary-700 font-medium">{{ t.boxSize }}:</span>
-                  <span class="text-primary-900 ml-1 capitalize">{{ order.box_size }}</span>
-                </div>
-                <div>
-                  <span class="text-primary-700 font-medium">{{ t.totalPaid }}:</span>
-                  <span class="text-primary-900 ml-1">${{ order.amount_paid }} {{ order.currency?.toUpperCase() }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
 
         <!-- Delivery Address Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn" :class="{ 'opacity-60': !canEdit }" style="animation-delay: 0.1s">
@@ -363,14 +338,6 @@ const translations = {
   orderNumber: {
     es: 'Número de orden',
     en: 'Order number'
-  },
-  boxSize: {
-    es: 'Tamaño de caja',
-    en: 'Box size'
-  },
-  totalPaid: {
-    es: 'Total pagado',
-    en: 'Total paid'
   },
   deliveryAddressTitle: {
     es: 'Dirección de Entrega',

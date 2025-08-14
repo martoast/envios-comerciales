@@ -145,17 +145,19 @@ const translations = {
     en: 'Order Completed! 🎉'
   },
   awaitingMessage: {
-    es: 'Perfecto! Ya registraste todos tus productos. Cuando lleguen a nuestro almacén en USA, los enviaremos juntos a la dirección de entrega en México.',
-    en: 'Perfect! You\'ve added all your items. When they arrive at our US warehouse, we\'ll ship them together to the provided delivery address in Mexico.'
+    es: 'Perfecto! Ya registraste todos tus productos. Cuando lleguen a nuestro almacén en USA, los procesaremos y te enviaremos una cotización para el envío a tu dirección en México.',
+    en: 'Perfect! You\'ve added all your items. When they arrive at our US warehouse, we will process them and send you a quote for shipping to your delivery address in Mexico.',
   },
+
   awaitingNextTitle: {
     es: '¿Qué sigue?',
     en: 'What happens next?'
   },
   awaitingNextMessage: {
-    es: 'Usa los números de rastreo para ver dónde están tus paquetes. Te avisaremos cuando lleguen.',
-    en: 'Use the tracking numbers to see where your packages are. We\'ll let you know when they arrive.'
+    es: 'Usa los números de rastreo para seguir tus paquetes. Te enviaremos un correo de confirmación cada vez que llegue uno, y cuando todos hayan llegado, tu pedido pasará a la siguiente etapa.',
+    en: 'Use the tracking numbers to track your packages. We will email you a confirmation each time one arrives, and once all have arrived, your order will move to the next stage.',
   },
+
   // Packages complete status
   packagesCompleteTitle: {
     es: '¡Todos tus paquetes han llegado! 📦',

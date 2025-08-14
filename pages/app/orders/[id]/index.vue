@@ -103,6 +103,30 @@
                         {{ t.editOrder }}
                       </NuxtLink>
                     </MenuItem>
+                    <MenuItem v-slot="{ active }">
+                      <button
+                        @click="showDeleteOrderModal = true"
+                        :class="[
+                          active ? 'bg-red-50' : '',
+                          'flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors text-red-600 w-full',
+                        ]"
+                      >
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                        {{ t.deleteOrder }}
+                      </button>
+                    </MenuItem>
                   </div>
                 </MenuItems>
               </transition>
@@ -182,7 +206,7 @@
       <!-- Complete Order Banner (Collecting Status with Items) -->
       <div
         v-if="order.status === 'collecting' && order.items?.length > 0"
-        class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white"
+        class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 text-white"
       >
         <div
           class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
@@ -210,13 +234,21 @@
               {{ t.needToCompleteOrderText }}
             </p>
           </div>
-          <button
-            @click="showCompleteOrderModal = true"
-            :disabled="completingOrder"
-            class="px-6 py-3 bg-white text-green-600 font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-          >
-            {{ completingOrder ? t.completing : t.completeOrder }}
-          </button>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <NuxtLink
+              :to="`/app/orders/${order.id}/items`"
+              class="px-4 py-2.5 bg-white/20 text-white font-medium rounded-lg hover:bg-white/30 transition-colors border border-white/30"
+            >
+              {{ t.addMoreItems }}
+            </NuxtLink>
+            <button
+              @click="showCompleteOrderModal = true"
+              :disabled="completingOrder"
+              class="px-6 py-2.5 bg-white text-primary-600 font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+            >
+              {{ completingOrder ? t.completing : t.completeOrder }}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -264,19 +296,45 @@
 
       <!-- Items List -->
       <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-gray-900">
-            {{ t.orderItems }}
-          </h2>
+        <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-900">
+              {{ t.orderItems }}
+            </h2>
+            <!-- Manage Items Button - Always visible if collecting status -->
+            <NuxtLink
+              v-if="order.status === 'collecting'"
+              :to="`/app/orders/${order.id}/items`"
+              class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              <span class="hidden sm:inline">{{ t.manageItems }}</span>
+              <span class="sm:hidden">{{ t.manage }}</span>
+            </NuxtLink>
+          </div>
         </div>
+
+        <!-- Items Content -->
         <div class="divide-y divide-gray-100">
           <div
             v-for="item in order.items"
             :key="item.id"
-            class="p-6 hover:bg-gray-50 transition-colors"
+            class="p-4 sm:p-6 hover:bg-gray-50 transition-colors"
           >
-            <div class="flex items-start justify-between gap-4">
-              <!-- Item Info -->
+            <div class="flex items-start gap-3 sm:gap-4">
+              <!-- Mobile-optimized Item Info -->
               <div class="flex-1 min-w-0">
                 <!-- Product name with conditional link -->
                 <a
@@ -307,13 +365,13 @@
                   {{ item.product_name }}
                 </p>
 
-                <!-- Quantity and other info -->
-                <div class="flex items-center gap-3 mt-1">
-                  <p class="text-sm text-gray-500">
+                <!-- Quantity and status - Stacked on mobile -->
+                <div class="flex flex-wrap items-center gap-2 mt-2">
+                  <span class="text-sm text-gray-500">
                     {{ t.quantity }}: {{ item.quantity }}
-                  </p>
+                  </span>
 
-                  <!-- Arrived Status Badge -->
+                  <!-- Status badges -->
                   <span
                     v-if="order.status !== 'collecting' && item.arrived"
                     class="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full"
@@ -331,7 +389,9 @@
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
+                    <span class="hidden sm:inline">{{ t.arrived }}</span>
                   </span>
+
                   <span
                     v-else-if="order.status !== 'collecting' && !item.arrived"
                     class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full"
@@ -352,15 +412,15 @@
                     {{ t.inTransit }}
                   </span>
 
-                  <!-- Proof of Purchase Link -->
+                  <!-- Receipt link -->
                   <a
                     v-if="item.proof_of_purchase_url"
                     :href="item.proof_of_purchase_url"
                     target="_blank"
-                    class="inline-flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                    class="inline-flex items-center gap-1 text-xs sm:text-sm text-primary-600 hover:text-primary-700 font-medium"
                   >
                     <svg
-                      class="w-4 h-4"
+                      class="w-3.5 h-3.5"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -375,30 +435,7 @@
                     {{ t.receipt }}
                   </a>
                 </div>
-
-                
               </div>
-
-              <!-- Delete Button -->
-              <button
-                v-if="order.status === 'collecting'"
-                @click="selectedItemToDelete = item"
-                class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-              >
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-              </button>
             </div>
           </div>
         </div>
@@ -406,26 +443,26 @@
         <!-- Empty state -->
         <div
           v-if="!order.items || order.items.length === 0"
-          class="p-12 text-center"
+          class="py-8 sm:py-12 px-4 text-center"
         >
-        <img
-                  src="/empty-box.svg"
-                  alt="empty box"
-                  class="w-12 h-12 flex items-center justify-center mx-auto"
-                />
-          <p class="text-gray-500">{{ t.noItemsYet }}</p>
-          <p class="text-sm text-gray-400 mt-1">{{ t.startAddingItems }}</p>
-        </div>
-      </div>
+          <img
+            src="/empty-box.svg"
+            alt="empty box"
+            class="w-12 h-12 mx-auto mb-3"
+          />
+          <p class="text-gray-500 text-sm sm:text-base">{{ t.noItemsYet }}</p>
+          <p class="text-xs sm:text-sm text-gray-400 mt-1">
+            {{ t.startAddingItems }}
+          </p>
 
-      <!-- Delivery Address -->
-      <div class="bg-white rounded-xl p-6 border border-gray-200">
-        <div class="flex items-center gap-3 mb-4">
-          <div
-            class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center"
+          <!-- CTA Button when empty -->
+          <NuxtLink
+            v-if="order.status === 'collecting'"
+            :to="`/app/orders/${order.id}/items`"
+            class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
           >
             <svg
-              class="w-5 h-5 text-gray-600"
+              class="w-4 h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -434,51 +471,91 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                d="M12 4v16m8-8H4"
               />
             </svg>
-          </div>
-          <h2 class="text-lg font-semibold text-gray-900">
-            {{ t.deliveryAddress }}
-          </h2>
+            {{ t.addFirstItem }}
+          </NuxtLink>
         </div>
-        <div class="grid sm:grid-cols-2 gap-4">
-          <div>
-            <p class="text-sm font-medium text-gray-900">
-              {{ order.delivery_address.street }}
-              {{ order.delivery_address.exterior_number }}
-              <span v-if="order.delivery_address.interior_number">
-                Int. {{ order.delivery_address.interior_number }}
-              </span>
-            </p>
-            <p class="text-sm text-gray-600 mt-1">
-              {{ order.delivery_address.colonia }}<br />
-              {{ order.delivery_address.municipio }},
-              {{ order.delivery_address.estado }}<br />
-              C.P. {{ order.delivery_address.postal_code }}
-            </p>
+      </div>
+
+      <!-- Delivery Address -->
+      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-900">
+              {{ t.deliveryAddress }}
+            </h2>
+
+            <!-- Edit Address Button - Only show in collecting status -->
+            <NuxtLink
+              v-if="order.status === 'collecting'"
+              :to="`/app/orders/${order.id}/edit`"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
+              </svg>
+              <span class="hidden sm:inline">{{ t.editAddress }}</span>
+              <span class="sm:hidden">{{ t.edit }}</span>
+            </NuxtLink>
           </div>
-          <div v-if="order.delivery_address.referencias">
-            <p class="text-sm font-medium text-gray-900 mb-1">
-              {{ t.references }}
-            </p>
-            <p class="text-sm text-gray-600">
-              {{ order.delivery_address.referencias }}
-            </p>
+        </div>
+
+        <!-- Address Content - Mobile optimized -->
+        <div class="p-4 sm:p-6">
+          <div class="space-y-3">
+            <!-- Main Address -->
+            <div>
+              <p class="text-sm font-medium text-gray-900">
+                {{ order.delivery_address.street }}
+                {{ order.delivery_address.exterior_number
+                }}<span v-if="order.delivery_address.interior_number"
+                  >, Int. {{ order.delivery_address.interior_number }}</span
+                >
+              </p>
+              <p class="text-sm text-gray-600 mt-1">
+                {{ order.delivery_address.colonia }}
+              </p>
+              <p class="text-sm text-gray-600">
+                {{ order.delivery_address.municipio }},
+                {{ order.delivery_address.estado }}
+              </p>
+              <p class="text-sm text-gray-600">
+                C.P. {{ order.delivery_address.postal_code }}
+              </p>
+            </div>
+
+            <!-- References - if exists -->
+            <div
+              v-if="order.delivery_address.referencias"
+              class="pt-3 border-t border-gray-100"
+            >
+              <p
+                class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-1"
+              >
+                {{ t.references }}
+              </p>
+              <p class="text-sm text-gray-700">
+                {{ order.delivery_address.referencias }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Progress Timeline Component -->
       <OrderProgressTimeline :order="order" />
-
-      
     </div>
 
     <!-- Modals -->
@@ -639,6 +716,88 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- Delete Order Modal -->
+    <TransitionRoot as="template" :show="showDeleteOrderModal">
+      <Dialog class="relative z-50" @close="showDeleteOrderModal = false">
+        <TransitionChild
+          as="template"
+          enter="ease-out duration-300"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="ease-in duration-200"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <TransitionChild
+              as="template"
+              enter="ease-out duration-300"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
+              >
+                <div class="text-center">
+                  <div
+                    class="mx-auto w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4"
+                  >
+                    <svg
+                      class="w-6 h-6 text-red-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                  </div>
+                  <DialogTitle
+                    as="h3"
+                    class="text-lg font-semibold text-gray-900 mb-2"
+                  >
+                    {{ t.confirmDeleteOrder }}
+                  </DialogTitle>
+                  <p class="text-sm text-gray-600 mb-2">
+                    {{ t.confirmDeleteOrderText }}
+                  </p>
+                  <p class="text-xs text-red-600 bg-red-50 rounded-lg p-3 mb-6">
+                    {{ t.deleteOrderWarning }}
+                  </p>
+                  <div class="flex gap-3">
+                    <button
+                      @click="showDeleteOrderModal = false"
+                      class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      {{ t.cancel }}
+                    </button>
+                    <button
+                      @click="handleDeleteOrder"
+                      :disabled="deletingOrder"
+                      class="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                    >
+                      {{ deletingOrder ? t.deleting : t.confirmDelete }}
+                    </button>
+                  </div>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </section>
 </template>
 
@@ -666,7 +825,7 @@ definePageMeta({
 // Nuxt imports
 const { $customFetch, $toast } = useNuxtApp();
 const route = useRoute();
-const router = useRouter()
+const router = useRouter();
 const user = useUser().value;
 
 // Use the language composable
@@ -681,7 +840,10 @@ const showCompleteOrderModal = ref(false);
 const showReopenOrderModal = ref(false);
 const reopeningOrder = ref(false);
 const showSuccessBanner = ref(false);
-const bannerTrigger = ref('auto');
+const bannerTrigger = ref("auto");
+
+const showDeleteOrderModal = ref(false);
+const deletingOrder = ref(false);
 
 // Translations
 const translations = {
@@ -735,9 +897,13 @@ const translations = {
     es: "Has agregado productos pero aún no has completado la orden. Complétala para empezar el rastreo.",
     en: "You've added products but haven't completed the order yet. Complete it to start tracking.",
   },
+  addMoreItems: {
+    es: "Agregar o quitar productos",
+    en: "Add or Remove Products",
+  },
   addItemsToOrder: {
-    es: "Agregar Artículos a tu Envio",
-    en: "Add Items to Your Shipment",
+    es: "Gestionar artículos de tu envío",
+    en: "Manage Items in Your Shipment",
   },
   addItemsDescription: {
     es: "Agrega los productos que nos enviaste y quieres incluir en tu envio.",
@@ -764,8 +930,8 @@ const translations = {
     en: "Need to make changes?",
   },
   needToMakeChangesText: {
-    es: "Puedes reabrir tu caja para agregar o eliminar artículos.",
-    en: "You can reopen your box to add or remove items.",
+    es: "Puedes reabrir tu caja para agregar o eliminar artículos y editar tu dirección de entrega.",
+    en: "You can reopen your box to add or remove items and edit your delivery address.",
   },
   reopenOrder: {
     es: "Reabrir Orden",
@@ -896,7 +1062,7 @@ const translations = {
     en: "Delivered",
   },
   // Box size translations
-  'extra-small': {
+  "extra-small": {
     es: "Extra Pequeña",
     en: "Extra Small",
   },
@@ -912,9 +1078,42 @@ const translations = {
     es: "Grande",
     en: "Large",
   },
-  'extra-large': {
+  "extra-large": {
     es: "Extra Grande",
     en: "Extra Large",
+  },
+
+  deleteOrder: {
+    es: "Eliminar orden",
+    en: "Delete order",
+  },
+  confirmDeleteOrder: {
+    es: "¿Eliminar esta orden?",
+    en: "Delete this order?",
+  },
+  confirmDeleteOrderText: {
+    es: "Esta acción eliminará permanentemente esta orden y todos sus productos asociados.",
+    en: "This will permanently delete this order and all associated items.",
+  },
+  deleteOrderWarning: {
+    es: "⚠️ Esta acción no se puede deshacer. Todos los datos se perderán permanentemente.",
+    en: "⚠️ This action cannot be undone. All data will be permanently lost.",
+  },
+  confirmDelete: {
+    es: "Sí, eliminar",
+    en: "Yes, delete",
+  },
+  deleting: {
+    es: "Eliminando...",
+    en: "Deleting...",
+  },
+  orderDeletedSuccess: {
+    es: "Orden eliminada exitosamente",
+    en: "Order deleted successfully",
+  },
+  errorDeletingOrder: {
+    es: "Error al eliminar la orden",
+    en: "Error deleting order",
   },
 };
 
@@ -927,48 +1126,63 @@ const fetchOrder = async () => {
   try {
     const response = await $customFetch(`/orders/${route.params.id}`);
     order.value = response.data;
-    
+
     // Show banner for certain statuses if not dismissed
-    const showBannerStatuses = ['awaiting_packages', 'packages_complete', 'shipped', 'delivered'];
-    
+    const showBannerStatuses = [
+      "awaiting_packages",
+      "packages_complete",
+      "shipped",
+      "delivered",
+    ];
+
     if (showBannerStatuses.includes(order.value?.status)) {
       // Check if banner was dismissed for this status
-      if (!localStorage.getItem(`order-${order.value.id}-${order.value.status}-dismissed`)) {
+      if (
+        !localStorage.getItem(
+          `order-${order.value.id}-${order.value.status}-dismissed`
+        )
+      ) {
         // For awaiting_packages with completed_at, check if it's the first time showing confetti
-        if (order.value.status === 'awaiting_packages' && order.value.completed_at) {
+        if (
+          order.value.status === "awaiting_packages" &&
+          order.value.completed_at
+        ) {
           // Check if confetti has been shown for this order completion
           const confettiKey = `order-${order.value.id}-confetti-shown`;
           const hasShownConfetti = localStorage.getItem(confettiKey);
-          
+
           if (!hasShownConfetti) {
-            bannerTrigger.value = 'just_completed';
+            bannerTrigger.value = "just_completed";
             // Mark that confetti has been shown for this order
-            localStorage.setItem(confettiKey, 'true');
+            localStorage.setItem(confettiKey, "true");
           } else {
-            bannerTrigger.value = 'auto';
+            bannerTrigger.value = "auto";
           }
         } else {
-          bannerTrigger.value = 'auto';
+          bannerTrigger.value = "auto";
         }
         showSuccessBanner.value = true;
       }
     }
-    
+
     // Check if coming from items page after completion
-    if (route.query.completed === 'true' && order.value?.status === 'awaiting_packages') {
+    if (
+      route.query.completed === "true" &&
+      order.value?.status === "awaiting_packages"
+    ) {
       const confettiKey = `order-${order.value.id}-confetti-shown`;
       const hasShownConfetti = localStorage.getItem(confettiKey);
-      
+
       if (!hasShownConfetti) {
-        bannerTrigger.value = 'just_completed';
+        bannerTrigger.value = "just_completed";
         showSuccessBanner.value = true;
-        localStorage.setItem(confettiKey, 'true');
+        localStorage.setItem(confettiKey, "true");
       }
-      
+
       // Remove the query parameter from URL to prevent re-triggering on refresh
       router.replace({
         path: route.path,
-        query: {} // Remove all query params, or you can keep others if needed
+        query: {}, // Remove all query params, or you can keep others if needed
       });
     }
   } catch (error) {
@@ -982,7 +1196,10 @@ const fetchOrder = async () => {
 const dismissSuccessBanner = () => {
   showSuccessBanner.value = false;
   // Remember that user dismissed the banner for this specific status
-  localStorage.setItem(`order-${order.value.id}-${order.value.status}-dismissed`, 'true');
+  localStorage.setItem(
+    `order-${order.value.id}-${order.value.status}-dismissed`,
+    "true"
+  );
 };
 
 const handleCompleteOrder = async () => {
@@ -998,9 +1215,9 @@ const handleCompleteOrder = async () => {
 
     showCompleteOrderModal.value = false;
     await fetchOrder();
-    
+
     // Show success banner with confetti after completion
-    bannerTrigger.value = 'just_completed';
+    bannerTrigger.value = "just_completed";
     showSuccessBanner.value = true;
   } catch (error) {
     console.error("Error completing order:", error);
@@ -1044,94 +1261,27 @@ const getStatusColor = (status) => {
   return colors[status] || "bg-gray-100 text-gray-700";
 };
 
-const getStatusIconBg = (status) => {
-  const colors = {
-    collecting: "bg-primary-100",
-    awaiting_packages: "bg-amber-100",
-    packages_complete: "bg-primary-100",
-    quote_sent: "bg-orange-100",
-    paid: "bg-green-100",
-    shipped: "bg-primary-100",
-    delivered: "bg-green-100",
-  };
-  return colors[status] || "bg-gray-100";
-};
-
-const getStatusIconColor = (status) => {
-  const colors = {
-    collecting: "text-primary-600",
-    awaiting_packages: "text-amber-600",
-    packages_complete: "text-primary-600",
-    quote_sent: "text-orange-600",
-    paid: "text-green-600",
-    shipped: "text-primary-600",
-    delivered: "text-green-600",
-  };
-  return colors[status] || "text-gray-600";
-};
-
 const getStatusLabel = (status) => {
   return t.value[status] || status;
 };
 
-const getStatusDescription = (status) => {
-  const descriptions = {
-    collecting: {
-      es: "Agrega los productos que compraste",
-      en: "Add the products you purchased",
-    },
-    awaiting_packages: {
-      es: "Tus paquetes están en camino a nuestro almacén",
-      en: "Your packages are on their way to our warehouse",
-    },
-    packages_complete: {
-      es: "Todos tus paquetes han llegado",
-      en: "All your packages have arrived",
-    },
-    quote_sent: {
-      es: "Te enviamos la cotización final",
-      en: "We sent you the final quote",
-    },
-    paid: {
-      es: "Pago recibido, preparando envío",
-      en: "Payment received, preparing shipment",
-    },
-    shipped: {
-      es: "Tu paquete va en camino a México",
-      en: "Your package is on its way to Mexico",
-    },
-    delivered: {
-      es: "Entregado en tu dirección",
-      en: "Delivered to your address",
-    },
-  };
-  return descriptions[status]?.[user?.preferred_language || 'es'] || '';
-};
-
-const getBoxSizeLabel = (size) => {
-  return t.value[size] || size;
-};
-
-const formatProductUrl = (url) => {
+const handleDeleteOrder = async () => {
+  deletingOrder.value = true;
   try {
-    const urlObj = new URL(url);
-    const domain = urlObj.hostname.replace("www.", "");
-    const pathParts = urlObj.pathname.split("/").filter(Boolean);
+    await $customFetch(`/orders/${order.value.id}`, {
+      method: "DELETE",
+    });
 
-    // For Amazon URLs, try to get the product name
-    if (domain.includes("amazon")) {
-      const productIndex = pathParts.findIndex((part) => part.length > 20);
-      if (productIndex > 0 && pathParts[productIndex - 1]) {
-        return decodeURIComponent(
-          pathParts[productIndex - 1].replace(/-/g, " ")
-        );
-      }
-    }
+    $toast.success(t.value.orderDeletedSuccess);
+    showDeleteOrderModal.value = false;
 
-    // For other URLs, return domain + shortened path
-    return domain + (pathParts.length > 0 ? "/" + pathParts[0] + "..." : "");
-  } catch {
-    return url.substring(0, 40) + "...";
+    // Redirect to orders list
+    return await navigateTo("/app/orders");
+  } catch (error) {
+    console.error("Error deleting order:", error);
+    $toast.error(error.data?.message || t.value.errorDeletingOrder);
+  } finally {
+    deletingOrder.value = false;
   }
 };
 
