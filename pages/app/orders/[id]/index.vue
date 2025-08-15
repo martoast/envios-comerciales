@@ -479,6 +479,75 @@
         </div>
       </div>
 
+      <div
+  v-if="order.dhl_waybill_number && order.gia_url"
+  class="bg-white rounded-xl border border-gray-200 overflow-hidden"
+>
+  <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
+    <h2 class="text-lg font-semibold text-gray-900">
+      {{ t.shippingDetails }}
+    </h2>
+  </div>
+  
+  <div class="p-4 sm:p-6 space-y-4">
+    <!-- DHL Tracking -->
+    <div v-if="order.dhl_waybill_number">
+      <p class="text-sm text-gray-600 mb-2">{{ t.dhlWaybillNumber }}</p>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <p class="font-mono text-lg font-medium text-gray-900">
+          {{ order.dhl_waybill_number }}
+        </p>
+        <a
+          :href="`https://www.dhl.com/mx-es/home/tracking.html?tracking-id=${order.dhl_waybill_number.replace(/\s/g, '')}`"
+          target="_blank"
+          class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+          </svg>
+          {{ t.trackWithDHL }}
+        </a>
+      </div>
+    </div>
+    
+    <!-- GIA Document -->
+    <div v-if="order.gia_url" class="pt-4 border-t border-gray-100">
+      <p class="text-sm text-gray-600 mb-3">{{ t.giaDocumentDescription }}</p>
+      <a
+        :href="order.gia_url"
+        target="_blank"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        {{ t.downloadGIA }}
+      </a>
+      <p v-if="order.gia_filename" class="text-xs text-gray-500 mt-2">
+        {{ order.gia_filename }}
+      </p>
+    </div>
+    
+    <!-- Delivery Timeline -->
+    <div v-if="order.shipped_at || order.estimated_delivery_date" class="pt-4 border-t border-gray-100">
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div v-if="order.shipped_at">
+          <p class="text-xs text-gray-500 uppercase tracking-wider">{{ t.shippedOn }}</p>
+          <p class="text-sm font-medium text-gray-900 mt-1">
+            {{ formatDate(order.shipped_at) }}
+          </p>
+        </div>
+        <div v-if="order.estimated_delivery_date">
+          <p class="text-xs text-gray-500 uppercase tracking-wider">{{ t.estimatedDelivery }}</p>
+          <p class="text-sm font-medium text-gray-900 mt-1">
+            {{ formatDate(order.estimated_delivery_date) }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
       <!-- Delivery Address -->
       <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
@@ -1115,6 +1184,38 @@ const translations = {
     es: "Error al eliminar la orden",
     en: "Error deleting order",
   },
+  shippingDetails: {
+    es: "Información de Envío",
+    en: "Shipping Information"
+  },
+  dhlWaybillNumber: {
+    es: "Número de guía DHL",
+    en: "DHL Waybill Number"
+  },
+  trackWithDHL: {
+    es: "Rastrear con DHL",
+    en: "Track with DHL"
+  },
+  giaDocument: {
+    es: "Documento GIA",
+    en: "GIA Document"
+  },
+  giaDocumentDescription: {
+    es: "Tu documento GIA (Guía de Importación Aduanal) está disponible para descarga:",
+    en: "Your GIA document (Customs Import Guide) is available for download:"
+  },
+  downloadGIA: {
+    es: "Descargar GIA",
+    en: "Download GIA"
+  },
+  shippedOn: {
+    es: "Enviado",
+    en: "Shipped"
+  },
+  estimatedDelivery: {
+    es: "Entrega estimada",
+    en: "Estimated Delivery"
+  }
 };
 
 // Get reactive translations
@@ -1263,6 +1364,25 @@ const getStatusColor = (status) => {
 
 const getStatusLabel = (status) => {
   return t.value[status] || status;
+};
+
+const formatDate = (date) => {
+  if (!date) return "";
+  const d = new Date(date);
+  const locale = user?.preferred_language === 'es' ? 'es-MX' : 'en-US';
+  return d.toLocaleDateString(locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+// Optional: Add formatFileSize helper if you want to show file size
+const formatFileSize = (bytes) => {
+  if (!bytes) return "";
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
 };
 
 const handleDeleteOrder = async () => {

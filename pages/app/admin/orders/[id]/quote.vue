@@ -1120,10 +1120,8 @@ const fetchBoxProducts = async () => {
   loadingBoxes.value = true
   try {
     const response = await $customFetch('/products')
-    // Filter to only get weight-based products
-    availableBoxes.value = (response.data || []).filter(product => 
-      product.min_weight !== undefined && product.max_weight !== undefined
-    ).sort((a, b) => a.min_weight - b.min_weight)
+    // Just grab all products without filtering
+    availableBoxes.value = response.data || []
     
     // If order has a previous selection, try to match it
     if (order.value?.quote_breakdown) {
@@ -1140,7 +1138,7 @@ const fetchBoxProducts = async () => {
     }
   } catch (error) {
     console.error('Error fetching box products:', error)
-    $toast.error('Error loading weight range options')
+    $toast.error('Error loading products')
   } finally {
     loadingBoxes.value = false
   }
@@ -1313,7 +1311,7 @@ const prepareQuote = async () => {
     if (selectedBox.value) {
       quoteItems.push({
         item: `Envío ${selectedBox.value.name}`,
-        description: `Rango de peso ${selectedBox.value.name} - Incluye consolidación y envío a México`,
+        description: `${selectedBox.value.name} - Incluye consolidación y envío a México`,
         amount: selectedBox.value.price,
         type: 'box'
       })

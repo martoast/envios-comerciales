@@ -387,6 +387,154 @@
               </div>
             </div>
           </div>
+
+          <div
+            v-if="order.dhl_waybill_number && order.gia_url"
+            class="bg-white rounded-xl border border-gray-200 p-6"
+          >
+            <h2
+              class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"
+            >
+              <svg
+                class="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              {{ t.shippingDetails }}
+            </h2>
+
+            <div class="space-y-4">
+              <!-- DHL Waybill -->
+              <div
+                v-if="order.dhl_waybill_number"
+                class="bg-primary-50 rounded-lg p-4"
+              >
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-primary-900">
+                      {{ t.dhlWaybillNumber }}
+                    </p>
+                    <p
+                      class="text-lg font-mono font-semibold text-primary-700 mt-1"
+                    >
+                      {{ order.dhl_waybill_number }}
+                    </p>
+                  </div>
+                  <a
+                    :href="`https://www.dhl.com/mx-es/home/tracking.html?tracking-id=${order.dhl_waybill_number.replace(
+                      /\s/g,
+                      ''
+                    )}`"
+                    target="_blank"
+                    class="inline-flex items-center gap-2 px-3 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                    {{ t.trackDHL }}
+                  </a>
+                </div>
+              </div>
+
+              <!-- GIA Document -->
+              <div v-if="order.gia_url" class="bg-gray-50 rounded-lg p-4">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="p-2 bg-primary-100 rounded-lg">
+                      <svg
+                        class="w-6 h-6 text-primary-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-gray-900">
+                        {{ t.giaDocument }}
+                      </p>
+                      <p class="text-xs text-gray-500 mt-1">
+                        {{ order.gia_filename || "GIA Document" }}
+                      </p>
+                      <p v-if="order.gia_size" class="text-xs text-gray-400">
+                        {{ formatFileSize(order.gia_size) }}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    @click="viewGiaDocument"
+                    class="inline-flex items-center gap-2 px-3 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                    {{ t.viewGIA }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Shipped Date & Estimated Delivery -->
+              <div class="grid sm:grid-cols-2 gap-3">
+                <div v-if="order.shipped_at" class="bg-gray-50 rounded-lg p-3">
+                  <p class="text-xs text-gray-500">{{ t.shippedOn }}</p>
+                  <p class="text-sm font-medium text-gray-900">
+                    {{ formatDate(order.shipped_at) }}
+                  </p>
+                </div>
+                <div
+                  v-if="order.estimated_delivery_date"
+                  class="bg-green-50 rounded-lg p-3"
+                >
+                  <p class="text-xs text-green-600">
+                    {{ t.estimatedDelivery }}
+                  </p>
+                  <p class="text-sm font-medium text-green-900">
+                    {{ formatDate(order.estimated_delivery_date) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Timeline & Actions -->
@@ -517,7 +665,6 @@
           <h2 class="text-lg font-semibold text-gray-900">
             {{ t.orderItems }}
           </h2>
-         
         </div>
 
         <!-- Empty State -->
@@ -659,11 +806,11 @@
                     <!-- Tracking Information (if available) -->
                     <div
                       v-if="item.tracking_number || item.carrier"
-                      class="mt-3 p-2 bg-blue-50 rounded-lg"
+                      class="mt-3 p-2 bg-primary-50 rounded-lg"
                     >
                       <div class="flex items-center gap-2">
                         <svg
-                          class="w-4 h-4 text-blue-600"
+                          class="w-4 h-4 text-primary-600"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -676,19 +823,19 @@
                           />
                         </svg>
                         <div class="flex-1">
-                          <p class="text-xs text-blue-600 font-medium">
+                          <p class="text-xs text-primary-600 font-medium">
                             {{ t.packageTracking }}
                           </p>
                           <div class="flex items-center gap-3 mt-1">
                             <span
                               v-if="item.carrier"
-                              class="text-xs text-blue-700"
+                              class="text-xs text-primary-700"
                             >
                               {{ item.carrier }}
                             </span>
                             <span
                               v-if="item.tracking_number"
-                              class="text-xs text-blue-700 font-mono"
+                              class="text-xs text-primary-700 font-mono"
                             >
                               {{ item.tracking_number }}
                             </span>
@@ -696,7 +843,7 @@
                               v-if="item.tracking_url"
                               :href="item.tracking_url"
                               target="_blank"
-                              class="text-xs text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
+                              class="text-xs text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
                             >
                               {{ t.track }}
                               <svg
@@ -1099,7 +1246,6 @@
         >
           <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" />
         </TransitionChild>
-
         <div class="fixed inset-0 overflow-y-auto">
           <div class="flex min-h-full items-center justify-center p-4">
             <TransitionChild
@@ -1119,64 +1265,201 @@
                     {{ t.markAsShipped }}
                   </DialogTitle>
 
-                  <div class="space-y-4">
+                  <form @submit.prevent="markAsShipped" class="space-y-4">
+                    <!-- DHL Waybill Number -->
+                    <div>
+                      <label
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        {{ t.dhlWaybillNumber }}
+                        <span class="text-red-500">*</span>
+                      </label>
+                      <input
+                        v-model="shipForm.dhl_waybill_number"
+                        type="text"
+                        required
+                        class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        :placeholder="t.dhlWaybillPlaceholder"
+                      />
+                      <p class="mt-1 text-xs text-gray-500">
+                        {{ t.dhlWaybillHint }}
+                      </p>
+                    </div>
+
+                    <!-- GIA Document Upload -->
+                    <div>
+                      <label
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        {{ t.giaDocument }}
+                        <span class="text-red-500">*</span>
+                      </label>
+                      <div
+                        @click="triggerFileInput"
+                        @dragover.prevent
+                        @drop.prevent="handleFileDrop"
+                        class="relative border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-primary-400 transition-colors cursor-pointer"
+                      >
+                        <input
+                          ref="fileInput"
+                          type="file"
+                          accept=".pdf"
+                          @change="handleFileSelect"
+                          class="hidden"
+                          required
+                        />
+
+                        <div v-if="!shipForm.gia_file" class="text-center">
+                          <svg
+                            class="mx-auto h-12 w-12 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 48 48"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                            />
+                          </svg>
+                          <p class="mt-2 text-sm text-gray-600">
+                            {{ t.clickOrDragFile }}
+                          </p>
+                          <p class="text-xs text-gray-500">{{ t.pdfOnly }}</p>
+                        </div>
+
+                        <div v-else class="flex items-center justify-between">
+                          <div class="flex items-center gap-3">
+                            <div class="p-2 bg-red-100 rounded-lg">
+                              <svg
+                                class="w-6 h-6 text-red-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                />
+                              </svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                              <p
+                                class="text-sm font-medium text-gray-900 truncate"
+                              >
+                                {{ shipForm.gia_file.name }}
+                              </p>
+                              <p class="text-xs text-gray-500">
+                                {{ formatFileSize(shipForm.gia_file.size) }}
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            @click.stop="removeFile"
+                            class="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                          >
+                            <svg
+                              class="w-5 h-5 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">
+                        {{ t.giaHint }}
+                      </p>
+                    </div>
+
+                    <!-- Estimated Delivery Date -->
                     <div>
                       <label
                         class="block text-sm font-medium text-gray-700 mb-1"
                       >
                         {{ t.estimatedDelivery }}
+                        <span class="text-red-500">*</span>
                       </label>
                       <input
                         v-model="shipForm.estimated_delivery_date"
                         type="date"
                         :min="minDeliveryDate"
+                        required
                         class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
-                  </div>
 
-                  <div class="mt-6 flex gap-3">
-                    <button
-                      @click="markAsShipped"
-                      :disabled="
-                        !shipForm.estimated_delivery_date || updatingStatus
-                      "
-                      class="flex-1 px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-all disabled:opacity-50"
-                    >
-                      <span v-if="!updatingStatus">{{ t.confirmShip }}</span>
-                      <span
-                        v-else
-                        class="inline-flex items-center justify-center gap-2"
+                    <!-- Optional Notes -->
+                    <div>
+                      <label
+                        class="block text-sm font-medium text-gray-700 mb-1"
                       >
-                        <svg
-                          class="animate-spin h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
+                        {{ t.notes }}
+                        <span class="text-gray-400">({{ t.optional }})</span>
+                      </label>
+                      <textarea
+                        v-model="shipForm.notes"
+                        rows="3"
+                        class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        :placeholder="t.notesPlaceholder"
+                      ></textarea>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="mt-6 flex gap-3">
+                      <button
+                        type="submit"
+                        :disabled="!canSubmitShipping || shippingOrder"
+                        class="flex-1 px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span v-if="!shippingOrder">{{ t.confirmShip }}</span>
+                        <span
+                          v-else
+                          class="inline-flex items-center justify-center gap-2"
                         >
-                          <circle
-                            class="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            stroke-width="4"
-                          ></circle>
-                          <path
-                            class="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                          ></path>
-                        </svg>
-                        {{ t.updating }}
-                      </span>
-                    </button>
-                    <button
-                      @click="showShipModal = false"
-                      class="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-all"
-                    >
-                      {{ t.cancel }}
-                    </button>
-                  </div>
+                          <svg
+                            class="animate-spin h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              class="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              stroke-width="4"
+                            ></circle>
+                            <path
+                              class="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                            ></path>
+                          </svg>
+                          {{ t.shipping }}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        @click="closeShipModal"
+                        :disabled="shippingOrder"
+                        class="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-all disabled:opacity-50"
+                      >
+                        {{ t.cancel }}
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </DialogPanel>
             </TransitionChild>
@@ -1324,8 +1607,15 @@ const markingArrived = ref(false);
 const selectedItem = ref(null);
 
 const shipForm = ref({
+  dhl_waybill_number: "",
+  gia_file: null,
   estimated_delivery_date: "",
+  notes: "",
 });
+
+// Add new state for shipping
+const shippingOrder = ref(false);
+const fileInput = ref(null);
 
 const arrivedForm = ref({
   weight: null,
@@ -1680,11 +1970,72 @@ const translations = {
     es: "Llegó el",
     en: "Arrived on",
   },
+  dhlWaybillNumber: {
+    es: "Número de Guía DHL",
+    en: "DHL Waybill Number",
+  },
+  dhlWaybillPlaceholder: {
+    es: "Ej: 1234567890",
+    en: "Ex: 1234567890",
+  },
+  dhlWaybillHint: {
+    es: "Ingrese el número de guía de DHL para rastreo",
+    en: "Enter DHL waybill number for tracking",
+  },
+  giaDocument: {
+    es: "Documento GIA",
+    en: "GIA Document",
+  },
+  clickOrDragFile: {
+    es: "Haz clic o arrastra el archivo PDF aquí",
+    en: "Click or drag PDF file here",
+  },
+  pdfOnly: {
+    es: "Solo archivos PDF",
+    en: "PDF files only",
+  },
+  giaHint: {
+    es: "Sube el certificado GIA en formato PDF",
+    en: "Upload the GIA certificate in PDF format",
+  },
+  notes: {
+    es: "Notas",
+    en: "Notes",
+  },
+  notesPlaceholder: {
+    es: "Notas adicionales sobre el envío (opcional)",
+    en: "Additional notes about the shipment (optional)",
+  },
+  shipping: {
+    es: "Enviando...",
+    en: "Shipping...",
+  },
+  shipmentSuccess: {
+    es: "Pedido marcado como enviado exitosamente",
+    en: "Order marked as shipped successfully",
+  },
+  shipmentError: {
+    es: "Error al marcar el pedido como enviado",
+    en: "Error marking order as shipped",
+  },
+  shippedOn: {
+    es: "Enviado el",
+    en: "Shipped on",
+  },
 };
 
 const t = createTranslations(translations);
 
 // Computed
+
+const canSubmitShipping = computed(() => {
+  return (
+    shipForm.value.dhl_waybill_number &&
+    shipForm.value.gia_file &&
+    shipForm.value.estimated_delivery_date
+  );
+});
+
 const showQuickActions = computed(() => {
   return (
     order.value &&
@@ -1922,28 +2273,55 @@ const markAsProcessing = async () => {
 };
 
 const markAsShipped = async () => {
-  updatingStatus.value = true;
+  if (!canSubmitShipping.value) return;
+
+  shippingOrder.value = true;
+
   try {
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append("dhl_waybill_number", shipForm.value.dhl_waybill_number);
+    formData.append("gia_file", shipForm.value.gia_file);
+    formData.append(
+      "estimated_delivery_date",
+      shipForm.value.estimated_delivery_date
+    );
+
+    if (shipForm.value.notes) {
+      formData.append("notes", shipForm.value.notes);
+    }
+
     const response = await $customFetch(
-      `/admin/orders/${order.value.id}/status`,
+      `/admin/orders/${order.value.id}/ship`,
       {
-        method: "PUT",
-        body: {
-          status: "shipped",
-          estimated_delivery_date: shipForm.value.estimated_delivery_date,
-        },
+        method: "POST",
+        body: formData,
       }
     );
 
-    $toast.success("Order marked as shipped");
-    order.value = response.data;
-    showShipModal.value = false;
-    shipForm.value = { estimated_delivery_date: "" };
+    $toast.success(t.value.shipmentSuccess);
+
+    // Update the order with the response data
+    if (response.data && response.data.order) {
+      order.value = response.data.order;
+    } else {
+      // Fallback: re-fetch the order to get updated data
+      await fetchOrder();
+    }
+
+    closeShipModal();
   } catch (error) {
-    console.error("Error updating status:", error);
-    $toast.error("Error updating order status");
+    console.error("Error shipping order:", error);
+    $toast.error(t.value.shipmentError);
   } finally {
-    updatingStatus.value = false;
+    shippingOrder.value = false;
+  }
+};
+
+// Add method to view GIA document (add to existing methods)
+const viewGiaDocument = () => {
+  if (order.value?.gia_url) {
+    window.open(order.value.gia_full_url || order.value.gia_url, "_blank");
   }
 };
 
@@ -2040,6 +2418,50 @@ const confirmMarkArrived = async () => {
     $toast.error("Error updating item");
   } finally {
     markingArrived.value = false;
+  }
+};
+
+// File handling methods
+const triggerFileInput = () => {
+  fileInput.value?.click();
+};
+
+const handleFileSelect = (event) => {
+  const file = event.target.files[0];
+  if (file && file.type === "application/pdf") {
+    shipForm.value.gia_file = file;
+  } else {
+    $toast.error("Please select a PDF file");
+  }
+};
+
+const handleFileDrop = (event) => {
+  const file = event.dataTransfer.files[0];
+  if (file && file.type === "application/pdf") {
+    shipForm.value.gia_file = file;
+  } else {
+    $toast.error("Please select a PDF file");
+  }
+};
+
+const removeFile = () => {
+  shipForm.value.gia_file = null;
+  if (fileInput.value) {
+    fileInput.value.value = "";
+  }
+};
+
+const closeShipModal = () => {
+  showShipModal.value = false;
+  // Reset form
+  shipForm.value = {
+    dhl_waybill_number: "",
+    gia_file: null,
+    estimated_delivery_date: "",
+    notes: "",
+  };
+  if (fileInput.value) {
+    fileInput.value.value = "";
   }
 };
 
