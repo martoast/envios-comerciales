@@ -1,10 +1,11 @@
 <template>
-  <section class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
-    <div class="max-w-md w-full space-y-8">
-      <!-- Logo and Header -->
-      <div class="text-center animate-fadeIn">
-        <div class="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-primary-50 rounded-2xl mb-6 shadow-lg animate-bounce-subtle">
-          <svg class="w-12 h-12 sm:w-16 sm:h-16" viewBox="0 0 150 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20 px-4 py-6">
+    <div class="max-w-sm mx-auto">
+      <!-- Header with Progress -->
+      <div class="text-center mb-8">
+        <!-- Logo -->
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-50 rounded-xl mb-4 shadow-lg">
+          <svg class="w-10 h-10" viewBox="0 0 150 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
             <g stroke="#0d2c4f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
               <line x1="0" y1="35" x2="40" y2="35" />
               <line x1="5" y1="50" x2="45" y2="50" />
@@ -15,307 +16,347 @@
             </g>
           </svg>
         </div>
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">
-          {{ t.registerTitle }}
+        
+        <!-- Progress Bar -->
+        <div class="mb-4">
+          <div class="flex items-center justify-center gap-2 mb-2">
+            <div v-for="step in totalSteps" :key="step" :class="[
+              'w-2 h-2 rounded-full transition-all duration-300',
+              step <= currentStep ? 'bg-primary-500' : 'bg-gray-200'
+            ]"></div>
+          </div>
+          <p class="text-xs text-gray-500">{{ currentStep }}/{{ totalSteps }}</p>
+        </div>
+        
+        <!-- Dynamic Title -->
+        <h1 class="text-xl font-bold text-gray-900 mb-1">
+          {{ currentStepTitle }}
         </h1>
-        <p class="text-sm sm:text-base text-gray-600 max-w-sm mx-auto">
-          {{ t.registerSubtitle }}
+        <p class="text-sm text-gray-600">
+          {{ currentStepSubtitle }}
         </p>
       </div>
+
       <!-- Error Alert -->
       <Transition
-        enter-active-class="transform ease-out duration-300 transition"
+        enter-active-class="transform ease-out duration-300"
         enter-from-class="translate-y-2 opacity-0"
         enter-to-class="translate-y-0 opacity-100"
         leave-active-class="transition ease-in duration-200"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div v-if="errorMessage || Object.keys(errors).length > 0" class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 shadow-md animate-shake">
+        <div v-if="errorMessage || Object.keys(errors).length > 0" class="bg-red-50 border-l-4 border-red-500 rounded-lg p-3 mb-6 shadow-sm">
           <div class="flex">
             <div class="flex-shrink-0">
-              <svg class="w-5 h-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <svg class="w-4 h-4 text-red-400 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
               </svg>
             </div>
-            <div class="ml-3 flex-1">
-              <p class="text-sm font-medium text-red-800">
-                {{ errorMessage || t.validationError }}
+            <div class="ml-2 flex-1">
+              <p class="text-xs font-medium text-red-800">
+                {{ errorMessage || getFirstError() }}
               </p>
-              <ul v-if="Object.keys(errors).length > 0" class="mt-2 text-sm text-red-700 space-y-1">
-                <li v-for="(messages, field) in errors" :key="field" class="flex items-start">
-                  <span class="inline-block w-2 h-2 bg-red-400 rounded-full mt-1.5 mr-2 flex-shrink-0"></span>
-                  <span>{{ messages[0] }}</span>
-                </li>
-              </ul>
             </div>
-            <button @click="clearErrors" class="ml-3 flex-shrink-0">
-              <svg class="w-5 h-5 text-red-400 hover:text-red-600 transition-colors" viewBox="0 0 20 20" fill="currentColor">
+            <button @click="clearErrors" class="ml-2 flex-shrink-0">
+              <svg class="w-4 h-4 text-red-400 hover:text-red-600" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
               </svg>
             </button>
           </div>
         </div>
       </Transition>
-      <!-- Register Form -->
-      <div class="bg-white/90 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-100 animate-fadeIn">
-        <form @submit.prevent="handleRegister" class="space-y-5">
-          <!-- User Type Selection -->
-          <div>
-            <label class="block text-sm font-semibold text-gray-900 mb-3">
-              {{ t.userTypeLabel }} <span class="text-red-500">*</span>
-            </label>
-            <div class="grid grid-cols-1 gap-3">
+
+      <!-- Form Container -->
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <!-- Step Content -->
+        <div class="p-6">
+          <!-- Step 1: User Type Selection -->
+          <div v-if="currentStep === 1" class="space-y-4">
+            <div class="grid gap-3">
               <button
                 v-for="userType in translatedUserTypes"
                 :key="userType.value"
                 type="button"
-                @click="form.user_type = userType.value; clearFieldError('user_type')"
+                @click="selectUserType(userType.value)"
                 :class="[
-                  'relative flex items-start p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer group',
+                  'relative flex items-center p-4 rounded-xl border-2 transition-all duration-200 text-left',
                   form.user_type === userType.value 
-                    ? 'border-primary-500 bg-primary-50/50' 
-                    : errors.user_type 
-                      ? 'border-red-300 hover:border-red-400 bg-white'
-                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                    ? 'border-primary-500 bg-primary-50/50 shadow-md transform scale-[1.02]' 
+                    : 'border-gray-200 hover:border-gray-300 bg-white hover:shadow-sm'
                 ]"
               >
                 <div class="flex items-center h-5">
                   <div :class="[
                     'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all',
                     form.user_type === userType.value 
-                      ? 'border-primary-500' 
-                      : 'border-gray-300 group-hover:border-gray-400'
+                      ? 'border-primary-500 bg-primary-500' 
+                      : 'border-gray-300'
                   ]">
-                    <div v-if="form.user_type === userType.value" class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                    <div v-if="form.user_type === userType.value" class="w-2 h-2 bg-white rounded-full"></div>
                   </div>
                 </div>
                 <div class="ml-3 flex-1">
-                  <div class="flex items-center gap-2">
-                    <svg v-if="userType.icon === 'globe'" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="flex items-center gap-2 mb-1">
+                    <svg v-if="userType.icon === 'globe'" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <svg v-else-if="userType.icon === 'briefcase'" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg v-else-if="userType.icon === 'briefcase'" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
-                    <svg v-else-if="userType.icon === 'shopping-cart'" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg v-else-if="userType.icon === 'shopping-cart'" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                     </svg>
-                    <span class="font-semibold text-gray-900">{{ userType.label }}</span>
+                    <span class="font-semibold text-gray-900 text-sm">{{ userType.label }}</span>
                   </div>
-                  <p class="text-sm text-gray-600 mt-1">{{ userType.description }}</p>
+                  <p class="text-xs text-gray-600">{{ userType.description }}</p>
                 </div>
               </button>
             </div>
-            <p v-if="errors.user_type" class="mt-2 text-sm text-red-600">{{ errors.user_type[0] }}</p>
           </div>
-          
-          <!-- Name Field -->
-          <div>
-            <label for="name" class="block text-sm font-semibold text-gray-900 mb-2">
-              {{ t.nameLabel }}
-            </label>
-            <div class="relative">
-              <input
-                v-model="form.name"
-                type="text"
-                id="name"
-                autocomplete="name"
-                :placeholder="t.namePlaceholder"
-                :class="[
-                  'w-full pl-10 pr-3 py-3 rounded-lg border text-base focus:outline-none focus:ring-2 transition-all duration-200',
-                  errors.name ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
-                ]"
-                required
-                @input="clearFieldError('name')"
-              >
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
+
+          <!-- Step 2: Basic Info -->
+          <div v-if="currentStep === 2" class="space-y-4">
+            <!-- Name Field -->
+            <div>
+              <label for="name" class="block text-sm font-semibold text-gray-900 mb-2">
+                {{ t.nameLabel }}
+              </label>
+              <div class="relative">
+                <input
+                  ref="nameInput"
+                  v-model="form.name"
+                  type="text"
+                  id="name"
+                  autocomplete="name"
+                  :placeholder="t.namePlaceholder"
+                  :class="[
+                    'w-full pl-10 pr-3 py-3 rounded-xl border text-base focus:outline-none focus:ring-2 transition-all duration-200',
+                    errors.name ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
+                  ]"
+                  required
+                  @input="clearFieldError('name')"
+                >
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                </div>
               </div>
             </div>
-            <p v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name[0] }}</p>
-          </div>
-          <!-- Email Field -->
-          <div>
-            <label for="email" class="block text-sm font-semibold text-gray-900 mb-2">
-              {{ t.emailLabel }}
-            </label>
-            <div class="relative">
-              <input
-                v-model="form.email"
-                type="email"
-                id="email"
-                autocomplete="email"
-                :placeholder="t.emailPlaceholder"
-                :class="[
-                  'w-full pl-10 pr-3 py-3 rounded-lg border text-base focus:outline-none focus:ring-2 transition-all duration-200',
-                  errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
-                ]"
-                required
-                @input="clearFieldError('email')"
-              >
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
+
+            <!-- Email Field -->
+            <div>
+              <label for="email" class="block text-sm font-semibold text-gray-900 mb-2">
+                {{ t.emailLabel }}
+              </label>
+              <div class="relative">
+                <input
+                  v-model="form.email"
+                  type="email"
+                  id="email"
+                  autocomplete="email"
+                  :placeholder="t.emailPlaceholder"
+                  :class="[
+                    'w-full pl-10 pr-3 py-3 rounded-xl border text-base focus:outline-none focus:ring-2 transition-all duration-200',
+                    errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
+                  ]"
+                  required
+                  @input="clearFieldError('email')"
+                >
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
+                </div>
               </div>
             </div>
-            <p v-if="errors.email" class="mt-1 text-sm text-red-600">{{ errors.email[0] }}</p>
+
+            <!-- Phone Field -->
+            <div>
+              <label for="phone" class="block text-sm font-semibold text-gray-900 mb-2">
+                {{ t.phoneLabel }}
+              </label>
+              <div class="relative">
+                <input
+                  v-model="form.phone"
+                  type="tel"
+                  id="phone"
+                  autocomplete="tel"
+                  :placeholder="t.phonePlaceholder"
+                  :class="[
+                    'w-full pl-10 pr-3 py-3 rounded-xl border text-base focus:outline-none focus:ring-2 transition-all duration-200',
+                    errors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
+                  ]"
+                  required
+                  @input="clearFieldError('phone')"
+                >
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                  </svg>
+                </div>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">{{ t.phoneHelp }}</p>
+            </div>
           </div>
-          <!-- Phone Field -->
-          <div>
-            <label for="phone" class="block text-sm font-semibold text-gray-900 mb-2">
-              {{ t.phoneLabel }}
-            </label>
-            <div class="relative">
-              <input
-                v-model="form.phone"
-                type="tel"
-                id="phone"
-                autocomplete="tel"
-                :placeholder="t.phonePlaceholder"
-                :class="[
-                  'w-full pl-10 pr-3 py-3 rounded-lg border text-base focus:outline-none focus:ring-2 transition-all duration-200',
-                  errors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
-                ]"
-                required
-                @input="clearFieldError('phone')"
-              >
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                </svg>
+
+          <!-- Step 3: Password -->
+          <div v-if="currentStep === 3" class="space-y-4">
+            <!-- Password Field -->
+            <div>
+              <label for="password" class="block text-sm font-semibold text-gray-900 mb-2">
+                {{ t.passwordLabel }}
+              </label>
+              <div class="relative">
+                <input
+                  ref="passwordInput"
+                  v-model="form.password"
+                  :type="showPassword ? 'text' : 'password'"
+                  id="password"
+                  autocomplete="new-password"
+                  :placeholder="t.passwordPlaceholder"
+                  :class="[
+                    'w-full pl-10 pr-12 py-3 rounded-xl border text-base focus:outline-none focus:ring-2 transition-all duration-200',
+                    errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
+                  ]"
+                  required
+                  @input="clearFieldError('password')"
+                >
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                  </svg>
+                </div>
+                <button
+                  type="button"
+                  @click="showPassword = !showPassword"
+                  class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+                >
+                  <svg v-if="!showPassword" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                  </svg>
+                  <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+                  </svg>
+                </button>
+              </div>
+              
+              <!-- Password strength indicator -->
+              <div v-if="form.password" class="mt-2">
+                <div class="flex items-center gap-1">
+                  <div v-for="i in 4" :key="i" :class="[
+                    'h-1 flex-1 rounded-full transition-all duration-300',
+                    i <= passwordStrength ? passwordStrengthColor : 'bg-gray-200'
+                  ]"></div>
+                </div>
+                <p class="text-xs mt-1" :class="passwordStrengthTextColor">
+                  {{ passwordStrengthText }}
+                </p>
               </div>
             </div>
-            <p v-if="errors.phone" class="mt-1 text-sm text-red-600">{{ errors.phone[0] }}</p>
-            <p class="mt-1 text-xs text-gray-500">{{ t.phoneHelp }}</p>
-          </div>
-          <!-- Password Field -->
-          <div>
-            <label for="password" class="block text-sm font-semibold text-gray-900 mb-2">
-              {{ t.passwordLabel }}
-            </label>
-            <div class="relative">
-              <input
-                v-model="form.password"
-                :type="showPassword ? 'text' : 'password'"
-                id="password"
-                autocomplete="new-password"
-                :placeholder="t.passwordPlaceholder"
-                :class="[
-                  'w-full pl-10 pr-12 py-3 rounded-lg border text-base focus:outline-none focus:ring-2 transition-all duration-200',
-                  errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
-                ]"
-                required
-                @input="clearFieldError('password')"
-              >
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                </svg>
+
+            <!-- Password Confirmation Field -->
+            <div>
+              <label for="password_confirmation" class="block text-sm font-semibold text-gray-900 mb-2">
+                {{ t.passwordConfirmLabel }}
+              </label>
+              <div class="relative">
+                <input
+                  v-model="form.password_confirmation"
+                  :type="showPasswordConfirm ? 'text' : 'password'"
+                  id="password_confirmation"
+                  autocomplete="new-password"
+                  :placeholder="t.passwordConfirmPlaceholder"
+                  :class="[
+                    'w-full pl-10 pr-12 py-3 rounded-xl border text-base focus:outline-none focus:ring-2 transition-all duration-200',
+                    errors.password_confirmation || (form.password_confirmation && form.password !== form.password_confirmation) 
+                      ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                      : 'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
+                  ]"
+                  required
+                  @input="clearFieldError('password_confirmation')"
+                >
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                  </svg>
+                </div>
+                <button
+                  type="button"
+                  @click="showPasswordConfirm = !showPasswordConfirm"
+                  class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+                >
+                  <svg v-if="!showPasswordConfirm" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                  </svg>
+                  <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+                  </svg>
+                </button>
               </div>
-              <button
-                type="button"
-                @click="showPassword = !showPassword"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
-              >
-                <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                  <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
-                </svg>
-              </button>
-            </div>
-            <p v-if="errors.password" class="mt-1 text-sm text-red-600">{{ errors.password[0] }}</p>
-            
-            <!-- Password strength indicator -->
-            <div v-if="form.password" class="mt-2">
-              <div class="flex items-center gap-1">
-                <div v-for="i in 4" :key="i" :class="[
-                  'h-1 flex-1 rounded-full transition-all duration-300',
-                  i <= passwordStrength ? passwordStrengthColor : 'bg-gray-200'
-                ]"></div>
-              </div>
-              <p class="text-xs mt-1" :class="passwordStrengthTextColor">
-                {{ passwordStrengthText }}
+              <p v-if="form.password_confirmation && form.password !== form.password_confirmation" class="mt-1 text-xs text-red-600">
+                {{ t.passwordMismatch }}
               </p>
             </div>
           </div>
-          <!-- Password Confirmation Field -->
-          <div>
-            <label for="password_confirmation" class="block text-sm font-semibold text-gray-900 mb-2">
-              {{ t.passwordConfirmLabel }}
-            </label>
-            <div class="relative">
-              <input
-                v-model="form.password_confirmation"
-                :type="showPasswordConfirm ? 'text' : 'password'"
-                id="password_confirmation"
-                autocomplete="new-password"
-                :placeholder="t.passwordConfirmPlaceholder"
-                :class="[
-                  'w-full pl-10 pr-12 py-3 rounded-lg border text-base focus:outline-none focus:ring-2 transition-all duration-200',
-                  errors.password_confirmation || (form.password_confirmation && form.password !== form.password_confirmation) 
-                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
-                    : 'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
-                ]"
-                required
-                @input="clearFieldError('password_confirmation')"
-              >
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                </svg>
-              </div>
-              <button
-                type="button"
-                @click="showPasswordConfirm = !showPasswordConfirm"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
-              >
-                <svg v-if="!showPasswordConfirm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                  <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
-                </svg>
-              </button>
-            </div>
-            <p v-if="errors.password_confirmation" class="mt-1 text-sm text-red-600">{{ errors.password_confirmation[0] }}</p>
-            <p v-else-if="form.password_confirmation && form.password !== form.password_confirmation" class="mt-1 text-sm text-red-600">
-              {{ t.passwordMismatch }}
-            </p>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-100">
+          <div class="flex gap-3">
+            <!-- Back Button -->
+            <button
+              v-if="currentStep > 1"
+              @click="goToPreviousStep"
+              type="button"
+              class="flex-1 px-4 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition-all duration-200"
+            >
+              {{ t.backButton }}
+            </button>
+            
+            <!-- Next/Submit Button -->
+            <button
+              @click="handleNext"
+              :disabled="!canProceed || loading"
+              :class="[
+                'flex-1 px-4 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2',
+                canProceed && !loading
+                  ? 'bg-primary-500 text-white hover:bg-primary-600 shadow-lg hover:shadow-xl hover:-translate-y-0.5'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              ]"
+            >
+              <svg v-if="loading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span v-if="!loading">
+                {{ isLastStep ? t.createAccountButton : t.nextButton }}
+              </span>
+              <span v-else>
+                {{ t.creatingAccountButton }}
+              </span>
+            </button>
           </div>
-          <!-- Submit Button -->
-          <button
-            type="submit"
-            :disabled="loading || !isFormValid"
-            class="w-full px-6 py-3.5 rounded-xl inline-flex items-center justify-center gap-2 font-semibold text-base no-underline border-2 border-transparent cursor-pointer transition-all duration-300 bg-primary-500 text-white shadow-lg hover:bg-primary-600 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg"
-          >
-            <svg v-if="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span v-if="!loading">{{ t.registerButton }}</span>
-            <span v-else>{{ t.registeringButton }}</span>
-          </button>
-        </form>
+        </div>
+      </div>
+
+      <!-- Social Login Section -->
+      <div v-if="currentStep === 1" class="mt-6">
         <!-- Divider -->
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">
             <div class="w-full border-t border-gray-200"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="px-4 bg-white text-gray-500">{{ t.orContinueWith }}</span>
+            <span class="px-3 bg-gray-50 text-gray-500">{{ t.orText }}</span>
           </div>
         </div>
+
         <!-- Google Sign Up Button -->
         <button
-          type="button"
           @click="handleGoogleSignUp"
-          class="w-full inline-flex justify-center items-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all"
+          class="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
         >
           <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -325,27 +366,22 @@
           </svg>
           {{ t.continueWithGoogle }}
         </button>
-        <!-- Divider -->
-        <div class="relative my-6">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-200"></div>
-          </div>
-          <div class="relative flex justify-center text-sm">
-            <span class="px-4 bg-white text-gray-500">{{ t.orText }}</span>
-          </div>
-        </div>
-        <!-- Login Link -->
-        <p class="text-center text-sm sm:text-base text-gray-600">
+      </div>
+
+      <!-- Login Link -->
+      <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
           {{ t.alreadyHaveAccount }}
-          <NuxtLink :to="loginLink" class="text-primary-500 font-semibold hover:text-primary-600 hover:underline transition-colors">
+          <NuxtLink :to="loginLink" class="text-primary-500 font-semibold hover:text-primary-600 transition-colors">
             {{ t.loginLink }}
           </NuxtLink>
         </p>
       </div>
+
       <!-- Back to Home -->
-      <div class="text-center">
-        <NuxtLink to="/" class="text-gray-500 hover:text-gray-700 text-sm inline-flex items-center gap-2 group transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 transition-transform group-hover:-translate-x-1">
+      <div class="mt-4 text-center">
+        <NuxtLink to="/" class="text-gray-500 hover:text-gray-700 text-sm inline-flex items-center gap-1 group transition-colors">
+          <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="currentColor" viewBox="0 0 24 24">
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
           </svg>
           {{ t.backToHome }}
@@ -356,9 +392,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 
-// Define page meta to use default layout
+// Define page meta
 definePageMeta({
   layout: 'default'
 })
@@ -370,6 +406,10 @@ const runtimeConfig = useRuntimeConfig();
 
 // Use the language composable
 const { t: createTranslations, language } = useLanguage()
+
+// Multi-step state
+const currentStep = ref(1)
+const totalSteps = ref(3)
 
 // User types state
 const userTypes = ref([])
@@ -406,22 +446,32 @@ const loginLink = computed(() => {
 
 // Define translations
 const translations = {
-  registerTitle: {
-    es: 'Crear una Cuenta',
-    en: 'Create an Account'
+  // Step titles
+  stepOneTitle: {
+    es: '¿Cómo te describes?',
+    en: 'How do you describe yourself?'
   },
-  registerSubtitle: {
-    es: 'Únete para empezar a enviar desde USA a México',
-    en: 'Join to start shipping from USA to Mexico'
-  },
-  userTypeLabel: {
+  stepOneSubtitle: {
     es: 'Ayúdanos a personalizar tu experiencia',
     en: 'Help us personalize your experience'
   },
-  userTypeRequired: {
-    es: 'Por favor selecciona un tipo de usuario',
-    en: 'Please select a user type'
+  stepTwoTitle: {
+    es: 'Información básica',
+    en: 'Basic information'
   },
+  stepTwoSubtitle: {
+    es: 'Solo necesitamos algunos detalles',
+    en: 'We just need a few details'
+  },
+  stepThreeTitle: {
+    es: 'Crear contraseña',
+    en: 'Create password'
+  },
+  stepThreeSubtitle: {
+    es: 'Mantén tu cuenta segura',
+    en: 'Keep your account secure'
+  },
+  
   // User type translations
   expatLabel: {
     es: 'Expatriado',
@@ -440,40 +490,42 @@ const translations = {
     en: 'Companies needing B2B solutions'
   },
   shopperLabel: {
-    es: 'Comprador en Línea',
-    en: 'Online Shopper'
+    es: 'Comprador',
+    en: 'Shopper'
   },
   shopperDescription: {
-    es: 'Compra en tiendas en línea de USA/internacionales',
-    en: 'Shop from US/international online stores'
+    es: 'Compras en tiendas en línea de USA',
+    en: 'Shop from US online stores'
   },
+  
+  // Form fields
   nameLabel: {
-    es: 'Nombre Completo',
-    en: 'Full Name'
+    es: 'Nombre completo',
+    en: 'Full name'
   },
   namePlaceholder: {
     es: 'Juan Pérez',
     en: 'John Doe'
   },
   emailLabel: {
-    es: 'Correo Electrónico',
-    en: 'Email Address'
+    es: 'Correo electrónico',
+    en: 'Email address'
   },
   emailPlaceholder: {
     es: 'tu@email.com',
     en: 'your@email.com'
   },
   phoneLabel: {
-    es: 'Número de Teléfono',
-    en: 'Phone Number'
+    es: 'Teléfono',
+    en: 'Phone number'
   },
   phonePlaceholder: {
     es: '+52 55 1234 5678',
     en: '+1 555 123 4567'
   },
   phoneHelp: {
-    es: 'Incluye el código de país. Ej: +52 para México, +1 para USA',
-    en: 'Include country code. Ex: +1 for USA, +52 for Mexico, +1 for USA'
+    es: 'Incluye código de país',
+    en: 'Include country code'
   },
   passwordLabel: {
     es: 'Contraseña',
@@ -484,49 +536,55 @@ const translations = {
     en: 'Minimum 8 characters'
   },
   passwordConfirmLabel: {
-    es: 'Confirmar Contraseña',
-    en: 'Confirm Password'
+    es: 'Confirmar contraseña',
+    en: 'Confirm password'
   },
   passwordConfirmPlaceholder: {
     es: 'Repite tu contraseña',
     en: 'Repeat your password'
   },
-  registerButton: {
-    es: 'Crear Cuenta',
-    en: 'Create Account'
+  
+  // Buttons
+  nextButton: {
+    es: 'Continuar',
+    en: 'Continue'
   },
-  registeringButton: {
-    es: 'Creando cuenta...',
-    en: 'Creating account...'
+  backButton: {
+    es: 'Atrás',
+    en: 'Back'
   },
+  createAccountButton: {
+    es: 'Crear cuenta',
+    en: 'Create account'
+  },
+  creatingAccountButton: {
+    es: 'Creando...',
+    en: 'Creating...'
+  },
+  
+  // Social and links
   orText: {
     es: 'o',
     en: 'or'
   },
+  continueWithGoogle: {
+    es: 'Continuar con Google',
+    en: 'Continue with Google'
+  },
   alreadyHaveAccount: {
-    es: '¿Ya tienes una cuenta?',
+    es: '¿Ya tienes cuenta?',
     en: 'Already have an account?'
   },
   loginLink: {
-    es: 'Inicia Sesión',
-    en: 'Sign In'
+    es: 'Inicia sesión',
+    en: 'Sign in'
   },
   backToHome: {
-    es: 'Volver al Inicio',
-    en: 'Back to Home'
+    es: 'Volver al inicio',
+    en: 'Back to home'
   },
-  generalError: {
-    es: 'Ocurrió un error. Por favor, intenta de nuevo.',
-    en: 'An error occurred. Please try again.'
-  },
-  validationError: {
-    es: 'Por favor corrige los siguientes errores:',
-    en: 'Please correct the following errors:'
-  },
-  passwordMismatch: {
-    es: 'Las contraseñas no coinciden',
-    en: 'Passwords do not match'
-  },
+  
+  // Password strength
   weakPassword: {
     es: 'Débil',
     en: 'Weak'
@@ -543,27 +601,53 @@ const translations = {
     es: 'Fuerte',
     en: 'Strong'
   },
-  orContinueWith: {
-    es: 'o continúa con',
-    en: 'or continue with'
+  
+  // Errors
+  passwordMismatch: {
+    es: 'Las contraseñas no coinciden',
+    en: 'Passwords do not match'
   },
-  continueWithGoogle: {
-    es: 'Continuar con Google',
-    en: 'Continue with Google'
+  generalError: {
+    es: 'Ocurrió un error. Intenta de nuevo.',
+    en: 'An error occurred. Please try again.'
   },
   noAccountError: {
-    es: 'No existe una cuenta con este email. Por favor regístrate primero.',
-    en: 'No account exists with this email. Please register first.'
+    es: 'No existe una cuenta con este email.',
+    en: 'No account exists with this email.'
+  },
+  userTypeRequired: {
+    es: 'Selecciona una opción',
+    en: 'Please select an option'
   }
 }
 
 // Get reactive translations
 const t = createTranslations(translations)
 
+// Computed properties for step management
+const currentStepTitle = computed(() => {
+  switch (currentStep.value) {
+    case 1: return t.value.stepOneTitle
+    case 2: return t.value.stepTwoTitle
+    case 3: return t.value.stepThreeTitle
+    default: return ''
+  }
+})
+
+const currentStepSubtitle = computed(() => {
+  switch (currentStep.value) {
+    case 1: return t.value.stepOneSubtitle
+    case 2: return t.value.stepTwoSubtitle
+    case 3: return t.value.stepThreeSubtitle
+    default: return ''
+  }
+})
+
+const isLastStep = computed(() => currentStep.value === totalSteps.value)
+
 // Computed property for translated user types
 const translatedUserTypes = computed(() => {
   return userTypes.value.map(type => {
-    // Get the translated label and description based on the type value
     let label = ''
     let description = ''
     
@@ -591,62 +675,24 @@ const translatedUserTypes = computed(() => {
   })
 })
 
-// Fetch user types
-const fetchUserTypes = async () => {
-  loadingUserTypes.value = true
-  try {
-    const response = await $customFetch('/user-types')
-    if (response.success && response.data) {
-      // We only need the values and icons from the API
-      // Labels and descriptions come from our translations
-      userTypes.value = response.data.map(type => ({
-        value: type.value,
-        icon: type.icon
-      }))
-    }
-  } catch (error) {
-    console.error('Error fetching user types:', error)
-    // Fallback to hardcoded types if API fails
-    userTypes.value = [
-      { value: 'expat', icon: 'globe' },
-      { value: 'business', icon: 'briefcase' },
-      { value: 'shopper', icon: 'shopping-cart' }
-    ]
-  } finally {
-    loadingUserTypes.value = false
+// Step validation
+const canProceed = computed(() => {
+  switch (currentStep.value) {
+    case 1:
+      return form.value.user_type !== ''
+    case 2:
+      return form.value.name.trim() !== '' && 
+             form.value.email.trim() !== '' && 
+             form.value.phone.trim() !== ''
+    case 3:
+      return form.value.password !== '' &&
+             form.value.password_confirmation !== '' &&
+             form.value.password === form.value.password_confirmation &&
+             passwordStrength.value >= 2
+    default:
+      return false
   }
-}
-
-// Get registration source and preselection from URL parameters
-const getRegistrationSourceAndPreselect = () => {
-  const params = route.query
-  
-  // Build comprehensive tracking data object
-  const trackingData = {
-    utm_source: params.utm_source || null,
-    utm_medium: params.utm_medium || null,
-    utm_campaign: params.utm_campaign || null,
-    utm_content: params.utm_content || null,
-    utm_term: params.utm_term || null,
-    fbclid: params.fbclid || null,
-    gclid: params.gclid || null,
-    landing_page: params.source || null,
-    referrer: document.referrer || null,
-    timestamp: new Date().toISOString()
-  }
-  
-  // Only set registration_source if we have tracking data
-  const hasTrackingData = Object.values(trackingData).some(value => value !== null)
-  if (hasTrackingData) {
-    form.value.registration_source = JSON.stringify(trackingData)
-  }
-  
-  // Check for preselected user type
-  const preselect = params.preselect
-  if (preselect && ['expat', 'business', 'shopper'].includes(preselect)) {
-    form.value.user_type = preselect
-  }
-}
+})
 
 // Password strength calculation
 const passwordStrength = computed(() => {
@@ -677,18 +723,6 @@ const passwordStrengthText = computed(() => {
   return texts[passwordStrength.value]
 })
 
-// Form validation
-const isFormValid = computed(() => {
-  return form.value.name &&
-    form.value.email &&
-    form.value.phone &&
-    form.value.password &&
-    form.value.password_confirmation &&
-    form.value.user_type && // Now required
-    form.value.password === form.value.password_confirmation &&
-    passwordStrength.value >= 2
-})
-
 // Methods
 const clearErrors = () => {
   errorMessage.value = ''
@@ -701,19 +735,55 @@ const clearFieldError = (field) => {
   }
 }
 
+const getFirstError = () => {
+  const firstField = Object.keys(errors.value)[0]
+  return firstField ? errors.value[firstField][0] : ''
+}
+
+const selectUserType = (userType) => {
+  form.value.user_type = userType
+  clearFieldError('user_type')
+}
+
+const goToPreviousStep = () => {
+  if (currentStep.value > 1) {
+    currentStep.value--
+    clearErrors()
+  }
+}
+
+const goToNextStep = async () => {
+  if (currentStep.value < totalSteps.value) {
+    currentStep.value++
+    clearErrors()
+    
+    // Focus on first input of next step
+    await nextTick()
+    if (currentStep.value === 2) {
+      const nameInput = document.querySelector('#name')
+      if (nameInput) nameInput.focus()
+    } else if (currentStep.value === 3) {
+      const passwordInput = document.querySelector('#password')
+      if (passwordInput) passwordInput.focus()
+    }
+  }
+}
+
+const handleNext = async () => {
+  if (!canProceed.value) return
+  
+  if (isLastStep.value) {
+    await handleRegister()
+  } else {
+    await goToNextStep()
+  }
+}
+
 const handleRegister = async () => {
   loading.value = true
   clearErrors()
   
-  // Validate user type is selected
-  if (!form.value.user_type) {
-    errors.value.user_type = [t.value.userTypeRequired]
-    loading.value = false
-    return
-  }
-  
   try {
-    // Make registration request with user_type and registration_source
     await $customFetch('/auth/register', {
       method: 'POST',
       body: {
@@ -731,26 +801,19 @@ const handleRegister = async () => {
       $fbq('track', 'CompleteRegistration')
     }
     
-    // Success - check for redirect query parameter
+    // Success - redirect
     if (redirectTo && typeof redirectTo === 'string') {
-      // Ensure the redirect is a relative path for security
       if (redirectTo.startsWith('/')) {
-        console.log('Redirecting to:', redirectTo)
         await navigateTo(redirectTo)
       } else {
-        // If it's not a relative path, go to default app page
-        console.log('Invalid redirect path, going to default app page')
         await navigateTo('/app/')
       }
     } else {
-      // No redirect, go to default app page
-      console.log('No redirect parameter, going to default app page')
       await navigateTo('/app/')
     }
   } catch (error) {
     console.error('Registration error:', error)
     
-    // Handle API validation errors
     if (error.data) {
       if (error.data.errors) {
         errors.value = error.data.errors
@@ -767,7 +830,6 @@ const handleRegister = async () => {
 }
 
 const handleGoogleSignUp = () => { 
-  // Build the OAuth URL with state parameter containing tracking data
   const state = btoa(JSON.stringify({
     tracking: form.value.registration_source || null,
     redirect: redirectTo || null
@@ -776,53 +838,112 @@ const handleGoogleSignUp = () => {
   window.location.href = `${runtimeConfig.public.apiUrl}/auth/google/redirect?state=${encodeURIComponent(state)}`
 }
 
-// Check for errors and fetch user types on mount
+// Fetch user types
+const fetchUserTypes = async () => {
+  loadingUserTypes.value = true
+  try {
+    const response = await $customFetch('/user-types')
+    if (response.success && response.data) {
+      userTypes.value = response.data.map(type => ({
+        value: type.value,
+        icon: type.icon
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching user types:', error)
+    // Fallback to hardcoded types if API fails
+    userTypes.value = [
+      { value: 'expat', icon: 'globe' },
+      { value: 'business', icon: 'briefcase' },
+      { value: 'shopper', icon: 'shopping-cart' }
+    ]
+  } finally {
+    loadingUserTypes.value = false
+  }
+}
+
+// Get registration source and preselection from URL parameters
+const getRegistrationSourceAndPreselect = () => {
+  const params = route.query
+  
+  const trackingData = {
+    utm_source: params.utm_source || null,
+    utm_medium: params.utm_medium || null,
+    utm_campaign: params.utm_campaign || null,
+    utm_content: params.utm_content || null,
+    utm_term: params.utm_term || null,
+    fbclid: params.fbclid || null,
+    gclid: params.gclid || null,
+    landing_page: params.source || null,
+    referrer: document.referrer || null,
+    timestamp: new Date().toISOString()
+  }
+  
+  const hasTrackingData = Object.values(trackingData).some(value => value !== null)
+  if (hasTrackingData) {
+    form.value.registration_source = JSON.stringify(trackingData)
+  }
+  
+  const preselect = params.preselect
+  if (preselect && ['expat', 'business', 'shopper'].includes(preselect)) {
+    form.value.user_type = preselect
+  }
+}
+
+// Lifecycle
 onMounted(() => {
-  // Check if redirected from Google OAuth with no account error
   if (route.query.error === 'no_account') {
     errorMessage.value = t.value.noAccountError
   }
   
-  // Fetch user types
   fetchUserTypes()
-  
-  // Get registration source and preselected user type from URL
   getRegistrationSourceAndPreselect()
 })
 </script>
 
 <style scoped>
+/* Custom animations for smooth transitions */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-  20%, 40%, 60%, 80% { transform: translateX(2px); }
-}
-
-@keyframes bounce-subtle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.6s ease-out;
+  animation: fadeIn 0.4s ease-out;
 }
 
-.animate-shake {
-  animation: shake 0.5s ease-in-out;
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
 }
 
-.animate-bounce-subtle {
-  animation: bounce-subtle 2s ease-in-out infinite;
+/* Focus styles for better accessibility */
+input:focus, button:focus {
+  outline: none;
+}
+
+/* Smooth transitions for all interactive elements */
+button, input, .transition-all {
+  transition: all 0.2s ease;
+}
+
+/* Enhanced hover effects */
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Mobile-optimized touch targets */
+@media (max-width: 640px) {
+  button, input {
+    min-height: 44px; /* iOS recommended touch target */
+  }
 }
 </style>
