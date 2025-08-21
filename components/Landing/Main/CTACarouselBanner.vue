@@ -133,7 +133,7 @@
         link: '/register?source=cta_first_time'
       },
       {
-        image: '/boxbanner.webp',
+        image: '/newbanner.jpeg',
         title: 'Ahorra hasta 60% en envíos',
         description: 'Consolidamos todos tus paquetes en uno solo. Paga un solo envío a México.',
         buttonText: 'Calcular Envio',
@@ -148,7 +148,7 @@
         link: '/register?source=landing_page_shoppers&preselect=shopper'
       },
       {
-        image: '/boxbanner.webp',
+        image: '/newbanner.jpeg',
         title: 'Save up to 60% on shipping',
         description: 'We consolidate all your packages into one. Pay only one shipment to Mexico.',
         buttonText: 'Calculate Savings',
