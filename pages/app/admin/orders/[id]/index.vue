@@ -32,16 +32,67 @@
             </div>
           </div>
 
-          <!-- Status Badge -->
-          <span
-            v-if="order"
-            :class="[
-              'px-3 py-1 rounded-full text-xs font-medium',
-              getStatusColor(order.status),
-            ]"
-          >
-            {{ getStatusLabel(order.status) }}
-          </span>
+          <!-- Actions -->
+          <div class="flex items-center gap-3">
+            <!-- Status Badge -->
+            <span
+              v-if="order"
+              :class="[
+                'px-3 py-1 rounded-full text-xs font-medium',
+                getStatusColor(order.status),
+              ]"
+            >
+              {{ getStatusLabel(order.status) }}
+            </span>
+            
+            <!-- Admin Actions Dropdown -->
+            <div class="relative">
+              <button
+                @click="showActionsMenu = !showActionsMenu"
+                @blur="() => setTimeout(() => showActionsMenu = false, 200)"
+                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                </svg>
+              </button>
+              
+              <!-- Dropdown Menu -->
+              <Transition
+                enter-active-class="transition ease-out duration-100"
+                enter-from-class="transform opacity-0 scale-95"
+                enter-to-class="transform opacity-100 scale-100"
+                leave-active-class="transition ease-in duration-75"
+                leave-from-class="transform opacity-100 scale-100"
+                leave-to-class="transform opacity-0 scale-95"
+              >
+                <div v-if="showActionsMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50">
+                  <NuxtLink
+                    :to="`/app/admin/orders/${order.id}/edit`"
+                    @click="showActionsMenu = false"
+                    class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    {{ t.editOrder }}
+                  </NuxtLink>
+                  
+                  <hr class="my-1 border-gray-100">
+                  
+                  <button
+                    @click="openDeleteModal"
+                    class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    {{ t.deleteOrder }}
+                  </button>
+                </div>
+              </Transition>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -61,6 +112,29 @@
       v-else-if="order"
       class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6"
     >
+      <!-- Admin Controls - Clean Button Group -->
+      <div class="flex flex-wrap gap-3 mb-6">
+        <NuxtLink
+          :to="`/app/admin/orders/${order.id}/edit`"
+          class="inline-flex items-center px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-all shadow-sm hover:shadow-md"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+          {{ t.editFullOrder }}
+        </NuxtLink>
+        
+        <button
+          @click="openDeleteModal"
+          class="inline-flex items-center px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-all shadow-sm hover:shadow-md"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+          {{ t.deleteOrder }}
+        </button>
+      </div>
+
       <!-- Alert Banner for Incomplete Orders -->
       <div
         v-if="order.status === 'collecting'"
@@ -153,7 +227,6 @@
             {{ t.startProcessing }}
           </button>
           <!-- Send Quote Button -->
-
           <NuxtLink
             v-if="order.status === 'processing'"
             :to="`/app/admin/orders/${order.id}/quote`"
@@ -354,10 +427,7 @@
               <div class="pt-2 border-t border-gray-200 flex justify-between">
                 <span class="font-semibold text-gray-900">{{ t.total }}</span>
                 <span class="font-semibold text-gray-900"
-                  >${{
-                    order.quoted_amount ?? order.quoted_amount.toFixed(2)
-                  }}
-                  MXN</span
+                  >${{ order.quoted_amount ?? '' }} MXN</span
                 >
               </div>
               <div
@@ -388,8 +458,9 @@
             </div>
           </div>
 
+          <!-- Shipping Details (if exists) -->
           <div
-            v-if="order.dhl_waybill_number && order.gia_url"
+            v-if="order.dhl_waybill_number || order.gia_url"
             class="bg-white rounded-xl border border-gray-200 p-6"
           >
             <h2
@@ -658,13 +729,21 @@
       </div>
 
       <!-- Items List -->
-      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div
-          class="px-6 py-4 border-b border-gray-100 flex items-center justify-between"
-        >
+      <div class="bg-white rounded-xl border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <h2 class="text-lg font-semibold text-gray-900">
             {{ t.orderItems }}
           </h2>
+          <button
+            v-if="order.status !== 'cancelled' && order.status !== 'delivered'"
+            @click="showAddItemModal = true"
+            class="inline-flex items-center px-3 py-1.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+          >
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            {{ t.addItem }}
+          </button>
         </div>
 
         <!-- Empty State -->
@@ -672,9 +751,7 @@
           v-if="!order.items || order.items.length === 0"
           class="px-6 py-16 text-center"
         >
-          <div
-            class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4"
-          >
+          <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
             <svg
               class="w-8 h-8 text-gray-400"
               fill="none"
@@ -691,231 +768,736 @@
           </div>
           <h3 class="font-medium text-gray-900 mb-1">{{ t.noItemsYet }}</h3>
           <p class="text-sm text-gray-500">{{ t.customerHasNotAddedItems }}</p>
+          <button
+            @click="showAddItemModal = true"
+            class="mt-4 inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            {{ t.addFirstItem }}
+          </button>
         </div>
 
         <!-- Items List -->
         <div v-else class="divide-y divide-gray-100">
           <div
-            v-for="item in order.items"
+            v-for="(item, index) in order.items"
             :key="item.id"
             class="p-6 hover:bg-gray-50 transition-colors"
+            :class="{ 'pb-8': index === order.items.length - 1 }"
           >
-            <div class="flex items-start justify-between gap-4">
+            <div class="flex flex-col lg:flex-row lg:items-start gap-4">
               <!-- Item Info -->
               <div class="flex-1 min-w-0">
-                <div class="flex items-start gap-3">
-                  <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-900">
-                      {{ item.product_name }}
-                    </p>
-
-                    <!-- Product URL & Proof of Purchase Links -->
-                    <div class="flex flex-wrap items-center gap-3 mt-1">
-                      <a
-                        v-if="item.product_url"
-                        :href="item.product_url"
-                        target="_blank"
-                        class="text-xs text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
-                      >
-                        {{ t.viewProduct }}
-                        <svg
-                          class="w-3 h-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                          />
-                        </svg>
-                      </a>
-
-                      <!-- Proof of Purchase Link -->
-                      <a
-                        v-if="item.proof_of_purchase_url"
-                        :href="item.proof_of_purchase_url"
-                        target="_blank"
-                        class="text-xs text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
-                      >
-                        <svg
-                          class="w-3 h-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                          />
-                        </svg>
-                        {{ t.viewProofOfPurchase }}
-                      </a>
-                    </div>
-
-                    <!-- Item Details Grid -->
-                    <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <!-- Quantity -->
-                      <div class="bg-gray-50 rounded-lg p-2">
-                        <p class="text-xs text-gray-500">{{ t.quantity }}</p>
-                        <p class="text-sm font-medium text-gray-900">
-                          {{ item.quantity }}
-                        </p>
-                      </div>
-
-                      <!-- Weight -->
-                      <div v-if="item.weight" class="bg-gray-50 rounded-lg p-2">
-                        <p class="text-xs text-gray-500">{{ t.weight }}</p>
-                        <p class="text-sm font-medium text-gray-900">
-                          {{ item.weight }} kg
-                        </p>
-                      </div>
-
-                      <!-- Declared Value -->
-                      <div
-                        v-if="item.declared_value"
-                        class="bg-gray-50 rounded-lg p-2"
-                      >
-                        <p class="text-xs text-gray-500">{{ t.value }}</p>
-                        <p class="text-sm font-medium text-gray-900">
-                          ${{ item.declared_value }}
-                        </p>
-                      </div>
-
-                      <!-- Dimensions -->
-                      <div
-                        v-if="
-                          item.dimensions &&
-                          (item.dimensions.length ||
-                            item.dimensions.width ||
-                            item.dimensions.height)
-                        "
-                        class="bg-gray-50 rounded-lg p-2"
-                      >
-                        <p class="text-xs text-gray-500">{{ t.dimensions }}</p>
-                        <p class="text-sm font-medium text-gray-900">
-                          {{ formatDimensions(item.dimensions) }}
-                        </p>
-                      </div>
-                    </div>
-
-                    <!-- Tracking Information (if available) -->
-                    <div
-                      v-if="item.tracking_number || item.carrier"
-                      class="mt-3 p-2 bg-primary-50 rounded-lg"
+                <!-- Product Name and Links -->
+                <div class="mb-3">
+                  <h4 class="text-base font-medium text-gray-900 mb-2">
+                    {{ item.product_name }}
+                  </h4>
+                  
+                  <!-- Links Row -->
+                  <div class="flex flex-wrap items-center gap-3">
+                    <a
+                      v-if="item.product_url"
+                      :href="item.product_url"
+                      target="_blank"
+                      class="text-xs text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
                     >
-                      <div class="flex items-center gap-2">
-                        <svg
-                          class="w-4 h-4 text-primary-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                          />
-                        </svg>
-                        <div class="flex-1">
-                          <p class="text-xs text-primary-600 font-medium">
-                            {{ t.packageTracking }}
-                          </p>
-                          <div class="flex items-center gap-3 mt-1">
-                            <span
-                              v-if="item.carrier"
-                              class="text-xs text-primary-700"
-                            >
-                              {{ item.carrier }}
-                            </span>
-                            <span
-                              v-if="item.tracking_number"
-                              class="text-xs text-primary-700 font-mono"
-                            >
-                              {{ item.tracking_number }}
-                            </span>
-                            <a
-                              v-if="item.tracking_url"
-                              :href="item.tracking_url"
-                              target="_blank"
-                              class="text-xs text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
-                            >
-                              {{ t.track }}
-                              <svg
-                                class="w-3 h-3"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="2"
-                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                                />
-                              </svg>
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      {{ t.viewProduct }}
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                      </svg>
+                    </a>
 
-                    <!-- Arrival Date (if arrived) -->
-                    <div v-if="item.arrived && item.arrived_at" class="mt-2">
-                      <p class="text-xs text-gray-500">
-                        <span class="font-medium">{{ t.arrivedAt }}:</span>
-                        {{ formatDate(item.arrived_at) }}
-                      </p>
+                    <a
+                      v-if="item.proof_of_purchase_url"
+                      :href="item.proof_of_purchase_full_url || item.proof_of_purchase_url"
+                      target="_blank"
+                      class="text-xs text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
+                    >
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                      </svg>
+                      {{ t.viewProofOfPurchase }}
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Item Details Grid - Responsive -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 mb-3">
+                  <!-- Quantity -->
+                  <div class="bg-gray-50 rounded-lg px-3 py-2">
+                    <p class="text-xs text-gray-500">{{ t.quantity }}</p>
+                    <p class="text-sm font-semibold text-gray-900">{{ item.quantity }}</p>
+                  </div>
+
+                  <!-- Weight -->
+                  <div v-if="item.weight" class="bg-gray-50 rounded-lg px-3 py-2">
+                    <p class="text-xs text-gray-500">{{ t.weight }}</p>
+                    <p class="text-sm font-semibold text-gray-900">{{ item.weight }} kg</p>
+                  </div>
+
+                  <!-- Declared Value -->
+                  <div v-if="item.declared_value" class="bg-gray-50 rounded-lg px-3 py-2">
+                    <p class="text-xs text-gray-500">{{ t.value }}</p>
+                    <p class="text-sm font-semibold text-gray-900">${{ item.declared_value }}</p>
+                  </div>
+
+                  <!-- Dimensions -->
+                  <div
+                    v-if="item.dimensions && (item.dimensions.length || item.dimensions.width || item.dimensions.height)"
+                    class="bg-gray-50 rounded-lg px-3 py-2"
+                  >
+                    <p class="text-xs text-gray-500">{{ t.dimensions }}</p>
+                    <p class="text-sm font-semibold text-gray-900">{{ formatDimensions(item.dimensions) }}</p>
+                  </div>
+                </div>
+
+                <!-- Tracking Information -->
+                <div v-if="item.tracking_number || item.carrier" class="bg-primary-50 rounded-lg p-3 mb-3">
+                  <div class="flex items-start gap-2">
+                    <svg class="w-4 h-4 text-primary-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-xs font-medium text-primary-700 mb-1">{{ t.packageTracking }}</p>
+                      <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <span v-if="item.carrier" class="font-medium text-primary-800">
+                          {{ item.carrier }}
+                        </span>
+                        <span v-if="item.tracking_number" class="font-mono text-primary-700">
+                          {{ item.tracking_number }}
+                        </span>
+                        <a
+                          v-if="item.tracking_url"
+                          :href="item.tracking_url"
+                          target="_blank"
+                          class="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
+                        >
+                          {{ t.track }}
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                          </svg>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                <!-- Arrival Date -->
+                <div v-if="item.arrived && item.arrived_at" class="text-xs text-gray-500">
+                  <span class="font-medium">{{ t.arrivedAt }}:</span> {{ formatDate(item.arrived_at) }}
+                </div>
               </div>
 
-              <!-- Status & Actions -->
-              <div class="flex items-start gap-3">
+              <!-- Right Side: Status & Actions -->
+              <div class="flex items-center gap-3 lg:flex-shrink-0">
+                <!-- Status Badge -->
                 <span
                   :class="[
-                    'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium',
-                    item.arrived
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-gray-100 text-gray-700',
+                    'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium',
+                    item.arrived ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700',
                   ]"
                 >
                   {{ item.arrived ? t.arrived : t.pending }}
                 </span>
 
-                <!-- Only show Mark Arrived button if order is NOT collecting -->
-                <button
-                  v-if="!item.arrived && order.status !== 'collecting'"
-                  @click="openMarkArrivedModal(item)"
-                  class="p-2 text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-all"
-                  :title="t.markArrived"
-                >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </button>
+                <!-- Actions Button Group (Mobile Friendly) -->
+                <div class="flex items-center gap-2">
+                  <!-- Quick Actions for Desktop -->
+                  <div class="hidden sm:flex items-center gap-1">
+                    <button
+                      v-if="!item.arrived && order.status !== 'collecting'"
+                      @click="openMarkArrivedModal(item)"
+                      class="p-2 text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-all"
+                      :title="t.markArrived"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </button>
+                    
+                    <button
+                      @click="openEditItemModal(item)"
+                      class="p-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all"
+                      :title="t.editItem"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                      </svg>
+                    </button>
+                    
+                    <button
+                      @click="openDeleteItemModal(item)"
+                      class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
+                      :title="t.deleteItem"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- Mobile Dropdown Menu -->
+                  <div class="relative sm:hidden">
+                    <button
+                      @click="toggleItemMenu(item.id)"
+                      class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                      </svg>
+                    </button>
+                    
+                    <!-- Dropdown positioned to avoid overflow -->
+                    <Transition
+                      enter-active-class="transition ease-out duration-100"
+                      enter-from-class="transform opacity-0 scale-95"
+                      enter-to-class="transform opacity-100 scale-100"
+                      leave-active-class="transition ease-in duration-75"
+                      leave-from-class="transform opacity-100 scale-100"
+                      leave-to-class="transform opacity-0 scale-95"
+                    >
+                      <div 
+                        v-if="activeItemMenu === item.id" 
+                        class="absolute right-0 z-50 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-1"
+                        :class="index < order.items.length - 1 ? 'bottom-auto' : 'bottom-full mb-12'"
+                      >
+                        <button
+                          v-if="!item.arrived && order.status !== 'collecting'"
+                          @click="openMarkArrivedModal(item)"
+                          class="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          {{ t.markArrived }}
+                        </button>
+                        
+                        <button
+                          @click="openEditItemModal(item)"
+                          class="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                          </svg>
+                          {{ t.editItem }}
+                        </button>
+                        
+                        <hr class="my-1 border-gray-100">
+                        
+                        <button
+                          @click="openDeleteItemModal(item)"
+                          class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          </svg>
+                          {{ t.deleteItem }}
+                        </button>
+                      </div>
+                    </Transition>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Delete Order Modal -->
+    <TransitionRoot :show="showDeleteModal" as="template">
+      <Dialog class="relative z-50" @close="showDeleteModal = false">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all"
+              >
+                <div class="p-6">
+                  <div class="flex items-center gap-4 mb-4">
+                    <div class="p-3 bg-red-100 rounded-xl">
+                      <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <DialogTitle class="text-lg font-semibold text-gray-900">
+                        {{ t.deleteOrderTitle }}
+                      </DialogTitle>
+                      <p class="text-sm text-gray-500 mt-1">
+                        {{ t.deleteOrderWarning }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div v-if="order" class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <div class="space-y-2 text-sm">
+                      <div class="flex justify-between">
+                        <span class="text-gray-500">{{ t.orderNumber }}:</span>
+                        <span class="font-medium text-gray-900">{{ order.order_number }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-500">{{ t.customer }}:</span>
+                        <span class="font-medium text-gray-900">{{ order.user.name }}</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-500">{{ t.items }}:</span>
+                        <span class="font-medium text-gray-900">{{ order.items?.length || 0 }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-6">
+                    <p class="text-sm text-red-800">
+                      <strong>{{ t.warningTitle }}:</strong> {{ t.deleteWarningMessage }}
+                    </p>
+                  </div>
+
+                  <div class="flex gap-3">
+                    <button
+                      @click="confirmDeleteOrder"
+                      :disabled="deletingOrder"
+                      class="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-all disabled:opacity-50"
+                    >
+                      <span v-if="!deletingOrder">{{ t.confirmDelete }}</span>
+                      <span
+                        v-else
+                        class="inline-flex items-center justify-center gap-2"
+                      >
+                        <svg
+                          class="animate-spin h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                          ></circle>
+                          <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          ></path>
+                        </svg>
+                        {{ t.deleting }}
+                      </span>
+                    </button>
+                    <button
+                      @click="showDeleteModal = false"
+                      :disabled="deletingOrder"
+                      class="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-all disabled:opacity-50"
+                    >
+                      {{ t.cancel }}
+                    </button>
+                  </div>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Add/Edit Item Modal -->
+    <TransitionRoot :show="showAddItemModal || showEditItemModal" as="template">
+      <Dialog class="relative z-50" @close="closeItemModal">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel
+                class="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all"
+              >
+                <div class="p-6">
+                  <DialogTitle class="text-lg font-semibold text-gray-900 mb-4">
+                    {{ showEditItemModal ? t.editItem : t.addNewItem }}
+                  </DialogTitle>
+
+                  <form @submit.prevent="saveItem" class="space-y-4">
+                    <!-- Product Name -->
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ t.productName }}
+                        <span class="text-red-500">*</span>
+                      </label>
+                      <input
+                        v-model="itemForm.product_name"
+                        type="text"
+                        required
+                        class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        :placeholder="t.productNamePlaceholder"
+                      />
+                    </div>
+
+                    <!-- Product URL -->
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ t.productUrl }}
+                      </label>
+                      <input
+                        v-model="itemForm.product_url"
+                        type="url"
+                        class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        :placeholder="t.productUrlPlaceholder"
+                      />
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                      <!-- Quantity -->
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                          {{ t.quantity }}
+                          <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                          v-model.number="itemForm.quantity"
+                          type="number"
+                          min="1"
+                          required
+                          class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          :placeholder="t.quantityPlaceholder"
+                        />
+                      </div>
+
+                      <!-- Declared Value -->
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                          {{ t.declaredValue }}
+                        </label>
+                        <div class="relative">
+                          <input
+                            v-model.number="itemForm.declared_value"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            class="w-full px-3 py-2 pl-6 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            placeholder="0.00"
+                          />
+                          <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm">$</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                      <!-- Tracking Number -->
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                          {{ t.trackingNumberLabel }}
+                        </label>
+                        <input
+                          v-model="itemForm.tracking_number"
+                          type="text"
+                          class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          :placeholder="t.trackingNumberPlaceholder"
+                        />
+                      </div>
+
+                      <!-- Carrier -->
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                          {{ t.carrier }}
+                        </label>
+                        <select
+                          v-model="itemForm.carrier"
+                          class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        >
+                          <option value="">{{ t.selectCarrier }}</option>
+                          <option value="ups">UPS</option>
+                          <option value="fedex">FedEx</option>
+                          <option value="usps">USPS</option>
+                          <option value="amazon">Amazon</option>
+                          <option value="dhl">DHL</option>
+                          <option value="ontrac">OnTrac</option>
+                          <option value="lasership">LaserShip</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <!-- Weight (always show for admin) -->
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ t.weight }}
+                        <span v-if="itemForm.arrived" class="text-red-500">*</span>
+                      </label>
+                      <div class="relative">
+                        <input
+                          v-model.number="itemForm.weight"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          :required="itemForm.arrived"
+                          class="w-full px-3 py-2 pr-8 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          placeholder="0.00"
+                        />
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                          <span class="text-gray-500 text-sm">kg</span>
+                        </div>
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">
+                        {{ t.weightHint }}
+                      </p>
+                    </div>
+
+                    <!-- Dimensions -->
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ t.dimensions }}
+                        <span class="text-gray-400">({{ t.optional }})</span>
+                      </label>
+                      <div class="grid grid-cols-3 gap-2">
+                        <div>
+                          <input
+                            v-model.number="itemForm.dimensions.length"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="Length"
+                            class="w-full px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          />
+                          <p class="text-xs text-gray-400 text-center mt-1">L (cm)</p>
+                        </div>
+                        <div>
+                          <input
+                            v-model.number="itemForm.dimensions.width"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="Width"
+                            class="w-full px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          />
+                          <p class="text-xs text-gray-400 text-center mt-1">W (cm)</p>
+                        </div>
+                        <div>
+                          <input
+                            v-model.number="itemForm.dimensions.height"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="Height"
+                            class="w-full px-2 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          />
+                          <p class="text-xs text-gray-400 text-center mt-1">H (cm)</p>
+                        </div>
+                      </div>
+                      <p class="mt-1 text-xs text-gray-500">
+                        {{ t.dimensionsHint }}
+                      </p>
+                    </div>
+
+                    <!-- Arrived Checkbox -->
+                    <div class="bg-gray-50 rounded-lg p-3">
+                      <div class="flex items-center gap-3">
+                        <input
+                          v-model="itemForm.arrived"
+                          type="checkbox"
+                          id="arrived"
+                          class="h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
+                        />
+                        <label for="arrived" class="text-sm font-medium text-gray-700">
+                          {{ t.markAsArrived }}
+                        </label>
+                      </div>
+                      <p v-if="itemForm.arrived" class="text-xs text-amber-600 mt-2 ml-7">
+                        {{ t.arrivedNote }}
+                      </p>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="mt-6 flex gap-3">
+                      <button
+                        type="submit"
+                        :disabled="savingItem || (itemForm.arrived && !itemForm.weight)"
+                        class="flex-1 px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span v-if="!savingItem">{{ showEditItemModal ? t.saveChanges : t.addItem }}</span>
+                        <span
+                          v-else
+                          class="inline-flex items-center justify-center gap-2"
+                        >
+                          <svg
+                            class="animate-spin h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              class="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              stroke-width="4"
+                            ></circle>
+                            <path
+                              class="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                            ></path>
+                          </svg>
+                          {{ t.saving }}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        @click="closeItemModal"
+                        :disabled="savingItem"
+                        class="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-all disabled:opacity-50"
+                      >
+                        {{ t.cancel }}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Delete Item Modal -->
+    <TransitionRoot :show="showDeleteItemModal" as="template">
+      <Dialog class="relative z-50" @close="showDeleteItemModal = false">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all"
+              >
+                <div class="p-6">
+                  <DialogTitle class="text-lg font-semibold text-gray-900 mb-4">
+                    {{ t.deleteItemTitle }}
+                  </DialogTitle>
+
+                  <div v-if="selectedItem" class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <p class="text-sm font-medium text-gray-900">
+                      {{ selectedItem.product_name }}
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">
+                      {{ t.quantity }}: {{ selectedItem.quantity }}
+                    </p>
+                  </div>
+
+                  <p class="text-sm text-gray-600 mb-6">
+                    {{ t.deleteItemWarning }}
+                  </p>
+
+                  <div class="flex gap-3">
+                    <button
+                      @click="confirmDeleteItem"
+                      :disabled="deletingItem"
+                      class="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-all disabled:opacity-50"
+                    >
+                      <span v-if="!deletingItem">{{ t.confirmDelete }}</span>
+                      <span
+                        v-else
+                        class="inline-flex items-center justify-center gap-2"
+                      >
+                        <svg
+                          class="animate-spin h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                          ></circle>
+                          <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          ></path>
+                        </svg>
+                        {{ t.deleting }}
+                      </span>
+                    </button>
+                    <button
+                      @click="showDeleteItemModal = false"
+                      :disabled="deletingItem"
+                      class="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-all disabled:opacity-50"
+                    >
+                      {{ t.cancel }}
+                    </button>
+                  </div>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
 
     <!-- Mark Arrived Modal -->
     <TransitionRoot :show="showMarkArrivedModal" as="template">
@@ -1154,75 +1736,6 @@
                     >
                       {{ t.cancel }}
                     </button>
-                  </div>
-                </div>
-              </DialogPanel>
-            </TransitionChild>
-          </div>
-        </div>
-      </Dialog>
-    </TransitionRoot>
-
-    <!-- Quote Modal (Placeholder - actual implementation would be more complex) -->
-    <TransitionRoot :show="showQuoteModal" as="template">
-      <Dialog class="relative z-50" @close="showQuoteModal = false">
-        <TransitionChild
-          as="template"
-          enter="duration-300 ease-out"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="duration-200 ease-in"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
-          <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" />
-        </TransitionChild>
-
-        <div class="fixed inset-0 overflow-y-auto">
-          <div class="flex min-h-full items-center justify-center p-4">
-            <TransitionChild
-              as="template"
-              enter="duration-300 ease-out"
-              enter-from="opacity-0 scale-95"
-              enter-to="opacity-100 scale-100"
-              leave="duration-200 ease-in"
-              leave-from="opacity-100 scale-100"
-              leave-to="opacity-0 scale-95"
-            >
-              <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all"
-              >
-                <div class="p-6">
-                  <DialogTitle class="text-lg font-semibold text-gray-900 mb-4">
-                    {{ t.sendQuoteTitle }}
-                  </DialogTitle>
-
-                  <div class="bg-orange-50 rounded-lg p-4">
-                    <p class="text-sm text-orange-900">
-                      {{ t.sendQuoteMessage }}
-                    </p>
-                  </div>
-
-                  <div class="mt-6 text-center">
-                    <NuxtLink
-                      :to="`/app/admin/orders/${order.id}/quote`"
-                      class="inline-flex items-center px-4 py-2 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 transition-all"
-                    >
-                      {{ t.goToQuotePage }}
-                      <svg
-                        class="w-4 h-4 ml-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </NuxtLink>
                   </div>
                 </div>
               </DialogPanel>
@@ -1569,9 +2082,8 @@
     </TransitionRoot>
   </section>
 </template>
-
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import {
   Dialog,
   DialogPanel,
@@ -1597,15 +2109,24 @@ const { t: createTranslations } = useLanguage();
 // State
 const order = ref(null);
 const loading = ref(true);
+const showActionsMenu = ref(false);
+const showDeleteModal = ref(false);
+const deletingOrder = ref(false);
 const showShipModal = ref(false);
 const showMarkArrivedModal = ref(false);
 const showDeliveredModal = ref(false);
 const showProcessModal = ref(false);
-const showQuoteModal = ref(false);
 const updatingStatus = ref(false);
 const markingArrived = ref(false);
 const selectedItem = ref(null);
+const activeItemMenu = ref(null);
+const showAddItemModal = ref(false);
+const showEditItemModal = ref(false);
+const showDeleteItemModal = ref(false);
+const savingItem = ref(false);
+const deletingItem = ref(false);
 
+// Ship form state
 const shipForm = ref({
   dhl_waybill_number: "",
   gia_file: null,
@@ -1613,10 +2134,10 @@ const shipForm = ref({
   notes: "",
 });
 
-// Add new state for shipping
 const shippingOrder = ref(false);
 const fileInput = ref(null);
 
+// Arrived form state
 const arrivedForm = ref({
   weight: null,
   declared_value: null,
@@ -1627,11 +2148,192 @@ const arrivedForm = ref({
   },
 });
 
-// Translations
+// Item form state with dimensions
+const itemForm = ref({
+  product_name: '',
+  product_url: '',
+  quantity: 1,
+  declared_value: null,
+  tracking_number: '',
+  carrier: '',
+  arrived: false,
+  weight: null,
+  dimensions: {
+    length: null,
+    width: null,
+    height: null
+  }
+});
+
+// Translations object (complete set)
 const translations = {
   loading: {
     es: "Cargando detalles de la orden...",
     en: "Loading order details...",
+  },
+  adminControls: {
+    es: "Controles de Administrador",
+    en: "Administrator Controls"
+  },
+  adminControlsMessage: {
+    es: "Tienes acceso completo para editar o eliminar esta orden.",
+    en: "You have full access to edit or delete this order."
+  },
+  editFullOrder: {
+    es: "Editar Orden Completa",
+    en: "Edit Full Order"
+  },
+  editOrder: {
+    es: "Editar Orden",
+    en: "Edit Order"
+  },
+  deleteOrder: {
+    es: "Eliminar Orden",
+    en: "Delete Order"
+  },
+  deleteOrderTitle: {
+    es: "Eliminar Orden Permanentemente",
+    en: "Delete Order Permanently"
+  },
+  deleteOrderWarning: {
+    es: "Esta acción no se puede deshacer.",
+    en: "This action cannot be undone."
+  },
+  warningTitle: {
+    es: "Advertencia",
+    en: "Warning"
+  },
+  deleteWarningMessage: {
+    es: "Se eliminarán todos los datos asociados con esta orden, incluyendo artículos, archivos y registros de pago.",
+    en: "All data associated with this order will be deleted, including items, files, and payment records."
+  },
+  confirmDelete: {
+    es: "Sí, Eliminar",
+    en: "Yes, Delete"
+  },
+  deleting: {
+    es: "Eliminando...",
+    en: "Deleting..."
+  },
+  orderDeletedSuccess: {
+    es: "Orden eliminada exitosamente",
+    en: "Order deleted successfully"
+  },
+  orderDeleteError: {
+    es: "Error al eliminar la orden",
+    en: "Error deleting order"
+  },
+  addItem: {
+    es: "Agregar Artículo",
+    en: "Add Item"
+  },
+  addFirstItem: {
+    es: "Agregar Primer Artículo",
+    en: "Add First Item"
+  },
+  addNewItem: {
+    es: "Agregar Nuevo Artículo",
+    en: "Add New Item"
+  },
+  editItem: {
+    es: "Editar Artículo",
+    en: "Edit Item"
+  },
+  deleteItem: {
+    es: "Eliminar Artículo",
+    en: "Delete Item"
+  },
+  deleteItemTitle: {
+    es: "Eliminar Artículo",
+    en: "Delete Item"
+  },
+  deleteItemWarning: {
+    es: "¿Estás seguro de que deseas eliminar este artículo?",
+    en: "Are you sure you want to delete this item?"
+  },
+  itemDeletedSuccess: {
+    es: "Artículo eliminado exitosamente",
+    en: "Item deleted successfully"
+  },
+  itemAddedSuccess: {
+    es: "Artículo agregado exitosamente",
+    en: "Item added successfully"
+  },
+  itemUpdatedSuccess: {
+    es: "Artículo actualizado exitosamente",
+    en: "Item updated successfully"
+  },
+  productName: {
+    es: "Nombre del Producto",
+    en: "Product Name"
+  },
+  productNamePlaceholder: {
+    es: "Ej: iPhone 15 Pro",
+    en: "Ex: iPhone 15 Pro"
+  },
+  productUrl: {
+    es: "URL del Producto",
+    en: "Product URL"
+  },
+  productUrlPlaceholder: {
+    es: "https://...",
+    en: "https://..."
+  },
+  quantity: {
+    es: "Cantidad",
+    en: "Quantity"
+  },
+  quantityPlaceholder: {
+    es: "1",
+    en: "1"
+  },
+  declaredValue: {
+    es: "Valor Declarado",
+    en: "Declared Value"
+  },
+  trackingNumberLabel: {
+    es: "Número de Rastreo",
+    en: "Tracking Number"
+  },
+  trackingNumberPlaceholder: {
+    es: "Ej: 1Z999AA10123456784",
+    en: "Ex: 1Z999AA10123456784"
+  },
+  carrier: {
+    es: "Transportista",
+    en: "Carrier"
+  },
+  selectCarrier: {
+    es: "Seleccionar transportista",
+    en: "Select carrier"
+  },
+  markAsArrived: {
+    es: "Marcar como llegado",
+    en: "Mark as arrived"
+  },
+  saveChanges: {
+    es: "Guardar Cambios",
+    en: "Save Changes"
+  },
+  saving: {
+    es: "Guardando...",
+    en: "Saving..."
+  },
+  cancel: {
+    es: "Cancelar",
+    en: "Cancel"
+  },
+  weightHint: {
+    es: "Ingrese el peso en kilogramos. Requerido si el artículo ha llegado.",
+    en: "Enter weight in kilograms. Required if item has arrived."
+  },
+  dimensionsHint: {
+    es: "Largo x Ancho x Alto en centímetros",
+    en: "Length x Width x Height in centimeters"
+  },
+  arrivedNote: {
+    es: "Nota: El peso es requerido cuando el artículo está marcado como llegado.",
+    en: "Note: Weight is required when item is marked as arrived."
   },
   orderIncomplete: {
     es: "Orden No Enviada",
@@ -1660,18 +2362,6 @@ const translations = {
   confirmProcessing: {
     es: "Confirmar Procesamiento",
     en: "Confirm Processing",
-  },
-  sendQuote: {
-    es: "Enviar Cotización",
-    en: "Send Quote",
-  },
-  sendQuoteTitle: {
-    es: "Enviar Cotización al Cliente",
-    en: "Send Quote to Customer",
-  },
-  sendQuoteMessage: {
-    es: "Prepara y envía la cotización final al cliente para el pago.",
-    en: "Prepare and send the final quote to the customer for payment.",
   },
   goToQuotePage: {
     es: "Ir a crear Cotización",
@@ -1729,30 +2419,6 @@ const translations = {
     es: "Pagada",
     en: "Paid",
   },
-  totalWeight: {
-    es: "Peso Total",
-    en: "Total Weight",
-  },
-  totalPaid: {
-    es: "Total Pagado",
-    en: "Total Paid",
-  },
-  quotedAmount: {
-    es: "Monto Cotizado",
-    en: "Quoted Amount",
-  },
-  pendingQuote: {
-    es: "Pendiente",
-    en: "Pending",
-  },
-  items: {
-    es: "Artículos",
-    en: "Items",
-  },
-  item: {
-    es: "artículo",
-    en: "item",
-  },
   boxType: {
     es: "Tipo de Caja",
     en: "Box Type",
@@ -1766,12 +2432,12 @@ const translations = {
     en: "Rural Area",
   },
   trackingNumber: {
-    es: "Tracking Number",
+    es: "Número de Rastreo",
     en: "Tracking Number",
   },
   orderNumber: {
-    es: "Numero de Orden",
-    en: "Tracking Number",
+    es: "Número de Orden",
+    en: "Order Number",
   },
   orderTimeline: {
     es: "Línea de Tiempo",
@@ -1793,17 +2459,21 @@ const translations = {
     es: "Ver producto",
     en: "View product",
   },
-  quantity: {
-    es: "Cantidad",
-    en: "Quantity",
+  weight: {
+    es: "Peso",
+    en: "Weight",
   },
   value: {
     es: "Valor",
     en: "Value",
   },
-  weight: {
-    es: "Peso",
-    en: "Weight",
+  dimensions: {
+    es: "Dimensiones",
+    en: "Dimensions",
+  },
+  optional: {
+    es: "Opcional",
+    en: "Optional",
   },
   arrived: {
     es: "Llegó",
@@ -1817,21 +2487,61 @@ const translations = {
     es: "Marcar como Llegado",
     en: "Mark as Arrived",
   },
-  cancel: {
-    es: "Cancelar",
-    en: "Cancel",
+  packageTracking: {
+    es: "Rastreo del Paquete",
+    en: "Package Tracking",
+  },
+  track: {
+    es: "Rastrear",
+    en: "Track",
+  },
+  arrivedAt: {
+    es: "Llegó el",
+    en: "Arrived on",
+  },
+  viewProofOfPurchase: {
+    es: "Ver comprobante",
+    en: "View proof",
+  },
+  quoteDetails: {
+    es: "Detalles de Cotización",
+    en: "Quote Details",
+  },
+  total: {
+    es: "Total",
+    en: "Total",
+  },
+  viewPaymentLink: {
+    es: "Ver Link de Pago",
+    en: "View Payment Link",
+  },
+  shippingDetails: {
+    es: "Detalles de Envío",
+    en: "Shipping Details",
+  },
+  dhlWaybillNumber: {
+    es: "Número de Guía DHL",
+    en: "DHL Waybill Number",
+  },
+  trackDHL: {
+    es: "Rastrear DHL",
+    en: "Track DHL",
+  },
+  giaDocument: {
+    es: "Documento GIA",
+    en: "GIA Document",
+  },
+  viewGIA: {
+    es: "Ver GIA",
+    en: "View GIA",
+  },
+  shippedOn: {
+    es: "Enviado el",
+    en: "Shipped on",
   },
   estimatedDelivery: {
-    es: "Fecha Estimada de Entrega",
-    en: "Estimated Delivery Date",
-  },
-  confirmShip: {
-    es: "Confirmar Envío",
-    en: "Confirm Shipment",
-  },
-  updating: {
-    es: "Actualizando...",
-    en: "Updating...",
+    es: "Entrega Estimada",
+    en: "Estimated Delivery",
   },
   markPackageArrived: {
     es: "Marcar Paquete como Llegado",
@@ -1844,22 +2554,6 @@ const translations = {
   weightPlaceholder: {
     es: "Ej: 1.5",
     en: "Ex: 1.5",
-  },
-  weightHint: {
-    es: "Ingrese el peso en kilogramos con hasta 2 decimales",
-    en: "Enter weight in kilograms with up to 2 decimal places",
-  },
-  dimensions: {
-    es: "Dimensiones",
-    en: "Dimensions",
-  },
-  optional: {
-    es: "Opcional",
-    en: "Optional",
-  },
-  dimensionsHint: {
-    es: "Largo x Ancho x Alto en centímetros",
-    en: "Length x Width x Height in centimeters",
   },
   confirmArrived: {
     es: "Confirmar Llegada",
@@ -1881,43 +2575,58 @@ const translations = {
     es: "Confirmar Entregado",
     en: "Confirm Delivered",
   },
-  packagesCompleteMessage: {
-    es: "Todos los paquetes han llegado. Puedes iniciar el procesamiento de esta orden.",
-    en: "All packages have arrived. You can start processing this order.",
+  updating: {
+    es: "Actualizando...",
+    en: "Updating...",
   },
-  processingMessage: {
-    es: "La orden está siendo procesada. Prepara y envía la cotización al cliente.",
-    en: "Order is being processed. Prepare and send the quote to the customer.",
+  dhlWaybillPlaceholder: {
+    es: "Ej: 1234567890",
+    en: "Ex: 1234567890",
   },
-  paidMessage: {
-    es: "El pago ha sido recibido. Puedes marcar este pedido como enviado.",
-    en: "Payment has been received. You can mark this order as shipped.",
+  dhlWaybillHint: {
+    es: "Ingrese el número de guía de DHL para rastreo",
+    en: "Enter DHL waybill number for tracking",
   },
-  shippedMessage: {
-    es: "El pedido está en tránsito. Márcalo como entregado cuando el cliente lo reciba.",
-    en: "Order is in transit. Mark as delivered when customer receives it.",
+  clickOrDragFile: {
+    es: "Haz clic o arrastra el archivo PDF aquí",
+    en: "Click or drag PDF file here",
   },
-  proofOfPurchase: {
-    es: "Comprobante",
-    en: "Proof of Purchase",
+  pdfOnly: {
+    es: "Solo archivos PDF",
+    en: "PDF files only",
   },
-  viewProofOfPurchase: {
-    es: "Ver comprobante",
-    en: "View proof",
+  giaHint: {
+    es: "Sube el certificado GIA en formato PDF",
+    en: "Upload the GIA certificate in PDF format",
   },
-  quoteDetails: {
-    es: "Detalles de Cotización",
-    en: "Quote Details",
+  notes: {
+    es: "Notas",
+    en: "Notes",
   },
-  total: {
-    es: "Total",
-    en: "Total",
+  notesPlaceholder: {
+    es: "Notas adicionales sobre el envío (opcional)",
+    en: "Additional notes about the shipment (optional)",
   },
-  viewPaymentLink: {
-    es: "Ver Link de Pago",
-    en: "View Payment Link",
+  confirmShip: {
+    es: "Confirmar Envío",
+    en: "Confirm Shipment",
   },
-  // Status translations
+  shipping: {
+    es: "Enviando...",
+    en: "Shipping...",
+  },
+  shipmentSuccess: {
+    es: "Pedido marcado como enviado exitosamente",
+    en: "Order marked as shipped successfully",
+  },
+  shipmentError: {
+    es: "Error al marcar el pedido como enviado",
+    en: "Error marking order as shipped",
+  },
+  items: {
+    es: "Artículos",
+    en: "Items"
+  },
   collecting: {
     es: "Agregando Artículos",
     en: "Adding Items",
@@ -1954,80 +2663,27 @@ const translations = {
     es: "Cancelado",
     en: "Cancelled",
   },
-  dimensions: {
-    es: "Dimensiones",
-    en: "Dimensions",
+  packagesCompleteMessage: {
+    es: "Todos los paquetes han llegado. Puedes iniciar el procesamiento de esta orden.",
+    en: "All packages have arrived. You can start processing this order.",
   },
-  packageTracking: {
-    es: "Rastreo del Paquete",
-    en: "Package Tracking",
+  processingMessage: {
+    es: "La orden está siendo procesada. Prepara y envía la cotización al cliente.",
+    en: "Order is being processed. Prepare and send the quote to the customer.",
   },
-  track: {
-    es: "Rastrear",
-    en: "Track",
+  paidMessage: {
+    es: "El pago ha sido recibido. Puedes marcar este pedido como enviado.",
+    en: "Payment has been received. You can mark this order as shipped.",
   },
-  arrivedAt: {
-    es: "Llegó el",
-    en: "Arrived on",
-  },
-  dhlWaybillNumber: {
-    es: "Número de Guía DHL",
-    en: "DHL Waybill Number",
-  },
-  dhlWaybillPlaceholder: {
-    es: "Ej: 1234567890",
-    en: "Ex: 1234567890",
-  },
-  dhlWaybillHint: {
-    es: "Ingrese el número de guía de DHL para rastreo",
-    en: "Enter DHL waybill number for tracking",
-  },
-  giaDocument: {
-    es: "Documento GIA",
-    en: "GIA Document",
-  },
-  clickOrDragFile: {
-    es: "Haz clic o arrastra el archivo PDF aquí",
-    en: "Click or drag PDF file here",
-  },
-  pdfOnly: {
-    es: "Solo archivos PDF",
-    en: "PDF files only",
-  },
-  giaHint: {
-    es: "Sube el certificado GIA en formato PDF",
-    en: "Upload the GIA certificate in PDF format",
-  },
-  notes: {
-    es: "Notas",
-    en: "Notes",
-  },
-  notesPlaceholder: {
-    es: "Notas adicionales sobre el envío (opcional)",
-    en: "Additional notes about the shipment (optional)",
-  },
-  shipping: {
-    es: "Enviando...",
-    en: "Shipping...",
-  },
-  shipmentSuccess: {
-    es: "Pedido marcado como enviado exitosamente",
-    en: "Order marked as shipped successfully",
-  },
-  shipmentError: {
-    es: "Error al marcar el pedido como enviado",
-    en: "Error marking order as shipped",
-  },
-  shippedOn: {
-    es: "Enviado el",
-    en: "Shipped on",
+  shippedMessage: {
+    es: "El pedido está en tránsito. Márcalo como entregado cuando el cliente lo reciba.",
+    en: "Order is in transit. Mark as delivered when customer receives it.",
   },
 };
 
 const t = createTranslations(translations);
 
-// Computed
-
+// Computed properties
 const canSubmitShipping = computed(() => {
   return (
     shipForm.value.dhl_waybill_number &&
@@ -2049,10 +2705,6 @@ const minDeliveryDate = computed(() => {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   return tomorrow.toISOString().split("T")[0];
-});
-
-const arrivedCount = computed(() => {
-  return order.value?.items?.filter((item) => item.arrived).length || 0;
 });
 
 const orderTimeline = computed(() => {
@@ -2131,6 +2783,165 @@ const fetchOrder = async () => {
     await router.push("/app/admin/orders");
   } finally {
     loading.value = false;
+  }
+};
+
+const openDeleteModal = () => {
+  showActionsMenu.value = false;
+  showDeleteModal.value = true;
+};
+
+const confirmDeleteOrder = async () => {
+  deletingOrder.value = true;
+  try {
+    await $customFetch(`/admin/management/orders/${order.value.id}`, {
+      method: 'DELETE'
+    });
+    
+    $toast.success(t.value.orderDeletedSuccess);
+    await router.push('/app/admin/orders');
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    $toast.error(t.value.orderDeleteError);
+  } finally {
+    deletingOrder.value = false;
+    showDeleteModal.value = false;
+  }
+};
+
+const toggleItemMenu = (itemId) => {
+  activeItemMenu.value = activeItemMenu.value === itemId ? null : itemId;
+};
+
+const openAddItemModal = () => {
+  itemForm.value = {
+    product_name: '',
+    product_url: '',
+    quantity: 1,
+    declared_value: null,
+    tracking_number: '',
+    carrier: '',
+    arrived: false,
+    weight: null,
+    dimensions: {
+      length: null,
+      width: null,
+      height: null
+    }
+  };
+  showAddItemModal.value = true;
+};
+
+const openEditItemModal = (item) => {
+  selectedItem.value = item;
+  itemForm.value = {
+    product_name: item.product_name,
+    product_url: item.product_url || '',
+    quantity: item.quantity,
+    declared_value: item.declared_value,
+    tracking_number: item.tracking_number || '',
+    carrier: item.carrier || '',
+    arrived: item.arrived,
+    weight: item.weight,
+    dimensions: item.dimensions ? {
+      length: item.dimensions.length || null,
+      width: item.dimensions.width || null,
+      height: item.dimensions.height || null
+    } : {
+      length: null,
+      width: null,
+      height: null
+    }
+  };
+  activeItemMenu.value = null;
+  showEditItemModal.value = true;
+};
+
+const openDeleteItemModal = (item) => {
+  selectedItem.value = item;
+  activeItemMenu.value = null;
+  showDeleteItemModal.value = true;
+};
+
+const closeItemModal = () => {
+  showAddItemModal.value = false;
+  showEditItemModal.value = false;
+  selectedItem.value = null;
+  itemForm.value = {
+    product_name: '',
+    product_url: '',
+    quantity: 1,
+    declared_value: null,
+    tracking_number: '',
+    carrier: '',
+    arrived: false,
+    weight: null,
+    dimensions: {
+      length: null,
+      width: null,
+      height: null
+    }
+  };
+};
+
+const saveItem = async () => {
+  savingItem.value = true;
+  
+  try {
+    // Prepare the data
+    const formData = {
+      ...itemForm.value
+    };
+    
+    // Only include dimensions if at least one dimension is set
+    if (!formData.dimensions.length && !formData.dimensions.width && !formData.dimensions.height) {
+      formData.dimensions = null;
+    }
+    
+    if (showEditItemModal.value && selectedItem.value) {
+      // Update existing item
+      await $customFetch(`/admin/management/orders/${order.value.id}/items/${selectedItem.value.id}`, {
+        method: 'PUT',
+        body: formData
+      });
+      $toast.success(t.value.itemUpdatedSuccess);
+    } else {
+      // Add new item
+      await $customFetch(`/admin/management/orders/${order.value.id}/items`, {
+        method: 'POST',
+        body: formData
+      });
+      $toast.success(t.value.itemAddedSuccess);
+    }
+    
+    await fetchOrder();
+    closeItemModal();
+  } catch (error) {
+    console.error('Error saving item:', error);
+    $toast.error(error.data?.message || 'Error saving item');
+  } finally {
+    savingItem.value = false;
+  }
+};
+
+const confirmDeleteItem = async () => {
+  if (!selectedItem.value) return;
+  
+  deletingItem.value = true;
+  try {
+    await $customFetch(`/admin/management/orders/${order.value.id}/items/${selectedItem.value.id}`, {
+      method: 'DELETE'
+    });
+    
+    $toast.success(t.value.itemDeletedSuccess);
+    await fetchOrder();
+    showDeleteItemModal.value = false;
+    selectedItem.value = null;
+  } catch (error) {
+    console.error('Error deleting item:', error);
+    $toast.error('Error deleting item');
+  } finally {
+    deletingItem.value = false;
   }
 };
 
@@ -2234,13 +3045,6 @@ const formatDate = (date) => {
   });
 };
 
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("es-MX", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-};
-
 const formatFileSize = (bytes) => {
   if (!bytes) return "";
   const sizes = ["B", "KB", "MB", "GB"];
@@ -2278,7 +3082,6 @@ const markAsShipped = async () => {
   shippingOrder.value = true;
 
   try {
-    // Create FormData for file upload
     const formData = new FormData();
     formData.append("dhl_waybill_number", shipForm.value.dhl_waybill_number);
     formData.append("gia_file", shipForm.value.gia_file);
@@ -2301,11 +3104,9 @@ const markAsShipped = async () => {
 
     $toast.success(t.value.shipmentSuccess);
 
-    // Update the order with the response data
     if (response.data && response.data.order) {
       order.value = response.data.order;
     } else {
-      // Fallback: re-fetch the order to get updated data
       await fetchOrder();
     }
 
@@ -2318,7 +3119,6 @@ const markAsShipped = async () => {
   }
 };
 
-// Add method to view GIA document (add to existing methods)
 const viewGiaDocument = () => {
   if (order.value?.gia_url) {
     window.open(order.value.gia_full_url || order.value.gia_url, "_blank");
@@ -2360,6 +3160,7 @@ const openMarkArrivedModal = (item) => {
       height: null,
     },
   };
+  activeItemMenu.value = null;
   showMarkArrivedModal.value = true;
 };
 
@@ -2421,7 +3222,6 @@ const confirmMarkArrived = async () => {
   }
 };
 
-// File handling methods
 const triggerFileInput = () => {
   fileInput.value?.click();
 };
@@ -2453,7 +3253,6 @@ const removeFile = () => {
 
 const closeShipModal = () => {
   showShipModal.value = false;
-  // Reset form
   shipForm.value = {
     dhl_waybill_number: "",
     gia_file: null,
@@ -2465,9 +3264,23 @@ const closeShipModal = () => {
   }
 };
 
-// Fetch order on mount
+const handleClickOutside = (event) => {
+  if (showActionsMenu.value && !event.target.closest('.relative')) {
+    showActionsMenu.value = false;
+  }
+  if (activeItemMenu.value && !event.target.closest('.relative')) {
+    activeItemMenu.value = null;
+  }
+};
+
+// Lifecycle hooks
 onMounted(() => {
   fetchOrder();
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
 });
 </script>
 
