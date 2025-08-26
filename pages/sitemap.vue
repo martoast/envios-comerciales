@@ -54,35 +54,7 @@
               </ul>
             </div>
   
-            <!-- Services -->
-            <div class="space-y-4">
-              <div class="flex items-center gap-2 mb-4">
-                <div class="p-2 bg-primary-100 rounded-lg">
-                  <BriefcaseIcon class="w-5 h-5 text-primary-600" />
-                </div>
-                <h2 class="text-xl font-bold text-gray-900">{{ t.services }}</h2>
-              </div>
-              <ul class="space-y-2 ml-9">
-                <li>
-                  <NuxtLink to="/expats" class="text-gray-600 hover:text-primary-600 transition-colors flex items-center gap-2">
-                    <ChevronRightIcon class="w-4 h-4" />
-                    {{ t.forExpats }}
-                  </NuxtLink>
-                </li>
-                <li>
-                  <NuxtLink to="/business" class="text-gray-600 hover:text-primary-600 transition-colors flex items-center gap-2">
-                    <ChevronRightIcon class="w-4 h-4" />
-                    {{ t.forBusiness }}
-                  </NuxtLink>
-                </li>
-                <li>
-                  <NuxtLink to="/trendy" class="text-gray-600 hover:text-primary-600 transition-colors flex items-center gap-2">
-                    <ChevronRightIcon class="w-4 h-4" />
-                    {{ t.forShoppers }}
-                  </NuxtLink>
-                </li>
-              </ul>
-            </div>
+           
   
             <!-- Help & Support -->
             <div class="space-y-4">
