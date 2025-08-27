@@ -99,7 +99,7 @@
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.length }}</label>
               <input 
-                v-model.number="dimensions.length" 
+                v-model.number="lengthDisplay" 
                 type="number" 
                 step="0.1"
                 placeholder="0" 
@@ -109,7 +109,7 @@
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.width }}</label>
               <input 
-                v-model.number="dimensions.width" 
+                v-model.number="widthDisplay" 
                 type="number" 
                 step="0.1"
                 placeholder="0" 
@@ -119,7 +119,7 @@
             <div>
               <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.height }}</label>
               <input 
-                v-model.number="dimensions.height" 
+                v-model.number="heightDisplay" 
                 type="number" 
                 step="0.1"
                 placeholder="0" 
@@ -167,10 +167,6 @@
                     <span class="text-lg font-normal text-gray-600">{{ result.box.currency }}</span>
                   </div>
                   
-                  <!-- <div v-if="result.box.description" class="text-sm text-gray-600 mt-3">
-                    {{ result.box.description }}
-                  </div> -->
-                  
                   <!-- Specs Grid -->
                   <div class="grid grid-cols-2 gap-3 mt-4 text-xs">
                     <div v-if="result.box.max_weight" class="bg-white/70 rounded-lg p-2">
@@ -187,29 +183,74 @@
                 </div>
               </div>
               
-              <!-- CTA Button -->
-              <NuxtLink 
-                to="/app/orders/create"
-                class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition-all"
-              >
-                {{ t.createOrder }}
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-              </NuxtLink>
+              <!-- CTA Buttons -->
+              <div class="space-y-3">
+                <!-- Create Order Button -->
+                <NuxtLink 
+                  to="/app/orders/create"
+                  class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition-all"
+                >
+                  {{ t.createOrder }}
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </NuxtLink>
+                
+                <!-- WhatsApp Contact Button -->
+                <a 
+                  href="https://wa.me/16195591910" 
+                  target="_blank"
+                  class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-all"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                  </svg>
+                  {{ t.questionsContact }}
+                </a>
+                
+                <p class="text-center text-xs text-gray-500">
+                  {{ t.whatsAppAvailability }}
+                </p>
+              </div>
             </div>
 
-            <!-- Error Result -->
-            <div v-else-if="result.error" class="bg-red-50 rounded-xl p-4">
-              <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                </svg>
-                <div>
-                  <div class="text-sm font-medium text-red-800">{{ t.error }}</div>
-                  <div class="text-sm text-red-600 mt-1">{{ result.error }}</div>
+            <!-- Custom Quote CTA (replaces error alert) -->
+            <div v-else-if="result.needsCustomQuote" class="space-y-4">
+              <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5">
+                <div class="text-center space-y-3">
+                  <svg class="w-12 h-12 text-green-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                  </svg>
+                  
+                  <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                      {{ t.customQuoteTitle }}
+                    </h3>
+                    <p class="text-sm text-gray-600">
+                      {{ t.customQuoteMessage }}
+                    </p>
+                  </div>
                 </div>
               </div>
+              
+              <!-- WhatsApp CTA Button -->
+              <a 
+                href="https://wa.me/16195591910" 
+                target="_blank"
+                class="w-full inline-flex items-center justify-center gap-3 py-3 px-4 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-all shadow-md hover:shadow-lg"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                <span>{{ t.contactWhatsApp }}</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+              </a>
+              
+              <p class="text-center text-xs text-gray-500">
+                {{ t.whatsAppAvailability }}
+              </p>
             </div>
           </div>
         </transition>
@@ -228,15 +269,79 @@ const { $customFetch } = useNuxtApp()
 const { t: createTranslations, language } = useLanguage()
 
 // State
-const weight = ref(null)
+const weightInKg = ref(null) // Store weight internally in kg
 const weightUnit = ref('kg')
-const dimensions = ref({ length: null, width: null, height: null })
+const dimensionsInCm = ref({ length: null, width: null, height: null }) // Store dimensions internally in cm
 const dimensionUnit = ref('cm')
 const showDimensions = ref(false)
 const products = ref([])
 const loadingProducts = ref(true)
 const calculating = ref(false)
 const result = ref(null)
+
+// Computed property for display weight
+const weight = computed({
+  get() {
+    if (weightInKg.value === null) return null
+    // Convert from internal kg to display unit, round to 2 decimal places
+    const converted = weightUnit.value === 'kg' ? weightInKg.value : weightInKg.value * 2.20462
+    return Math.round(converted * 100) / 100
+  },
+  set(value) {
+    if (value === null || value === '') {
+      weightInKg.value = null
+      return
+    }
+    // Convert from display unit to internal kg
+    weightInKg.value = weightUnit.value === 'kg' ? value : value / 2.20462
+  }
+})
+
+// Computed property for display dimensions
+const lengthDisplay = computed({
+  get() {
+    if (dimensionsInCm.value.length === null) return null
+    const converted = dimensionUnit.value === 'cm' ? dimensionsInCm.value.length : dimensionsInCm.value.length / 2.54
+    return Math.round(converted * 100) / 100
+  },
+  set(value) {
+    if (value === null || value === '') {
+      dimensionsInCm.value.length = null
+      return
+    }
+    dimensionsInCm.value.length = dimensionUnit.value === 'cm' ? value : value * 2.54
+  }
+})
+
+const widthDisplay = computed({
+  get() {
+    if (dimensionsInCm.value.width === null) return null
+    const converted = dimensionUnit.value === 'cm' ? dimensionsInCm.value.width : dimensionsInCm.value.width / 2.54
+    return Math.round(converted * 100) / 100
+  },
+  set(value) {
+    if (value === null || value === '') {
+      dimensionsInCm.value.width = null
+      return
+    }
+    dimensionsInCm.value.width = dimensionUnit.value === 'cm' ? value : value * 2.54
+  }
+})
+
+const heightDisplay = computed({
+  get() {
+    if (dimensionsInCm.value.height === null) return null
+    const converted = dimensionUnit.value === 'cm' ? dimensionsInCm.value.height : dimensionsInCm.value.height / 2.54
+    return Math.round(converted * 100) / 100
+  },
+  set(value) {
+    if (value === null || value === '') {
+      dimensionsInCm.value.height = null
+      return
+    }
+    dimensionsInCm.value.height = dimensionUnit.value === 'cm' ? value : value * 2.54
+  }
+})
 
 // Translations
 const translations = {
@@ -304,13 +409,25 @@ const translations = {
     es: 'Crear Orden',
     en: 'Create Order'
   },
-  error: {
-    es: 'No se pudo calcular',
-    en: 'Could not calculate'
+  customQuoteTitle: {
+    es: 'Necesitas una Cotización Personalizada',
+    en: 'Need a Custom Quote'
   },
-  errorNoBox: {
-    es: 'No hay una caja disponible para este peso/tamaño. Contacta soporte para opciones.',
-    en: 'No box available for this weight/size. Contact support for options.'
+  customQuoteMessage: {
+    es: 'Tu paquete requiere un servicio especial. ¡Contáctanos por WhatsApp para una cotización personalizada!',
+    en: 'Your package requires special handling. Contact us on WhatsApp for a personalized quote!'
+  },
+  contactWhatsApp: {
+    es: 'Contactar por WhatsApp',
+    en: 'Contact on WhatsApp'
+  },
+  questionsContact: {
+    es: '¿Preguntas? Cotización Personalizada',
+    en: 'Questions? Custom Quote'
+  },
+  whatsAppAvailability: {
+    es: 'Disponible: Lun-Vie 9AM-6PM PST',
+    en: 'Available: Mon-Fri 9AM-6PM PST'
   }
 }
 
@@ -319,7 +436,7 @@ const t = createTranslations(translations)
 
 // Computed
 const canCalculate = computed(() => {
-  return weight.value && weight.value > 0
+  return weightInKg.value && weightInKg.value > 0
 })
 
 const consolidatedProducts = computed(() => {
@@ -394,27 +511,26 @@ const calculate = () => {
   
   // Simulate calculation delay for better UX
   setTimeout(() => {
-    // Convert weight to kg if needed
-    const weightInKg = weightUnit.value === 'lb' ? weight.value * 0.453592 : weight.value
+    // Use weightInKg directly (already in kg)
+    const weightForCalculation = weightInKg.value
     
     let suitableBoxes = []
     let usedDimensions = false
     
     // Check if dimensions are provided and valid
     const hasDimensions = showDimensions.value && 
-                          dimensions.value.length > 0 && 
-                          dimensions.value.width > 0 && 
-                          dimensions.value.height > 0
+                          dimensionsInCm.value.length > 0 && 
+                          dimensionsInCm.value.width > 0 && 
+                          dimensionsInCm.value.height > 0
     
     if (hasDimensions) {
-      // Convert dimensions to cm if needed
-      const toCm = (val) => dimensionUnit.value === 'in' ? val * 2.54 : val
-      const lengthCm = toCm(dimensions.value.length)
-      const widthCm = toCm(dimensions.value.width)
-      const heightCm = toCm(dimensions.value.height)
+      // Use dimensionsInCm directly (already in cm)
+      const lengthCm = dimensionsInCm.value.length
+      const widthCm = dimensionsInCm.value.width
+      const heightCm = dimensionsInCm.value.height
       
       suitableBoxes = consolidatedProducts.value.filter(box => {
-        const fitsWeight = !box.max_weight || weightInKg <= parseFloat(box.max_weight)
+        const fitsWeight = !box.max_weight || weightForCalculation <= parseFloat(box.max_weight)
         const fitsLength = !box.max_length || lengthCm <= parseFloat(box.max_length)
         const fitsWidth = !box.max_width || widthCm <= parseFloat(box.max_width)
         const fitsHeight = !box.max_height || heightCm <= parseFloat(box.max_height)
@@ -426,7 +542,7 @@ const calculate = () => {
     } else {
       // Filter by weight only
       suitableBoxes = consolidatedProducts.value.filter(box => {
-        return !box.max_weight || weightInKg <= parseFloat(box.max_weight)
+        return !box.max_weight || weightForCalculation <= parseFloat(box.max_weight)
       })
     }
     
@@ -436,10 +552,9 @@ const calculate = () => {
         usedDimensions: usedDimensions
       }
     } else {
+      // Instead of error, show custom quote CTA
       result.value = {
-        error: language.value === 'es' ? 
-          'No hay una caja disponible para este peso/tamaño. Contacta soporte para opciones.' :
-          'No box available for this weight/size. Contact support for options.'
+        needsCustomQuote: true
       }
     }
     
