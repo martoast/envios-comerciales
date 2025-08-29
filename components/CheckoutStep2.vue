@@ -22,7 +22,7 @@
                     {{ t.nameAtCheckout }}
                   </p>
                   <p class="text-lg font-semibold text-gray-900">
-                    ECTJ {{ user?.name || "Loading..." }}
+                    BOXLY {{ user?.name || "Loading..." }}
                   </p>
                 </div>
                 <div>
@@ -127,7 +127,7 @@
   const copied = ref(false);
   
   const copyAddress = async () => {
-    const address = `ECTJ ${props.user?.name}
+    const address = `BOXLY ${props.user?.name}
   ${props.poBoxAddress.line1}
   ${props.poBoxAddress.line2}`;
   

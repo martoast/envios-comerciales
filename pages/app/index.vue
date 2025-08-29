@@ -108,7 +108,7 @@
                     >
                       <div class="space-y-1">
                         <p class="font-medium text-gray-900">
-                          ECTJ {{ fullUserName }}
+                          BOXLY {{ fullUserName }}
                         </p>
                         <p class="text-gray-700">{{ poBoxAddress.line1 }}</p>
                         <p class="text-gray-700">{{ poBoxAddress.line2 }}</p>

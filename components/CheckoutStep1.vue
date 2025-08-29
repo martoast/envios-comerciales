@@ -37,7 +37,7 @@
               <div class="sm:hidden">
                 <div class="flex items-start justify-between mb-3">
                   <div class="flex items-center gap-3">
-                    <img src="/logo.svg" alt="ECTJ" class="w-10 h-10 flex-shrink-0" />
+                    <img src="/logo.svg" alt="BOXLY" class="w-10 h-10 flex-shrink-0" />
                     <div>
                       <h3 class="font-semibold text-gray-900">
                         {{ getBoxTranslations(box).name }}
@@ -72,7 +72,7 @@
                 <div class="flex items-start gap-4">
                   <!-- Logo and Selection Indicator -->
                   <div class="relative flex-shrink-0">
-                    <img src="/logo.svg" alt="ECTJ" class="w-14 h-14 lg:w-16 lg:h-16" />
+                    <img src="/logo.svg" alt="BOXLY" class="w-14 h-14 lg:w-16 lg:h-16" />
                     <div
                       v-if="selectedBox?.id === box.id"
                       class="absolute -top-1 -right-1 w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center shadow-sm"

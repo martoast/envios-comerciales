@@ -156,7 +156,7 @@
                   </div>
                   <div class="space-y-2 font-mono text-sm">
                     <p class="font-bold text-gray-900 text-base">
-                      ECTJ Juan Pérez
+                      BOXLY Juan Pérez
                     </p>
                     <p class="text-gray-700">123 Main Street</p>
                     <p class="text-gray-700">San Diego, CA</p>
@@ -240,8 +240,8 @@ const translations = {
     en: "Name",
   },
   nameInstructions: {
-    es: "Escribe ECTJ + tu nombre completo (esto identifica tu paquete)",
-    en: "Write ECTJ + your full name (this identifies your package)",
+    es: "Escribe BOXLY + tu nombre completo (esto identifica tu paquete)",
+    en: "Write BOXLY + your full name (this identifies your package)",
   },
   addressField: {
     es: "Dirección de envío",
