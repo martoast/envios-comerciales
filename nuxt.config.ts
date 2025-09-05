@@ -18,6 +18,11 @@ export default defineNuxtConfig({
           name: 'description', 
           content: 'Compra en cualquier parte del mundo y recibe en México. Te damos un domicilio en USA, consolidamos tus paquetes y enviamos a todo México al mejor precio.'
         },
+        // Facebook domain verification
+        {
+          name: 'facebook-domain-verification',
+          content: 'kmve28gubfhfg1vgfz3xpxxwqyde9e'
+        },
         // Open Graph / Facebook
         { 
           property: 'og:type', 
@@ -92,4 +97,4 @@ export default defineNuxtConfig({
       }
     }
   }
-})
+ })
