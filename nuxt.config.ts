@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
-      title: 'Envios Comerciales TJ - Compra en cualquier parte del mundo y recibe en México',
+      title: 'Boxly - Compra en cualquier parte del mundo y recibe en México',
       meta: [
         // Essential SEO tags
         {
@@ -30,11 +30,11 @@ export default defineNuxtConfig({
         },
         { 
           property: 'og:url', 
-          content: 'https://envioscomercialestj.com/'
+          content: 'https://boxly.mx/'
         },
         { 
           property: 'og:title', 
-          content: 'Envios Comerciales TJ - Compra en cualquier tienda del mundo y recíbelo en México'
+          content: 'Boxly - Compra en cualquier tienda del mundo y recíbelo en México'
         },
         { 
           property: 'og:description', 
@@ -42,7 +42,7 @@ export default defineNuxtConfig({
         },
         { 
           property: 'og:image', 
-          content: 'https://envioscomercialestj.com/logo.jpeg'
+          content: 'https://boxly.mx/logo.jpeg'
         },
         { 
           property: 'og:image:width', 
@@ -59,7 +59,7 @@ export default defineNuxtConfig({
         },
         { 
           name: 'twitter:title', 
-          content: 'Envios Comerciales TJ - Compra en cualquier tienda del mundo y recíbelo en México'
+          content: 'Boxly - Compra en cualquier tienda del mundo y recíbelo en México'
         },
         { 
           name: 'twitter:description', 
@@ -67,7 +67,7 @@ export default defineNuxtConfig({
         },
         { 
           name: 'twitter:image', 
-          content: 'https://envioscomercialestj.com/logo.jpeg'
+          content: 'https://boxly.mx/logo.jpeg'
         }
       ]
     }
