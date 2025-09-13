@@ -19,7 +19,6 @@
                 </g>
               </svg>
             </div>
-            <!-- <span class="text-gray-900 font-bold text-xl hidden sm:block">EnviosComercialesTJ</span> -->
           </NuxtLink>
         </div>
 

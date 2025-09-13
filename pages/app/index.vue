@@ -477,7 +477,7 @@
 
                 <!-- Email -->
                 <a
-                  href="mailto:envioscomercialestj@gmail.com"
+                  href="mailto:contact@boxly.mx"
                   class="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
                 >
                   <div class="p-2 bg-blue-100 rounded-lg flex-shrink-0">
@@ -500,7 +500,7 @@
                       {{ t.email }}
                     </p>
                     <p class="text-xs text-gray-500">
-                      envioscomercialestj@gmail.com
+                      contact@boxly.mx
                     </p>
                   </div>
                   <svg

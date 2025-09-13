@@ -176,7 +176,7 @@
             <p class="mb-4">{{ t.contactText }}</p>
             <div class="mt-4 p-4 bg-gray-100 rounded-lg">
               <p class="font-semibold mb-2">{{ t.contactInfo }}</p>
-              <p>Email: envioscomercialestj@gmail.com</p>
+              <p>Email: contact@boxly.mx</p>
               <p>WhatsApp: +1 (619) 559-1910</p>
               <p>{{ t.address }}: 2220 Otay Lakes Road, San Diego, CA 91915</p>
               <p class="mt-2">{{ t.hours }}: {{ t.hoursDetail }}</p>

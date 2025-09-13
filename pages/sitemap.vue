@@ -182,7 +182,7 @@
                   WhatsApp
                 </a>
                 <a
-                  href="mailto:envioscomercialestj@gmail.com"
+                  href="mailto:contact@boxly.mx"
                   class="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-full transition-all duration-300 hover:scale-105"
                 >
                   <EnvelopeIcon class="w-5 h-5" />

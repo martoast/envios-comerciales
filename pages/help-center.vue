@@ -70,8 +70,8 @@
                     <div class="flex-1">
                       <h4 class="font-semibold text-gray-900">{{ t.emailTitle }}</h4>
                       <p class="text-sm text-gray-600">{{ t.emailDescription }}</p>
-                      <a href="mailto:envioscomercialestj@gmail.com" class="text-sm text-primary-600 hover:text-primary-700 font-medium">
-                        envioscomercialestj@gmail.com
+                      <a href="mailto:contact@boxly.mx" class="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                        contact@boxly.mx
                       </a>
                     </div>
                   </div>

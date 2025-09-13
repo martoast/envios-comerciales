@@ -170,7 +170,7 @@
                 
                 <!-- Email -->
                 <a
-                  href="mailto:envioscomercialestj@gmail.com"
+                  href="mailto:contact@boxly.mx"
                   class="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors border border-gray-200"
                 >
                   <div class="p-2 bg-primary-100 rounded-lg flex-shrink-0">
@@ -180,7 +180,7 @@
                   </div>
                   <div class="flex-1">
                     <p class="text-sm font-medium text-gray-900">{{ t.email }}</p>
-                    <p class="text-xs text-gray-500">envioscomercialestj@gmail.com</p>
+                    <p class="text-xs text-gray-500">contact@boxly.mx</p>
                   </div>
                   <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>

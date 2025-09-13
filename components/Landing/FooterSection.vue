@@ -10,11 +10,11 @@
           <h4 class="text-white mb-3 sm:mb-4 text-base sm:text-lg font-semibold">{{ t.contact }}</h4>
           <ul class="list-none p-0 m-0 space-y-2">
             <li>
-              <a href="mailto:envioscomercialestj@gmail.com" class="inline-flex items-center gap-2 text-white/70 no-underline hover:text-white transition-colors">
+              <a href="mailto:contact@boxly.mx" class="inline-flex items-center gap-2 text-white/70 no-underline hover:text-white transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
-                <span class="text-sm sm:text-base break-all">envioscomercialestj@gmail.com</span>
+                <span class="text-sm sm:text-base break-all">contact@boxly.mx</span>
               </a>
             </li>
             <li>
@@ -56,7 +56,7 @@
           
           <!-- Instagram -->
           <a 
-            href="https://www.instagram.com/envioscomercialestj?igsh=dmcyMW93OWNzODU3&utm_source=qr"
+            href="https://www.instagram.com/official_boxlyj?igsh=dmcyMW93OWNzODU3&utm_source=qr"
             target="_blank"
             rel="noopener noreferrer"
             class="group p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all duration-300"
@@ -69,7 +69,7 @@
           
           <!-- TikTok -->
           <a 
-            href="https://www.tiktok.com/@envioscomercialestj?_t=ZP-8yEE34krzqR&_r=1"
+            href="https://www.tiktok.com/@official_boxlyj?_t=ZP-8yEE34krzqR&_r=1"
             target="_blank"
             rel="noopener noreferrer"
             class="group p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all duration-300"

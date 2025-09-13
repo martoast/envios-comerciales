@@ -148,7 +148,7 @@
                   </a>
   
                   <a
-                    href="mailto:envioscomercialestj@gmail.com"
+                    href="mailto:contact@boxly.mx"
                     class="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-primary-700 hover:text-primary-900"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
