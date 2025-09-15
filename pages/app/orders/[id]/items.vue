@@ -1,6 +1,5 @@
-<!-- pages/app/orders/[id]/items.vue -->
 <template>
-  <section class="min-h-screen bg-gray-50 pb-32 sm:pb-24">
+  <section class="min-h-screen bg-gray-50 pb-20">
     <!-- Fixed Header with Progress -->
     <div class="bg-white border-b sticky top-0 z-40">
       <div class="max-w-3xl mx-auto px-4 py-4">
@@ -40,13 +39,17 @@
           </div>
         </div>
 
-        <!-- Simplified Progress Bar -->
+        <!-- Progress Bar -->
         <div class="relative">
           <div class="bg-gray-200 rounded-full h-2 overflow-hidden">
             <div
               :class="[
                 'h-full bg-gradient-to-r from-green-500 to-primary-500 transition-all duration-500 ease-out',
-                hasItems ? 'w-2/3' : 'w-1/3',
+                order?.items_confirmed
+                  ? 'w-full'
+                  : hasItems
+                  ? 'w-2/3'
+                  : 'w-1/3',
               ]"
             ></div>
           </div>
@@ -63,7 +66,15 @@
             >
               {{ hasItems ? "✓" : "•" }} {{ t.stepAddItems }}
             </span>
-            <span class="text-gray-400">{{ t.stepComplete }}</span>
+            <span
+              :class="
+                order?.items_confirmed
+                  ? 'text-green-600 font-medium'
+                  : 'text-gray-400'
+              "
+            >
+              {{ order?.items_confirmed ? "✓" : "" }} {{ t.stepComplete }}
+            </span>
           </div>
         </div>
       </div>
@@ -79,9 +90,10 @@
       </div>
 
       <div v-else-if="order">
-        <!-- Floating Add Product Card (Mobile) -->
+        <!-- Add Product Button (Mobile) -->
         <div
-          class="sm:hidden bg-white rounded-2xl shadow-lg border border-gray-100 p-4 mb-6"
+          v-if="!order.items_confirmed"
+          class="sm:hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6"
         >
           <button
             @click="showAddProductModal = true"
@@ -127,6 +139,7 @@
 
         <!-- Desktop Add Product Form -->
         <div
+          v-if="!order.items_confirmed"
           class="hidden sm:block bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6"
         >
           <h2 class="text-lg font-semibold text-gray-900 mb-4">
@@ -308,7 +321,7 @@
             </span>
           </div>
 
-          <!-- Product Cards with Animation -->
+          <!-- Product Cards -->
           <TransitionGroup name="list" tag="div" class="space-y-3">
             <div
               v-for="(item, index) in order.items"
@@ -353,6 +366,7 @@
                   </div>
                 </div>
                 <button
+                  v-if="!order.items_confirmed"
                   @click="removeItem(item.id)"
                   class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                 >
@@ -373,6 +387,78 @@
               </div>
             </div>
           </TransitionGroup>
+
+          <!-- Clean Confirmation Section (Desktop Only) -->
+          <div
+            v-if="!order.items_confirmed"
+            class="hidden sm:block mt-6 bg-white rounded-xl p-6 border-2 border-primary-200 shadow-sm"
+          >
+            <div class="flex items-start gap-4">
+              <div class="flex-shrink-0">
+                <div
+                  class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-primary-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-semibold text-gray-900 mb-1">
+                  {{ t.reviewAndConfirm }}
+                </h3>
+                <p class="text-sm text-gray-600 mb-4">
+                  {{ t.confirmExplanation }}
+                </p>
+                <button
+                  @click="showCompleteModal = true"
+                  class="w-full sm:w-auto px-6 py-2.5 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors shadow-sm hover:shadow-md"
+                >
+                  {{ t.confirmProducts }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Already Confirmed Message -->
+          <div
+            v-else
+            class="mt-6 bg-green-50 rounded-xl p-5 border border-green-200"
+          >
+            <div class="flex items-center gap-3">
+              <svg
+                class="w-6 h-6 text-green-600 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <div>
+                <p class="font-semibold text-green-900">
+                  {{ t.orderConfirmed }}
+                </p>
+                <p class="text-sm text-green-700 mt-0.5">
+                  {{ t.orderConfirmedDesc }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Empty State -->
@@ -380,35 +466,46 @@
           <div
             class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
           >
-            <img src="/empty-box.svg" alt="empty box" class="w-12 h-12" />
+            <svg
+              class="w-12 h-12 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
+            </svg>
           </div>
           <p class="text-gray-500 mb-2">{{ t.noProducts }}</p>
+          <p class="text-sm text-gray-400">{{ t.startByAdding }}</p>
         </div>
       </div>
     </div>
 
-    <!-- Fixed Bottom Action (Mobile & Desktop) -->
+    <!-- Simplified Fixed Bottom Bar (Mobile Only) -->
     <div
-      v-if="hasItems && order"
-      class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-30"
+      v-if="hasItems && order && !order.items_confirmed"
+      class="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-30"
     >
-      <div class="max-w-3xl mx-auto px-4 py-4">
-        <div class="flex items-center gap-4">
-          <div class="flex-1">
-            <p class="text-sm text-gray-600">{{ t.readyToContinue }}</p>
-            <p class="font-semibold text-gray-900">
-              {{ totalItemQuantity }}
-              {{ totalItemQuantity === 1 ? t.product : t.products }}
-              {{ t.added }}
-            </p>
-          </div>
-          <button
-            @click="showCompleteModal = true"
-            class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-md"
-          >
-            {{ t.continue }}
-          </button>
-        </div>
+      <div class="px-4 py-3">
+        <button
+          @click="showCompleteModal = true"
+          class="w-full py-3.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors shadow-sm relative"
+        >
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"
+            ></span>
+            <span
+              class="relative inline-flex rounded-full h-3 w-3 bg-red-500"
+            ></span>
+          </span>
+          {{ t.confirmAndContinue }}
+        </button>
       </div>
     </div>
 
@@ -641,7 +738,7 @@
       </Dialog>
     </TransitionRoot>
 
-    <!-- Complete Order Modal -->
+    <!-- Streamlined Confirmation Modal -->
     <TransitionRoot as="template" :show="showCompleteModal">
       <Dialog class="relative z-50" @close="showCompleteModal = false">
         <TransitionChild
@@ -653,7 +750,7 @@
           leave-from="opacity-100"
           leave-to="opacity-0"
         >
-          <div class="fixed inset-0 bg-black/30" />
+          <div class="fixed inset-0 bg-black/50" />
         </TransitionChild>
 
         <div class="fixed inset-0 z-10 overflow-y-auto">
@@ -670,9 +767,10 @@
               <DialogPanel
                 class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6"
               >
-                <div class="text-center mb-6">
+                <!-- Icon -->
+                <div class="text-center mb-4">
                   <div
-                    class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+                    class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto"
                   >
                     <svg
                       class="w-8 h-8 text-green-600"
@@ -688,15 +786,20 @@
                       />
                     </svg>
                   </div>
+                </div>
+
+                <!-- Title & Message -->
+                <div class="text-center mb-6">
                   <DialogTitle class="text-lg font-semibold text-gray-900 mb-2">
-                    {{ t.confirmComplete }}
+                    {{ t.confirmOrder }}
                   </DialogTitle>
-                  <p class="text-gray-600">
-                    {{ t.confirmCompleteText }}
+                  <p class="text-sm text-gray-600">
+                    {{ t.confirmMessage }}
                   </p>
                 </div>
 
-                <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                <!-- Product Count -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
                   <div class="flex items-center justify-between">
                     <span class="text-gray-600">{{ t.totalProducts }}:</span>
                     <span class="text-2xl font-bold text-gray-900">{{
@@ -705,19 +808,22 @@
                   </div>
                 </div>
 
+                
+
+                <!-- Action Buttons -->
                 <div class="flex gap-3">
                   <button
                     @click="showCompleteModal = false"
-                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                    class="flex-1 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
                   >
                     {{ t.cancel }}
                   </button>
                   <button
                     @click="handleCompleteOrder"
                     :disabled="completingOrder"
-                    class="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium transition-colors"
+                    class="flex-1 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium transition-colors"
                   >
-                    {{ completingOrder ? "..." : t.confirm }}
+                    {{ completingOrder ? t.confirming : t.confirm }}
                   </button>
                 </div>
               </DialogPanel>
@@ -760,7 +866,6 @@ const addingItem = ref(false);
 const completingOrder = ref(false);
 const showCompleteModal = ref(false);
 const showAddProductModal = ref(false);
-const showSuccessToast = ref(false);
 const selectedFile = ref(null);
 
 // Computed - check if user has items
@@ -781,7 +886,7 @@ const itemForm = ref({
   declared_value: "",
 });
 
-// Translations
+// Simplified Translations
 const translations = {
   addYourProducts: {
     es: "Agrega tus productos",
@@ -791,7 +896,6 @@ const translations = {
     es: "Orden",
     en: "Order",
   },
-  // Progress Steps
   stepAddress: {
     es: "Dirección",
     en: "Address",
@@ -801,8 +905,45 @@ const translations = {
     en: "Products",
   },
   stepComplete: {
-    es: "Completar",
-    en: "Complete",
+    es: "Confirmar",
+    en: "Confirm",
+  },
+  reviewAndConfirm: {
+    es: "Revisa y confirma tus productos",
+    en: "Review and confirm your products",
+  },
+  confirmExplanation: {
+    es: "Confirma que estos son los productos que vas a enviar. Podrás modificarlos más tarde si es necesario.",
+    en: "Confirm that these are the products you're shipping. You can modify them later if needed.",
+  },
+  confirmProducts: {
+    es: "Confirmar productos",
+    en: "Confirm products",
+  },
+  confirmAndContinue: {
+    es: "Confirmar y Continuar",
+    en: "Confirm & Continue",
+  },
+  orderConfirmed: {
+    es: "Orden confirmada",
+    en: "Order confirmed",
+  },
+  orderConfirmedDesc: {
+    es: "Tu orden está lista para ser procesada",
+    en: "Your order is ready to be processed",
+  },
+  confirmOrder: {
+    es: "¿Confirmar orden?",
+    en: "Confirm order?",
+  },
+  confirmMessage: {
+    es: "¿Has agregado todos los productos que necesitas?",
+    en: "Have you added all the products you need?",
+  },
+ 
+  confirming: {
+    es: "Confirmando...",
+    en: "Confirming...",
   },
   addProduct: {
     es: "Agregar producto",
@@ -861,24 +1002,12 @@ const translations = {
     en: "Receipt attached",
   },
   noProducts: {
-    es: "No has agregado productos al envio todavía",
-    en: "You haven't added any products to the shipment yet",
+    es: "No has agregado productos todavía",
+    en: "You haven't added any products yet",
   },
-  tapToAdd: {
-    es: "Toca el botón para agregar tu primer producto",
-    en: "Tap the button to add your first product",
-  },
-  confirmComplete: {
-    es: "¿Todo listo?",
-    en: "All set?",
-  },
-  confirmCompleteText: {
-    es: "¿Has agregado todos tus productos?",
-    en: "Have you added all your products?",
-  },
-  totalProducts: {
-    es: "Total de productos",
-    en: "Total products",
+  startByAdding: {
+    es: "Comienza agregando tu primer producto",
+    en: "Start by adding your first product",
   },
   product: {
     es: "producto",
@@ -896,22 +1025,6 @@ const translations = {
     es: "Confirmar",
     en: "Confirm",
   },
-  readyToContinue: {
-    es: "¿Listo para continuar?",
-    en: "Ready to continue?",
-  },
-  added: {
-    es: "agregados",
-    en: "added",
-  },
-  continue: {
-    es: "Continuar",
-    en: "Continue",
-  },
-  productAdded: {
-    es: "¡Producto agregado!",
-    en: "Product added!",
-  },
   declaredValue: {
     es: "Valor declarado",
     en: "Declared value",
@@ -919,6 +1032,10 @@ const translations = {
   declaredValuePlaceholder: {
     es: "ej: 999.99",
     en: "e.g. 999.99",
+  },
+  totalProducts: {
+    es: "Total de productos",
+    en: "Total products",
   },
 };
 
@@ -939,7 +1056,6 @@ const decrementQuantity = () => {
 };
 
 const validateQuantity = () => {
-  // Ensure quantity stays within bounds
   if (!itemForm.value.quantity || itemForm.value.quantity < 1) {
     itemForm.value.quantity = 1;
   } else if (itemForm.value.quantity > 9999) {
@@ -950,7 +1066,6 @@ const validateQuantity = () => {
 const handleFileSelect = (event) => {
   const file = event.target.files[0];
   if (file) {
-    // Simple validation
     if (file.size > 10 * 1024 * 1024) {
       $toast.error("File too large");
       return;
@@ -961,7 +1076,6 @@ const handleFileSelect = (event) => {
 
 const removeFile = () => {
   selectedFile.value = null;
-  // Clear all file inputs
   const fileInputs = ["fileInputMobile", "fileInputDesktop"];
   fileInputs.forEach((refName) => {
     if ($refs[refName]) {
@@ -1007,13 +1121,8 @@ const handleAddItem = async () => {
       body: formData,
     });
 
-    // Show success toast
-    showSuccessToast.value = true;
-    setTimeout(() => {
-      showSuccessToast.value = false;
-    }, 3000);
+    $toast.success(t.value.productAdded || "Product added!");
 
-    // Reset form
     itemForm.value = {
       product_name: "",
       quantity: 1,
@@ -1021,7 +1130,6 @@ const handleAddItem = async () => {
     };
     selectedFile.value = null;
 
-    // Refresh order
     await fetchOrder();
   } catch (error) {
     console.error("Error adding item:", error);
@@ -1060,7 +1168,7 @@ const handleCompleteOrder = async () => {
     });
 
     showCompleteModal.value = false;
-    $toast.success("Order completed!");
+    $toast.success("Order confirmed!");
 
     return navigateTo({
       path: `/app/orders/${order.value.id}`,
@@ -1068,7 +1176,7 @@ const handleCompleteOrder = async () => {
     });
   } catch (error) {
     console.error("Error completing order:", error);
-    $toast.error("Error completing order");
+    $toast.error("Error confirming order");
   } finally {
     completingOrder.value = false;
   }
