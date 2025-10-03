@@ -209,7 +209,7 @@ const translations = {
   },
   step2Desc: {
     es: "Para la dirección de envío, usa tu dirección de Envíos Comerciales TJ en San Diego.",
-    en: "For the shipping address, use your Envios Comerciales TJ address in San Diego.",
+    en: "For the shipping address, use your Boxly address in San Diego.",
   },
   step3Title: {
     es: "¡Recibe en casa!",

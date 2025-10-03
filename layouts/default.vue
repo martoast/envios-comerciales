@@ -322,8 +322,8 @@ watch(() => route.path, (newPath, oldPath) => {
 
 // SEO Meta
 useSeoMeta({
-  title: 'Envios Comerciales TJ - Compra en cualquier tienda del mundo y recíbelo en México',
-  ogTitle: 'Envios Comerciales TJ - Compra en cualquier tienda del mundo y recíbelo en México',
+  title: 'Boxly - Compra en cualquier tienda del mundo y recíbelo en México',
+  ogTitle: 'Boxly - Compra en cualquier tienda del mundo y recíbelo en México',
   description: 'Compra en cualquier tienda del mundo y recíbelo en México. Te damos un domicilio en USA, consolidamos tus paquetes y enviamos a todo México al mejor precio.',
   ogDescription: 'Compra en cualquier tienda del mundo y recíbelo en México. Te damos un domicilio en USA, consolidamos tus paquetes y enviamos a todo México al mejor precio.',
   ogImage: '/logo.jpeg',

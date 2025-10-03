@@ -465,7 +465,7 @@
   
   // SEO
   useSeoMeta({
-    title: 'Rastrear Paquete - Envios Comerciales TJ',
+    title: 'Rastrear Paquete - Boxly',
     description: 'Rastrea el status de tu envio. Ingresa tu número de rastreo para ver el estado actual de tu envío.',
   })
   </script>

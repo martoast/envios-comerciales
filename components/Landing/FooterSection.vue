@@ -153,8 +153,8 @@ const translations = {
     en: 'Sitemap'
   },
   copyright: {
-    es: '© 2025 Envios Comerciales Tijuana - Todos los derechos reservados.',
-    en: '© 2025 Envios Comerciales Tijuana - All rights reserved.'
+    es: '© 2025 Boxly - Todos los derechos reservados.',
+    en: '© 2025 Boxly - All rights reserved.'
   },
   followOn: {
     es: 'Síguenos en',

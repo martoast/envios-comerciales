@@ -330,11 +330,11 @@
   
   // Page meta
   useHead({
-    title: 'Mapa del Sitio - Envios Comerciales Tijuana',
+    title: 'Mapa del Sitio - Boxly',
     meta: [
       {
         name: 'description',
-        content: 'Navega fácilmente por todas las páginas de Envios Comerciales Tijuana. Encuentra información sobre servicios, ayuda, y más.'
+        content: 'Navega fácilmente por todas las páginas de Boxly. Encuentra información sobre servicios, ayuda, y más.'
       }
     ]
   })

@@ -19,7 +19,7 @@
   
   // Page meta
   useHead({
-    title: 'Preguntas Frecuentes - Envios Comerciales Tijuana',
+    title: 'Preguntas Frecuentes - Boxly',
     meta: [
       {
         name: 'description',

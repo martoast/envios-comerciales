@@ -52,8 +52,8 @@ definePageMeta({
 
 // SEO Meta for Expats page
 useSeoMeta({
-  title: 'Para Expatriados - Envios Comerciales TJ | Compra en USA desde México',
-  ogTitle: 'Para Expatriados - Envios Comerciales TJ | Compra en USA desde México',
+  title: 'Para Expatriados - Boxly | Compra en USA desde México',
+  ogTitle: 'Para Expatriados - Boxly | Compra en USA desde México',
   description: 'Servicio especializado para expatriados en México. Accede a productos de tu país de origen, compra en tiendas internacionales y recibe todo en tu domicilio en México.',
   ogDescription: 'Servicio especializado para expatriados en México. Accede a productos de tu país de origen, compra en tiendas internacionales y recibe todo en tu domicilio en México.',
   ogImage: '/logo.jpeg',

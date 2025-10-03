@@ -167,10 +167,10 @@
       },
       answer: {
         es: [
-          "Cuando te registras, recibes una dirección única en Estados Unidos en San Diego con la cual puedes comenzar a comprar en línea--esta dirección es donde enviarás tus paquetes. Cuando estos paquetes llegan a tu dirección de envío en EE.UU., se procesan para ser enviados internacionalmente. Tan pronto como llegan a Tijuana, nuestros agentes de Envios Comerciales Tijuana se encargan del despacho aduanal y envían los paquetes a tu hogar u oficina.",
+          "Cuando te registras, recibes una dirección única en Estados Unidos en San Diego con la cual puedes comenzar a comprar en línea--esta dirección es donde enviarás tus paquetes. Cuando estos paquetes llegan a tu dirección de envío en EE.UU., se procesan para ser enviados internacionalmente. Tan pronto como llegan a Tijuana, nuestros agentes de Boxly se encargan del despacho aduanal y envían los paquetes a tu hogar u oficina.",
         ],
         en: [
-          "When you sign up, you receive a unique U.S. address in San Diego with which you can start shopping online--this address is where you'll receive your packages. When these packages arrive at your U.S. shipping address, they are then processed to be shipped internationally. As soon as they arrive in Tijuana, our Envios Comerciales Tijuana agents clear customs and send the packages to your home or office.",
+          "When you sign up, you receive a unique U.S. address in San Diego with which you can start shopping online--this address is where you'll receive your packages. When these packages arrive at your U.S. shipping address, they are then processed to be shipped internationally. As soon as they arrive in Tijuana, our Boxly agents clear customs and send the packages to your home or office.",
         ],
       },
     },
@@ -183,10 +183,10 @@
       },
       answer: {
         es: [
-          "Una dirección de envío internacional acompañada de una serie de herramientas únicas de Envios Comerciales Tijuana que garantizan el manejo y entrega de tus paquetes comprados en línea. Recibirás servicios de envío internacional a un costo muy favorable y con altos estándares de calidad, cumplimiento y seguridad. Además de estos beneficios, tu dirección física en San Diego recibe, clasifica y envía diariamente los documentos o paquetes recibidos a tu cuenta. Tu dirección física en San Diego también te permite hacer seguimiento de tus órdenes.",
+          "Una dirección de envío internacional acompañada de una serie de herramientas únicas de Boxly que garantizan el manejo y entrega de tus paquetes comprados en línea. Recibirás servicios de envío internacional a un costo muy favorable y con altos estándares de calidad, cumplimiento y seguridad. Además de estos beneficios, tu dirección física en San Diego recibe, clasifica y envía diariamente los documentos o paquetes recibidos a tu cuenta. Tu dirección física en San Diego también te permite hacer seguimiento de tus órdenes.",
         ],
         en: [
-          "An international shipping address accompanied by a series of unique Envios Comerciales Tijuana tools that guarantee the handling and delivery of your packages purchased online. You will receive international shipping services at a very favorable cost and with high quality, compliant, and secure margins. In addition to these benefits, your physical address in San Diego receives, classifies, and ships the documents or packages received to your account daily. Your physical address in San Diego also allows you to follow the tracking of your orders.",
+          "An international shipping address accompanied by a series of unique Boxly tools that guarantee the handling and delivery of your packages purchased online. You will receive international shipping services at a very favorable cost and with high quality, compliant, and secure margins. In addition to these benefits, your physical address in San Diego receives, classifies, and ships the documents or packages received to your account daily. Your physical address in San Diego also allows you to follow the tracking of your orders.",
         ],
       },
     },
@@ -199,10 +199,10 @@
       },
       answer: {
         es: [
-          "Todas tus compras están respaldadas automáticamente por un seguro de $9 USD/lb hasta $100.00 USD. En Envios Comerciales Tijuana, somos responsables de tus paquetes desde que llegan y se ubican en el P.O Box hasta la entrega final en tu hogar u oficina.",
+          "Todas tus compras están respaldadas automáticamente por un seguro de $9 USD/lb hasta $100.00 USD. En Boxly, somos responsables de tus paquetes desde que llegan y se ubican en el P.O Box hasta la entrega final en tu hogar u oficina.",
         ],
         en: [
-          "All your purchases are automatically backed by insurance of U.S. $9/lb up to U.S $100.00. At Envios Comerciales Tijuana, we are responsible for your packages since they arrive and are located at the P.O Box until the final delivery at your home or office.",
+          "All your purchases are automatically backed by insurance of U.S. $9/lb up to U.S $100.00. At Boxly, we are responsible for your packages since they arrive and are located at the P.O Box until the final delivery at your home or office.",
         ],
       },
     },
@@ -248,10 +248,10 @@
       },
       answer: {
         es: [
-          "Sí, puedes comprar en cualquier tienda en línea de Estados Unidos que acepte tu dirección de San Diego. Esto incluye Amazon, eBay, Walmart, Best Buy y miles de otras tiendas. Solo asegúrate de usar tu dirección de Envios Comerciales Tijuana como dirección de envío.",
+          "Sí, puedes comprar en cualquier tienda en línea de Estados Unidos que acepte tu dirección de San Diego. Esto incluye Amazon, eBay, Walmart, Best Buy y miles de otras tiendas. Solo asegúrate de usar tu dirección de Boxly como dirección de envío.",
         ],
         en: [
-          "Yes, you can shop at any U.S. online store that accepts your San Diego address. This includes Amazon, eBay, Walmart, Best Buy, and thousands of other stores. Just make sure to use your Envios Comerciales Tijuana address as your shipping address.",
+          "Yes, you can shop at any U.S. online store that accepts your San Diego address. This includes Amazon, eBay, Walmart, Best Buy, and thousands of other stores. Just make sure to use your Boxly address as your shipping address.",
         ],
       },
     },

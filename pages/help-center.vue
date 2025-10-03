@@ -476,7 +476,7 @@
   
   // Page meta
   useHead({
-    title: 'Centro de Ayuda - Envios Comerciales Tijuana',
+    title: 'Centro de Ayuda - Boxly',
     meta: [
       {
         name: 'description',
