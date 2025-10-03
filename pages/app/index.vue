@@ -279,16 +279,37 @@
             </div>
           </div>
 
-          <!-- Helper Text -->
-          <!-- <div class="mt-6 text-center">
-            <p class="text-sm text-gray-500">
-              <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <!-- Tutorial Video Link - Prominent placement after steps -->
+          <div
+            class="mt-6 text-center animate-fadeIn"
+            style="animation-delay: 0.4s"
+          >
+            <a
+              href="https://www.loom.com/share/aa0802b6092b4a4bb989a6bbb2e9786d?sid=a2023588-6ade-4252-beaa-b50202f5d237"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-300 shadow-md hover:shadow-lg group"
+            >
+             
+              {{ t.watchTutorial }}
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
               </svg>
-              {{ t.needHelp }} 
-              <a href="#" class="text-primary-600 hover:text-primary-700 font-medium">{{ t.watchTutorial }}</a>
+            </a>
+            <p class="mt-2 text-sm text-gray-500">
+              {{ t.tutorialDescription }}
             </p>
-          </div> -->
+          </div>
         </div>
 
         <!-- Recent Orders & Quick Actions -->
@@ -499,9 +520,7 @@
                     <p class="text-sm font-medium text-gray-900">
                       {{ t.email }}
                     </p>
-                    <p class="text-xs text-gray-500">
-                      contact@boxly.mx
-                    </p>
+                    <p class="text-xs text-gray-500">contact@boxly.mx</p>
                   </div>
                   <svg
                     class="w-4 h-4 text-gray-400"
@@ -734,12 +753,10 @@ const translations = {
     es: "Inicia tu envío a México",
     en: "Start your shipment to Mexico",
   },
-
   tellUsWhatYouBought: {
     es: "Agrega tu dirección de entrega y los productos que nos enviaste. Nosotros nos encargamos del resto.",
     en: "Add your delivery address and the products you sent us. We take care of the rest.",
   },
-
   createOrderButton: {
     es: "Crear Envio",
     en: "Create Shipment",
@@ -749,8 +766,12 @@ const translations = {
     en: "First time?",
   },
   watchTutorial: {
-    es: "Ver tutorial",
-    en: "Watch tutorial",
+    es: "📹 Ver Tutorial Paso a Paso",
+    en: "📹 Watch Step-by-Step Tutorial",
+  },
+  tutorialDescription: {
+    es: "Aprende cómo funciona el proceso completo en 3 minutos",
+    en: "Learn how the complete process works in 3 minutes",
   },
 };
 
