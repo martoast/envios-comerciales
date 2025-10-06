@@ -3,20 +3,14 @@
     <div class="max-w-md w-full space-y-8">
       <!-- Logo and Header -->
       <div class="text-center animate-fadeIn">
-        <div class="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-primary-50 rounded-2xl mb-6 shadow-lg animate-bounce-subtle">
-          <NuxtLink to="/" class="inline-block">
-            <svg class="w-12 h-12 sm:w-16 sm:h-16" viewBox="0 0 150 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-              <g stroke="#0d2c4f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
-                <line x1="0" y1="35" x2="40" y2="35" />
-                <line x1="5" y1="50" x2="45" y2="50" />
-                <line x1="0" y1="65" x2="40" y2="65" />
-                <path fill="#FFC107" d="M 55,25 L 105,25 L 125,45 L 75,45 Z" />
-                <path fill="#FFA000" d="M 55,25 L 55,75 L 75,95 L 75,45 Z" />
-                <path fill="#FF8F00" d="M 75,95 L 125,95 L 125,45 L 75,45 Z" />
-              </g>
-            </svg>
-          </NuxtLink>
-        </div>
+        <NuxtLink to="/" class="inline-block">
+          <img 
+          src="/logo.svg" 
+          class="h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-32 lg:h-40 lg:w-40 inline-flex items-center justify-center"
+        />
+        </NuxtLink>
+        
+
         <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">
           {{ t.loginTitle }}
         </h1>
@@ -34,7 +28,7 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div v-if="errorMessage || Object.keys(errors).length > 0" class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 shadow-md animate-shake">
+        <div v-if="errorMessage || Object.keys(errors).length > 0" class="bg-red-50 border-l-4 border-red-500 rounded-lg shadow-md animate-shake">
           <div class="flex">
             <div class="flex-shrink-0">
               <svg class="w-5 h-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
