@@ -1,3 +1,4 @@
+<!-- components/SuccessBanner.vue -->
 <template>
   <TransitionRoot
     :show="show"

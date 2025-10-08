@@ -304,7 +304,7 @@
                 <div class="flex items-center gap-2">
                   <div class="flex-1 bg-gray-200 rounded-full h-1.5">
                     <div
-                      class="bg-primary-500 h-1.5 rounded-full transition-all duration-300"
+                      class="bg-amber-500 h-1.5 rounded-full transition-all duration-300"
                       :style="`width: ${order.arrival_progress || 0}%`"
                     ></div>
                   </div>
@@ -381,7 +381,7 @@
                       >
                         <div class="w-24 bg-gray-200 rounded-full h-1.5">
                           <div
-                            class="bg-primary-500 h-1.5 rounded-full transition-all duration-300"
+                            class="bg-amber-500 h-1.5 rounded-full transition-all duration-300"
                             :style="`width: ${order.arrival_progress || 0}%`"
                           ></div>
                         </div>
@@ -576,7 +576,7 @@ const translations = {
     es: "Limpiar búsqueda",
     en: "Clear search",
   },
-  // Status translations
+  // Status translations - UPDATED
   collecting: {
     es: "Agregando Artículos",
     en: "Adding Items",
@@ -589,9 +589,9 @@ const translations = {
     es: "Paquetes Completos",
     en: "Packages Complete",
   },
-  quote_sent: {
-    es: "Cotización Enviada",
-    en: "Quote Sent",
+  processing: {
+    es: "Procesando",
+    en: "Processing",
   },
   shipped: {
     es: "Enviado",
@@ -601,9 +601,17 @@ const translations = {
     es: "Entregado",
     en: "Delivered",
   },
+  awaiting_payment: {
+    es: "Esperando Pago",
+    en: "Awaiting Payment",
+  },
   paid: {
     es: "Pagado",
     en: "Paid",
+  },
+  cancelled: {
+    es: "Cancelado",
+    en: "Cancelled",
   },
   // Stats
   totalOrders: {
@@ -618,28 +626,38 @@ const translations = {
     es: "En Tránsito",
     en: "In Transit",
   },
+  delivered: {
+    es: "Entregadas",
+    en: "Delivered",
+  },
 };
 
 // Get reactive translations
 const t = createTranslations(translations);
 
-// Computed stats - based on ALL orders, not filtered
+// Computed stats - based on ALL orders, not filtered - UPDATED
 const stats = computed(() => {
   // Use allOrders for stats if available, otherwise use current orders
   const ordersForStats =
     allOrders.value.length > 0 ? allOrders.value : orders.value;
   const totalOrders = ordersForStats.length;
+  
+  // Active orders: collecting, awaiting_packages, packages_complete, processing
   const activeOrders = ordersForStats.filter((o) =>
     [
       "collecting",
       "awaiting_packages",
       "packages_complete",
-      "quote_sent",
+      "processing",
     ].includes(o.status)
   ).length;
+  
+  // In transit: shipped status
   const inTransit = ordersForStats.filter((o) => o.status === "shipped").length;
-  const delivered = ordersForStats.filter(
-    (o) => o.status === "delivered"
+  
+  // Delivered: delivered, awaiting_payment, and paid statuses
+  const delivered = ordersForStats.filter((o) =>
+    ["delivered", "awaiting_payment", "paid"].includes(o.status)
   ).length;
 
   return [
@@ -721,15 +739,18 @@ const changePage = (page) => {
   }
 };
 
+// Updated status colors to match new flow
 const getStatusColor = (status) => {
   const colors = {
     collecting: "bg-primary-100 text-primary-700",
     awaiting_packages: "bg-amber-100 text-amber-700",
     packages_complete: "bg-primary-100 text-primary-700",
-    quote_sent: "bg-orange-100 text-orange-700",
-    paid: "bg-green-100 text-green-700",
+    processing: "bg-primary-100 text-primary-700",
     shipped: "bg-primary-100 text-primary-700",
     delivered: "bg-green-100 text-green-700",
+    awaiting_payment: "bg-orange-100 text-orange-700",
+    paid: "bg-green-100 text-green-700",
+    cancelled: "bg-red-100 text-red-700",
   };
   return colors[status] || "bg-gray-100 text-gray-700";
 };

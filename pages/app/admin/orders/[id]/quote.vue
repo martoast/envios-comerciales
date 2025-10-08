@@ -40,7 +40,7 @@
     <!-- Main Content -->
     <div v-else-if="order" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <!-- Status Alerts -->
-      <div v-if="order.status === 'quote_sent'" class="mb-6 bg-green-50 border border-green-200 rounded-xl p-4">
+      <div v-if="order.status === 'awaiting_payment'" class="mb-6 bg-green-50 border border-green-200 rounded-xl p-4">
         <div class="flex items-start gap-3">
           <svg class="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -69,7 +69,7 @@
       </div>
 
       <!-- Quote Already Prepared Notice -->
-      <div v-else-if="order.quote_breakdown && order.status === 'processing'" class="mb-6 bg-primary-50 border border-primary-200 rounded-xl p-4">
+      <div v-else-if="order.quote_breakdown && order.status === 'delivered'" class="mb-6 bg-primary-50 border border-primary-200 rounded-xl p-4">
         <div class="flex items-start gap-3">
           <svg class="w-5 h-5 text-primary-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -177,7 +177,7 @@
           </div>
 
           <!-- Quote Builder - Only show if quote not yet prepared -->
-          <div v-if="!order.quote_breakdown || order.status === 'packages_complete'" class="bg-white rounded-xl border border-gray-200 p-6">
+          <div v-if="!order.quote_breakdown || order.status === 'delivered'" class="bg-white rounded-xl border border-gray-200 p-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t.quoteBuilder }}</h2>
 
             <div class="space-y-4">
@@ -300,7 +300,7 @@
           </div>
 
           <!-- Display Existing Quote if Already Prepared -->
-          <div v-else-if="order.quote_breakdown && order.status === 'processing'" class="bg-white rounded-xl border border-gray-200 p-6">
+          <div v-else-if="order.quote_breakdown && order.status === 'delivered'" class="bg-white rounded-xl border border-gray-200 p-6">
             <div class="flex items-center justify-between mb-4">
               <h2 class="text-lg font-semibold text-gray-900">{{ t.preparedQuote }}</h2>
               <button
@@ -341,7 +341,7 @@
         <!-- Right Column - Preview & Actions -->
         <div class="space-y-6">
           <!-- Quote Preview (Only show while building) -->
-          <div v-if="!order.quote_breakdown || order.status === 'packages_complete'" class="bg-white rounded-xl border border-gray-200 p-6">
+          <div v-if="!order.quote_breakdown || order.status === 'delivered'" class="bg-white rounded-xl border border-gray-200 p-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t.quotePreview }}</h2>
             
             <div class="space-y-2 mb-4">
@@ -380,9 +380,25 @@
             <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t.actions }}</h2>
             
             <div class="space-y-3">
+              <!-- Alert if not delivered yet -->
+              <div
+                v-if="order.status !== 'delivered' && order.status !== 'awaiting_payment' && order.status !== 'paid'"
+                class="bg-amber-50 border border-amber-200 rounded-lg p-4"
+              >
+                <div class="flex items-start gap-3">
+                  <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <div>
+                    <p class="text-sm font-medium text-amber-900">{{ t.invoiceNotReady }}</p>
+                    <p class="text-xs text-amber-700 mt-1">{{ t.invoiceNotReadyMessage }}</p>
+                  </div>
+                </div>
+              </div>
+
               <!-- Prepare Quote Button -->
               <button
-                v-if="!order.quote_breakdown && (order.status === 'packages_complete' || order.status === 'processing')"
+                v-if="!order.quote_breakdown && order.status === 'delivered'"
                 @click="prepareQuote"
                 :disabled="!canPrepareQuote || preparingQuote"
                 class="w-full px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -399,7 +415,7 @@
 
               <!-- Review and Send Button -->
               <button
-                v-if="order.status === 'processing' && order.quote_breakdown"
+                v-if="order.status === 'delivered' && order.quote_breakdown"
                 @click="showReviewModal = true"
                 class="w-full px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors"
               >
@@ -408,7 +424,7 @@
           
               <!-- Cancel Quote Button -->
               <button
-                v-if="order.status === 'quote_sent'"
+                v-if="order.status === 'awaiting_payment'"
                 @click="showCancelModal = true"
                 class="w-full px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
               >
@@ -424,6 +440,19 @@
               >
                 {{ t.viewInStripe }}
               </a>
+
+              <!-- Payment Status -->
+              <div v-if="order.status === 'paid'" class="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div class="flex items-center gap-3">
+                  <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  <div>
+                    <p class="text-sm font-medium text-green-900">{{ t.paymentCompleted }}</p>
+                    <p class="text-xs text-green-700 mt-1">{{ t.orderFullyCompleted }}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -745,8 +774,8 @@ const translations = {
     en: 'View payment link',
   },
   wrongStatus: {
-    es: 'La orden debe estar en estado "paquetes completos" o "procesando"',
-    en: 'Order must be in "packages complete" or "processing" status',
+    es: 'La orden debe estar en estado "entregada"',
+    en: 'Order must be in "delivered" status',
   },
   notAllArrived: {
     es: 'No todos los paquetes han llegado',
@@ -755,6 +784,14 @@ const translations = {
   notAllWeighed: {
     es: 'No todos los paquetes han sido pesados',
     en: 'Not all packages have been weighed',
+  },
+  invoiceNotReady: {
+    es: 'Factura No Disponible',
+    en: 'Invoice Not Available',
+  },
+  invoiceNotReadyMessage: {
+    es: 'La factura solo puede ser preparada después de que la orden haya sido entregada al cliente.',
+    en: 'Invoice can only be prepared after the order has been delivered to the customer.',
   },
   orderInformation: {
     es: 'Información de la Orden',
@@ -771,10 +808,6 @@ const translations = {
   rural: {
     es: 'Rural',
     en: 'Rural',
-  },
-  totalWeight: {
-    es: 'Peso Total',
-    en: 'Total Weight',
   },
   totalDeclaredValue: {
     es: 'Valor Total Declarado',
@@ -973,8 +1006,8 @@ const translations = {
     en: 'Cancel Quote',
   },
   cancelQuoteMessage: {
-    es: 'Esto anulará la factura en Stripe y regresará la orden al estado de procesamiento.',
-    en: 'This will void the invoice in Stripe and return the order to processing status.',
+    es: 'Esto anulará la factura en Stripe y regresará la orden al estado de entregada.',
+    en: 'This will void the invoice in Stripe and return the order to delivered status.',
   },
   reason: {
     es: 'Razón',
@@ -1004,6 +1037,14 @@ const translations = {
     es: 'Agrega elementos a la cotización',
     en: 'Add items to the quote',
   },
+  paymentCompleted: {
+    es: 'Pago Completado',
+    en: 'Payment Completed',
+  },
+  orderFullyCompleted: {
+    es: 'La orden ha sido completada exitosamente.',
+    en: 'Order has been completed successfully.',
+  },
   // Status labels
   collecting: {
     es: 'Agregando Artículos',
@@ -1021,9 +1062,17 @@ const translations = {
     es: 'Procesando',
     en: 'Processing',
   },
-  quote_sent: {
-    es: 'Cotización Enviada',
-    en: 'Quote Sent',
+  shipped: {
+    es: 'Enviado',
+    en: 'Shipped',
+  },
+  delivered: {
+    es: 'Entregado',
+    en: 'Delivered',
+  },
+  awaiting_payment: {
+    es: 'Esperando Pago',
+    en: 'Awaiting Payment',
   },
   paid: {
     es: 'Pagado',
@@ -1044,7 +1093,7 @@ const t = createTranslations(translations)
 // Computed
 const canSendQuote = computed(() => {
   if (!order.value) return false
-  return (order.value.status === 'packages_complete' || order.value.status === 'processing') &&
+  return order.value.status === 'delivered' &&
          allItemsArrived.value &&
          allItemsWeighed.value
 })
@@ -1408,12 +1457,14 @@ const cancelQuote = async () => {
 
 const getStatusColor = (status) => {
   const colors = {
-    collecting: 'bg-primary-100 text-primary-700',
+    collecting: 'bg-blue-100 text-blue-700',
     awaiting_packages: 'bg-amber-100 text-amber-700',
-    packages_complete: 'bg-primary-100 text-primary-700',
-    processing: 'bg-primary-100 text-primary-700',
-    quote_sent: 'bg-orange-100 text-orange-700',
-    paid: 'bg-green-100 text-green-700',
+    packages_complete: 'bg-purple-100 text-purple-700',
+    processing: 'bg-indigo-100 text-indigo-700',
+    shipped: 'bg-cyan-100 text-cyan-700',
+    delivered: 'bg-green-100 text-green-700',
+    awaiting_payment: 'bg-orange-100 text-orange-700',
+    paid: 'bg-emerald-100 text-emerald-700',
   }
   return colors[status] || 'bg-gray-100 text-gray-700'
 }

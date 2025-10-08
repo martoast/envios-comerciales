@@ -1,3 +1,4 @@
+<!-- pages/app/orders/[id]/index.vue -->
 <template>
   <section class="min-h-screen bg-gray-50">
     <!-- Header - Simplified & Clean -->
@@ -159,8 +160,9 @@
         @dismiss="dismissSuccessBanner"
       />
 
-      <!-- Action Banners -->
-      <!-- Add Items CTA (Collecting Status) -->
+      <!-- Status Banners -->
+
+      <!-- COLLECTING STATUS - Add Items CTA (No Items) -->
       <div
         v-if="
           order.status === 'collecting' &&
@@ -189,9 +191,11 @@
             </svg>
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-semibold">{{ t.addItemsToOrder }}</h3>
+            <h3 class="text-lg font-semibold">
+              {{ t.collectingNoItemsTitle }}
+            </h3>
             <p class="text-sm text-white/90 mt-1">
-              {{ t.addItemsDescription }}
+              {{ t.collectingNoItemsDescription }}
             </p>
           </div>
           <NuxtLink
@@ -203,7 +207,7 @@
         </div>
       </div>
 
-      <!-- Complete Order Banner (Collecting Status with Items) -->
+      <!-- COLLECTING STATUS - Complete Order Banner (With Items) -->
       <div
         v-if="order.status === 'collecting' && order.items?.length > 0"
         class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 text-white"
@@ -229,9 +233,11 @@
             </svg>
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-semibold">{{ t.needToCompleteOrder }}</h3>
+            <h3 class="text-lg font-semibold">
+              {{ t.collectingWithItemsTitle }}
+            </h3>
             <p class="text-sm text-white/90 mt-1">
-              {{ t.needToCompleteOrderText }}
+              {{ t.collectingWithItemsDescription }}
             </p>
           </div>
           <div class="flex flex-col sm:flex-row gap-2">
@@ -252,7 +258,7 @@
         </div>
       </div>
 
-      <!-- Reopen Order Banner (Awaiting Packages) -->
+      <!-- AWAITING_PACKAGES STATUS -->
       <div
         v-if="order.status === 'awaiting_packages'"
         class="bg-amber-50 border border-amber-200 rounded-xl p-6"
@@ -273,16 +279,16 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
               />
             </svg>
           </div>
           <div class="flex-1">
             <h3 class="text-lg font-semibold text-amber-900">
-              {{ t.needToMakeChanges }}
+              {{ t.awaitingPackagesTitle }}
             </h3>
             <p class="text-sm text-amber-700 mt-1">
-              {{ t.needToMakeChangesText }}
+              {{ t.awaitingPackagesDescription }}
             </p>
           </div>
           <button
@@ -291,6 +297,355 @@
           >
             {{ t.reopenOrder }}
           </button>
+        </div>
+      </div>
+
+      <!-- PACKAGES_COMPLETE STATUS -->
+      <div
+        v-if="order.status === 'packages_complete'"
+        class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 text-white"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold">{{ t.packagesCompleteTitle }}</h3>
+            <p class="text-sm text-white/90 mt-1">
+              {{ t.packagesCompleteDescription }}
+            </p>
+          </div>
+          <div class="px-6 py-3 bg-white/20 rounded-lg border border-white/30">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              <span class="text-sm font-medium">{{ t.preparing }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROCESSING STATUS -->
+      <div
+        v-if="order.status === 'processing'"
+        class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 text-white"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6 animate-spin"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold">{{ t.processingTitle }}</h3>
+            <p class="text-sm text-white/90 mt-1">
+              {{ t.processingDescription }}
+            </p>
+          </div>
+          <div class="px-6 py-3 bg-white/20 rounded-lg border border-white/30">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              <span class="text-sm font-medium">{{ t.inProgress }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHIPPED STATUS -->
+      <div
+        v-if="order.status === 'shipped'"
+        class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 text-white"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold">{{ t.shippedTitle }}</h3>
+            <p class="text-sm text-white/90 mt-1">
+              {{ t.shippedDescription }}
+            </p>
+            <p
+              v-if="order.estimated_delivery_date"
+              class="text-sm text-white/90 mt-2 font-medium"
+            >
+              {{ t.estimatedArrival }}:
+              {{ formatDate(order.estimated_delivery_date) }}
+            </p>
+          </div>
+          <NuxtLink
+            v-if="order.dhl_waybill_number"
+            :to="`https://www.dhl.com/mx-es/home/tracking.html?tracking-id=${order.dhl_waybill_number.replace(
+              /\s/g,
+              ''
+            )}`"
+            external
+            target="_blank"
+            class="px-6 py-3 bg-white text-primary-600 font-medium rounded-lg hover:bg-gray-50 transition-colors inline-flex items-center gap-2"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+            {{ t.trackShipment }}
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- DELIVERED STATUS -->
+      <div
+        v-if="order.status === 'delivered'"
+        class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold">{{ t.deliveredTitle }}</h3>
+            <p class="text-sm text-white/90 mt-1">
+              {{ t.deliveredDescription }}
+            </p>
+          </div>
+          <div class="px-6 py-3 bg-white/20 rounded-lg border border-white/30">
+            <div class="flex items-center gap-2">
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <span class="text-sm font-medium">{{ t.completed }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AWAITING_PAYMENT STATUS -->
+      <div
+        v-if="order.status === 'awaiting_payment'"
+        class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 text-white"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold">{{ t.awaitingPaymentTitle }}</h3>
+            <p class="text-sm text-white/90 mt-1">
+              {{ t.awaitingPaymentDescription }}
+            </p>
+            <p v-if="order.quoted_amount" class="text-xl font-bold mt-2">
+              ${{ order.quoted_amount }} {{ order.currency.toUpperCase() }}
+            </p>
+          </div>
+          <NuxtLink
+            v-if="order.payment_link"
+            :to="order.payment_link"
+            external
+            target="_blank"
+            class="px-6 py-3 bg-white text-orange-600 font-medium rounded-lg hover:bg-gray-50 transition-colors inline-flex items-center gap-2"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+            {{ t.payNow }}
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- PAID STATUS -->
+      <div
+        v-if="order.status === 'paid'"
+        class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold">{{ t.paidTitle }}</h3>
+            <p class="text-sm text-white/90 mt-1">
+              {{ t.paidDescription }}
+            </p>
+            <p v-if="order.quoted_amount" class="text-lg font-medium mt-2">
+              {{ t.amountPaid }}: ${{ order.quoted_amount }}
+              {{ order.currency.toUpperCase() }}
+            </p>
+          </div>
+          <div class="px-6 py-3 bg-white/20 rounded-lg border border-white/30">
+            <div class="flex items-center gap-2">
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <span class="text-sm font-medium">{{ t.paymentComplete }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CANCELLED STATUS -->
+      <div
+        v-if="order.status === 'cancelled'"
+        class="bg-red-50 border border-red-200 rounded-xl p-6"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6 text-red-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-red-900">
+              {{ t.cancelledTitle }}
+            </h3>
+            <p class="text-sm text-red-700 mt-1">
+              {{ t.cancelledDescription }}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -337,9 +692,10 @@
               <!-- Mobile-optimized Item Info -->
               <div class="flex-1 min-w-0">
                 <!-- Product name with conditional link -->
-                <a
+                <NuxtLink
                   v-if="item.product_url"
-                  :href="item.product_url"
+                  :to="item.product_url"
+                  external
                   target="_blank"
                   class="text-sm font-medium text-gray-900 hover:text-primary-600 transition-colors line-clamp-2 inline-flex items-center gap-1"
                 >
@@ -357,7 +713,7 @@
                       d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                     />
                   </svg>
-                </a>
+                </NuxtLink>
                 <p
                   v-else
                   class="text-sm font-medium text-gray-900 line-clamp-2"
@@ -413,9 +769,10 @@
                   </span>
 
                   <!-- Receipt link -->
-                  <a
+                  <NuxtLink
                     v-if="item.proof_of_purchase_url"
-                    :href="item.proof_of_purchase_url"
+                    :to="item.proof_of_purchase_url"
+                    external
                     target="_blank"
                     class="inline-flex items-center gap-1 text-xs sm:text-sm text-primary-600 hover:text-primary-700 font-medium"
                   >
@@ -433,7 +790,7 @@
                       />
                     </svg>
                     {{ t.receipt }}
-                  </a>
+                  </NuxtLink>
                 </div>
               </div>
             </div>
@@ -479,74 +836,111 @@
         </div>
       </div>
 
+      <!-- Shipping Details (DHL & GIA) -->
       <div
-  v-if="order.dhl_waybill_number && order.gia_url"
-  class="bg-white rounded-xl border border-gray-200 overflow-hidden"
->
-  <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
-    <h2 class="text-lg font-semibold text-gray-900">
-      {{ t.shippingDetails }}
-    </h2>
-  </div>
-  
-  <div class="p-4 sm:p-6 space-y-4">
-    <!-- DHL Tracking -->
-    <div v-if="order.dhl_waybill_number">
-      <p class="text-sm text-gray-600 mb-2">{{ t.dhlWaybillNumber }}</p>
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <p class="font-mono text-lg font-medium text-gray-900">
-          {{ order.dhl_waybill_number }}
-        </p>
-        <a
-          :href="`https://www.dhl.com/mx-es/home/tracking.html?tracking-id=${order.dhl_waybill_number.replace(/\s/g, '')}`"
-          target="_blank"
-          class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-          </svg>
-          {{ t.trackWithDHL }}
-        </a>
-      </div>
-    </div>
-    
-    <!-- GIA Document -->
-    <div v-if="order.gia_url" class="pt-4 border-t border-gray-100">
-      <p class="text-sm text-gray-600 mb-3">{{ t.giaDocumentDescription }}</p>
-      <a
-        :href="order.gia_url"
-        target="_blank"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+        v-if="order.dhl_waybill_number || order.gia_url"
+        class="bg-white rounded-xl border border-gray-200 overflow-hidden"
       >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-        </svg>
-        {{ t.downloadGIA }}
-      </a>
-      <p v-if="order.gia_filename" class="text-xs text-gray-500 mt-2">
-        {{ order.gia_filename }}
-      </p>
-    </div>
-    
-    <!-- Delivery Timeline -->
-    <div v-if="order.shipped_at || order.estimated_delivery_date" class="pt-4 border-t border-gray-100">
-      <div class="grid sm:grid-cols-2 gap-3">
-        <div v-if="order.shipped_at">
-          <p class="text-xs text-gray-500 uppercase tracking-wider">{{ t.shippedOn }}</p>
-          <p class="text-sm font-medium text-gray-900 mt-1">
-            {{ formatDate(order.shipped_at) }}
-          </p>
+        <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">
+            {{ t.shippingDetails }}
+          </h2>
         </div>
-        <div v-if="order.estimated_delivery_date">
-          <p class="text-xs text-gray-500 uppercase tracking-wider">{{ t.estimatedDelivery }}</p>
-          <p class="text-sm font-medium text-gray-900 mt-1">
-            {{ formatDate(order.estimated_delivery_date) }}
-          </p>
+
+        <div class="p-4 sm:p-6 space-y-4">
+          <!-- DHL Tracking -->
+          <div v-if="order.dhl_waybill_number">
+            <p class="text-sm text-gray-600 mb-2">{{ t.dhlWaybillNumber }}</p>
+            <div
+              class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+            >
+              <p class="font-mono text-lg font-medium text-gray-900">
+                {{ order.dhl_waybill_number }}
+              </p>
+              <NuxtLink
+                :to="`https://www.dhl.com/mx-es/home/tracking.html?tracking-id=${order.dhl_waybill_number.replace(
+                  /\s/g,
+                  ''
+                )}`"
+                external
+                target="_blank"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+                {{ t.trackWithDHL }}
+              </NuxtLink>
+            </div>
+          </div>
+
+          <!-- GIA Document -->
+          <div v-if="order.gia_url" class="pt-4 border-t border-gray-100">
+            <p class="text-sm text-gray-600 mb-3">
+              {{ t.giaDocumentDescription }}
+            </p>
+            <NuxtLink
+              :to="order.gia_url"
+              external
+              target="_blank"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              {{ t.downloadGIA }}
+            </NuxtLink>
+            <p v-if="order.gia_filename" class="text-xs text-gray-500 mt-2">
+              {{ order.gia_filename }}
+            </p>
+          </div>
+
+          <!-- Delivery Timeline -->
+          <div
+            v-if="order.shipped_at || order.estimated_delivery_date"
+            class="pt-4 border-t border-gray-100"
+          >
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div v-if="order.shipped_at">
+                <p class="text-xs text-gray-500 uppercase tracking-wider">
+                  {{ t.shippedOn }}
+                </p>
+                <p class="text-sm font-medium text-gray-900 mt-1">
+                  {{ formatDate(order.shipped_at) }}
+                </p>
+              </div>
+              <div v-if="order.estimated_delivery_date">
+                <p class="text-xs text-gray-500 uppercase tracking-wider">
+                  {{ t.estimatedDelivery }}
+                </p>
+                <p class="text-sm font-medium text-gray-900 mt-1">
+                  {{ formatDate(order.estimated_delivery_date) }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
 
       <!-- Delivery Address -->
       <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -1010,6 +1404,19 @@ const translations = {
     es: "Reabriendo...",
     en: "Reopening...",
   },
+  // Payment
+  paymentRequired: {
+    es: "Pago pendiente",
+    en: "Payment required",
+  },
+  paymentRequiredText: {
+    es: "Tu paquete ha sido entregado. Por favor completa el pago para finalizar tu orden.",
+    en: "Your package has been delivered. Please complete payment to finalize your order.",
+  },
+  payNow: {
+    es: "Pagar ahora",
+    en: "Pay now",
+  },
   // Items
   noItemsYet: {
     es: "No hay artículos todavía",
@@ -1030,6 +1437,10 @@ const translations = {
   inTransit: {
     es: "En tránsito",
     en: "In transit",
+  },
+  arrived: {
+    es: "Llegó",
+    en: "Arrived",
   },
   // Modals
   confirmCompleteOrder: {
@@ -1114,13 +1525,9 @@ const translations = {
     es: "Paquetes Completos",
     en: "Packages Complete",
   },
-  quote_sent: {
-    es: "Cotización Enviada",
-    en: "Quote Sent",
-  },
-  paid: {
-    es: "Pagado",
-    en: "Paid",
+  processing: {
+    es: "Procesando",
+    en: "Processing",
   },
   shipped: {
     es: "Enviado",
@@ -1129,6 +1536,18 @@ const translations = {
   delivered: {
     es: "Entregado",
     en: "Delivered",
+  },
+  awaiting_payment: {
+    es: "Esperando Pago",
+    en: "Awaiting Payment",
+  },
+  paid: {
+    es: "Pagado",
+    en: "Paid",
+  },
+  cancelled: {
+    es: "Cancelado",
+    en: "Cancelled",
   },
   // Box size translations
   "extra-small": {
@@ -1168,10 +1587,6 @@ const translations = {
     es: "⚠️ Esta acción no se puede deshacer. Todos los datos se perderán permanentemente.",
     en: "⚠️ This action cannot be undone. All data will be permanently lost.",
   },
-  confirmDelete: {
-    es: "Sí, eliminar",
-    en: "Yes, delete",
-  },
   deleting: {
     es: "Eliminando...",
     en: "Deleting...",
@@ -1186,36 +1601,165 @@ const translations = {
   },
   shippingDetails: {
     es: "Información de Envío",
-    en: "Shipping Information"
+    en: "Shipping Information",
   },
   dhlWaybillNumber: {
-    es: "Número de guía DHL",
-    en: "DHL Waybill Number"
+    es: "Número de guía",
+    en: "Waybill Number",
   },
   trackWithDHL: {
     es: "Rastrear con DHL",
-    en: "Track with DHL"
+    en: "Track with DHL",
   },
   giaDocument: {
     es: "Documento GIA",
-    en: "GIA Document"
+    en: "GIA Document",
   },
   giaDocumentDescription: {
     es: "Tu documento GIA (Guía de Importación Aduanal) está disponible para descarga:",
-    en: "Your GIA document (Customs Import Guide) is available for download:"
+    en: "Your GIA document (Customs Import Guide) is available for download:",
   },
   downloadGIA: {
     es: "Descargar GIA",
-    en: "Download GIA"
+    en: "Download GIA",
   },
   shippedOn: {
     es: "Enviado",
-    en: "Shipped"
+    en: "Shipped",
   },
   estimatedDelivery: {
     es: "Entrega estimada",
-    en: "Estimated Delivery"
-  }
+    en: "Estimated Delivery",
+  },
+  manage: {
+    es: "Gestionar",
+    en: "Manage",
+  },
+  manageItems: {
+    es: "Gestionar artículos",
+    en: "Manage items",
+  },
+  edit: {
+    es: "Editar",
+    en: "Edit",
+  },
+  editAddress: {
+    es: "Editar dirección",
+    en: "Edit address",
+  },
+  addFirstItem: {
+    es: "Agregar primer artículo",
+    en: "Add first item",
+  },
+  // Add these to your existing translations object
+  collectingNoItemsTitle: {
+    es: "Gestionar artículos de tu envío",
+    en: "Manage Items in Your Shipment",
+  },
+  collectingNoItemsDescription: {
+    es: "Agrega los productos que nos enviaste y quieres incluir en tu envio.",
+    en: "Add products you've purchased and want to include in the shipment.",
+  },
+  collectingWithItemsTitle: {
+    es: "¡Completa tu orden!",
+    en: "Complete your order!",
+  },
+  collectingWithItemsDescription: {
+    es: "Has agregado productos pero aún no has completado la orden. Complétala para empezar el rastreo.",
+    en: "You've added products but haven't completed the order yet. Complete it to start tracking.",
+  },
+  awaitingPackagesTitle: {
+    es: "Esperando Paquetes",
+    en: "Awaiting Packages",
+  },
+  awaitingPackagesDescription: {
+    es: "Tu orden está completa. Estamos esperando que tus paquetes lleguen a nuestro almacén en San Diego.",
+    en: "Your order is complete. We're waiting for your packages to arrive at our San Diego warehouse.",
+  },
+  packagesCompleteTitle: {
+    es: "¡Todos los paquetes han llegado!",
+    en: "All Packages Have Arrived!",
+  },
+  packagesCompleteDescription: {
+    es: "Excelente noticia, todos tus paquetes están en nuestro almacén. Estamos preparando tu envío.",
+    en: "Great news, all your packages are at our warehouse. We're preparing your shipment.",
+  },
+  processingTitle: {
+    es: "Cruzando la Frontera",
+    en: "Crossing the Border",
+  },
+  processingDescription: {
+    es: "Tu paquete está en tránsito desde USA a México. Una vez que llegue a nuestro centro de distribución, lo enviaremos directamente a tu dirección.",
+    en: "Your package is in transit from the USA to Mexico. Once it arrives at our distribution center, we'll ship it directly to your address.",
+  },
+  shippedTitle: {
+    es: "¡En Camino!",
+    en: "On Its Way!",
+  },
+  shippedDescription: {
+    es: "Tu paquete ha sido enviado y está en camino a tu dirección en México.",
+    en: "Your package has been shipped and is on its way to your address in Mexico.",
+  },
+  deliveredTitle: {
+    es: "¡Entregado!",
+    en: "Delivered!",
+  },
+  deliveredDescription: {
+    es: "Tu paquete ha sido entregado exitosamente. ¡Esperamos que disfrutes tus productos!",
+    en: "Your package has been delivered successfully. We hope you enjoy your products!",
+  },
+  awaitingPaymentTitle: {
+    es: "Pago Pendiente",
+    en: "Payment Required",
+  },
+  awaitingPaymentDescription: {
+    es: "Tu paquete ha sido entregado. Por favor completa el pago para finalizar tu orden.",
+    en: "Your package has been delivered. Please complete payment to finalize your order.",
+  },
+  paidTitle: {
+    es: "¡Pago Completado!",
+    en: "Payment Complete!",
+  },
+  paidDescription: {
+    es: "Gracias por tu pago. Tu orden está completamente finalizada.",
+    en: "Thank you for your payment. Your order is fully complete.",
+  },
+  cancelledTitle: {
+    es: "Orden Cancelada",
+    en: "Order Cancelled",
+  },
+  cancelledDescription: {
+    es: "Esta orden ha sido cancelada. Si tienes preguntas, por favor contáctanos.",
+    en: "This order has been cancelled. If you have questions, please contact us.",
+  },
+  preparing: {
+    es: "Preparando",
+    en: "Preparing",
+  },
+  inProgress: {
+    es: "En Progreso",
+    en: "In Progress",
+  },
+  completed: {
+    es: "Completado",
+    en: "Completed",
+  },
+  paymentComplete: {
+    es: "Pago Completo",
+    en: "Payment Complete",
+  },
+  amountPaid: {
+    es: "Monto Pagado",
+    en: "Amount Paid",
+  },
+  estimatedArrival: {
+    es: "Llegada estimada",
+    en: "Estimated arrival",
+  },
+  trackShipment: {
+    es: "Rastrear Envío",
+    en: "Track Shipment",
+  },
 };
 
 // Get reactive translations
@@ -1231,9 +1775,6 @@ const fetchOrder = async () => {
     // Show banner for certain statuses if not dismissed
     const showBannerStatuses = [
       "awaiting_packages",
-      "packages_complete",
-      "shipped",
-      "delivered",
     ];
 
     if (showBannerStatuses.includes(order.value?.status)) {
@@ -1283,7 +1824,7 @@ const fetchOrder = async () => {
       // Remove the query parameter from URL to prevent re-triggering on refresh
       router.replace({
         path: route.path,
-        query: {}, // Remove all query params, or you can keep others if needed
+        query: {},
       });
     }
   } catch (error) {
@@ -1348,16 +1889,18 @@ const handleReopenOrder = async () => {
   }
 };
 
-// Status helper methods
+// Status helper methods - Using your Tailwind config colors
 const getStatusColor = (status) => {
   const colors = {
     collecting: "bg-primary-100 text-primary-700",
     awaiting_packages: "bg-amber-100 text-amber-700",
     packages_complete: "bg-primary-100 text-primary-700",
-    quote_sent: "bg-orange-100 text-orange-700",
-    paid: "bg-green-100 text-green-700",
+    processing: "bg-primary-100 text-primary-700",
     shipped: "bg-primary-100 text-primary-700",
     delivered: "bg-green-100 text-green-700",
+    awaiting_payment: "bg-orange-100 text-orange-700",
+    paid: "bg-green-100 text-green-700",
+    cancelled: "bg-red-100 text-red-700",
   };
   return colors[status] || "bg-gray-100 text-gray-700";
 };
@@ -1369,20 +1912,12 @@ const getStatusLabel = (status) => {
 const formatDate = (date) => {
   if (!date) return "";
   const d = new Date(date);
-  const locale = user?.preferred_language === 'es' ? 'es-MX' : 'en-US';
+  const locale = user?.preferred_language === "es" ? "es-MX" : "en-US";
   return d.toLocaleDateString(locale, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
-};
-
-// Optional: Add formatFileSize helper if you want to show file size
-const formatFileSize = (bytes) => {
-  if (!bytes) return "";
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
 };
 
 const handleDeleteOrder = async () => {
