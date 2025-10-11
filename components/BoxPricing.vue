@@ -1,6 +1,7 @@
 <template>
   <section
     class="py-12 md:py-16 lg:py-20 bg-gradient-to-b from-white to-gray-50"
+    id="box-pricing"
   >
     <div class="container mx-auto px-4 md:px-8 lg:px-12">
       <!-- Header -->

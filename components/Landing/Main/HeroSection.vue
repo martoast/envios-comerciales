@@ -61,7 +61,7 @@
                   </NuxtLink>
                   
                   <a
-                    href="/shipping-calculator"
+                    href="#box-pricing"
                     class="px-8 py-4 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold rounded-full transition-all duration-300 border border-white/30"
                   >
                     {{ t.ctaCalculate }}
