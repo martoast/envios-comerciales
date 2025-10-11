@@ -166,32 +166,50 @@
               </div>
             </div>
 
-            <!-- Phone Field -->
+            <!-- Phone Field with Validation -->
             <div>
               <label for="phone" class="block text-sm font-semibold text-gray-900 mb-2">
                 {{ t.phoneLabel }}
               </label>
               <div class="relative">
                 <input
-                  v-model="form.phone"
+                  v-model="phoneInput"
                   type="tel"
                   id="phone"
                   autocomplete="tel"
                   :placeholder="t.phonePlaceholder"
                   :class="[
-                    'w-full pl-10 pr-3 py-3 rounded-xl border text-base focus:outline-none focus:ring-2 transition-all duration-200',
-                    errors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
+                    'w-full pl-10 pr-10 py-3 rounded-xl border text-base focus:outline-none focus:ring-2 transition-all duration-200',
+                    phoneValidationState === 'invalid' ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 
+                    phoneValidationState === 'valid' ? 'border-green-300 focus:border-green-500 focus:ring-green-500' : 
+                    'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
                   ]"
                   required
-                  @input="clearFieldError('phone')"
+                  @input="handlePhoneInput"
+                  @blur="validatePhone"
                 >
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                   </svg>
                 </div>
+                <!-- Validation Icon -->
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg v-if="phoneValidationState === 'valid'" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <svg v-else-if="phoneValidationState === 'invalid'" class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
               </div>
-              <p class="mt-1 text-xs text-gray-500">{{ t.phoneHelp }}</p>
+              <p v-if="phoneValidationState === 'invalid' && phoneErrorMessage" class="mt-1 text-sm text-red-600">
+                {{ phoneErrorMessage }}
+              </p>
+              <p v-else-if="phoneValidationState === 'valid' && formattedPhoneDisplay" class="mt-1 text-sm text-green-600">
+                {{ t.phoneFormatted }}: {{ formattedPhoneDisplay }}
+              </p>
+              <p v-else class="mt-1 text-xs text-gray-500">{{ t.phoneHelp }}</p>
             </div>
           </div>
 
@@ -394,7 +412,7 @@ definePageMeta({
 })
 
 // Nuxt imports
-const { $customFetch, $fbq } = useNuxtApp()
+const { $customFetch, $fbq, $phone } = useNuxtApp()
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig();
 
@@ -413,12 +431,18 @@ const loadingUserTypes = ref(false)
 const form = ref({
   name: '',
   email: '',
-  phone: '',
+  phone: '', // This will store E.164 formatted phone
   password: '',
   password_confirmation: '',
   user_type: '',
   registration_source: ''
 })
+
+// Phone-specific state
+const phoneInput = ref('')
+const phoneValidationState = ref('neutral') // 'neutral', 'valid', 'invalid'
+const phoneErrorMessage = ref('')
+const formattedPhoneDisplay = ref('')
 
 // UI state
 const loading = ref(false)
@@ -514,12 +538,20 @@ const translations = {
     en: 'Phone number'
   },
   phonePlaceholder: {
-    es: '+52 55 1234 5678',
-    en: '+1 555 123 4567'
+    es: '+52 664 123 4567 o 6641234567',
+    en: '+1 555 123 4567 or 5551234567'
   },
   phoneHelp: {
-    es: 'Incluye código de país',
-    en: 'Include country code'
+    es: 'Ingresa tu número con código de país (+52 para México)',
+    en: 'Enter your number with country code (+1 for US)'
+  },
+  phoneFormatted: {
+    es: 'Formato',
+    en: 'Format'
+  },
+  phoneInvalid: {
+    es: 'Número de teléfono inválido. Incluye el código de país (ej: +52 664 123 4567)',
+    en: 'Invalid phone number. Include country code (e.g., +1 555 123 4567)'
   },
   passwordLabel: {
     es: 'Contraseña',
@@ -669,6 +701,74 @@ const translatedUserTypes = computed(() => {
   })
 })
 
+// Phone validation and formatting
+const validatePhone = () => {
+  if (!phoneInput.value.trim()) {
+    phoneValidationState.value = 'neutral'
+    phoneErrorMessage.value = ''
+    formattedPhoneDisplay.value = ''
+    form.value.phone = ''
+    return false
+  }
+
+  try {
+    let phoneToValidate = phoneInput.value.trim()
+    
+    // If phone doesn't start with +, try adding default country code (MX)
+    if (!phoneToValidate.startsWith('+')) {
+      // Try parsing with MX as default country
+      if ($phone.isValid(phoneToValidate, 'MX')) {
+        const phoneNumber = $phone.parse(phoneToValidate, 'MX')
+        form.value.phone = phoneNumber.format('E.164')
+        formattedPhoneDisplay.value = phoneNumber.formatInternational()
+        phoneValidationState.value = 'valid'
+        phoneErrorMessage.value = ''
+        return true
+      }
+      
+      // If still invalid, try adding + and parsing again
+      phoneToValidate = '+' + phoneToValidate.replace(/\D/g, '')
+    }
+    
+    // Validate the phone number
+    if ($phone.isValid(phoneToValidate)) {
+      const phoneNumber = $phone.parse(phoneToValidate)
+      form.value.phone = phoneNumber.format('E.164')
+      formattedPhoneDisplay.value = phoneNumber.formatInternational()
+      phoneValidationState.value = 'valid'
+      phoneErrorMessage.value = ''
+      return true
+    } else {
+      phoneValidationState.value = 'invalid'
+      phoneErrorMessage.value = t.value.phoneInvalid
+      formattedPhoneDisplay.value = ''
+      form.value.phone = ''
+      return false
+    }
+  } catch (error) {
+    phoneValidationState.value = 'invalid'
+    phoneErrorMessage.value = t.value.phoneInvalid
+    formattedPhoneDisplay.value = ''
+    form.value.phone = ''
+    return false
+  }
+}
+
+const handlePhoneInput = () => {
+  // Clear validation state while typing
+  if (phoneValidationState.value !== 'neutral') {
+    phoneValidationState.value = 'neutral'
+  }
+  clearFieldError('phone')
+  
+  // Validate after a short delay (debounce effect)
+  if (phoneInput.value.trim().length > 3) {
+    setTimeout(() => {
+      validatePhone()
+    }, 500)
+  }
+}
+
 // Step validation
 const canProceed = computed(() => {
   switch (currentStep.value) {
@@ -677,6 +777,7 @@ const canProceed = computed(() => {
     case 2:
       return form.value.name.trim() !== '' && 
              form.value.email.trim() !== '' && 
+             phoneValidationState.value === 'valid' &&
              form.value.phone.trim() !== ''
     case 3:
       return form.value.password !== '' &&
@@ -747,6 +848,15 @@ const goToPreviousStep = () => {
 }
 
 const goToNextStep = async () => {
+  // Final phone validation before moving to step 3
+  if (currentStep.value === 2) {
+    if (!validatePhone()) {
+      phoneValidationState.value = 'invalid'
+      phoneErrorMessage.value = t.value.phoneInvalid
+      return
+    }
+  }
+  
   if (currentStep.value < totalSteps.value) {
     currentStep.value++
     clearErrors()
@@ -774,6 +884,13 @@ const handleNext = async () => {
 }
 
 const handleRegister = async () => {
+  // Final phone validation before submit
+  if (!validatePhone()) {
+    phoneValidationState.value = 'invalid'
+    phoneErrorMessage.value = t.value.phoneInvalid
+    return
+  }
+
   loading.value = true
   clearErrors()
   
@@ -783,7 +900,7 @@ const handleRegister = async () => {
       body: {
         name: form.value.name,
         email: form.value.email,
-        phone: form.value.phone,
+        phone: form.value.phone, // Already in E.164 format
         password: form.value.password,
         password_confirmation: form.value.password_confirmation,
         user_type: form.value.user_type,

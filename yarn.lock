@@ -4304,6 +4304,11 @@ lazystream@^1.0.0:
   dependencies:
     readable-stream "^2.0.5"
 
+libphonenumber-js@^1.12.24:
+  version "1.12.24"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.24.tgz#deb04b96084a74b4d68d8c2cde816f15e387cfdb"
+  integrity sha512-l5IlyL9AONj4voSd7q9xkuQOL4u8Ty44puTic7J88CmdXkxfGsRfoVLXHCxppwehgpb/Chdb80FFehHqjN3ItQ==
+
 lightningcss-darwin-arm64@1.30.1:
   version "1.30.1"
   resolved "https://registry.yarnpkg.com/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.30.1.tgz#3d47ce5e221b9567c703950edf2529ca4a3700ae"

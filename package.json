@@ -20,6 +20,7 @@
     "@tailwindcss/postcss": "^4.0.7",
     "@tailwindcss/typography": "^0.5.16",
     "canvas-confetti": "^1.9.3",
+    "libphonenumber-js": "^1.12.24",
     "mapbox-gl": "^3.14.0",
     "nuxt": "^3.17.6",
     "nuxt-meta-pixel": "^2.0.2",
