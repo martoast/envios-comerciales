@@ -11,6 +11,8 @@
     
     <!-- How It Works Section -->
     <MainHowItWorksSection />
+
+    <BoxPricing/>
     
 
     <CTACarouselBanner/>
