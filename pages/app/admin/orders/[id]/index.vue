@@ -260,7 +260,7 @@
                     <p class="text-sm font-medium text-gray-900">{{ item.product_name }}</p>
                     <p class="text-xs text-gray-500 mt-1">
                       {{ t.quantity }}: {{ item.quantity }} | 
-                      {{ t.weight }}: {{ item.weight || 0 }} kg
+                      <span v-if="item.weight">{{ t.weight }}: {{ item.weight || 0 }} kg</span>
                       <template v-if="item.declared_value">
                         | {{ t.value }}: ${{ item.declared_value }}
                       </template>
