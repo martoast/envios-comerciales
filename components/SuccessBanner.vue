@@ -142,8 +142,8 @@ const translations = {
   },
   // Awaiting packages status
   awaitingTitle: {
-    es: '¡Orden Completada! 🎉',
-    en: 'Order Completed! 🎉'
+    es: '¡Orden Creada! 🎉',
+    en: 'Order Created! 🎉'
   },
   awaitingMessage: {
     es: 'Perfecto! Ya registraste todos tus productos. Cuando lleguen a nuestro almacén en USA, los procesaremos y te enviaremos una cotización para el envío a tu dirección en México.',
