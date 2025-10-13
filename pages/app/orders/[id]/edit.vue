@@ -1,4 +1,3 @@
-<!-- pages/app/orders/[id]/edit.vue -->
 <template>
   <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
     <!-- Header -->
@@ -90,29 +89,8 @@
 
       <!-- Edit Form -->
       <form v-if="order" @submit.prevent="handleSubmit" class="space-y-6">
-        <!-- Box Size Section -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn" :class="{ 'opacity-60': !canEdit }" style="animation-delay: 0s">
-          <h2 class="text-xl font-bold text-gray-900 mb-6">{{ t.boxSizeTitle }}</h2>
-          
-          <BoxSelector
-            v-model="form.box_stripe_product_id"
-            v-model:selected-box-data="form.selectedBoxData"
-            :disabled="!canEdit"
-          />
-
-          <!-- Current Box Display (if already has one) -->
-          <div v-if="order.box_size && !form.selectedBoxData" class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div class="flex items-center gap-3">
-              <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-              </svg>
-              <div>
-                <p class="text-sm font-medium text-blue-900">{{ t.currentBoxSize }}</p>
-                <p class="text-sm text-blue-700">{{ formatBoxSize(order.box_size) }} - ${{ order.box_price }} MXN</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Order Info Banner -->
+        
 
         <!-- Delivery Address Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn" :class="{ 'opacity-60': !canEdit }" style="animation-delay: 0.1s">
@@ -300,7 +278,6 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import BoxSelector from '~/components/BoxSelector.vue'
 
 // Define page meta
 definePageMeta({
@@ -314,7 +291,7 @@ const route = useRoute()
 const router = useRouter()
 
 // Use the language composable
-const { t: createTranslations, language } = useLanguage()
+const { t: createTranslations } = useLanguage()
 
 // State
 const orderId = route.params.id
@@ -326,8 +303,6 @@ const originalData = ref(null)
 
 // Form data
 const form = ref({
-  box_stripe_product_id: null,
-  selectedBoxData: null,
   delivery_address: {
     street: '',
     exterior_number: '',
@@ -356,13 +331,13 @@ const translations = {
     es: 'Editar Orden',
     en: 'Edit Order'
   },
-  boxSizeTitle: {
-    es: 'Tamaño de Caja',
-    en: 'Box Size'
+  editingOrder: {
+    es: 'Editando Orden',
+    en: 'Editing Order'
   },
-  currentBoxSize: {
-    es: 'Tamaño de caja actual',
-    en: 'Current box size'
+  orderNumber: {
+    es: 'Número de orden',
+    en: 'Order number'
   },
   deliveryAddressTitle: {
     es: 'Dirección de Entrega',
@@ -473,8 +448,8 @@ const translations = {
     en: 'Editing not available'
   },
   cannotEditMessage: {
-    es: 'Esta orden ya no se puede editar porque ha progresado más allá de la etapa de recolección. Los cambios solo están permitidos mientras la orden está en estado "Agregando Artículos".',
-    en: 'This order can no longer be edited because it has progressed beyond the collecting stage. Changes are only allowed while the order is in "Adding Items" status.'
+    es: 'Esta orden ya no se puede editar porque ha progresado más allá de la etapa de recolección. Los cambios de dirección solo están permitidos mientras la orden está en estado "Agregando Artículos".',
+    en: 'This order can no longer be edited because it has progressed beyond the collecting stage. Address changes are only allowed while the order is in "Adding Items" status.'
   },
   currentStatus: {
     es: 'Estado actual',
@@ -491,10 +466,6 @@ const translations = {
   packagesComplete: {
     es: 'Paquetes Completos',
     en: 'Packages Complete'
-  },
-  processing: {
-    es: 'Procesando',
-    en: 'Processing'
   },
   shipped: {
     es: 'Enviado',
@@ -523,24 +494,11 @@ const getStatusLabel = (status) => {
     'collecting': t.value.collecting || 'Adding Items',
     'awaiting_packages': t.value.awaitingPackages || 'Awaiting Packages',
     'packages_complete': t.value.packagesComplete || 'Packages Complete',
-    'processing': t.value.processing || 'Processing',
     'shipped': t.value.shipped || 'Shipped',
     'delivered': t.value.delivered || 'Delivered'
   }
   return statusLabels[status] || status
 }
-
-const formatBoxSize = (size) => {
-  const sizeMap = {
-    'extra-small': language.value === 'es' ? 'Extra Pequeña' : 'Extra Small',
-    'small': language.value === 'es' ? 'Pequeña' : 'Small',
-    'medium': language.value === 'es' ? 'Mediana' : 'Medium',
-    'large': language.value === 'es' ? 'Grande' : 'Large',
-    'extra-large': language.value === 'es' ? 'Extra Grande' : 'Extra Large'
-  }
-  return sizeMap[size] || size
-}
-
 // Methods
 const fetchOrder = async () => {
   loading.value = true
@@ -548,10 +506,15 @@ const fetchOrder = async () => {
     const response = await $customFetch(`/orders/${orderId}`)
     order.value = response.data
     
+    // Check if order can be edited
+    if (order.value.status !== 'collecting') {
+      $toast.error(t.value.orderNotEditable)
+      await router.push(`/app/orders/${orderId}`)
+      return
+    }
+    
     // Populate form with current data
     form.value = {
-      box_stripe_product_id: order.value.stripe_product_id || null,
-      selectedBoxData: null,
       delivery_address: { 
         ...order.value.delivery_address,
         interior_number: order.value.delivery_address.interior_number || ''
@@ -578,20 +541,9 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
-    const updateData = {
-      delivery_address: form.value.delivery_address,
-      is_rural: form.value.is_rural
-    }
-
-    // Only include box data if it changed
-    if (form.value.selectedBoxData) {
-      updateData.box_size = form.value.selectedBoxData.box_type
-      updateData.box_price = form.value.selectedBoxData.price
-    }
-
     const response = await $customFetch(`/orders/${orderId}`, {
       method: 'PUT',
-      body: updateData
+      body: form.value
     })
 
     if (response.success) {
