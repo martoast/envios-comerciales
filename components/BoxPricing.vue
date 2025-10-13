@@ -19,6 +19,11 @@
         <p class="text-lg md:text-xl text-gray-600">
           {{ t.pricingSubtitle }}
         </p>
+        
+        <!-- Small deposit notice -->
+        <p class="text-sm text-gray-500 mt-4">
+          {{ t.depositNotice }}
+        </p>
       </div>
 
       <!-- Pricing Table -->
@@ -346,6 +351,10 @@ const translations = {
   pricingSubtitle: {
     es: "Compra en múltiples tiendas de EE.UU. Nosotros lo empacamos todo en una caja y lo enviamos a México. Precio fijo, sin sorpresas.",
     en: "Shop from multiple US stores. We pack everything into one box and ship it to Mexico. Fixed price, no surprises.",
+  },
+  depositNotice: {
+    es: "*Se requiere un anticipo de $500 MXN para procesar su envío, el cual será descontado de su costo final.",
+    en: "*A $500 MXN deposit is required to process your shipment, which will be deducted from your final cost.",
   },
   consolidationTitle: {
     es: "💡 Ahorra consolidando tus compras",
