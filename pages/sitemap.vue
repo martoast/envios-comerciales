@@ -126,7 +126,7 @@
               </div>
               <ul class="space-y-2 ml-9">
                 <li>
-                  <NuxtLink to="/terms" class="text-gray-600 hover:text-primary-600 transition-colors flex items-center gap-2">
+                  <NuxtLink to="/terms-of-service" class="text-gray-600 hover:text-primary-600 transition-colors flex items-center gap-2">
                     <ChevronRightIcon class="w-4 h-4" />
                     {{ t.termsOfService }}
                   </NuxtLink>

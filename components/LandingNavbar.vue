@@ -27,90 +27,20 @@
             {{ t.home }}
           </NuxtLink>
 
-          <!-- Services Dropdown -->
-          <!-- <div 
-            class="relative"
-            @mouseenter="showServicesDropdown = true"
-            @mouseleave="showServicesDropdown = false"
+          <NuxtLink 
+            to="/shopping"
+            :class="[
+              isActiveRoute('/shopping')
+                ? 'text-primary-600 font-semibold'
+                : 'text-gray-700 hover:text-primary-600',
+              'transition-colors duration-200 flex items-center gap-1'
+            ]"
           >
-            <button
-              class="flex items-center gap-1 text-gray-700 hover:text-primary-600 transition-colors duration-200"
-              :class="{ 'text-primary-600 font-semibold': isServicePage }"
-            >
-              {{ t.services }}
-              <svg 
-                class="w-4 h-4 transition-transform duration-200"
-                :class="{ 'rotate-180': showServicesDropdown }"
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            
-            <Transition
-              enter-active-class="transition ease-out duration-200"
-              enter-from-class="transform opacity-0 scale-95"
-              enter-to-class="transform opacity-100 scale-100"
-              leave-active-class="transition ease-in duration-150"
-              leave-from-class="transform opacity-100 scale-100"
-              leave-to-class="transform opacity-0 scale-95"
-            >
-              <div 
-                v-if="showServicesDropdown"
-                class="absolute left-0 mt-2 w-64 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5"
-              >
-                <div class="py-2">
-                  <NuxtLink
-                    to="/expats"
-                    class="group flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200"
-                    :class="{ 'bg-primary-50 text-primary-600': isActiveRoute('/expats') }"
-                  >
-                    <div class="mr-3 p-2 bg-gray-100 rounded-lg group-hover:bg-primary-100">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-medium">{{ t.forExpats }}</p>
-                      <p class="text-xs text-gray-500">{{ t.forExpatsDesc }}</p>
-                    </div>
-                  </NuxtLink>
-                  
-                  <NuxtLink
-                    to="/business"
-                    class="group flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200"
-                  >
-                    <div class="mr-3 p-2 bg-gray-100 rounded-lg group-hover:bg-primary-100">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-medium">{{ t.forBusiness }}</p>
-                      <p class="text-xs text-gray-500">{{ t.forBusinessDesc }}</p>
-                    </div>
-                  </NuxtLink>
-                  
-                  <NuxtLink
-                    to="/trendy"
-                    class="group flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200"
-                  >
-                    <div class="mr-3 p-2 bg-gray-100 rounded-lg group-hover:bg-primary-100">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-medium">{{ t.forTrendy }}</p>
-                      <p class="text-xs text-gray-500">{{ t.forTrendyDesc }}</p>
-                    </div>
-                  </NuxtLink>
-                </div>
-              </div>
-            </Transition>
-          </div> -->
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            {{ t.shopping }}
+          </NuxtLink>
 
           <NuxtLink 
             to="/how-it-works"
@@ -283,7 +213,21 @@
             {{ t.home }}
           </NuxtLink>
 
-          
+          <NuxtLink
+            to="/shopping"
+            @click="mobileMenuOpen = false"
+            class="flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium"
+            :class="[
+              isActiveRoute('/shopping')
+                ? 'bg-primary-50 text-primary-600'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+            ]"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            {{ t.shopping }}
+          </NuxtLink>
 
           <NuxtLink
             to="/how-it-works"
@@ -397,6 +341,10 @@ const translations = {
   home: {
     es: 'Inicio',
     en: 'Home'
+  },
+  shopping: {
+    es: 'Ofertas',
+    en: 'Offers'
   },
   services: {
     es: '¿Para quién?',

@@ -1,3 +1,4 @@
+<!-- pages/register.vue -->
 <template>
   <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20 px-4 py-6">
     <div class="max-w-sm mx-auto">
@@ -65,45 +66,74 @@
       <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
         <!-- Step Content -->
         <div class="p-6">
-          <!-- Step 1: User Type Selection -->
-          <div v-if="currentStep === 1" class="space-y-4">
-            <div class="grid gap-3">
+          <!-- Step 1: User Type Selection - COMPACT ALPHABETICAL WITH LOADING -->
+          <div v-if="currentStep === 1">
+            <!-- Loading State -->
+            <div v-if="loadingUserTypes" class="space-y-2">
+              <div v-for="i in 3" :key="i" class="animate-pulse">
+                <div class="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-gray-200 bg-gray-50">
+                  <div class="w-5 h-5 rounded-full bg-gray-300"></div>
+                  <div class="w-9 h-9 rounded-lg bg-gray-300"></div>
+                  <div class="flex-1 space-y-2">
+                    <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                    <div class="h-3 bg-gray-200 rounded w-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actual User Type Options -->
+            <div v-else class="space-y-2">
               <button
-                v-for="userType in translatedUserTypes"
+                v-for="userType in sortedTranslatedUserTypes"
                 :key="userType.value"
                 type="button"
                 @click="selectUserType(userType.value)"
                 :class="[
-                  'relative flex items-center p-4 rounded-xl border-2 transition-all duration-200 text-left',
+                  'w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 text-left',
                   form.user_type === userType.value 
-                    ? 'border-primary-500 bg-primary-50/50 shadow-md transform scale-[1.02]' 
+                    ? 'border-primary-500 bg-primary-50/50 shadow-md' 
                     : 'border-gray-200 hover:border-gray-300 bg-white hover:shadow-sm'
                 ]"
               >
-                <div class="flex items-center h-5">
+                <!-- Radio Circle -->
+                <div class="flex-shrink-0">
                   <div :class="[
-                    'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all',
+                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all',
                     form.user_type === userType.value 
                       ? 'border-primary-500 bg-primary-500' 
                       : 'border-gray-300'
                   ]">
-                    <div v-if="form.user_type === userType.value" class="w-2 h-2 bg-white rounded-full"></div>
+                    <div v-if="form.user_type === userType.value" class="w-2.5 h-2.5 bg-white rounded-full"></div>
                   </div>
                 </div>
-                <div class="ml-3 flex-1">
-                  <div class="flex items-center gap-2 mb-1">
-                    <svg v-if="userType.icon === 'globe'" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <svg v-else-if="userType.icon === 'briefcase'" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                    <svg v-else-if="userType.icon === 'shopping-cart'" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                    <span class="font-semibold text-gray-900 text-sm">{{ userType.label }}</span>
-                  </div>
-                  <p class="text-xs text-gray-600">{{ userType.description }}</p>
+
+                <!-- Icon -->
+                <div :class="[
+                  'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
+                  form.user_type === userType.value ? 'bg-primary-100' : 'bg-gray-100'
+                ]">
+                  <svg v-if="userType.icon === 'globe'" class="w-5 h-5" :class="form.user_type === userType.value ? 'text-primary-600' : 'text-gray-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <svg v-else-if="userType.icon === 'briefcase'" class="w-5 h-5" :class="form.user_type === userType.value ? 'text-primary-600' : 'text-gray-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
+                  <svg v-else-if="userType.icon === 'shopping-cart'" class="w-5 h-5" :class="form.user_type === userType.value ? 'text-primary-600' : 'text-gray-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                  </svg>
+                </div>
+
+                <!-- Text Content -->
+                <div class="flex-1 min-w-0">
+                  <div :class="[
+                    'text-sm font-semibold',
+                    form.user_type === userType.value ? 'text-primary-900' : 'text-gray-900'
+                  ]">{{ userType.label }}</div>
+                  <div :class="[
+                    'text-xs mt-0.5 truncate',
+                    form.user_type === userType.value ? 'text-primary-700' : 'text-gray-500'
+                  ]">{{ userType.description }}</div>
                 </div>
               </button>
             </div>
@@ -166,54 +196,20 @@
               </div>
             </div>
 
-            <!-- Phone Field with Validation -->
-            <div>
-              <label for="phone" class="block text-sm font-semibold text-gray-900 mb-2">
-                {{ t.phoneLabel }}
-              </label>
-              <div class="relative">
-                <input
-                  v-model="phoneInput"
-                  type="tel"
-                  id="phone"
-                  autocomplete="tel"
-                  :placeholder="t.phonePlaceholder"
-                  :class="[
-                    'w-full pl-10 pr-10 py-3 rounded-xl border text-base focus:outline-none focus:ring-2 transition-all duration-200',
-                    phoneValidationState === 'invalid' ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 
-                    phoneValidationState === 'valid' ? 'border-green-300 focus:border-green-500 focus:ring-green-500' : 
-                    'border-gray-200 focus:border-primary-500 focus:ring-primary-500'
-                  ]"
-                  required
-                  @input="handlePhoneInput"
-                  @blur="validatePhone"
-                >
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                  </svg>
-                </div>
-                <!-- Validation Icon -->
-                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <svg v-if="phoneValidationState === 'valid'" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                  </svg>
-                  <svg v-else-if="phoneValidationState === 'invalid'" class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                  </svg>
-                </div>
-              </div>
-              <p v-if="phoneValidationState === 'invalid' && phoneErrorMessage" class="mt-1 text-sm text-red-600">
-                {{ phoneErrorMessage }}
-              </p>
-              <p v-else-if="phoneValidationState === 'valid' && formattedPhoneDisplay" class="mt-1 text-sm text-green-600">
-                {{ t.phoneFormatted }}: {{ formattedPhoneDisplay }}
-              </p>
-              <p v-else class="mt-1 text-xs text-gray-500">{{ t.phoneHelp }}</p>
-            </div>
+            <!-- Phone Field with Validation Component -->
+            <PhoneValidationInput
+              ref="phoneInputRef"
+              v-model="form.phone"
+              :label="t.phoneLabel"
+              :placeholder="t.phonePlaceholder"
+              :help-text="t.phoneHelp"
+              input-id="register-phone"
+              :required="true"
+              @validation-change="handlePhoneValidation"
+            />
           </div>
 
-          <!-- Step 3: Password -->
+          <!-- Step 3: Password & Terms -->
           <div v-if="currentStep === 3" class="space-y-4">
             <!-- Password Field -->
             <div>
@@ -311,6 +307,42 @@
                 {{ t.passwordMismatch }}
               </p>
             </div>
+
+            <!-- Terms of Service Checkbox -->
+            <div class="pt-2">
+              <label class="flex items-start cursor-pointer group">
+                <div class="flex items-center h-5 mt-0.5">
+                  <input
+                    v-model="form.agree_to_terms"
+                    type="checkbox"
+                    id="agree_to_terms"
+                    :class="[
+                      'w-4 h-4 rounded border-2 transition-all duration-200 cursor-pointer',
+                      errors.agree_to_terms 
+                        ? 'border-red-300 text-red-500 focus:ring-red-500' 
+                        : 'border-gray-300 text-primary-500 focus:ring-primary-500'
+                    ]"
+                    @change="clearFieldError('agree_to_terms')"
+                  >
+                </div>
+                <div class="ml-3 text-sm">
+                  <span class="text-gray-700">
+                    {{ t.agreeToTermsPrefix }}
+                    <NuxtLink 
+                      to="/terms-of-service" 
+                      target="_blank"
+                      class="text-primary-500 font-semibold hover:text-primary-600 underline transition-colors"
+                    >
+                      {{ t.termsOfService }}
+                    </NuxtLink>
+                    <span class="text-red-500 ml-1">*</span>
+                  </span>
+                </div>
+              </label>
+              <p v-if="errors.agree_to_terms" class="mt-1 text-xs text-red-600 ml-7">
+                {{ errors.agree_to_terms[0] }}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -368,7 +400,8 @@
         <!-- Google Sign Up Button -->
         <button
           @click="handleGoogleSignUp"
-          class="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
+          :disabled="loadingUserTypes"
+          class="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -412,9 +445,9 @@ definePageMeta({
 })
 
 // Nuxt imports
-const { $customFetch, $fbq, $phone } = useNuxtApp()
+const { $customFetch, $fbq } = useNuxtApp()
 const route = useRoute()
-const runtimeConfig = useRuntimeConfig();
+const runtimeConfig = useRuntimeConfig()
 
 // Use the language composable
 const { t: createTranslations, language } = useLanguage()
@@ -431,18 +464,21 @@ const loadingUserTypes = ref(false)
 const form = ref({
   name: '',
   email: '',
-  phone: '', // This will store E.164 formatted phone
+  phone: '', // This will be E.164 format from component
   password: '',
   password_confirmation: '',
   user_type: '',
-  registration_source: ''
+  registration_source: '',
+  agree_to_terms: false
 })
 
-// Phone-specific state
-const phoneInput = ref('')
-const phoneValidationState = ref('neutral') // 'neutral', 'valid', 'invalid'
-const phoneErrorMessage = ref('')
-const formattedPhoneDisplay = ref('')
+// Phone validation state from component
+const phoneInputRef = ref(null)
+const phoneValidation = ref({
+  isValid: false,
+  e164Phone: '',
+  formattedPhone: ''
+})
 
 // UI state
 const loading = ref(false)
@@ -538,20 +574,12 @@ const translations = {
     en: 'Phone number'
   },
   phonePlaceholder: {
-    es: '+52 664 123 4567 o 6641234567',
-    en: '+1 555 123 4567 or 5551234567'
+    es: '+52 664 123 4567 o +1 619 888 5248',
+    en: '+1 619 888 5248 or +52 664 123 4567'
   },
   phoneHelp: {
-    es: 'Ingresa tu número con código de país (+52 para México)',
-    en: 'Enter your number with country code (+1 for US)'
-  },
-  phoneFormatted: {
-    es: 'Formato',
-    en: 'Format'
-  },
-  phoneInvalid: {
-    es: 'Número de teléfono inválido. Incluye el código de país (ej: +52 664 123 4567)',
-    en: 'Invalid phone number. Include country code (e.g., +1 555 123 4567)'
+    es: 'Incluye el código de país con +. Ejemplos: +52 para México, +1 para USA',
+    en: 'Include country code with +. Examples: +1 for USA, +52 for Mexico'
   },
   passwordLabel: {
     es: 'Contraseña',
@@ -568,6 +596,16 @@ const translations = {
   passwordConfirmPlaceholder: {
     es: 'Repite tu contraseña',
     en: 'Repeat your password'
+  },
+  
+  // Terms of Service
+  agreeToTermsPrefix: {
+    es: 'Acepto los',
+    en: 'I agree to the'
+  },
+  termsOfService: {
+    es: 'Términos de Servicio',
+    en: 'Terms of Service'
   },
   
   // Buttons
@@ -644,6 +682,10 @@ const translations = {
   userTypeRequired: {
     es: 'Selecciona una opción',
     en: 'Please select an option'
+  },
+  termsRequired: {
+    es: 'Debes aceptar los términos de servicio',
+    en: 'You must accept the terms of service'
   }
 }
 
@@ -701,89 +743,33 @@ const translatedUserTypes = computed(() => {
   })
 })
 
-// Phone validation and formatting
-const validatePhone = () => {
-  if (!phoneInput.value.trim()) {
-    phoneValidationState.value = 'neutral'
-    phoneErrorMessage.value = ''
-    formattedPhoneDisplay.value = ''
-    form.value.phone = ''
-    return false
-  }
+// 🔤 SORTED ALPHABETICALLY!
+const sortedTranslatedUserTypes = computed(() => {
+  return translatedUserTypes.value.sort((a, b) => a.label.localeCompare(b.label))
+})
 
-  try {
-    let phoneToValidate = phoneInput.value.trim()
-    
-    // If phone doesn't start with +, try adding default country code (MX)
-    if (!phoneToValidate.startsWith('+')) {
-      // Try parsing with MX as default country
-      if ($phone.isValid(phoneToValidate, 'MX')) {
-        const phoneNumber = $phone.parse(phoneToValidate, 'MX')
-        form.value.phone = phoneNumber.format('E.164')
-        formattedPhoneDisplay.value = phoneNumber.formatInternational()
-        phoneValidationState.value = 'valid'
-        phoneErrorMessage.value = ''
-        return true
-      }
-      
-      // If still invalid, try adding + and parsing again
-      phoneToValidate = '+' + phoneToValidate.replace(/\D/g, '')
-    }
-    
-    // Validate the phone number
-    if ($phone.isValid(phoneToValidate)) {
-      const phoneNumber = $phone.parse(phoneToValidate)
-      form.value.phone = phoneNumber.format('E.164')
-      formattedPhoneDisplay.value = phoneNumber.formatInternational()
-      phoneValidationState.value = 'valid'
-      phoneErrorMessage.value = ''
-      return true
-    } else {
-      phoneValidationState.value = 'invalid'
-      phoneErrorMessage.value = t.value.phoneInvalid
-      formattedPhoneDisplay.value = ''
-      form.value.phone = ''
-      return false
-    }
-  } catch (error) {
-    phoneValidationState.value = 'invalid'
-    phoneErrorMessage.value = t.value.phoneInvalid
-    formattedPhoneDisplay.value = ''
-    form.value.phone = ''
-    return false
-  }
-}
-
-const handlePhoneInput = () => {
-  // Clear validation state while typing
-  if (phoneValidationState.value !== 'neutral') {
-    phoneValidationState.value = 'neutral'
-  }
-  clearFieldError('phone')
-  
-  // Validate after a short delay (debounce effect)
-  if (phoneInput.value.trim().length > 3) {
-    setTimeout(() => {
-      validatePhone()
-    }, 500)
-  }
+// Handle phone validation changes from component
+const handlePhoneValidation = (validation) => {
+  phoneValidation.value = validation
+  // Update form.phone with E.164 format
+  form.value.phone = validation.e164Phone
 }
 
 // Step validation
 const canProceed = computed(() => {
   switch (currentStep.value) {
     case 1:
-      return form.value.user_type !== ''
+      return form.value.user_type !== '' && !loadingUserTypes.value
     case 2:
       return form.value.name.trim() !== '' && 
              form.value.email.trim() !== '' && 
-             phoneValidationState.value === 'valid' &&
-             form.value.phone.trim() !== ''
+             phoneValidation.value.isValid
     case 3:
       return form.value.password !== '' &&
              form.value.password_confirmation !== '' &&
              form.value.password === form.value.password_confirmation &&
-             passwordStrength.value >= 2
+             passwordStrength.value >= 2 &&
+             form.value.agree_to_terms === true
     default:
       return false
   }
@@ -850,9 +836,7 @@ const goToPreviousStep = () => {
 const goToNextStep = async () => {
   // Final phone validation before moving to step 3
   if (currentStep.value === 2) {
-    if (!validatePhone()) {
-      phoneValidationState.value = 'invalid'
-      phoneErrorMessage.value = t.value.phoneInvalid
+    if (phoneInputRef.value && !phoneInputRef.value.validate()) {
       return
     }
   }
@@ -885,9 +869,17 @@ const handleNext = async () => {
 
 const handleRegister = async () => {
   // Final phone validation before submit
-  if (!validatePhone()) {
-    phoneValidationState.value = 'invalid'
-    phoneErrorMessage.value = t.value.phoneInvalid
+  if (phoneInputRef.value && !phoneInputRef.value.validate()) {
+    return
+  }
+
+  if (!phoneValidation.value.isValid) {
+    return
+  }
+
+  // Validate terms checkbox
+  if (!form.value.agree_to_terms) {
+    errors.value.agree_to_terms = [t.value.termsRequired]
     return
   }
 
@@ -900,7 +892,7 @@ const handleRegister = async () => {
       body: {
         name: form.value.name,
         email: form.value.email,
-        phone: form.value.phone, // Already in E.164 format
+        phone: phoneValidation.value.e164Phone, // Use E.164 from component
         password: form.value.password,
         password_confirmation: form.value.password_confirmation,
         user_type: form.value.user_type,

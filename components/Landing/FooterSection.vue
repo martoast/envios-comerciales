@@ -98,7 +98,7 @@
       <!-- Legal Links Section -->
       <div class="text-center pt-6 sm:pt-8 border-t border-white/10">
         <div class="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 mb-4">
-          <NuxtLink to="/terms" class="text-white/70 no-underline hover:text-white transition-colors text-sm sm:text-base">
+          <NuxtLink to="/terms-of-service" class="text-white/70 no-underline hover:text-white transition-colors text-sm sm:text-base">
             {{ t.termsLink }}
           </NuxtLink>
           <span class="hidden sm:inline text-white/30">|</span>
