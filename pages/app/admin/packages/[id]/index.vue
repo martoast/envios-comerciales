@@ -1,3 +1,4 @@
+<!-- pages/app/admin/packages/[id]/index.vue -->
 <template>
   <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
     <!-- Header -->
