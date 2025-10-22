@@ -436,8 +436,8 @@ const translations = {
     en: "Estimated delivery times are 3-7 business days from when your shipment is processed",
   },
   shippingItem2: {
-    es: "Los envíos se realizan a través de DHL con número de rastreo",
-    en: "Shipments are made via DHL with tracking number",
+    es: "Los envíos se realizan a través de Estafeta con número de rastreo",
+    en: "Shipments are made via Estafeta with tracking number",
   },
   shippingItem3: {
     es: "Boxly no es responsable de retrasos causados por aduanas, condiciones climáticas o fuerza mayor",

@@ -419,11 +419,7 @@
             </p>
           </div>
           <NuxtLink
-            v-if="order.dhl_waybill_number"
-            :to="`https://www.dhl.com/mx-es/home/tracking.html?tracking-id=${order.dhl_waybill_number.replace(
-              /\s/g,
-              ''
-            )}`"
+            to="https://www.estafeta.com/en/rastrear-envio?rastreo=true"
             external
             target="_blank"
             class="px-6 py-3 bg-white text-primary-600 font-medium rounded-lg hover:bg-gray-50 transition-colors inline-flex items-center gap-2"
@@ -443,6 +439,7 @@
             </svg>
             {{ t.trackShipment }}
           </NuxtLink>
+
         </div>
       </div>
 
@@ -858,10 +855,7 @@
                 {{ order.dhl_waybill_number }}
               </p>
               <NuxtLink
-                :to="`https://www.dhl.com/mx-es/home/tracking.html?tracking-id=${order.dhl_waybill_number.replace(
-                  /\s/g,
-                  ''
-                )}`"
+                to="https://www.estafeta.com/en/rastrear-envio?rastreo=true"
                 external
                 target="_blank"
                 class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
@@ -881,6 +875,7 @@
                 </svg>
                 {{ t.trackWithDHL }}
               </NuxtLink>
+
             </div>
           </div>
 
@@ -1608,8 +1603,8 @@ const translations = {
     en: "Waybill Number",
   },
   trackWithDHL: {
-    es: "Rastrear con DHL",
-    en: "Track with DHL",
+    es: "Rastrear con Estafeta",
+    en: "Track with Estafeta",
   },
   giaDocument: {
     es: "Documento GIA",

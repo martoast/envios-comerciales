@@ -4,57 +4,7 @@
     <WhatsAppButton />
 
     <!-- Hot Deals Header Section -->
-    <section class="bg-white pt-24 md:pt-28 pb-8">
-      <div class="container mx-auto px-4 md:px-8 lg:px-12">
-        <div class="text-center mb-6">
-          <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full text-sm font-bold uppercase tracking-wider mb-3">
-            <svg class="w-5 h-5 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/>
-            </svg>
-            {{ t.hotDealsSection }}
-          </div>
-          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
-            {{ t.hotDealsTitle }}
-          </h1>
-          <p class="text-lg md:text-xl text-gray-600">
-            {{ t.hotDealsSubtitle }}
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Search Bar -->
-    <section class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
-      <div class="container mx-auto px-4 md:px-8 lg:px-12 py-4">
-        <div class="max-w-2xl mx-auto">
-          <div class="relative">
-            <input
-              v-model="searchQuery"
-              type="text"
-              :placeholder="t.searchPlaceholder"
-              class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-500 focus:outline-none transition-colors text-base"
-            >
-            <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-            <!-- Clear button -->
-            <button
-              v-if="searchQuery"
-              @click="searchQuery = ''"
-              class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-          <!-- Search results count -->
-          <p v-if="searchQuery" class="mt-2 text-sm text-gray-600 text-center">
-            {{ filteredProducts.length }} {{ filteredProducts.length === 1 ? t.result : t.results }}
-          </p>
-        </div>
-      </div>
-    </section>
+    
 
     <!-- Products Section -->
     <section class="py-12 md:py-16 bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
