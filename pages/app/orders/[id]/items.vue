@@ -222,26 +222,49 @@
               </div>
             </div>
 
-            <div>
-              <label
-                for="declared_value_desktop"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                {{ t.declaredValue }}
-                <span class="text-gray-400 font-normal"
-                  >({{ t.optional }})</span
+            <div class="grid sm:grid-cols-2 gap-4">
+              <!-- Declared Value -->
+              <div>
+                <label
+                  for="declared_value_desktop"
+                  class="block text-sm font-medium text-gray-700 mb-1"
                 >
-              </label>
-              <input
-                v-model="itemForm.declared_value"
-                type="number"
-                step="0.01"
-                min="0"
-                max="999999.99"
-                id="declared_value_desktop"
-                :placeholder="t.declaredValuePlaceholder"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              />
+                  {{ t.declaredValue }}
+                  <span class="text-gray-400 font-normal"
+                    >({{ t.optional }})</span
+                  >
+                </label>
+                <input
+                  v-model="itemForm.declared_value"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="999999.99"
+                  id="declared_value_desktop"
+                  :placeholder="t.declaredValuePlaceholder"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
+
+              <!-- Estimated Delivery Date (NEW) -->
+              <div>
+                <label
+                  for="estimated_delivery_date_desktop"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  {{ t.estimatedDeliveryDate }}
+                  <span class="text-gray-400 font-normal"
+                    >({{ t.optional }})</span
+                  >
+                </label>
+                <input
+                  v-model="itemForm.estimated_delivery_date"
+                  type="date"
+                  :min="todayDate"
+                  id="estimated_delivery_date_desktop"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
             </div>
 
             <!-- Receipt -->
@@ -340,9 +363,28 @@
                   <p class="font-medium text-gray-900 truncate">
                     {{ item.product_name }}
                   </p>
-                  <div class="flex items-center gap-3 mt-1">
+                  <div class="flex flex-wrap items-center gap-3 mt-1">
                     <p class="text-sm text-gray-500">
                       {{ t.quantity }}: {{ item.quantity }}
+                    </p>
+                    <p
+                      v-if="item.estimated_delivery_date"
+                      class="text-sm text-blue-600 flex items-center gap-1"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      {{ formatDate(item.estimated_delivery_date) }}
                     </p>
                     <p
                       v-if="item.proof_of_purchase_url"
@@ -661,6 +703,26 @@
                       />
                     </div>
 
+                    <!-- Estimated Delivery Date (NEW) -->
+                    <div>
+                      <label
+                        for="estimated_delivery_date_mobile"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        {{ t.estimatedDeliveryDate }}
+                        <span class="text-gray-400 font-normal"
+                          >({{ t.optional }})</span
+                        >
+                      </label>
+                      <input
+                        v-model="itemForm.estimated_delivery_date"
+                        type="date"
+                        :min="todayDate"
+                        id="estimated_delivery_date_mobile"
+                        class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      />
+                    </div>
+
                     <!-- Receipt -->
                     <div>
                       <label
@@ -808,8 +870,6 @@
                   </div>
                 </div>
 
-                
-
                 <!-- Action Buttons -->
                 <div class="flex gap-3">
                   <button
@@ -868,6 +928,12 @@ const showCompleteModal = ref(false);
 const showAddProductModal = ref(false);
 const selectedFile = ref(null);
 
+// Get today's date in YYYY-MM-DD format for date input min attribute
+const todayDate = computed(() => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+});
+
 // Computed - check if user has items
 const hasItems = computed(() => {
   return order.value?.items && order.value.items.length > 0;
@@ -884,6 +950,7 @@ const itemForm = ref({
   product_name: "",
   quantity: 1,
   declared_value: "",
+  estimated_delivery_date: "", // NEW
 });
 
 // Simplified Translations
@@ -940,7 +1007,6 @@ const translations = {
     es: "¿Has agregado todos los productos que necesitas?",
     en: "Have you added all the products you need?",
   },
- 
   confirming: {
     es: "Confirmando...",
     en: "Confirming...",
@@ -1037,6 +1103,10 @@ const translations = {
     es: "Total de productos",
     en: "Total products",
   },
+  estimatedDeliveryDate: {
+    es: "Fecha estimada de entrega",
+    en: "Estimated delivery date",
+  },
 };
 
 // Get reactive translations
@@ -1112,6 +1182,11 @@ const handleAddItem = async () => {
       formData.append("declared_value", itemForm.value.declared_value);
     }
 
+    // NEW: Add estimated delivery date if provided
+    if (itemForm.value.estimated_delivery_date) {
+      formData.append("estimated_delivery_date", itemForm.value.estimated_delivery_date);
+    }
+
     if (selectedFile.value) {
       formData.append("proof_of_purchase", selectedFile.value);
     }
@@ -1127,6 +1202,7 @@ const handleAddItem = async () => {
       product_name: "",
       quantity: 1,
       declared_value: "",
+      estimated_delivery_date: "", // Reset the new field
     };
     selectedFile.value = null;
 
@@ -1180,6 +1256,17 @@ const handleCompleteOrder = async () => {
   } finally {
     completingOrder.value = false;
   }
+};
+
+// Format date for display
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString(undefined, { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric' 
+  });
 };
 
 // Lifecycle

@@ -1,4 +1,3 @@
-<!-- pages/register.vue -->
 <template>
   <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20 px-4 py-6">
     <div class="max-w-sm mx-auto">
@@ -66,81 +65,8 @@
       <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
         <!-- Step Content -->
         <div class="p-6">
-          <!-- Step 1: User Type Selection - COMPACT ALPHABETICAL WITH LOADING -->
-          <div v-if="currentStep === 1">
-            <!-- Loading State -->
-            <div v-if="loadingUserTypes" class="space-y-2">
-              <div v-for="i in 3" :key="i" class="animate-pulse">
-                <div class="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-gray-200 bg-gray-50">
-                  <div class="w-5 h-5 rounded-full bg-gray-300"></div>
-                  <div class="w-9 h-9 rounded-lg bg-gray-300"></div>
-                  <div class="flex-1 space-y-2">
-                    <div class="h-4 bg-gray-300 rounded w-3/4"></div>
-                    <div class="h-3 bg-gray-200 rounded w-full"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Actual User Type Options -->
-            <div v-else class="space-y-2">
-              <button
-                v-for="userType in sortedTranslatedUserTypes"
-                :key="userType.value"
-                type="button"
-                @click="selectUserType(userType.value)"
-                :class="[
-                  'w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 text-left',
-                  form.user_type === userType.value 
-                    ? 'border-primary-500 bg-primary-50/50 shadow-md' 
-                    : 'border-gray-200 hover:border-gray-300 bg-white hover:shadow-sm'
-                ]"
-              >
-                <!-- Radio Circle -->
-                <div class="flex-shrink-0">
-                  <div :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all',
-                    form.user_type === userType.value 
-                      ? 'border-primary-500 bg-primary-500' 
-                      : 'border-gray-300'
-                  ]">
-                    <div v-if="form.user_type === userType.value" class="w-2.5 h-2.5 bg-white rounded-full"></div>
-                  </div>
-                </div>
-
-                <!-- Icon -->
-                <div :class="[
-                  'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
-                  form.user_type === userType.value ? 'bg-primary-100' : 'bg-gray-100'
-                ]">
-                  <svg v-if="userType.icon === 'globe'" class="w-5 h-5" :class="form.user_type === userType.value ? 'text-primary-600' : 'text-gray-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                  <svg v-else-if="userType.icon === 'briefcase'" class="w-5 h-5" :class="form.user_type === userType.value ? 'text-primary-600' : 'text-gray-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                  </svg>
-                  <svg v-else-if="userType.icon === 'shopping-cart'" class="w-5 h-5" :class="form.user_type === userType.value ? 'text-primary-600' : 'text-gray-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                  </svg>
-                </div>
-
-                <!-- Text Content -->
-                <div class="flex-1 min-w-0">
-                  <div :class="[
-                    'text-sm font-semibold',
-                    form.user_type === userType.value ? 'text-primary-900' : 'text-gray-900'
-                  ]">{{ userType.label }}</div>
-                  <div :class="[
-                    'text-xs mt-0.5 truncate',
-                    form.user_type === userType.value ? 'text-primary-700' : 'text-gray-500'
-                  ]">{{ userType.description }}</div>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <!-- Step 2: Basic Info -->
-          <div v-if="currentStep === 2" class="space-y-4">
+          <!-- Step 1: Basic Info -->
+          <div v-if="currentStep === 1" class="space-y-4">
             <!-- Name Field -->
             <div>
               <label for="name" class="block text-sm font-semibold text-gray-900 mb-2">
@@ -209,8 +135,8 @@
             />
           </div>
 
-          <!-- Step 3: Password & Terms -->
-          <div v-if="currentStep === 3" class="space-y-4">
+          <!-- Step 2: Password & Terms -->
+          <div v-if="currentStep === 2" class="space-y-4">
             <!-- Password Field -->
             <div>
               <label for="password" class="block text-sm font-semibold text-gray-900 mb-2">
@@ -400,8 +326,7 @@
         <!-- Google Sign Up Button -->
         <button
           @click="handleGoogleSignUp"
-          :disabled="loadingUserTypes"
-          class="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
         >
           <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -454,20 +379,15 @@ const { t: createTranslations, language } = useLanguage()
 
 // Multi-step state
 const currentStep = ref(1)
-const totalSteps = ref(3)
-
-// User types state
-const userTypes = ref([])
-const loadingUserTypes = ref(false)
+const totalSteps = ref(2)
 
 // Form state
 const form = ref({
   name: '',
   email: '',
-  phone: '', // This will be E.164 format from component
+  phone: '',
   password: '',
   password_confirmation: '',
-  user_type: '',
   registration_source: '',
   agree_to_terms: false
 })
@@ -502,54 +422,20 @@ const loginLink = computed(() => {
 const translations = {
   // Step titles
   stepOneTitle: {
-    es: '¿Cómo te describes?',
-    en: 'How do you describe yourself?'
+    es: 'Crear cuenta',
+    en: 'Create account'
   },
   stepOneSubtitle: {
-    es: 'Ayúdanos a personalizar tu experiencia',
-    en: 'Help us personalize your experience'
-  },
-  stepTwoTitle: {
-    es: 'Información básica',
-    en: 'Basic information'
-  },
-  stepTwoSubtitle: {
     es: 'Solo necesitamos algunos detalles',
     en: 'We just need a few details'
   },
-  stepThreeTitle: {
+  stepTwoTitle: {
     es: 'Crear contraseña',
     en: 'Create password'
   },
-  stepThreeSubtitle: {
+  stepTwoSubtitle: {
     es: 'Mantén tu cuenta segura',
     en: 'Keep your account secure'
-  },
-  
-  // User type translations
-  expatLabel: {
-    es: 'Expatriado',
-    en: 'Expat'
-  },
-  expatDescription: {
-    es: 'Extranjeros viviendo en México',
-    en: 'Foreign nationals living in Mexico'
-  },
-  businessLabel: {
-    es: 'Empresa',
-    en: 'Business'
-  },
-  businessDescription: {
-    es: 'Empresas que necesitan soluciones B2B',
-    en: 'Companies needing B2B solutions'
-  },
-  shopperLabel: {
-    es: 'Comprador',
-    en: 'Shopper'
-  },
-  shopperDescription: {
-    es: 'Compras en tiendas en línea de USA',
-    en: 'Shop from US online stores'
   },
   
   // Form fields
@@ -574,8 +460,8 @@ const translations = {
     en: 'Phone number'
   },
   phonePlaceholder: {
-    es: '+52 664 123 4567 o +1 619 888 5248',
-    en: '+1 619 888 5248 or +52 664 123 4567'
+    es: '+52 664 123 4567',
+    en: '+1 619 888 5248'
   },
   phoneHelp: {
     es: 'Incluye el código de país con +. Ejemplos: +52 para México, +1 para USA',
@@ -679,10 +565,6 @@ const translations = {
     es: 'No existe una cuenta con este email.',
     en: 'No account exists with this email.'
   },
-  userTypeRequired: {
-    es: 'Selecciona una opción',
-    en: 'Please select an option'
-  },
   termsRequired: {
     es: 'Debes aceptar los términos de servicio',
     en: 'You must accept the terms of service'
@@ -697,7 +579,6 @@ const currentStepTitle = computed(() => {
   switch (currentStep.value) {
     case 1: return t.value.stepOneTitle
     case 2: return t.value.stepTwoTitle
-    case 3: return t.value.stepThreeTitle
     default: return ''
   }
 })
@@ -706,52 +587,15 @@ const currentStepSubtitle = computed(() => {
   switch (currentStep.value) {
     case 1: return t.value.stepOneSubtitle
     case 2: return t.value.stepTwoSubtitle
-    case 3: return t.value.stepThreeSubtitle
     default: return ''
   }
 })
 
 const isLastStep = computed(() => currentStep.value === totalSteps.value)
 
-// Computed property for translated user types
-const translatedUserTypes = computed(() => {
-  return userTypes.value.map(type => {
-    let label = ''
-    let description = ''
-    
-    switch(type.value) {
-      case 'expat':
-        label = t.value.expatLabel
-        description = t.value.expatDescription
-        break
-      case 'business':
-        label = t.value.businessLabel
-        description = t.value.businessDescription
-        break
-      case 'shopper':
-        label = t.value.shopperLabel
-        description = t.value.shopperDescription
-        break
-    }
-    
-    return {
-      value: type.value,
-      icon: type.icon,
-      label,
-      description
-    }
-  })
-})
-
-// 🔤 SORTED ALPHABETICALLY!
-const sortedTranslatedUserTypes = computed(() => {
-  return translatedUserTypes.value.sort((a, b) => a.label.localeCompare(b.label))
-})
-
 // Handle phone validation changes from component
 const handlePhoneValidation = (validation) => {
   phoneValidation.value = validation
-  // Update form.phone with E.164 format
   form.value.phone = validation.e164Phone
 }
 
@@ -759,12 +603,10 @@ const handlePhoneValidation = (validation) => {
 const canProceed = computed(() => {
   switch (currentStep.value) {
     case 1:
-      return form.value.user_type !== '' && !loadingUserTypes.value
-    case 2:
       return form.value.name.trim() !== '' && 
              form.value.email.trim() !== '' && 
              phoneValidation.value.isValid
-    case 3:
+    case 2:
       return form.value.password !== '' &&
              form.value.password_confirmation !== '' &&
              form.value.password === form.value.password_confirmation &&
@@ -821,11 +663,6 @@ const getFirstError = () => {
   return firstField ? errors.value[firstField][0] : ''
 }
 
-const selectUserType = (userType) => {
-  form.value.user_type = userType
-  clearFieldError('user_type')
-}
-
 const goToPreviousStep = () => {
   if (currentStep.value > 1) {
     currentStep.value--
@@ -834,8 +671,8 @@ const goToPreviousStep = () => {
 }
 
 const goToNextStep = async () => {
-  // Final phone validation before moving to step 3
-  if (currentStep.value === 2) {
+  // Final phone validation before moving to step 2
+  if (currentStep.value === 1) {
     if (phoneInputRef.value && !phoneInputRef.value.validate()) {
       return
     }
@@ -848,9 +685,6 @@ const goToNextStep = async () => {
     // Focus on first input of next step
     await nextTick()
     if (currentStep.value === 2) {
-      const nameInput = document.querySelector('#name')
-      if (nameInput) nameInput.focus()
-    } else if (currentStep.value === 3) {
       const passwordInput = document.querySelector('#password')
       if (passwordInput) passwordInput.focus()
     }
@@ -892,10 +726,9 @@ const handleRegister = async () => {
       body: {
         name: form.value.name,
         email: form.value.email,
-        phone: phoneValidation.value.e164Phone, // Use E.164 from component
+        phone: phoneValidation.value.e164Phone,
         password: form.value.password,
         password_confirmation: form.value.password_confirmation,
-        user_type: form.value.user_type,
         registration_source: form.value.registration_source || undefined
       }
     })
@@ -941,32 +774,8 @@ const handleGoogleSignUp = () => {
   window.location.href = `${runtimeConfig.public.apiUrl}/auth/google/redirect?state=${encodeURIComponent(state)}`
 }
 
-// Fetch user types
-const fetchUserTypes = async () => {
-  loadingUserTypes.value = true
-  try {
-    const response = await $customFetch('/user-types')
-    if (response.success && response.data) {
-      userTypes.value = response.data.map(type => ({
-        value: type.value,
-        icon: type.icon
-      }))
-    }
-  } catch (error) {
-    console.error('Error fetching user types:', error)
-    // Fallback to hardcoded types if API fails
-    userTypes.value = [
-      { value: 'expat', icon: 'globe' },
-      { value: 'business', icon: 'briefcase' },
-      { value: 'shopper', icon: 'shopping-cart' }
-    ]
-  } finally {
-    loadingUserTypes.value = false
-  }
-}
-
-// Get registration source and preselection from URL parameters
-const getRegistrationSourceAndPreselect = () => {
+// Get registration source from URL parameters
+const getRegistrationSource = () => {
   const params = route.query
   
   const trackingData = {
@@ -986,11 +795,6 @@ const getRegistrationSourceAndPreselect = () => {
   if (hasTrackingData) {
     form.value.registration_source = JSON.stringify(trackingData)
   }
-  
-  const preselect = params.preselect
-  if (preselect && ['expat', 'business', 'shopper'].includes(preselect)) {
-    form.value.user_type = preselect
-  }
 }
 
 // Lifecycle
@@ -999,8 +803,13 @@ onMounted(() => {
     errorMessage.value = t.value.noAccountError
   }
   
-  fetchUserTypes()
-  getRegistrationSourceAndPreselect()
+  getRegistrationSource()
+  
+  // Focus on name input
+  nextTick(() => {
+    const nameInput = document.querySelector('#name')
+    if (nameInput) nameInput.focus()
+  })
 })
 </script>
 

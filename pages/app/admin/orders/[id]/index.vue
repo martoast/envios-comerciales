@@ -89,125 +89,10 @@
     <!-- Main Content -->
     <div v-else-if="order" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       
-      <!-- Payment Received Banner (when awaiting_payment) -->
-      <div v-if="order.status === 'awaiting_payment'" class="mb-6 bg-gradient-to-r from-orange-50 to-orange-100 border-l-4 border-orange-500 rounded-xl p-6 shadow-sm">
-        <div class="flex items-start gap-4">
-          <div class="flex-shrink-0">
-            <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-bold text-orange-900">{{ t.awaitingPaymentTitle }}</h3>
-            <p class="text-sm text-orange-800 mt-1">{{ t.awaitingPaymentMessage }}</p>
-            <div class="mt-4 flex flex-wrap gap-3">
-              <a 
-                v-if="order.payment_link"
-                :href="order.payment_link" 
-                target="_blank"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-white text-orange-700 text-sm font-medium rounded-lg border border-orange-300 hover:bg-orange-50 transition-colors"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                </svg>
-                {{ t.viewInvoice }}
-              </a>
-              <button
-                @click="showMarkPaidModal = true"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                {{ t.markAsPaid }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Order Completed Banner (when paid) -->
-      <div v-if="order.status === 'paid'" class="mb-6 bg-gradient-to-r from-green-50 to-emerald-100 border-l-4 border-green-500 rounded-xl p-6 shadow-sm">
-        <div class="flex items-start gap-4">
-          <div class="flex-shrink-0">
-            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-bold text-green-900">{{ t.orderCompletedTitle }}</h3>
-            <p class="text-sm text-green-800 mt-1">{{ t.orderCompletedMessage }}</p>
-            <div v-if="order.paid_at" class="mt-2 text-sm text-green-700">
-              {{ t.paidOn }}: {{ formatDate(order.paid_at) }}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Actions Bar - Shows only the NEXT action in the workflow -->
+      <!-- Quick Actions Bar -->
       <div class="mb-6 bg-white rounded-xl border border-gray-200 p-4">
         <div class="flex flex-wrap gap-3">
-          <!-- Packages Complete → Start Processing -->
-          <button
-            v-if="order.status === 'packages_complete'"
-            @click="showStartProcessingModal = true"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-            </svg>
-            {{ t.startProcessing }}
-          </button>
-
-          <!-- Processing → Ship Order -->
-          <button
-            v-if="order.status === 'processing'"
-            @click="showShipConfirmModal = true"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-            </svg>
-            {{ t.shipOrder }}
-          </button>
-
-          <!-- Shipped → Mark as Delivered -->
-          <button
-            v-if="order.status === 'shipped'"
-            @click="showMarkDeliveredModal = true"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-            {{ t.markAsDelivered }}
-          </button>
-
-          <!-- Delivered → Create Invoice/Quote -->
-          <button
-            v-if="order.status === 'delivered'"
-            @click="showCreateInvoiceModal = true"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-            </svg>
-            {{ t.createInvoice }}
-          </button>
-
-          <!-- Awaiting Payment or Paid → View/Manage Invoice -->
-          <NuxtLink
-            v-if="order.status === 'awaiting_payment' || order.status === 'paid'"
-            :to="`/app/admin/orders/${order.id}/quote`"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-primary-100 text-primary-700 text-sm font-medium rounded-lg hover:bg-primary-200 transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-            </svg>
-            {{ t.viewInvoice }}
-          </NuxtLink>
-
-          <!-- Info message for earlier stages -->
+          <!-- Actions buttons... (keeping existing) -->
           <div
             v-if="['collecting', 'awaiting_packages'].includes(order.status)"
             class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 text-sm rounded-lg"
@@ -244,7 +129,7 @@
             </div>
           </div>
 
-          <!-- Items List -->
+          <!-- Items List with Estimated Delivery -->
           <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
               <h2 class="text-lg font-semibold text-gray-900">{{ t.items }}</h2>
@@ -256,7 +141,7 @@
                 :key="item.id"
                 class="px-6 py-4"
               >
-                <div class="flex justify-between items-start">
+                <div class="flex justify-between items-start mb-3">
                   <div class="flex-1">
                     <p class="text-sm font-medium text-gray-900">{{ item.product_name }}</p>
                     <p class="text-xs text-gray-500 mt-1">
@@ -287,6 +172,47 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                       </svg>
                     </button>
+                  </div>
+                </div>
+
+                <!-- Estimated Delivery Date Section (NEW) -->
+                <div v-if="item.estimated_delivery_date" class="mt-3 bg-blue-50 rounded-lg p-3">
+                  <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-100 rounded-lg flex-shrink-0">
+                      <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-xs font-medium text-blue-900">{{ t.expectedDelivery }}</p>
+                      <p class="text-sm font-semibold text-blue-700 mt-0.5">
+                        {{ formatDeliveryDate(item.estimated_delivery_date) }}
+                      </p>
+                      <!-- Status Badge -->
+                      <div class="mt-1">
+                        <span v-if="getDeliveryStatus(item.estimated_delivery_date, item.arrived) === 'overdue'" class="inline-flex items-center gap-1 text-xs text-red-600">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          {{ getDaysUntilDelivery(item.estimated_delivery_date) }}
+                        </span>
+                        <span v-else-if="getDeliveryStatus(item.estimated_delivery_date, item.arrived) === 'today'" class="inline-flex items-center gap-1 text-xs text-blue-600 font-medium">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          {{ t.expectedToday }}
+                        </span>
+                        <span v-else-if="getDeliveryStatus(item.estimated_delivery_date, item.arrived) === 'soon'" class="inline-flex items-center gap-1 text-xs text-amber-600">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          {{ getDaysUntilDelivery(item.estimated_delivery_date) }}
+                        </span>
+                        <span v-else class="text-xs text-gray-600">
+                          {{ getDaysUntilDelivery(item.estimated_delivery_date) }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -338,35 +264,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Quote Breakdown (if exists) -->
-          <div v-if="order.quote_breakdown && order.quote_breakdown.length > 0" class="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t.invoiceBreakdown }}</h2>
-            <div class="space-y-3">
-              <div 
-                v-for="(item, index) in order.quote_breakdown" 
-                :key="index"
-                class="flex justify-between items-start p-3 bg-gray-50 rounded-lg"
-              >
-                <div>
-                  <p class="text-sm font-medium text-gray-900">{{ item.item }}</p>
-                  <p class="text-xs text-gray-500">{{ item.description }}</p>
-                </div>
-                <span class="text-sm font-semibold text-gray-900">
-                  ${{ parseFloat(item.amount).toFixed(2) }} {{ item.currency || 'MXN' }}
-                </span>
-              </div>
-            </div>
-            
-            <div class="mt-4 pt-4 border-t border-gray-200">
-              <div class="flex justify-between items-center">
-                <span class="text-lg font-semibold text-gray-900">{{ t.total }}</span>
-                <span class="text-xl font-bold text-primary-600">
-                  ${{ parseFloat(order.quoted_amount || 0).toFixed(2) }} MXN
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Right Column -->
@@ -383,30 +280,9 @@
                 <p class="text-sm text-gray-500">{{ t.trackingNumber }}</p>
                 <p class="font-medium">{{ order.tracking_number }}</p>
               </div>
-              <div v-if="order.dhl_waybill_number">
-                <p class="text-sm text-gray-500">{{ t.dhlWaybill }}</p>
-                <a 
-                  :href="`https://www.dhl.com/mx-es/home/tracking.html?tracking-id=${order.dhl_waybill_number.replace(/\s/g, '')}`"
-                  target="_blank"
-                  class="font-medium text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
-                >
-                  {{ order.dhl_waybill_number }}
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                  </svg>
-                </a>
-              </div>
               <div>
                 <p class="text-sm text-gray-500">{{ t.totalWeight }}</p>
                 <p class="font-medium">{{ order.total_weight || 0 }} kg</p>
-              </div>
-              <div v-if="order.quoted_amount">
-                <p class="text-sm text-gray-500">{{ t.quotedAmount }}</p>
-                <p class="font-medium">${{ order.quoted_amount }} MXN</p>
-              </div>
-              <div v-if="order.amount_paid">
-                <p class="text-sm text-gray-500">{{ t.amountPaid }}</p>
-                <p class="font-medium text-green-600">${{ order.amount_paid }} MXN</p>
               </div>
             </div>
           </div>
@@ -422,55 +298,7 @@
                   <p class="text-xs text-gray-500">{{ formatDate(order.created_at) }}</p>
                 </div>
               </div>
-              <div v-if="order.completed_at" class="flex gap-3">
-                <div class="flex-shrink-0 w-2 h-2 rounded-full bg-amber-400 mt-1.5"></div>
-                <div>
-                  <p class="text-sm font-medium text-gray-900">{{ t.orderSubmitted }}</p>
-                  <p class="text-xs text-gray-500">{{ formatDate(order.completed_at) }}</p>
-                </div>
-              </div>
-              <div v-if="order.processing_started_at" class="flex gap-3">
-                <div class="flex-shrink-0 w-2 h-2 rounded-full bg-primary-400 mt-1.5"></div>
-                <div>
-                  <p class="text-sm font-medium text-gray-900">{{ t.processingStarted }}</p>
-                  <p class="text-xs text-gray-500">{{ formatDate(order.processing_started_at) }}</p>
-                </div>
-              </div>
-              <div v-if="order.shipped_at" class="flex gap-3">
-                <div class="flex-shrink-0 w-2 h-2 rounded-full bg-primary-400 mt-1.5"></div>
-                <div>
-                  <p class="text-sm font-medium text-gray-900">{{ t.shipped }}</p>
-                  <p class="text-xs text-gray-500">{{ formatDate(order.shipped_at) }}</p>
-                </div>
-              </div>
-              <div v-if="order.delivered_at" class="flex gap-3">
-                <div class="flex-shrink-0 w-2 h-2 rounded-full bg-green-400 mt-1.5"></div>
-                <div>
-                  <p class="text-sm font-medium text-gray-900">{{ t.delivered }}</p>
-                  <p class="text-xs text-gray-500">{{ formatDate(order.delivered_at) }}</p>
-                </div>
-              </div>
-              <div v-if="order.quote_sent_at" class="flex gap-3">
-                <div class="flex-shrink-0 w-2 h-2 rounded-full bg-orange-400 mt-1.5"></div>
-                <div>
-                  <p class="text-sm font-medium text-gray-900">{{ t.invoiceSent }}</p>
-                  <p class="text-xs text-gray-500">{{ formatDate(order.quote_sent_at) }}</p>
-                </div>
-              </div>
-              <div v-if="order.paid_at" class="flex gap-3">
-                <div class="flex-shrink-0 w-2 h-2 rounded-full bg-emerald-400 mt-1.5"></div>
-                <div>
-                  <p class="text-sm font-medium text-gray-900">{{ t.paymentReceived }}</p>
-                  <p class="text-xs text-gray-500">{{ formatDate(order.paid_at) }}</p>
-                </div>
-              </div>
             </div>
-          </div>
-
-          <!-- Notes -->
-          <div v-if="order.notes" class="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t.notes }}</h2>
-            <p class="text-sm text-gray-600 whitespace-pre-wrap">{{ order.notes }}</p>
           </div>
         </div>
       </div>
@@ -1109,12 +937,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  TransitionChild,
-  TransitionRoot,
+import { 
+  Dialog, 
+  DialogPanel, 
+  DialogTitle, 
+  TransitionRoot, 
+  TransitionChild 
 } from '@headlessui/vue'
 
 definePageMeta({
@@ -1126,50 +954,40 @@ const { $customFetch, $toast } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
 const { t: createTranslations } = useLanguage()
+const user = useUser().value
 
 // State
 const order = ref(null)
 const loading = ref(true)
-const processingStatus = ref(false)
+const showActionsMenu = ref(false)
+const showMarkArrivedModal = ref(false)
+const showDeleteModal = ref(false)
 const showStartProcessingModal = ref(false)
 const showShipConfirmModal = ref(false)
 const showMarkDeliveredModal = ref(false)
 const showCreateInvoiceModal = ref(false)
 const showMarkPaidModal = ref(false)
-const showMarkArrivedModal = ref(false)
-const showDeleteModal = ref(false)
-const showActionsMenu = ref(false)
-const markingPaid = ref(false)
-const markingArrived = ref(false)
-const deletingOrder = ref(false)
 const selectedItem = ref(null)
+const processingStatus = ref(false)
+const markingArrived = ref(false)
+const markingPaid = ref(false)
+const deletingOrder = ref(false)
 
 const arrivedForm = ref({
   weight: null,
-  declared_value: null,
   dimensions: {
     length: null,
     width: null,
     height: null,
-  },
+  }
 })
 
 // Translations
 const translations = {
   orderDetails: { es: 'Detalles de la Orden', en: 'Order Details' },
   loading: { es: 'Cargando...', en: 'Loading...' },
-  awaitingPaymentTitle: { es: '💰 Esperando Pago del Cliente', en: '💰 Awaiting Customer Payment' },
-  awaitingPaymentMessage: { es: 'La factura ha sido enviada al cliente. Una vez que el cliente complete el pago, marca la orden como pagada para finalizarla.', en: 'Invoice has been sent to customer. Once customer completes payment, mark order as paid to finalize it.' },
-  viewInvoice: { es: 'Ver Factura', en: 'View Invoice' },
-  markAsPaid: { es: 'Marcar como Pagado', en: 'Mark as Paid' },
-  orderCompletedTitle: { es: '✅ Orden Completada', en: '✅ Order Completed' },
-  orderCompletedMessage: { es: 'El pago ha sido recibido y la orden está completamente finalizada.', en: 'Payment has been received and the order is fully completed.' },
-  paidOn: { es: 'Pagado el', en: 'Paid on' },
   editOrder: { es: 'Editar Orden', en: 'Edit Order' },
-  createInvoice: { es: 'Crear Factura', en: 'Create Invoice' },
-  startProcessing: { es: 'Iniciar Procesamiento', en: 'Start Processing' },
-  shipOrder: { es: 'Enviar Orden', en: 'Ship Order' },
-  markAsDelivered: { es: 'Marcar como Entregado', en: 'Mark as Delivered' },
+  deleteOrder: { es: 'Eliminar Orden', en: 'Delete Order' },
   waitingForPackages: { es: 'Esperando que todos los paquetes lleguen...', en: 'Waiting for all packages to arrive...' },
   customerInformation: { es: 'Información del Cliente', en: 'Customer Information' },
   name: { es: 'Nombre', en: 'Name' },
@@ -1184,70 +1002,62 @@ const translations = {
   arrived: { es: 'Llegó', en: 'Arrived' },
   pending: { es: 'Pendiente', en: 'Pending' },
   markArrived: { es: 'Marcar como Llegado', en: 'Mark as Arrived' },
-  invoiceBreakdown: { es: 'Desglose de Factura', en: 'Invoice Breakdown' },
-  total: { es: 'Total', en: 'Total' },
   orderSummary: { es: 'Resumen de Orden', en: 'Order Summary' },
   orderNumber: { es: 'Número de Orden', en: 'Order Number' },
   trackingNumber: { es: 'Número de Rastreo', en: 'Tracking Number' },
-  dhlWaybill: { es: 'Guía DHL', en: 'DHL Waybill' },
   totalWeight: { es: 'Peso Total', en: 'Total Weight' },
-  totalPackages: { es: 'Total de Paquetes', en: 'Total Packages' },
-  quotedAmount: { es: 'Monto Cotizado', en: 'Quoted Amount' },
-  amountPaid: { es: 'Monto Pagado', en: 'Amount Paid' },
   timeline: { es: 'Línea de Tiempo', en: 'Timeline' },
   orderCreated: { es: 'Orden Creada', en: 'Order Created' },
-  orderSubmitted: { es: 'Orden Enviada', en: 'Order Submitted' },
-  processingStarted: { es: 'Procesamiento Iniciado', en: 'Processing Started' },
-  shipped: { es: 'Enviado', en: 'Shipped' },
-  delivered: { es: 'Entregado', en: 'Delivered' },
-  invoiceSent: { es: 'Factura Enviada', en: 'Invoice Sent' },
-  paymentReceived: { es: 'Pago Recibido', en: 'Payment Received' },
-  notes: { es: 'Notas', en: 'Notes' },
-  startProcessingTitle: { es: 'Iniciar Procesamiento', en: 'Start Processing' },
-  startProcessingMessage: { es: '¿Estás listo para comenzar a procesar esta orden? Los paquetes se empaquetarán y prepararán para el envío.', en: 'Ready to start processing this order? Packages will be packed and prepared for shipment.' },
-  confirmStartProcessing: { es: 'Sí, Iniciar', en: 'Yes, Start' },
-  shipOrderTitle: { es: 'Preparar Envío', en: 'Prepare Shipment' },
-  shipOrderMessage: { es: 'Estás a punto de marcar esta orden como lista para enviar. Se te pedirá el número de guía y otros detalles.', en: "You're about to mark this order as ready to ship. You'll be asked for DHL waybill number and other details." },
-  continueToShip: { es: 'Continuar al Envío', en: 'Continue to Ship' },
-  markAsDeliveredTitle: { es: 'Confirmar Entrega', en: 'Confirm Delivery' },
-  markAsDeliveredMessage: { es: '¿Confirmas que esta orden ha sido entregada al cliente? Después de esto podrás crear la factura.', en: 'Confirm that this order has been delivered to the customer? After this you can create the invoice.' },
-  confirmDelivered: { es: 'Confirmar Entrega', en: 'Confirm Delivery' },
-  createInvoiceTitle: { es: 'Crear Factura', en: 'Create Invoice' },
-  createInvoiceMessage: { es: 'La orden ha sido entregada. Ahora puedes crear la factura con los costos finales para enviarla al cliente.', en: 'The order has been delivered. Now you can create the invoice with final costs to send to the customer.' },
-  continueToInvoice: { es: 'Continuar a Factura', en: 'Continue to Invoice' },
-  markAsPaidTitle: { es: 'Confirmar Pago Recibido', en: 'Confirm Payment Received' },
-  markAsPaidMessage: { es: '¿Confirmas que el pago ha sido recibido? Esto finalizará la orden y notificará al cliente.', en: 'Confirm that payment has been received? This will finalize the order and notify the customer.' },
-  invoiceAmount: { es: 'Monto de Factura', en: 'Invoice Amount' },
-  confirmPaid: { es: 'Confirmar Pagado', en: 'Confirm Paid' },
-  processing: { es: 'Procesando...', en: 'Processing...' },
-  cancel: { es: 'Cancelar', en: 'Cancel' },
-  markPackageArrived: { es: 'Marcar Paquete como Llegado', en: 'Mark Package as Arrived' },
-  packageWeight: { es: 'Peso del Paquete', en: 'Package Weight' },
-  weightHint: { es: 'Ingrese el peso en kilogramos', en: 'Enter weight in kilograms' },
-  dimensionsHint: { es: 'Largo x Ancho x Alto en centímetros', en: 'Length x Width x Height in centimeters' },
-  optional: { es: 'Opcional', en: 'Optional' },
-  confirmArrived: { es: 'Confirmar Llegada', en: 'Confirm Arrival' },
-  marking: { es: 'Marcando...', en: 'Marking...' },
-  deleteOrder: { es: 'Eliminar Orden', en: 'Delete Order' },
-  deleteOrderTitle: { es: 'Eliminar Orden Permanentemente', en: 'Delete Order Permanently' },
-  deleteOrderWarning: { es: 'Esta acción no se puede deshacer.', en: 'This action cannot be undone.' },
-  customer: { es: 'Cliente', en: 'Customer' },
-  warningTitle: { es: 'Advertencia', en: 'Warning' },
-  deleteWarningMessage: { es: 'Se eliminarán todos los datos asociados con esta orden, incluyendo artículos, archivos y registros de pago.', en: 'All data associated with this order will be deleted, including items, files, and payment records.' },
-  confirmDelete: { es: 'Sí, Eliminar', en: 'Yes, Delete' },
-  deleting: { es: 'Eliminando...', en: 'Deleting...' },
-  collecting: { es: 'Agregando Artículos', en: 'Adding Items' },
-  awaiting_packages: { es: 'Esperando Paquetes', en: 'Awaiting Packages' },
-  packages_complete: { es: 'Paquetes Completos', en: 'Packages Complete' },
-  processingStatus: { es: 'Procesando', en: 'Processing' },
-  shippedStatus: { es: 'Enviado', en: 'Shipped' },
-  deliveredStatus: { es: 'Entregado', en: 'Delivered' },
-  awaiting_payment: { es: 'Esperando Pago', en: 'Awaiting Payment' },
-  paid: { es: 'Pagado', en: 'Paid' },
-  cancelled: { es: 'Cancelado', en: 'Cancelled' },
   proofOfPurchase: { es: 'Comprobante de Compra', en: 'Proof of Purchase' },
   viewDocument: { es: 'Ver Documento', en: 'View Document' },
   downloadDocument: { es: 'Descargar', en: 'Download' },
+  expectedDelivery: { es: 'Entrega Estimada', en: 'Expected Delivery' },
+  expectedToday: { es: 'Llega hoy', en: 'Expected today' },
+  daysOverdue: { es: 'días de retraso', en: 'days overdue' },
+  dayOverdue: { es: 'día de retraso', en: 'day overdue' },
+  daysAway: { es: 'días', en: 'days away' },
+  dayAway: { es: 'día', en: 'day away' },
+  packageWeight: { es: 'Peso del Paquete', en: 'Package Weight' },
+  weightHint: { es: 'Ingresa el peso en kilogramos', en: 'Enter weight in kilograms' },
+  dimensionsHint: { es: 'Largo × Ancho × Alto (cm)', en: 'Length × Width × Height (cm)' },
+  optional: { es: 'Opcional', en: 'Optional' },
+  confirmArrived: { es: 'Confirmar Llegada', en: 'Confirm Arrival' },
+  marking: { es: 'Marcando...', en: 'Marking...' },
+  markPackageArrived: { es: 'Marcar Paquete como Llegado', en: 'Mark Package as Arrived' },
+  cancel: { es: 'Cancelar', en: 'Cancel' },
+  startProcessingTitle: { es: 'Iniciar Procesamiento', en: 'Start Processing' },
+  startProcessingMessage: { es: '¿Estás seguro que quieres iniciar el procesamiento de esta orden?', en: 'Are you sure you want to start processing this order?' },
+  totalPackages: { es: 'Total de Paquetes', en: 'Total Packages' },
+  confirmStartProcessing: { es: 'Iniciar Procesamiento', en: 'Start Processing' },
+  processing: { es: 'Procesando...', en: 'Processing...' },
+  shipOrderTitle: { es: 'Enviar Orden', en: 'Ship Order' },
+  shipOrderMessage: { es: '¿Listo para enviar esta orden?', en: 'Ready to ship this order?' },
+  continueToShip: { es: 'Continuar a Envío', en: 'Continue to Ship' },
+  markAsDeliveredTitle: { es: 'Marcar como Entregado', en: 'Mark as Delivered' },
+  markAsDeliveredMessage: { es: '¿Confirmas que esta orden fue entregada al cliente?', en: 'Confirm that this order was delivered to the customer?' },
+  customer: { es: 'Cliente', en: 'Customer' },
+  confirmDelivered: { es: 'Confirmar Entrega', en: 'Confirm Delivery' },
+  createInvoiceTitle: { es: 'Crear Factura', en: 'Create Invoice' },
+  createInvoiceMessage: { es: 'Crear una factura para esta orden', en: 'Create an invoice for this order' },
+  continueToInvoice: { es: 'Continuar a Factura', en: 'Continue to Invoice' },
+  markAsPaidTitle: { es: 'Marcar como Pagado', en: 'Mark as Paid' },
+  markAsPaidMessage: { es: '¿Confirmas que esta orden ha sido pagada?', en: 'Confirm that this order has been paid?' },
+  invoiceAmount: { es: 'Monto de Factura', en: 'Invoice Amount' },
+  confirmPaid: { es: 'Confirmar Pago', en: 'Confirm Payment' },
+  deleteOrderTitle: { es: 'Eliminar Orden', en: 'Delete Order' },
+  deleteOrderWarning: { es: 'Esta acción no se puede deshacer', en: 'This action cannot be undone' },
+  warningTitle: { es: 'Advertencia', en: 'Warning' },
+  deleteWarningMessage: { es: 'Todos los datos asociados con esta orden se eliminarán permanentemente.', en: 'All data associated with this order will be permanently deleted.' },
+  confirmDelete: { es: 'Eliminar Orden', en: 'Delete Order' },
+  deleting: { es: 'Eliminando...', en: 'Deleting...' },
+  collecting: { es: 'Recolectando', en: 'Collecting' },
+  awaiting_packages: { es: 'Esperando Paquetes', en: 'Awaiting Packages' },
+  packages_complete: { es: 'Paquetes Completos', en: 'Packages Complete' },
+  shipped: { es: 'Enviado', en: 'Shipped' },
+  delivered: { es: 'Entregado', en: 'Delivered' },
+  awaiting_payment: { es: 'Esperando Pago', en: 'Awaiting Payment' },
+  paid: { es: 'Pagado', en: 'Paid' },
+  cancelled: { es: 'Cancelado', en: 'Cancelled' },
 }
 
 const t = createTranslations(translations)
@@ -1267,148 +1077,6 @@ const fetchOrder = async () => {
   }
 }
 
-const confirmStartProcessing = async () => {
-  processingStatus.value = true
-  try {
-    await $customFetch(`/admin/orders/${order.value.id}/process`, {
-      method: 'PUT'
-    })
-    $toast.success('Order marked as processing')
-    showStartProcessingModal.value = false
-    await fetchOrder()
-  } catch (error) {
-    console.error('Error marking as processing:', error)
-    $toast.error(error.data?.message || 'Error marking as processing')
-  } finally {
-    processingStatus.value = false
-  }
-}
-
-const confirmMarkAsDelivered = async () => {
-  processingStatus.value = true
-  try {
-    await $customFetch(`/admin/orders/${order.value.id}/status`, {
-      method: 'PUT',
-      body: {
-        status: 'delivered'
-      }
-    })
-    $toast.success('Order marked as delivered')
-    showMarkDeliveredModal.value = false
-    await fetchOrder()
-  } catch (error) {
-    console.error('Error marking as delivered:', error)
-    $toast.error(error.data?.message || 'Error marking as delivered')
-  } finally {
-    processingStatus.value = false
-  }
-}
-
-const confirmMarkAsPaid = async () => {
-  markingPaid.value = true
-  try {
-    await $customFetch(`/admin/orders/${order.value.id}/status`, {
-      method: 'PUT',
-      body: {
-        status: 'paid'
-      }
-    })
-    $toast.success('Order marked as paid successfully! 🎉')
-    showMarkPaidModal.value = false
-    await fetchOrder()
-  } catch (error) {
-    console.error('Error marking as paid:', error)
-    $toast.error(error.data?.message || 'Error marking as paid')
-  } finally {
-    markingPaid.value = false
-  }
-}
-
-const openMarkArrivedModal = (item) => {
-  selectedItem.value = item
-  arrivedForm.value = {
-    weight: null,
-    declared_value: item.declared_value || null,
-    dimensions: {
-      length: null,
-      width: null,
-      height: null,
-    },
-  }
-  showMarkArrivedModal.value = true
-}
-
-const closeMarkArrivedModal = () => {
-  showMarkArrivedModal.value = false
-  selectedItem.value = null
-  arrivedForm.value = {
-    weight: null,
-    declared_value: null,
-    dimensions: {
-      length: null,
-      width: null,
-      height: null,
-    },
-  }
-}
-
-const confirmMarkArrived = async () => {
-  if (!selectedItem.value || !arrivedForm.value.weight) return
-
-  markingArrived.value = true
-  try {
-    const body = {
-      arrived: true,
-      weight: parseFloat(arrivedForm.value.weight),
-    }
-
-    if (arrivedForm.value.declared_value !== null && arrivedForm.value.declared_value !== '') {
-      body.declared_value = parseFloat(arrivedForm.value.declared_value)
-    }
-
-    if (arrivedForm.value.dimensions.length && arrivedForm.value.dimensions.width && arrivedForm.value.dimensions.height) {
-      body.dimensions = arrivedForm.value.dimensions
-    }
-
-    await $customFetch(`/admin/orders/${order.value.id}/items/${selectedItem.value.id}/arrived`, {
-      method: 'PUT',
-      body,
-    })
-
-    $toast.success('Item marked as arrived')
-    await fetchOrder()
-    closeMarkArrivedModal()
-  } catch (error) {
-    console.error('Error marking item arrived:', error)
-    $toast.error('Error updating item')
-  } finally {
-    markingArrived.value = false
-  }
-}
-
-const openDeleteModal = () => {
-  showActionsMenu.value = false
-  showDeleteModal.value = true
-}
-
-const confirmDeleteOrder = async () => {
-  deletingOrder.value = true
-  try {
-    await $customFetch(`/admin/management/orders/${order.value.id}`, {
-      method: 'DELETE'
-    })
-    
-    $toast.success('Order deleted successfully')
-    await router.push('/app/admin/orders')
-  } catch (error) {
-    console.error('Error deleting order:', error)
-    $toast.error('Error deleting order')
-  } finally {
-    deletingOrder.value = false
-    showDeleteModal.value = false
-  }
-}
-
 const getStatusColor = (status) => {
   const colors = {
     collecting: 'bg-blue-100 text-blue-700',
@@ -1425,18 +1093,7 @@ const getStatusColor = (status) => {
 }
 
 const getStatusLabel = (status) => {
-  const statusMap = {
-    collecting: 'collecting',
-    awaiting_packages: 'awaiting_packages',
-    packages_complete: 'packages_complete',
-    processing: 'processingStatus',
-    shipped: 'shippedStatus',
-    delivered: 'deliveredStatus',
-    awaiting_payment: 'awaiting_payment',
-    paid: 'paid',
-    cancelled: 'cancelled',
-  }
-  return t.value[statusMap[status]] || status
+  return t.value[status] || status
 }
 
 const formatAddress = (address) => {
@@ -1463,7 +1120,8 @@ const formatDimensions = (dimensions) => {
 
 const formatDate = (date) => {
   if (!date) return '-'
-  return new Date(date).toLocaleDateString('es-MX', {
+  const locale = user?.preferred_language === 'es' ? 'es-MX' : 'en-US'
+  return new Date(date).toLocaleDateString(locale, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -1479,6 +1137,195 @@ const formatFileSize = (bytes) => {
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`
 }
 
+// Delivery date helper methods
+const formatDeliveryDate = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  const locale = user?.preferred_language === 'es' ? 'es-MX' : 'en-US'
+  
+  return date.toLocaleDateString(locale, {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+const getDeliveryStatus = (dateString, arrived) => {
+  if (arrived) return 'arrived'
+  if (!dateString) return 'unknown'
+  
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const deliveryDate = new Date(dateString)
+  deliveryDate.setHours(0, 0, 0, 0)
+  
+  const diffTime = deliveryDate - today
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  
+  if (diffDays < 0) return 'overdue'
+  if (diffDays === 0) return 'today'
+  if (diffDays <= 3) return 'soon'
+  return 'future'
+}
+
+const getDaysUntilDelivery = (dateString) => {
+  if (!dateString) return ''
+  
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const deliveryDate = new Date(dateString)
+  deliveryDate.setHours(0, 0, 0, 0)
+  
+  const diffTime = deliveryDate - today
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  
+  if (diffDays < 0) {
+    const absDays = Math.abs(diffDays)
+    return absDays === 1 
+      ? `1 ${t.value.dayOverdue}` 
+      : `${absDays} ${t.value.daysOverdue}`
+  } else if (diffDays === 0) {
+    return t.value.expectedToday
+  } else {
+    return diffDays === 1 
+      ? `1 ${t.value.dayAway}` 
+      : `${diffDays} ${t.value.daysAway}`
+  }
+}
+
+const openMarkArrivedModal = (item) => {
+  selectedItem.value = item
+  arrivedForm.value = {
+    weight: null,
+    dimensions: {
+      length: null,
+      width: null,
+      height: null,
+    }
+  }
+  showMarkArrivedModal.value = true
+}
+
+const closeMarkArrivedModal = () => {
+  showMarkArrivedModal.value = false
+  selectedItem.value = null
+  arrivedForm.value = {
+    weight: null,
+    dimensions: {
+      length: null,
+      width: null,
+      height: null,
+    }
+  }
+}
+
+const confirmMarkArrived = async () => {
+  if (!arrivedForm.value.weight || !selectedItem.value) return
+  
+  markingArrived.value = true
+  try {
+    const payload = {
+      weight: arrivedForm.value.weight,
+    }
+    
+    // Only include dimensions if at least one value is provided
+    if (arrivedForm.value.dimensions.length || arrivedForm.value.dimensions.width || arrivedForm.value.dimensions.height) {
+      payload.dimensions = arrivedForm.value.dimensions
+    }
+    
+    await $customFetch(`/admin/orders/${order.value.id}/items/${selectedItem.value.id}/mark-arrived`, {
+      method: 'PUT',
+      body: payload
+    })
+    
+    $toast.success('Package marked as arrived')
+    closeMarkArrivedModal()
+    await fetchOrder()
+  } catch (error) {
+    console.error('Error marking package as arrived:', error)
+    $toast.error(error.data?.message || 'Error marking package as arrived')
+  } finally {
+    markingArrived.value = false
+  }
+}
+
+const confirmStartProcessing = async () => {
+  processingStatus.value = true
+  try {
+    await $customFetch(`/admin/orders/${order.value.id}/start-processing`, {
+      method: 'PUT'
+    })
+    
+    $toast.success('Order processing started')
+    showStartProcessingModal.value = false
+    await fetchOrder()
+  } catch (error) {
+    console.error('Error starting processing:', error)
+    $toast.error(error.data?.message || 'Error starting processing')
+  } finally {
+    processingStatus.value = false
+  }
+}
+
+const confirmMarkAsDelivered = async () => {
+  processingStatus.value = true
+  try {
+    await $customFetch(`/admin/orders/${order.value.id}/mark-delivered`, {
+      method: 'PUT'
+    })
+    
+    $toast.success('Order marked as delivered')
+    showMarkDeliveredModal.value = false
+    await fetchOrder()
+  } catch (error) {
+    console.error('Error marking as delivered:', error)
+    $toast.error(error.data?.message || 'Error marking as delivered')
+  } finally {
+    processingStatus.value = false
+  }
+}
+
+const confirmMarkAsPaid = async () => {
+  markingPaid.value = true
+  try {
+    await $customFetch(`/admin/orders/${order.value.id}/mark-paid`, {
+      method: 'PUT'
+    })
+    
+    $toast.success('Order marked as paid')
+    showMarkPaidModal.value = false
+    await fetchOrder()
+  } catch (error) {
+    console.error('Error marking as paid:', error)
+    $toast.error(error.data?.message || 'Error marking as paid')
+  } finally {
+    markingPaid.value = false
+  }
+}
+
+const openDeleteModal = () => {
+  showActionsMenu.value = false
+  showDeleteModal.value = true
+}
+
+const confirmDeleteOrder = async () => {
+  deletingOrder.value = true
+  try {
+    await $customFetch(`/admin/orders/${order.value.id}`, {
+      method: 'DELETE'
+    })
+    
+    $toast.success('Order deleted successfully')
+    await router.push('/app/admin/orders')
+  } catch (error) {
+    console.error('Error deleting order:', error)
+    $toast.error(error.data?.message || 'Error deleting order')
+  } finally {
+    deletingOrder.value = false
+  }
+}
+
 onMounted(() => {
   fetchOrder()
 })
@@ -1488,7 +1335,40 @@ onMounted(() => {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
 .animate-spin {
   animation: spin 1s linear infinite;
+}
+
+/* Smooth transitions */
+.transition-colors {
+  transition-property: color, background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 </style>

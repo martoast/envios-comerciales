@@ -1,4 +1,3 @@
-<!-- pages/app/orders/[id]/index.vue -->
 <template>
   <section class="min-h-screen bg-gray-50">
     <!-- Header - Simplified & Clean -->
@@ -49,7 +48,7 @@
             <Menu
               as="div"
               class="relative"
-              v-if="order?.status === 'collecting'"
+              v-if="order?.status === 'collecting' && canManageItems"
             >
               <MenuButton
                 class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -143,7 +142,7 @@
         <div
           class="w-12 h-12 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"
         ></div>
-        <p class="mt-4 text-sm text-gray-600">Loading order details...</p>
+        <p class="mt-4 text-sm text-gray-600">{{ t.loadingOrder }}</p>
       </div>
     </div>
 
@@ -207,97 +206,95 @@
         </div>
       </div>
 
-      
-
       <!-- AWAITING_PACKAGES STATUS -->
-<div
-  v-if="order.status === 'awaiting_packages'"
-  class="bg-amber-50 border border-amber-200 rounded-xl p-6"
->
-  <div
-    class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
-  >
-    <div
-      class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0"
-    >
-      <svg
-        class="w-6 h-6 text-amber-600"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
+      <div
+        v-if="order.status === 'awaiting_packages'"
+        class="bg-amber-50 border border-amber-200 rounded-xl p-6"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-        />
-      </svg>
-    </div>
-    <div class="flex-1">
-      <h3 class="text-lg font-semibold text-amber-900">
-        {{ t.awaitingPackagesTitle }}
-      </h3>
-      <p class="text-sm text-amber-700 mt-1">
-        {{ t.awaitingPackagesDescription }}
-      </p>
-    </div>
-    <button
-      @click="showReopenOrderModal = true"
-      class="px-6 py-3 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition-colors"
-    >
-      {{ t.reopenOrder }}
-    </button>
-  </div>
-</div>
-
-<!-- PACKAGES_COMPLETE STATUS -->
-<div
-  v-if="order.status === 'packages_complete'"
-  class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 text-white"
->
-  <div
-    class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
-  >
-    <div
-      class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
-    >
-      <svg
-        class="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M5 13l4 4L19 7"
-        />
-      </svg>
-    </div>
-    <div class="flex-1">
-      <h3 class="text-lg font-semibold">{{ t.packagesCompleteTitle }}</h3>
-      <p class="text-sm text-white/90 mt-1">
-        {{ t.packagesCompleteDescription }}
-      </p>
-    </div>
-    <div class="flex flex-col sm:flex-row gap-2">
-      <button
-        @click="showReopenOrderModal = true"
-        class="px-4 py-2.5 bg-white/20 text-white font-medium rounded-lg hover:bg-white/30 transition-colors border border-white/30"
-      >
-        {{ t.reopenOrder }}
-      </button>
-      <div class="px-6 py-3 bg-white/20 rounded-lg border border-white/30">
-        <div class="flex items-center gap-2">
-          <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          <span class="text-sm font-medium">{{ t.preparing }}</span>
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6 text-amber-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-amber-900">
+              {{ t.awaitingPackagesTitle }}
+            </h3>
+            <p class="text-sm text-amber-700 mt-1">
+              {{ t.awaitingPackagesDescription }}
+            </p>
+          </div>
+          <button
+            @click="showReopenOrderModal = true"
+            class="px-6 py-3 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition-colors"
+          >
+            {{ t.reopenOrder }}
+          </button>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+
+      <!-- PACKAGES_COMPLETE STATUS -->
+      <div
+        v-if="order.status === 'packages_complete'"
+        class="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 text-white"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left"
+        >
+          <div
+            class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold">{{ t.packagesCompleteTitle }}</h3>
+            <p class="text-sm text-white/90 mt-1">
+              {{ t.packagesCompleteDescription }}
+            </p>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <button
+              @click="showReopenOrderModal = true"
+              class="px-4 py-2.5 bg-white/20 text-white font-medium rounded-lg hover:bg-white/30 transition-colors border border-white/30"
+            >
+              {{ t.reopenOrder }}
+            </button>
+            <div class="px-6 py-3 bg-white/20 rounded-lg border border-white/30">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                <span class="text-sm font-medium">{{ t.preparing }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- PROCESSING STATUS -->
       <div
@@ -398,7 +395,6 @@
             </svg>
             {{ t.trackShipment }}
           </NuxtLink>
-
         </div>
       </div>
 
@@ -612,9 +608,9 @@
             <h2 class="text-lg font-semibold text-gray-900">
               {{ t.orderItems }}
             </h2>
-            <!-- Manage Items Button - Always visible if collecting status -->
+            <!-- Manage Items Button - Only show if can manage items -->
             <NuxtLink
-              v-if="order.status === 'collecting'"
+              v-if="canManageItems"
               :to="`/app/orders/${order.id}/items`"
               class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
             >
@@ -634,6 +630,10 @@
               <span class="hidden sm:inline">{{ t.manageItems }}</span>
               <span class="sm:hidden">{{ t.manage }}</span>
             </NuxtLink>
+            <!-- Info message when all items arrived -->
+            <div v-else-if="allItemsArrived && order.status !== 'collecting'" class="text-xs text-gray-500 bg-gray-50 px-3 py-1.5 rounded-lg">
+              {{ t.allItemsReceived }}
+            </div>
           </div>
         </div>
 
@@ -701,7 +701,7 @@
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span class="hidden sm:inline">{{ t.arrived }}</span>
+                    <span>{{ t.arrived }}</span>
                   </span>
 
                   <span
@@ -748,6 +748,52 @@
                     {{ t.receipt }}
                   </NuxtLink>
                 </div>
+
+                <!-- Estimated Delivery Date (NEW) - Only show if NOT arrived -->
+                <div v-if="item.estimated_delivery_date && !item.arrived" class="mt-3 bg-blue-50 rounded-lg p-3">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-xs font-medium text-blue-900">{{ t.expectedDelivery }}</p>
+                      <p class="text-sm font-semibold text-blue-700">
+                        {{ formatDeliveryDate(item.estimated_delivery_date) }}
+                      </p>
+                      <!-- Status indicator -->
+                      <p v-if="getDeliveryStatus(item.estimated_delivery_date) === 'overdue'" class="text-xs text-red-600 mt-1 flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {{ getDaysUntilDelivery(item.estimated_delivery_date) }}
+                      </p>
+                      <p v-else-if="getDeliveryStatus(item.estimated_delivery_date) === 'today'" class="text-xs text-blue-600 font-medium mt-1">
+                        {{ t.expectedToday }}
+                      </p>
+                      <p v-else-if="getDeliveryStatus(item.estimated_delivery_date) === 'soon'" class="text-xs text-amber-600 mt-1">
+                        {{ getDaysUntilDelivery(item.estimated_delivery_date) }}
+                      </p>
+                      <p v-else class="text-xs text-gray-600 mt-1">
+                        {{ getDaysUntilDelivery(item.estimated_delivery_date) }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Arrived Date (NEW) - Only show if arrived -->
+                <div v-if="item.arrived && item.arrived_at" class="mt-3 bg-green-50 rounded-lg p-3">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    <div>
+                      <p class="text-xs font-medium text-green-900">{{ t.arrivedAt }}</p>
+                      <p class="text-sm font-semibold text-green-700">
+                        {{ formatDate(item.arrived_at) }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -758,11 +804,11 @@
           v-if="!order.items || order.items.length === 0"
           class="py-8 sm:py-12 px-4 text-center"
         >
-          <img
-            src="/empty-box.svg"
-            alt="empty box"
-            class="w-12 h-12 mx-auto mb-3"
-          />
+          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+            </svg>
+          </div>
           <p class="text-gray-500 text-sm sm:text-base">{{ t.noItemsYet }}</p>
           <p class="text-xs sm:text-sm text-gray-400 mt-1">
             {{ t.startAddingItems }}
@@ -770,7 +816,7 @@
 
           <!-- CTA Button when empty -->
           <NuxtLink
-            v-if="order.status === 'collecting'"
+            v-if="canManageItems"
             :to="`/app/orders/${order.id}/items`"
             class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
           >
@@ -834,7 +880,6 @@
                 </svg>
                 {{ t.trackWithDHL }}
               </NuxtLink>
-
             </div>
           </div>
 
@@ -1219,7 +1264,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import {
   Dialog,
@@ -1261,6 +1306,21 @@ const bannerTrigger = ref("auto");
 
 const showDeleteOrderModal = ref(false);
 const deletingOrder = ref(false);
+
+// Computed properties
+const allItemsArrived = computed(() => {
+  if (!order.value?.items || order.value.items.length === 0) return false;
+  return order.value.items.every(item => item.arrived);
+});
+
+const canManageItems = computed(() => {
+  // Can manage items if:
+  // 1. Order is in collecting status, OR
+  // 2. Order is NOT in collecting status but NOT all items have arrived
+  if (order.value?.status === 'collecting') return true;
+  if (order.value?.status === 'awaiting_packages' && !allItemsArrived.value) return true;
+  return false;
+});
 
 // Translations
 const translations = {
@@ -1466,6 +1526,10 @@ const translations = {
     es: "Error al cargar la orden",
     en: "Error loading order",
   },
+  loadingOrder: {
+    es: "Cargando detalles de la orden...",
+    en: "Loading order details...",
+  },
   // Status translations
   collecting: {
     es: "Agregando Artículos",
@@ -1605,7 +1669,6 @@ const translations = {
     es: "Agregar primer artículo",
     en: "Add first item",
   },
-  // Add these to your existing translations object
   collectingNoItemsTitle: {
     es: "Gestionar artículos de tu envío",
     en: "Manage Items in Your Shipment",
@@ -1713,6 +1776,39 @@ const translations = {
   trackShipment: {
     es: "Rastrear Envío",
     en: "Track Shipment",
+  },
+  // NEW: Delivery date translations
+  expectedDelivery: {
+    es: "Entrega esperada",
+    en: "Expected Delivery",
+  },
+  expectedToday: {
+    es: "¡Se espera hoy!",
+    en: "Expected today!",
+  },
+  arrivedAt: {
+    es: "Llegó el",
+    en: "Arrived on",
+  },
+  daysOverdue: {
+    es: "días de retraso",
+    en: "days overdue",
+  },
+  dayOverdue: {
+    es: "día de retraso",
+    en: "day overdue",
+  },
+  daysAway: {
+    es: "días restantes",
+    en: "days away",
+  },
+  dayAway: {
+    es: "día restante",
+    en: "day away",
+  },
+  allItemsReceived: {
+    es: "Todos los artículos recibidos",
+    en: "All items received",
   },
 };
 
@@ -1874,6 +1970,66 @@ const formatDate = (date) => {
   });
 };
 
+// NEW: Delivery date helper methods
+const formatDeliveryDate = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const locale = user?.preferred_language === "es" ? "es-MX" : "en-US";
+  
+  return date.toLocaleDateString(locale, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+};
+
+const getDeliveryStatus = (dateString) => {
+  if (!dateString) return null;
+  
+  const deliveryDate = new Date(dateString);
+  const today = new Date();
+  
+  // Reset time parts for accurate day comparison
+  deliveryDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  
+  const diffTime = deliveryDate - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) return 'overdue';
+  if (diffDays === 0) return 'today';
+  if (diffDays <= 3) return 'soon';
+  return 'future';
+};
+
+const getDaysUntilDelivery = (dateString) => {
+  if (!dateString) return "";
+  
+  const deliveryDate = new Date(dateString);
+  const today = new Date();
+  
+  // Reset time parts for accurate day comparison
+  deliveryDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  
+  const diffTime = deliveryDate - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) {
+    const absDays = Math.abs(diffDays);
+    return absDays === 1 
+      ? `1 ${t.value.dayOverdue}` 
+      : `${absDays} ${t.value.daysOverdue}`;
+  }
+  
+  if (diffDays === 0) return t.value.expectedToday;
+  
+  return diffDays === 1 
+    ? `1 ${t.value.dayAway}` 
+    : `${diffDays} ${t.value.daysAway}`;
+};
+
 const handleDeleteOrder = async () => {
   deletingOrder.value = true;
   try {
@@ -1920,6 +2076,20 @@ onMounted(() => {
   animation: spin 1s linear infinite;
 }
 
+/* Pulse animation for status indicators */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 /* Custom scrollbar for better UX */
 ::-webkit-scrollbar {
   width: 6px;
@@ -1937,5 +2107,36 @@ onMounted(() => {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Smooth transitions for interactive elements */
+.transition-colors {
+  transition-property: color, background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Hover states */
+.hover\:bg-gray-50:hover {
+  background-color: #f9fafb;
+}
+
+.hover\:bg-gray-100:hover {
+  background-color: #f3f4f6;
+}
+
+.hover\:text-primary-600:hover {
+  color: var(--primary-600, #2563eb);
+}
+
+.hover\:text-primary-700:hover {
+  color: var(--primary-700, #1d4ed8);
+}
+
+/* Focus states for accessibility */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary-600, #2563eb);
+  outline-offset: 2px;
 }
 </style>
