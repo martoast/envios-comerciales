@@ -18,7 +18,7 @@
     <CTACarouselBanner/>
     
     <!-- Testimonials Section -->
-    <MainTestimonialsSection />
+    <!-- <MainTestimonialsSection /> -->
     
 
     
