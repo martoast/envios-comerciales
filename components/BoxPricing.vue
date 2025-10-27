@@ -353,8 +353,8 @@ const translations = {
     en: "Shop from multiple US stores. We pack everything into one box and ship it to Mexico. Fixed price, no surprises.",
   },
   depositNotice: {
-    es: "*Se requiere un anticipo de $500 MXN para procesar su envío, el cual será descontado de su costo final.",
-    en: "*A $500 MXN deposit is required to process your shipment, which will be deducted from your final cost.",
+    es: "*Se requiere un depósito del 50% del costo total para procesar su envío. El 50% restante se paga al recibir su paquete en México.",
+    en: "*A 50% deposit of the total cost is required to process your shipment. The remaining 50% is paid upon receiving your package in Mexico.",
   },
   consolidationTitle: {
     es: "💡 Ahorra consolidando tus compras",
