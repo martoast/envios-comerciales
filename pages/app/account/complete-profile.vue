@@ -89,139 +89,6 @@
         class="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 sm:p-6 md:p-8"
       >
         <form @submit.prevent="handleSubmit" class="space-y-5 sm:space-y-6">
-          <!-- User Type Selection (Required) - COMPACT MOBILE DESIGN -->
-          <div v-if="!userHasType">
-            <label class="block text-sm font-semibold text-gray-900 mb-3">
-              {{ t.userTypeLabel }} <span class="text-red-500">*</span>
-            </label>
-            <div class="space-y-2">
-              <button
-                v-for="type in sortedTranslatedUserTypes"
-                :key="type.value"
-                type="button"
-                @click="form.user_type = type.value"
-                :class="[
-                  'w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 text-left',
-                  form.user_type === type.value
-                    ? 'border-primary-500 bg-primary-50 shadow-md'
-                    : 'border-gray-200 hover:border-gray-300 bg-white hover:shadow-sm',
-                ]"
-              >
-                <!-- Radio Circle -->
-                <div class="flex-shrink-0">
-                  <div
-                    :class="[
-                      'w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all',
-                      form.user_type === type.value
-                        ? 'border-primary-500 bg-primary-500'
-                        : 'border-gray-300',
-                    ]"
-                  >
-                    <div
-                      v-if="form.user_type === type.value"
-                      class="w-2.5 h-2.5 bg-white rounded-full"
-                    ></div>
-                  </div>
-                </div>
-
-                <!-- Icon -->
-                <div
-                  :class="[
-                    'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0',
-                    form.user_type === type.value
-                      ? 'bg-primary-100'
-                      : 'bg-gray-100',
-                  ]"
-                >
-                  <svg
-                    v-if="type.icon === 'globe'"
-                    class="w-5 h-5"
-                    :class="
-                      form.user_type === type.value
-                        ? 'text-primary-600'
-                        : 'text-gray-600'
-                    "
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <svg
-                    v-else-if="type.icon === 'briefcase'"
-                    class="w-5 h-5"
-                    :class="
-                      form.user_type === type.value
-                        ? 'text-primary-600'
-                        : 'text-gray-600'
-                    "
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <svg
-                    v-else-if="type.icon === 'shopping-cart'"
-                    class="w-5 h-5"
-                    :class="
-                      form.user_type === type.value
-                        ? 'text-primary-600'
-                        : 'text-gray-600'
-                    "
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                </div>
-
-                <!-- Text Content -->
-                <div class="flex-1 min-w-0">
-                  <div
-                    :class="[
-                      'text-sm font-semibold',
-                      form.user_type === type.value
-                        ? 'text-primary-900'
-                        : 'text-gray-900',
-                    ]"
-                  >
-                    {{ type.label }}
-                  </div>
-                  <div
-                    :class="[
-                      'text-xs mt-0.5 truncate',
-                      form.user_type === type.value
-                        ? 'text-primary-700'
-                        : 'text-gray-500',
-                    ]"
-                  >
-                    {{ type.description }}
-                  </div>
-                </div>
-              </button>
-            </div>
-            <p v-if="errors.user_type" class="mt-2 text-sm text-red-600">
-              {{ errors.user_type[0] }}
-            </p>
-          </div>
-
           <!-- Phone Field with Validation Component -->
           <PhoneValidationInput
             ref="phoneInputRef"
@@ -289,7 +156,6 @@ const { t: createTranslations } = useLanguage();
 // State
 const form = ref({
   phone: "",
-  user_type: null,
 });
 
 const phoneInputRef = ref(null);
@@ -303,27 +169,6 @@ const loading = ref(false);
 const errorMessage = ref("");
 const errors = ref({});
 const userState = useState("user");
-
-// User types base configuration
-const userTypes = ref([
-  {
-    value: "expat",
-    icon: "globe",
-  },
-  {
-    value: "business",
-    icon: "briefcase",
-  },
-  {
-    value: "shopper",
-    icon: "shopping-cart",
-  },
-]);
-
-// Computed to check if user already has a type
-const userHasType = computed(() => {
-  return userState.value && userState.value.user_type;
-});
 
 // Get redirect parameter from route
 const redirectTo = route.query.redirect || "/app/";
@@ -367,35 +212,6 @@ const translations = {
     es: "Cuéntanos un poco sobre ti para personalizar tu experiencia",
     en: "Tell us a bit about yourself to personalize your experience",
   },
-  userTypeLabel: {
-    es: "¿Cómo planeas usar nuestro servicio?",
-    en: "How do you plan to use our service?",
-  },
-  // User type translations
-  expatLabel: {
-    es: "Expatriado",
-    en: "Expat",
-  },
-  expatDescription: {
-    es: "Viviendo en México",
-    en: "Living in Mexico",
-  },
-  businessLabel: {
-    es: "Empresa",
-    en: "Business",
-  },
-  businessDescription: {
-    es: "Soluciones B2B",
-    en: "B2B Solutions",
-  },
-  shopperLabel: {
-    es: "Comprador",
-    en: "Online Shopper",
-  },
-  shopperDescription: {
-    es: "Compras Personales",
-    en: "Personal Shopping",
-  },
   phoneLabel: {
     es: "Número de Teléfono",
     en: "Phone Number",
@@ -429,36 +245,6 @@ const translations = {
 // Get reactive translations
 const t = createTranslations(translations);
 
-// Computed property for translated user types
-const translatedUserTypes = computed(() => {
-  return userTypes.value.map((type) => {
-    let label = "";
-    let description = "";
-
-    switch (type.value) {
-      case "shopper":
-        label = t.value.shopperLabel;
-        description = t.value.shopperDescription;
-        break;
-      case "business":
-        label = t.value.businessLabel;
-        description = t.value.businessDescription;
-        break;
-      case "expat":
-        label = t.value.expatLabel;
-        description = t.value.expatDescription;
-        break;
-    }
-
-    return {
-      value: type.value,
-      icon: type.icon,
-      label,
-      description,
-    };
-  });
-});
-
 // Handle phone validation changes from component
 const handlePhoneValidation = (validation) => {
   phoneValidation.value = validation;
@@ -466,30 +252,8 @@ const handlePhoneValidation = (validation) => {
 
 // Form validation
 const canProceed = computed(() => {
-  const hasValidPhone = phoneValidation.value.isValid;
-  const hasUserType = userHasType.value || form.value.user_type;
-
-  return hasValidPhone && hasUserType;
+  return phoneValidation.value.isValid;
 });
-
-// Computed property for translated user types SORTED ALPHABETICALLY
-const sortedTranslatedUserTypes = computed(() => {
-  return translatedUserTypes.value.sort((a, b) =>
-    a.label.localeCompare(b.label)
-  );
-});
-
-// Check for preselected user type from query params
-const checkPreselection = () => {
-  const preselect = route.query.preselect;
-  if (
-    preselect &&
-    ["expat", "business", "shopper"].includes(preselect) &&
-    !userHasType.value
-  ) {
-    form.value.user_type = preselect;
-  }
-};
 
 // Methods
 const clearErrors = () => {
@@ -515,11 +279,6 @@ const handleSubmit = async () => {
     const updateData = {
       phone: phoneValidation.value.e164Phone, // Use E.164 format from component
     };
-
-    // Only add user_type if user doesn't have one
-    if (!userHasType.value && form.value.user_type) {
-      updateData.user_type = form.value.user_type;
-    }
 
     // Add registration source if available and user doesn't already have it
     if (
@@ -577,13 +336,10 @@ onMounted(async () => {
     return;
   }
 
-  // If user already has phone AND user_type, redirect
-  if (userState.value && userState.value.phone && userState.value.user_type) {
+  // If user already has phone, redirect
+  if (userState.value && userState.value.phone) {
     await navigateTo(redirectTo);
   }
-
-  // Check for preselected user type
-  checkPreselection();
 });
 </script>
 

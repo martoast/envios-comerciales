@@ -17,11 +17,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return
   }
   
-  // Check if user is missing critical info (phone OR user_type)
-  if (!userState.value.phone || !userState.value.user_type) {
+  // Check if user is missing critical info (ONLY phone now, removed user_type check)
+  if (!userState.value.phone) {
     console.log('User needs to complete profile', {
       hasPhone: !!userState.value.phone,
-      hasUserType: !!userState.value.user_type,
       provider: userState.value.provider
     })
     
