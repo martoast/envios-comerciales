@@ -1,4 +1,4 @@
-<!-- pages/terms-of-service-of-service.vue -->
+<!-- pages/terms-of-service.vue -->
 <template>
   <div class="min-h-screen bg-gray-50 py-20">
     <div class="max-w-4xl mx-auto px-5">
@@ -88,7 +88,34 @@
               <li>{{ t.shippingItem2 }}</li>
               <li>{{ t.shippingItem3 }}</li>
               <li>{{ t.shippingItem4 }}</li>
+              <li>{{ t.shippingItem5 }}</li>
+              <li>{{ t.shippingItem6 }}</li>
+              <li>{{ t.shippingItem7 }}</li>
+              <li>{{ t.shippingItem8 }}</li>
             </ul>
+          </section>
+
+          <!-- Section 5.1: Carrier Claims and Disputes -->
+          <section>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+              5.1 {{ t.carrierClaimsTitle }}
+            </h2>
+            <p class="mb-4">{{ t.carrierClaimsText }}</p>
+            <ul class="list-disc pl-6 space-y-2">
+              <li>{{ t.carrierClaimsItem1 }}</li>
+              <li>{{ t.carrierClaimsItem2 }}</li>
+              <li>{{ t.carrierClaimsItem3 }}</li>
+              <li>{{ t.carrierClaimsItem4 }}</li>
+              <li>{{ t.carrierClaimsItem5 }}</li>
+            </ul>
+            <div
+              class="mt-4 p-4 bg-red-50 border-l-4 border-red-400 rounded-lg"
+            >
+              <p class="text-sm font-semibold text-red-800 mb-2">
+                {{ t.carrierWarningTitle }}
+              </p>
+              <p class="text-sm text-red-700">{{ t.carrierWarningText }}</p>
+            </div>
           </section>
 
           <!-- Section 6: Prohibited Items -->
@@ -396,56 +423,108 @@ const translations = {
     en: "Prices are fixed and transparent, with no hidden charges",
   },
   pricingItem4: {
-    es: "Se requiere un depósito de $500 MXN cuando se genera su guía de envío",
-    en: "A deposit of $500 MXN is required when your shipping label is generated",
+    es: "Se requiere un depósito del 50% del costo total cuando se genera su guía de envío",
+    en: "A 50% deposit of the total cost is required when your shipping label is generated",
   },
   pricingItem5: {
-    es: "El depósito se aplica al costo total de su envío",
-    en: "The deposit is applied to the total cost of your shipment",
+    es: "El depósito cubre los costos de consolidación y envío internacional",
+    en: "The deposit covers consolidation and international shipping costs",
   },
   pricingItem6: {
-    es: "El saldo restante se paga después de recibir su paquete en México",
-    en: "The remaining balance is paid after receiving your package in Mexico",
+    es: "El saldo restante (50%) se paga después de recibir su paquete en México",
+    en: "The remaining balance (50%) is paid after receiving your package in Mexico",
   },
   pricingItem7: {
-    es: "Aceptamos pagos con tarjeta de crédito/débito a través de Stripe",
-    en: "We accept credit/debit card payments through Stripe",
+    es: "Todos los pagos se procesan de manera segura a través de Stripe",
+    en: "All payments are processed securely through Stripe",
   },
   importantNote: {
     es: "Nota Importante:",
     en: "Important Note:",
   },
   depositNote: {
-    es: "El depósito de $500 MXN es obligatorio para procesar y enviar su paquete. Este depósito no es reembolsable una vez que el envío ha sido procesado y despachado desde nuestro almacén.",
-    en: "The $500 MXN deposit is mandatory to process and ship your package. This deposit is non-refundable once the shipment has been processed and dispatched from our warehouse.",
+    es: "El depósito del 50% es obligatorio para procesar y enviar su paquete. Este depósito no es reembolsable una vez que el envío ha sido procesado y despachado desde nuestro almacén. El depósito cubre consolidación, documentación aduanal, y costos de envío internacional.",
+    en: "The 50% deposit is mandatory to process and ship your package. This deposit is non-refundable once the shipment has been processed and dispatched from our warehouse. The deposit covers consolidation, customs documentation, and international shipping costs.",
   },
   ivaNote: {
     es: "Todos los precios están sujetos a IVA (Impuesto al Valor Agregado) del 16% según lo establecido por las leyes fiscales mexicanas. El IVA se agregará al costo total del servicio y se reflejará en su factura final.",
     en: "All prices are subject to IVA (Value Added Tax) of 16% as established by Mexican tax laws. IVA will be added to the total service cost and reflected in your final invoice.",
   },
   shippingTitle: {
-    es: "Envío y Entrega",
-    en: "Shipping and Delivery",
+    es: "Envío, Entrega y Responsabilidad del Transportista",
+    en: "Shipping, Delivery and Carrier Liability",
   },
   shippingText: {
-    es: "Términos de envío:",
-    en: "Shipping terms:",
+    es: "Términos de envío y entrega:",
+    en: "Shipping and delivery terms:",
   },
   shippingItem1: {
-    es: "Los tiempos de entrega estimados son de 3-7 días hábiles desde que se procesa su envío",
-    en: "Estimated delivery times are 3-7 business days from when your shipment is processed",
+    es: "Los tiempos de entrega estimados son de 3-7 días hábiles desde que se procesa su envío a través de Estafeta",
+    en: "Estimated delivery times are 3-7 business days from when your shipment is processed via Estafeta",
   },
   shippingItem2: {
-    es: "Los envíos se realizan a través de Estafeta con número de rastreo",
-    en: "Shipments are made via Estafeta with tracking number",
+    es: "Boxly actúa como intermediario de envío y utiliza Estafeta como transportista. Una vez que su paquete es entregado a Estafeta, cualquier retraso, pérdida, daño o problema de entrega es responsabilidad exclusiva de Estafeta",
+    en: "Boxly acts as a shipping intermediary and uses Estafeta as the carrier. Once your package is handed to Estafeta, any delays, loss, damage, or delivery issues are the sole responsibility of Estafeta",
   },
   shippingItem3: {
-    es: "Boxly no es responsable de retrasos causados por aduanas, condiciones climáticas o fuerza mayor",
-    en: "Boxly is not responsible for delays caused by customs, weather conditions, or force majeure",
+    es: "Usted es responsable de proporcionar una dirección de entrega completa, precisa y válida en México. Boxly y Estafeta no son responsables de entregas fallidas debido a direcciones incorrectas, incompletas o inválidas proporcionadas por el cliente",
+    en: "You are responsible for providing a complete, accurate, and valid delivery address in Mexico. Boxly and Estafeta are not responsible for failed deliveries due to incorrect, incomplete, or invalid addresses provided by the customer",
   },
   shippingItem4: {
-    es: "Debe proporcionar una dirección de entrega válida en México",
-    en: "You must provide a valid delivery address in Mexico",
+    es: "Boxly no es responsable de retrasos causados por aduanas, condiciones climáticas, desastres naturales, huelgas, pandemias, restricciones gubernamentales, o cualquier otra circunstancia de fuerza mayor fuera de nuestro control",
+    en: "Boxly is not responsible for delays caused by customs, weather conditions, natural disasters, strikes, pandemics, government restrictions, or any other force majeure circumstances beyond our control",
+  },
+  shippingItem5: {
+    es: "Una vez que Estafeta marca su paquete como 'entregado', Boxly no tiene responsabilidad sobre reclamos de no recepción. Cualquier disputa de entrega debe manejarse directamente con Estafeta",
+    en: "Once Estafeta marks your package as 'delivered', Boxly has no liability for claims of non-receipt. Any delivery disputes must be handled directly with Estafeta",
+  },
+  shippingItem6: {
+    es: "Boxly proporcionará el número de rastreo de Estafeta una vez que el paquete sea enviado. Es su responsabilidad rastrear su paquete y estar disponible para recibirlo",
+    en: "Boxly will provide the Estafeta tracking number once the package is shipped. It is your responsibility to track your package and be available to receive it",
+  },
+  shippingItem7: {
+    es: "Si Estafeta no puede entregar su paquete debido a dirección incorrecta, ausencia del destinatario, o rechazo de entrega, usted será responsable de cualquier cargo adicional de reenvío o almacenamiento",
+    en: "If Estafeta cannot deliver your package due to incorrect address, recipient absence, or delivery refusal, you will be responsible for any additional reshipment or storage charges",
+  },
+  shippingItem8: {
+    es: "Boxly no ofrece garantías sobre tiempos de entrega específicos. Las estimaciones de 3-7 días son aproximadas y pueden variar según la ubicación, temporada y circunstancias del transportista",
+    en: "Boxly does not provide guarantees on specific delivery times. The 3-7 day estimate is approximate and may vary based on location, season, and carrier circumstances",
+  },
+  carrierClaimsTitle: {
+    es: "Reclamos al Transportista y Disputas de Entrega",
+    en: "Carrier Claims and Delivery Disputes",
+  },
+  carrierClaimsText: {
+    es: "Política de reclamos con el transportista:",
+    en: "Carrier claims policy:",
+  },
+  carrierClaimsItem1: {
+    es: "Boxly proporcionará asistencia razonable para presentar reclamos con Estafeta en caso de paquetes perdidos, dañados o no entregados",
+    en: "Boxly will provide reasonable assistance in filing claims with Estafeta for lost, damaged, or undelivered packages",
+  },
+  carrierClaimsItem2: {
+    es: "La responsabilidad final de cualquier paquete perdido o dañado recae en Estafeta según sus términos y condiciones de servicio",
+    en: "Final liability for any lost or damaged packages lies with Estafeta according to their terms and conditions of service",
+  },
+  carrierClaimsItem3: {
+    es: "Los reclamos de seguro, si están disponibles, deben presentarse directamente con Estafeta o su proveedor de seguros de envío",
+    en: "Insurance claims, if available, must be filed directly with Estafeta or your shipping insurance provider",
+  },
+  carrierClaimsItem4: {
+    es: "Boxly no es responsable de compensar a los clientes por paquetes perdidos, dañados o retrasados por el transportista. La responsabilidad máxima de Boxly se limita al costo del servicio de consolidación y envío pagado a Boxly, excluyendo el valor del contenido del paquete",
+    en: "Boxly is not responsible for compensating customers for packages lost, damaged, or delayed by the carrier. Boxly's maximum liability is limited to the cost of the consolidation and shipping service paid to Boxly, excluding the value of package contents",
+  },
+  carrierClaimsItem5: {
+    es: "El cliente acepta que al usar los servicios de Boxly, entiende y acepta que Boxly actúa únicamente como intermediario de envío y que el transportista (Estafeta) es el responsable final de la entrega segura y oportuna",
+    en: "The customer agrees that by using Boxly services, they understand and accept that Boxly acts solely as a shipping intermediary and that the carrier (Estafeta) is ultimately responsible for safe and timely delivery",
+  },
+  carrierWarningTitle: {
+    es: "ADVERTENCIA IMPORTANTE:",
+    en: "IMPORTANT WARNING:",
+  },
+  carrierWarningText: {
+    es: "Boxly NO es una compañía de seguros y NO asegura el contenido de sus paquetes. Si está enviando artículos de alto valor, se recomienda encarecidamente contratar seguro adicional a través de su tienda de compras o un proveedor de seguros de terceros ANTES de enviar a nuestra dirección en San Diego. Una vez que el paquete ha sido entregado a Estafeta, Boxly no tiene control ni responsabilidad sobre el mismo.",
+    en: "Boxly is NOT an insurance company and does NOT insure the contents of your packages. If you are shipping high-value items, it is strongly recommended to purchase additional insurance through your shopping store or a third-party insurance provider BEFORE shipping to our San Diego address. Once the package has been handed to Estafeta, Boxly has no control or liability over it.",
   },
   prohibitedTitle: {
     es: "Artículos Prohibidos",
@@ -556,8 +635,8 @@ const translations = {
     en: "You may cancel a shipping order before it is processed for shipment",
   },
   cancellationItem2: {
-    es: "Una vez que el paquete ha sido enviado, no se pueden realizar reembolsos",
-    en: "Once the package has been shipped, refunds cannot be made",
+    es: "Una vez que el paquete ha sido enviado, no se pueden realizar reembolsos del depósito",
+    en: "Once the package has been shipped, refunds of the deposit cannot be made",
   },
   cancellationItem3: {
     es: "Los reembolsos, cuando apliquen, se procesarán dentro de 7-10 días hábiles",
