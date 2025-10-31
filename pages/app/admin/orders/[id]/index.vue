@@ -1226,7 +1226,8 @@ const confirmMarkArrived = async () => {
   markingArrived.value = true
   try {
     const payload = {
-      weight: arrivedForm.value.weight,
+      arrived: true,  // ADD THIS
+      weight: parseFloat(arrivedForm.value.weight),  // Also parseFloat for consistency
     }
     
     // Only include dimensions if at least one value is provided
