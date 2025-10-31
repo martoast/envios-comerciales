@@ -1234,7 +1234,7 @@ const confirmMarkArrived = async () => {
       payload.dimensions = arrivedForm.value.dimensions
     }
     
-    await $customFetch(`/admin/orders/${order.value.id}/items/${selectedItem.value.id}/mark-arrived`, {
+    await $customFetch(`/admin/orders/${order.value.id}/items/${selectedItem.value.id}/arrived`, {
       method: 'PUT',
       body: payload
     })
