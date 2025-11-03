@@ -33,6 +33,7 @@
             </a>
           </div>
           <div class="hidden md:ml-6 md:flex md:space-x-8">
+            <!-- Dashboard -->
             <button
               @click="handleNavigation('/app/admin/dashboard')"
               :class="[
@@ -45,7 +46,7 @@
               {{ t.dashboard }}
             </button>
             
-            <!-- Orders now single link -->
+            <!-- Orders -->
             <button
               @click="handleNavigation('/app/admin/orders')"
               :class="[
@@ -58,7 +59,7 @@
               {{ t.orders }}
             </button>
 
-            <!-- Packages - Now a single link -->
+            <!-- Packages -->
             <button
               @click="handleNavigation('/app/admin/packages')"
               :class="[
@@ -71,6 +72,7 @@
               {{ t.packages }}
             </button>
 
+            <!-- Customers -->
             <button
               @click="handleNavigation('/app/admin/customers')"
               :class="[
@@ -82,11 +84,25 @@
             >
               {{ t.customers }}
             </button>
+
+            <!-- Expenses -->
+            <button
+              @click="handleNavigation('/app/admin/expenses')"
+              :class="[
+                isActiveRoute('/app/admin/expenses')
+                  ? 'border-primary-500 text-gray-900'
+                  : 'border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900',
+                'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors duration-200',
+              ]"
+            >
+              {{ t.expenses }}
+            </button>
           </div>
         </div>
+        
+        <!-- Right-side profile and admin badge -->
         <div class="flex items-center">
           <div class="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
-            <!-- Admin Badge -->
             <span class="px-3 py-1 text-xs font-medium text-primary-600 bg-primary-50 rounded-full mr-4 border border-primary-200">
               {{ t.adminRole }}
             </span>
@@ -169,25 +185,20 @@
             'block border-l-4 py-2 pl-3 pr-4 text-base font-medium sm:pl-5 sm:pr-6 w-full text-left',
           ]"
         >{{ t.dashboard }}</DisclosureButton>
-        
-        <!-- Mobile Orders Section -->
-        <div class="pl-6">
-          <p class="px-3 pt-2 pb-1 text-xs font-semibold text-gray-500 uppercase">{{ t.orders }}</p>
-          <DisclosureButton
-            as="a"
-            href="/app/admin/orders"
-            @click.prevent="handleNavigation('/app/admin/orders')"
-            :class="[
-              isActiveRoute('/app/admin/orders') && !isActiveRoute('/app/admin/orders/ready-to-quote')
-                ? 'bg-primary-50 border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900',
-              'block border-l-4 py-2 pl-6 pr-4 text-base font-medium',
-            ]"
-          >{{ t.allOrders }}</DisclosureButton>
-          
-        </div>
 
-        <!-- Mobile Packages - Now a single link -->
+        <!-- Orders -->
+        <DisclosureButton
+          as="button"
+          @click="handleNavigation('/app/admin/orders')"
+          :class="[
+            isActiveRoute('/app/admin/orders')
+              ? 'bg-primary-50 border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900',
+            'block border-l-4 py-2 pl-3 pr-4 text-base font-medium sm:pl-5 sm:pr-6 w-full text-left',
+          ]"
+        >{{ t.orders }}</DisclosureButton>
+
+        <!-- Packages -->
         <DisclosureButton
           as="button"
           @click="handleNavigation('/app/admin/packages')"
@@ -199,6 +210,7 @@
           ]"
         >{{ t.packages }}</DisclosureButton>
 
+        <!-- Customers -->
         <DisclosureButton
           as="button"
           @click="handleNavigation('/app/admin/customers')"
@@ -209,8 +221,21 @@
             'block border-l-4 py-2 pl-3 pr-4 text-base font-medium sm:pl-5 sm:pr-6 w-full text-left',
           ]"
         >{{ t.customers }}</DisclosureButton>
+
+        <!-- Expenses (mobile) -->
+        <DisclosureButton
+          as="button"
+          @click="handleNavigation('/app/admin/expenses')"
+          :class="[
+            isActiveRoute('/app/admin/expenses')
+              ? 'bg-primary-50 border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900',
+            'block border-l-4 py-2 pl-3 pr-4 text-base font-medium sm:pl-5 sm:pr-6 w-full text-left',
+          ]"
+        >{{ t.expenses }}</DisclosureButton>
       </div>
-      
+
+      <!-- Profile info -->
       <div class="border-t border-gray-200 pb-3 pt-4">
         <div class="px-4 sm:px-6">
           <div class="flex items-center">
@@ -227,7 +252,6 @@
           </div>
         </div>
         <div class="mt-3 space-y-1">
-          
           <DisclosureButton
             as="button"
             @click="handleNavigation('/app/admin/account')"
@@ -261,84 +285,31 @@ const { $customFetch } = useNuxtApp();
 const user = useUser().value;
 const router = useRouter();
 
-// Use the language composable
+// Language setup
 const { t: createTranslations } = useLanguage();
 
-// Translations
 const translations = {
-  dashboard: {
-    es: 'Panel de Control',
-    en: 'Dashboard'
-  },
-  orders: {
-    es: 'Órdenes',
-    en: 'Orders'
-  },
-  allOrders: {
-    es: 'Todas las Órdenes',
-    en: 'All Orders'
-  },
-  packages: {
-    es: 'Paquetes',
-    en: 'Packages'
-  },
-  customers: {
-    es: 'Clientes',
-    en: 'Customers'
-  },
-  adminRole: {
-    es: 'Administrador',
-    en: 'Administrator'
-  },
-  signedInAs: {
-    es: 'Sesión iniciada como',
-    en: 'Signed in as'
-  },
-  account: {
-    es: 'Cuenta',
-    en: 'Account'
-  },
-  logout: {
-    es: 'Cerrar Sesión',
-    en: 'Sign out'
-  }
+  dashboard: { es: 'Panel de Control', en: 'Dashboard' },
+  orders: { es: 'Órdenes', en: 'Orders' },
+  packages: { es: 'Paquetes', en: 'Packages' },
+  customers: { es: 'Clientes', en: 'Customers' },
+  expenses: { es: 'Gastos', en: 'Expenses' }, // ✅ new translation
+  adminRole: { es: 'Administrador', en: 'Administrator' },
+  signedInAs: { es: 'Sesión iniciada como', en: 'Signed in as' },
+  account: { es: 'Cuenta', en: 'Account' },
+  logout: { es: 'Cerrar Sesión', en: 'Sign out' },
 };
 
-// Get reactive translations
 const t = createTranslations(translations);
 
-// Get user initials
 const userInitials = computed(() => {
   if (!user?.name) return 'A';
   const names = user.name.split(' ');
   return names.map(n => n[0]).join('').toUpperCase().slice(0, 2);
 });
 
-// Dropdown state management - now only for orders
-const dropdowns = reactive({
-  orders: false,
-});
-
-const dropdownTimers = reactive({});
-
-const showDropdown = (key) => {
-  if (dropdownTimers[key]) {
-    clearTimeout(dropdownTimers[key]);
-  }
-  dropdowns[key] = true;
-};
-
-const hideDropdown = (key) => {
-  dropdownTimers[key] = setTimeout(() => {
-    dropdowns[key] = false;
-  }, 200); // 200ms delay before closing
-};
-
 const isActiveRoute = (route) => {
   const currentPath = router.currentRoute.value.path;
-  if (route === "/app/admin/dashboard" && currentPath === "/app/admin/dashboard") {
-    return true;
-  }
   return (
     currentPath.startsWith(route) &&
     (currentPath === route || currentPath.charAt(route.length) === "/")
@@ -346,9 +317,7 @@ const isActiveRoute = (route) => {
 };
 
 const handleNavigation = async (path) => {
-  // Check if we're already on the same page
   if (router.currentRoute.value.path === path) {
-    // Force a page reload
     window.location.href = path;
   } else {
     await navigateTo(path);
@@ -357,15 +326,9 @@ const handleNavigation = async (path) => {
 
 const handleLogout = async () => {
   try {
-    await $customFetch("/auth/logout", {
-      method: "POST",
-    });
+    await $customFetch("/auth/logout", { method: "POST" });
     useState("user", () => null);
-    
-    // Clear any stored data
-    const csrfCookie = useCookie("XSRF-TOKEN");
-    csrfCookie.value = null;
-    
+    useCookie("XSRF-TOKEN").value = null;
     window.location.href = "/login";
   } catch (error) {
     console.error('Logout error:', error);
