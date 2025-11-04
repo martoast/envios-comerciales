@@ -749,7 +749,7 @@ const fetchAllOrdersForStats = async () => {
     const response = await $customFetch('/admin/orders', {
       params: {
         page: 1,
-        per_page: 1000 // Get all orders for accurate stats
+        per_page: 10
       }
     })
     allOrders.value = response.data.data

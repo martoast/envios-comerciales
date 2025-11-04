@@ -31,30 +31,7 @@
   
       <!-- Main Content -->
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <!-- Stats Cards - Horizontal scroll on mobile -->
-        <div class="mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
-          <div class="flex gap-4 overflow-x-auto sm:grid sm:grid-cols-2 lg:grid-cols-4 pb-4 sm:pb-0 scrollbar-hide">
-            <div 
-              v-for="(stat, index) in stats" 
-              :key="stat.label"
-              class="min-w-[160px] sm:min-w-0 bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-fadeIn hover:shadow-md transition-all duration-300"
-              :style="`animation-delay: ${(index + 2) * 0.1}s`"
-            >
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-xs font-medium text-gray-600 uppercase tracking-wider">{{ stat.label }}</p>
-                  <p class="mt-2 text-2xl font-bold text-gray-900">{{ stat.value }}</p>
-                </div>
-                <div :class="['p-2.5 rounded-xl', stat.bgColor]">
-                  <svg class="w-5 h-5" :class="stat.iconColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="stat.icon"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-  
+       
         <!-- Customers Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fadeIn" style="animation-delay: 0.3s">
           <!-- Search and Filters Section -->
@@ -526,7 +503,7 @@
       const response = await $customFetch('/admin/customers', {
         params: {
           page: 1,
-          per_page: 1000 // Get all customers for stats
+          per_page: 10
         }
       })
       allCustomers.value = response.data.data
