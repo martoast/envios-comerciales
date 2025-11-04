@@ -16,167 +16,206 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
               </NuxtLink>
-             
             </div>
           </div>
         </div>
+    <!-- Desktop Layout -->
+    <div class="hidden lg:flex lg:items-center lg:justify-between">
+      <div class="flex items-center gap-8 animate-fadeIn">
+        <h1 class="text-3xl font-extrabold text-gray-900">{{ t.allOrders }}</h1>
+      </div>
 
-        <!-- Desktop Layout -->
-        <div class="hidden lg:flex lg:items-center lg:justify-between">
-          <div class="flex items-center gap-8 animate-fadeIn">
-            <h1 class="text-3xl font-extrabold text-gray-900">{{ t.allOrders }}</h1>
+      <div class="flex items-center gap-3">
+        <NuxtLink 
+          to="/app/admin/orders/create"
+          class="inline-flex items-center px-4 py-2.5 bg-primary-500 text-white font-medium rounded-xl hover:bg-primary-600 shadow-sm hover:shadow-md transition-all duration-300"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          {{ t.createOrder }}
+        </NuxtLink>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+  <!-- Stats Cards - Horizontal scroll on mobile -->
+  <div class="mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+    <div class="flex gap-4 overflow-x-auto sm:grid sm:grid-cols-2 lg:grid-cols-4 pb-4 sm:pb-0 scrollbar-hide">
+      <div 
+        v-for="(stat, index) in stats" 
+        :key="stat.label"
+        class="min-w-[160px] sm:min-w-0 bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-fadeIn hover:shadow-md transition-all duration-300"
+        :style="`animation-delay: ${(index + 2) * 0.1}s`"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs font-medium text-gray-600 uppercase tracking-wider">{{ stat.label }}</p>
+            <p class="mt-2 text-2xl font-bold text-gray-900">{{ stat.value }}</p>
           </div>
-
-          <div class="flex items-center gap-3">
-            <NuxtLink 
-              to="/app/admin/orders/create"
-              class="inline-flex items-center px-4 py-2.5 bg-primary-500 text-white font-medium rounded-xl hover:bg-primary-600 shadow-sm hover:shadow-md transition-all duration-300"
-            >
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-              </svg>
-              {{ t.createOrder }}
-            </NuxtLink>
-           
+          <div :class="['p-2.5 rounded-xl', stat.bgColor]">
+            <svg class="w-5 h-5" :class="stat.iconColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="stat.icon"/>
+            </svg>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <!-- Stats Cards - Horizontal scroll on mobile -->
-      <div class="mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div class="flex gap-4 overflow-x-auto sm:grid sm:grid-cols-2 lg:grid-cols-4 pb-4 sm:pb-0 scrollbar-hide">
-          <div 
-            v-for="(stat, index) in stats" 
-            :key="stat.label"
-            class="min-w-[160px] sm:min-w-0 bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-fadeIn hover:shadow-md transition-all duration-300"
-            :style="`animation-delay: ${(index + 2) * 0.1}s`"
+  <!-- Orders Section -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fadeIn" style="animation-delay: 0.3s">
+    <!-- Search and Filters Section -->
+    <div class="px-4 sm:px-6 py-4 bg-gray-50/50 border-b border-gray-100">
+      <div class="space-y-3">
+        <!-- Bulk Actions Bar (only show when items selected) -->
+        <div v-if="selectedOrders.length > 0" class="flex items-center justify-between p-3 bg-primary-50 border border-primary-200 rounded-xl">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-medium text-primary-900">
+              {{ selectedOrders.length }} {{ t.selected }}
+            </span>
+            <button
+              @click="clearSelection"
+              class="text-sm text-primary-600 hover:text-primary-700 font-medium"
+            >
+              {{ t.clearSelection }}
+            </button>
+          </div>
+          <button
+            @click="confirmBulkDelete"
+            :disabled="deletingBulk"
+            class="inline-flex items-center px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
           >
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-xs font-medium text-gray-600 uppercase tracking-wider">{{ stat.label }}</p>
-                <p class="mt-2 text-2xl font-bold text-gray-900">{{ stat.value }}</p>
-              </div>
-              <div :class="['p-2.5 rounded-xl', stat.bgColor]">
-                <svg class="w-5 h-5" :class="stat.iconColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="stat.icon"/>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Orders Section -->
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fadeIn" style="animation-delay: 0.3s">
-        <!-- Search and Filters Section -->
-        <div class="px-4 sm:px-6 py-4 bg-gray-50/50 border-b border-gray-100">
-          <div class="space-y-3">
-            <!-- Search Input -->
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-              </div>
-              <input
-                v-model="searchQuery"
-                type="text"
-                :placeholder="t.searchPlaceholder"
-                class="block w-full pl-10 pr-10 py-3 sm:py-2.5 border border-gray-200 rounded-xl bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                style="max-width: 500px;"
-              >
-              <!-- Clear button -->
-              <button
-                v-if="searchQuery"
-                @click="searchQuery = ''"
-                class="absolute inset-y-0 right-0 pr-3 flex items-center"
-              >
-                <svg class="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-              </button>
-            </div>
-            
-            <!-- Status Filter - Full Width on Mobile, Inline on Desktop -->
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <select 
-                v-model="statusFilter" 
-                class="w-full sm:w-auto px-4 py-3 sm:py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-              >
-                <option value="">{{ t.allStatuses }}</option>
-                <option v-for="status in orderStatuses" :key="status.value" :value="status.value">
-                  {{ status.label }}
-                </option>
-              </select>
-              
-              <!-- Active Filters Count (Desktop) -->
-              <div v-if="(searchQuery || statusFilter) && !loading" class="hidden sm:flex items-center gap-2 text-sm text-gray-600">
-                <span>{{ t.showingFiltered }}</span>
-                <button 
-                  @click="clearFilters"
-                  class="text-primary-600 hover:text-primary-700 font-medium"
-                >
-                  {{ t.clearFilters }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Active Filters Count (Mobile) -->
-            <div v-if="(searchQuery || statusFilter) && !loading" class="sm:hidden flex items-center justify-between text-sm">
-              <span class="text-gray-600">{{ t.showingFiltered }}</span>
-              <button 
-                @click="clearFilters"
-                class="text-primary-600 hover:text-primary-700 font-medium"
-              >
-                {{ t.clearFilters }}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Loading State -->
-        <div v-if="loading" class="px-6 py-16 text-center">
-          <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-50 rounded-2xl mb-4">
-            <svg class="animate-spin h-8 w-8 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg v-if="!deletingBulk" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            <svg v-else class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-          </div>
-          <p class="text-gray-500">{{ t.loadingOrders }}</p>
+            {{ deletingBulk ? t.deleting : t.deleteSelected }}
+          </button>
         </div>
 
-        <!-- Empty State -->
-        <div v-else-if="!loading && orders.length === 0" class="px-6 py-16 text-center">
-          <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-2xl mb-4">
-            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+        <!-- Search Input -->
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t.noOrders }}</h3>
-          <p class="text-gray-500 mb-6 max-w-md mx-auto">{{ t.noOrdersFound }}</p>
-          <NuxtLink 
-            to="/app/admin/orders/create"
-            class="inline-flex items-center px-4 py-2 bg-primary-500 text-white font-medium rounded-xl hover:bg-primary-600 shadow-sm hover:shadow-md transition-all duration-300"
+          <input
+            v-model="searchQuery"
+            type="text"
+            :placeholder="t.searchPlaceholder"
+            class="block w-full pl-10 pr-10 py-3 sm:py-2.5 border border-gray-200 rounded-xl bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+            style="max-width: 500px;"
           >
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          <!-- Clear button -->
+          <button
+            v-if="searchQuery"
+            @click="searchQuery = ''"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center"
+          >
+            <svg class="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
-            {{ t.createFirstOrder }}
-          </NuxtLink>
+          </button>
+        </div>
+        
+        <!-- Status Filter - Full Width on Mobile, Inline on Desktop -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <select 
+            v-model="statusFilter" 
+            class="w-full sm:w-auto px-4 py-3 sm:py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+          >
+            <option value="">{{ t.allStatuses }}</option>
+            <option v-for="status in orderStatuses" :key="status.value" :value="status.value">
+              {{ status.label }}
+            </option>
+          </select>
+          
+          <!-- Active Filters Count (Desktop) -->
+          <div v-if="(searchQuery || statusFilter) && !loading" class="hidden sm:flex items-center gap-2 text-sm text-gray-600">
+            <span>{{ t.showingFiltered }}</span>
+            <button 
+              @click="clearFilters"
+              class="text-primary-600 hover:text-primary-700 font-medium"
+            >
+              {{ t.clearFilters }}
+            </button>
+          </div>
         </div>
 
-        <!-- Orders List - Mobile Cards / Desktop Table -->
-        <div v-else>
-          <!-- Mobile Cards -->
-          <div class="sm:hidden divide-y divide-gray-100">
+        <!-- Active Filters Count (Mobile) -->
+        <div v-if="(searchQuery || statusFilter) && !loading" class="sm:hidden flex items-center justify-between text-sm">
+          <span class="text-gray-600">{{ t.showingFiltered }}</span>
+          <button 
+            @click="clearFilters"
+            class="text-primary-600 hover:text-primary-700 font-medium"
+          >
+            {{ t.clearFilters }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div v-if="loading" class="px-6 py-16 text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-50 rounded-2xl mb-4">
+        <svg class="animate-spin h-8 w-8 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <p class="text-gray-500">{{ t.loadingOrders }}</p>
+    </div>
+
+    <!-- Empty State -->
+    <div v-else-if="!loading && orders.length === 0" class="px-6 py-16 text-center">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-2xl mb-4">
+        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t.noOrders }}</h3>
+      <p class="text-gray-500 mb-6 max-w-md mx-auto">{{ t.noOrdersFound }}</p>
+      <NuxtLink 
+        to="/app/admin/orders/create"
+        class="inline-flex items-center px-4 py-2 bg-primary-500 text-white font-medium rounded-xl hover:bg-primary-600 shadow-sm hover:shadow-md transition-all duration-300"
+      >
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        {{ t.createFirstOrder }}
+      </NuxtLink>
+    </div>
+
+    <!-- Orders List - Mobile Cards / Desktop Table -->
+    <div v-else>
+      <!-- Mobile Cards -->
+      <div class="sm:hidden divide-y divide-gray-100">
+        <div
+          v-for="order in orders" 
+          :key="order.id"
+          class="p-4 hover:bg-gray-50 transition-colors"
+        >
+          <div class="flex items-start gap-3">
+            <!-- Checkbox -->
+            <input
+              type="checkbox"
+              :checked="isSelected(order.id)"
+              @change="toggleSelection(order.id)"
+              class="mt-1 h-5 w-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
+            >
+            
+            <!-- Order Info (clickable) -->
             <NuxtLink
-              v-for="order in orders" 
-              :key="order.id"
               :to="`/app/admin/orders/${order.id}`"
-              class="block p-4 hover:bg-gray-50 transition-colors"
+              class="flex-1"
             >
               <div class="flex items-start justify-between mb-3">
                 <div>
@@ -217,136 +256,203 @@
               </div>
             </NuxtLink>
           </div>
+        </div>
+      </div>
 
-          <!-- Desktop Table -->
-          <div class="hidden sm:block overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-gray-50 border-b border-gray-100">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{ t.orderInfo }}
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{ t.customer }}
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{ t.status }}
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{ t.items }}
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{ t.created }}
-                  </th>
-                  <th class="relative px-6 py-3">
-                    <span class="sr-only">{{ t.actions }}</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-100">
-                <tr 
-                  v-for="order in orders" 
-                  :key="order.id"
-                  class="hover:bg-gray-50 transition-colors cursor-pointer"
-                  @click="navigateTo(`/app/admin/orders/${order.id}`)"
+      <!-- Desktop Table -->
+      <div class="hidden sm:block overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 border-b border-gray-100">
+            <tr>
+              <th class="px-6 py-3 text-left">
+                <input
+                  type="checkbox"
+                  :checked="allSelected"
+                  @change="toggleSelectAll"
+                  class="h-5 w-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
                 >
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <p class="text-sm font-semibold text-gray-900">{{ order.tracking_number }}</p>
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {{ t.orderInfo }}
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {{ t.customer }}
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {{ t.status }}
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {{ t.items }}
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {{ t.created }}
+              </th>
+              <th class="relative px-6 py-3">
+                <span class="sr-only">{{ t.actions }}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr 
+              v-for="order in orders" 
+              :key="order.id"
+              class="hover:bg-gray-50 transition-colors"
+              :class="{ 'bg-primary-50/30': isSelected(order.id) }"
+            >
+              <td class="px-6 py-4 whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  :checked="isSelected(order.id)"
+                  @change="toggleSelection(order.id)"
+                  @click.stop
+                  class="h-5 w-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
+                >
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap cursor-pointer" @click="navigateTo(`/app/admin/orders/${order.id}`)">
+                <div>
+                  <p class="text-sm font-semibold text-gray-900">{{ order.tracking_number }}</p>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap cursor-pointer" @click="navigateTo(`/app/admin/orders/${order.id}`)">
+                <div>
+                  <p class="text-sm font-medium text-gray-900">{{ order.user?.name }}</p>
+                  <p class="text-sm text-gray-500">{{ order.user?.email }}</p>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap cursor-pointer" @click="navigateTo(`/app/admin/orders/${order.id}`)">
+                <span :class="[
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                  getStatusColor(order.status)
+                ]">
+                  {{ getStatusLabel(order.status) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap cursor-pointer" @click="navigateTo(`/app/admin/orders/${order.id}`)">
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-gray-900">{{ order.items?.length || 0 }}</span>
+                  <div v-if="order.status === 'awaiting_packages'" class="flex items-center gap-2">
+                    <div class="w-24 bg-gray-200 rounded-full h-1.5">
+                      <div 
+                        class="bg-primary-500 h-1.5 rounded-full transition-all duration-300"
+                        :style="`width: ${order.arrival_progress || 0}%`"
+                      ></div>
                     </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <p class="text-sm font-medium text-gray-900">{{ order.user?.name }}</p>
-                      <p class="text-sm text-gray-500">{{ order.user?.email }}</p>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span :class="[
-                      'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                      getStatusColor(order.status)
-                    ]">
-                      {{ getStatusLabel(order.status) }}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center gap-3">
-                      <span class="text-sm text-gray-900">{{ order.items?.length || 0 }}</span>
-                      <div v-if="order.status === 'awaiting_packages'" class="flex items-center gap-2">
-                        <div class="w-24 bg-gray-200 rounded-full h-1.5">
-                          <div 
-                            class="bg-primary-500 h-1.5 rounded-full transition-all duration-300"
-                            :style="`width: ${order.arrival_progress || 0}%`"
-                          ></div>
-                        </div>
-                        <span class="text-xs text-gray-500">{{ order.arrival_progress || 0 }}%</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ formatDate(order.created_at) }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <NuxtLink 
-                      :to="`/app/admin/orders/${order.id}`"
-                      class="text-primary-600 hover:text-primary-900"
-                      @click.stop
-                    >
-                      {{ t.manage }}
-                    </NuxtLink>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                    <span class="text-xs text-gray-500">{{ order.arrival_progress || 0 }}%</span>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 cursor-pointer" @click="navigateTo(`/app/admin/orders/${order.id}`)">
+                {{ formatDate(order.created_at) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <NuxtLink 
+                  :to="`/app/admin/orders/${order.id}`"
+                  class="text-primary-600 hover:text-primary-900"
+                  @click.stop
+                >
+                  {{ t.manage }}
+                </NuxtLink>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div v-if="pagination.lastPage > 1" class="px-4 sm:px-6 py-4 border-t border-gray-100">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-gray-700 hidden sm:block">
+            {{ t.showing }} <span class="font-medium">{{ pagination.from }}</span> {{ t.to }} 
+            <span class="font-medium">{{ pagination.to }}</span> {{ t.of }} 
+            <span class="font-medium">{{ pagination.total }}</span> {{ t.results }}
+          </p>
+          <p class="text-sm text-gray-700 sm:hidden">
+            {{ pagination.from }}-{{ pagination.to }} {{ t.of }} {{ pagination.total }}
+          </p>
+          <div class="flex gap-2">
+            <button 
+              @click="changePage(pagination.currentPage - 1)"
+              :disabled="pagination.currentPage === 1"
+              class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {{ t.previous }}
+            </button>
+            <button 
+              @click="changePage(pagination.currentPage + 1)"
+              :disabled="pagination.currentPage === pagination.lastPage"
+              class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {{ t.next }}
+            </button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-          <!-- Pagination -->
-          <div v-if="pagination.lastPage > 1" class="px-4 sm:px-6 py-4 border-t border-gray-100">
-            <div class="flex items-center justify-between">
-              <p class="text-sm text-gray-700 hidden sm:block">
-                {{ t.showing }} <span class="font-medium">{{ pagination.from }}</span> {{ t.to }} 
-                <span class="font-medium">{{ pagination.to }}</span> {{ t.of }} 
-                <span class="font-medium">{{ pagination.total }}</span> {{ t.results }}
-              </p>
-              <p class="text-sm text-gray-700 sm:hidden">
-                {{ pagination.from }}-{{ pagination.to }} {{ t.of }} {{ pagination.total }}
-              </p>
-              <div class="flex gap-2">
-                <button 
-                  @click="changePage(pagination.currentPage - 1)"
-                  :disabled="pagination.currentPage === 1"
-                  class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  {{ t.previous }}
-                </button>
-                <button 
-                  @click="changePage(pagination.currentPage + 1)"
-                  :disabled="pagination.currentPage === pagination.lastPage"
-                  class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  {{ t.next }}
-                </button>
+  <!-- Floating Action Button (Mobile Only) -->
+  <div class="fixed bottom-6 right-6 sm:hidden">
+    <NuxtLink 
+      to="/app/admin/orders/create"
+      class="flex items-center justify-center w-14 h-14 bg-primary-500 text-white rounded-full shadow-lg hover:bg-primary-600 hover:shadow-xl transition-all duration-300"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+    </NuxtLink>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<Teleport to="body">
+  <div v-if="showDeleteModal" class="fixed inset-0 z-50 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+      <!-- Background overlay -->
+      <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="showDeleteModal = false"></div>
+
+      <!-- Modal panel -->
+      <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="px-6 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+              <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+            </div>
+            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <h3 class="text-lg font-medium leading-6 text-gray-900">
+                {{ t.confirmDelete }}
+              </h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  {{ t.confirmDeleteMessage.replace('{count}', selectedOrders.length) }}
+                </p>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Floating Action Button (Mobile Only) -->
-      <div class="fixed bottom-6 right-6 sm:hidden">
-        <NuxtLink 
-          to="/app/admin/orders/create"
-          class="flex items-center justify-center w-14 h-14 bg-primary-500 text-white rounded-full shadow-lg hover:bg-primary-600 hover:shadow-xl transition-all duration-300"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-          </svg>
-        </NuxtLink>
+        <div class="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+          <button
+            @click="bulkDelete"
+            :disabled="deletingBulk"
+            class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {{ deletingBulk ? t.deleting : t.yesDelete }}
+          </button>
+          <button
+            @click="showDeleteModal = false"
+            :disabled="deletingBulk"
+            class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {{ t.cancel }}
+          </button>
+        </div>
       </div>
     </div>
+  </div>
+</Teleport>
   </section>
 </template>
-
 <script setup>
 import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 
@@ -378,6 +484,11 @@ const pagination = ref({
   to: 0,
   total: 0
 })
+
+// Bulk delete state
+const selectedOrders = ref([])
+const showDeleteModal = ref(false)
+const deletingBulk = ref(false)
 
 // Define translations
 const translations = {
@@ -481,6 +592,47 @@ const translations = {
     es: 'Limpiar filtros',
     en: 'Clear filters'
   },
+  // Bulk delete translations
+  selected: {
+    es: 'seleccionado(s)',
+    en: 'selected'
+  },
+  clearSelection: {
+    es: 'Limpiar selección',
+    en: 'Clear selection'
+  },
+  deleteSelected: {
+    es: 'Eliminar seleccionadas',
+    en: 'Delete selected'
+  },
+  deleting: {
+    es: 'Eliminando...',
+    en: 'Deleting...'
+  },
+  confirmDelete: {
+    es: '¿Eliminar órdenes?',
+    en: 'Delete orders?'
+  },
+  confirmDeleteMessage: {
+    es: '¿Estás seguro de que quieres eliminar {count} orden(es)? Esta acción no se puede deshacer.',
+    en: 'Are you sure you want to delete {count} order(s)? This action cannot be undone.'
+  },
+  yesDelete: {
+    es: 'Sí, eliminar',
+    en: 'Yes, delete'
+  },
+  cancel: {
+    es: 'Cancelar',
+    en: 'Cancel'
+  },
+  deleteSuccess: {
+    es: 'Órdenes eliminadas exitosamente',
+    en: 'Orders deleted successfully'
+  },
+  deleteError: {
+    es: 'Error al eliminar órdenes',
+    en: 'Error deleting orders'
+  },
   // Status translations
   collecting: {
     es: 'Agregando Artículos',
@@ -582,6 +734,11 @@ const stats = computed(() => {
   ]
 })
 
+// Bulk selection computed
+const allSelected = computed(() => {
+  return orders.value.length > 0 && selectedOrders.value.length === orders.value.length
+})
+
 // Methods
 const fetchOrders = async (page = 1) => {
   loading.value = true
@@ -667,9 +824,76 @@ const formatDate = (date) => {
   })
 }
 
+// Bulk selection methods
+const isSelected = (orderId) => {
+  return selectedOrders.value.includes(orderId)
+}
+
+const toggleSelection = (orderId) => {
+  const index = selectedOrders.value.indexOf(orderId)
+  if (index > -1) {
+    selectedOrders.value.splice(index, 1)
+  } else {
+    selectedOrders.value.push(orderId)
+  }
+}
+
+const toggleSelectAll = () => {
+  if (allSelected.value) {
+    selectedOrders.value = []
+  } else {
+    selectedOrders.value = orders.value.map(o => o.id)
+  }
+}
+
+const clearSelection = () => {
+  selectedOrders.value = []
+}
+
+const confirmBulkDelete = () => {
+  if (selectedOrders.value.length > 0) {
+    showDeleteModal.value = true
+  }
+}
+
+const bulkDelete = async () => {
+  if (selectedOrders.value.length === 0) return
+  
+  deletingBulk.value = true
+  try {
+    const response = await $customFetch('/admin/orders/bulk', {
+      method: 'DELETE',
+      body: {
+        order_ids: selectedOrders.value
+      }
+    })
+    
+    if (response.success) {
+      // Show success message
+      const toast = useToast()
+      toast.success(t.value.deleteSuccess)
+      
+      // Clear selection
+      selectedOrders.value = []
+      showDeleteModal.value = false
+      
+      // Refresh orders list
+      await fetchOrders(pagination.value.currentPage)
+      await fetchAllOrdersForStats()
+    }
+  } catch (error) {
+    console.error('Error deleting orders:', error)
+    const toast = useToast()
+    toast.error(t.value.deleteError)
+  } finally {
+    deletingBulk.value = false
+  }
+}
+
 // Watch status filter
 watch(statusFilter, () => {
   fetchOrders(1)
+  clearSelection() // Clear selection when filters change
 })
 
 // Watch search query with debounce
@@ -677,6 +901,7 @@ watch(searchQuery, (newValue) => {
   clearTimeout(searchDebounce.value)
   searchDebounce.value = setTimeout(() => {
     fetchOrders(1)
+    clearSelection() // Clear selection when search changes
   }, 300) // 300ms debounce
 })
 
@@ -691,7 +916,6 @@ onUnmounted(() => {
   clearTimeout(searchDebounce.value)
 })
 </script>
-
 <style scoped>
 @keyframes fadeIn {
   from {

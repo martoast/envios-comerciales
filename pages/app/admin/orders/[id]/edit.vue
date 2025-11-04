@@ -41,29 +41,7 @@
         </div>
       </div>
 
-      <!-- Admin Power Alert -->
-      <Transition
-        enter-active-class="transform ease-out duration-300 transition"
-        enter-from-class="translate-y-2 opacity-0"
-        enter-to-class="translate-y-0 opacity-100"
-        leave-active-class="transition ease-in duration-200"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
-        <div v-if="order" class="mb-6 bg-gradient-to-r from-primary-50 to-primary-100 border-l-4 border-primary-500 rounded-lg p-4 shadow-sm">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg class="w-5 h-5 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-              </svg>
-            </div>
-            <div class="ml-3 flex-1">
-              <h3 class="text-sm font-medium text-primary-800">{{ t.adminModeTitle }}</h3>
-              <p class="text-sm text-primary-700 mt-1">{{ t.adminModeMessage }}</p>
-            </div>
-          </div>
-        </div>
-      </Transition>
+     
 
       <!-- Error Alert -->
       <Transition
@@ -191,45 +169,6 @@
               <h2 class="text-xl font-bold text-gray-900 mb-6">{{ t.financialInformation }}</h2>
               
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Declared Value -->
-                <div>
-                  <label for="declared_value" class="block text-sm font-semibold text-gray-900 mb-2">
-                    {{ t.declaredValueLabel }}
-                  </label>
-                  <div class="relative">
-                    <input
-                      v-model.number="form.declared_value"
-                      type="number"
-                      step="0.01"
-                      id="declared_value"
-                      placeholder="0.00"
-                      class="w-full px-4 py-3 pl-8 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    >
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span class="text-gray-500">$</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- IVA Amount -->
-                <div>
-                  <label for="iva_amount" class="block text-sm font-semibold text-gray-900 mb-2">
-                    {{ t.ivaAmountLabel }}
-                  </label>
-                  <div class="relative">
-                    <input
-                      v-model.number="form.iva_amount"
-                      type="number"
-                      step="0.01"
-                      id="iva_amount"
-                      placeholder="0.00"
-                      class="w-full px-4 py-3 pl-8 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    >
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span class="text-gray-500">$</span>
-                    </div>
-                  </div>
-                </div>
 
                 <!-- Shipping Cost -->
                 <div>
@@ -250,46 +189,7 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- Handling Fee -->
-                <div>
-                  <label for="handling_fee" class="block text-sm font-semibold text-gray-900 mb-2">
-                    {{ t.handlingFeeLabel }}
-                  </label>
-                  <div class="relative">
-                    <input
-                      v-model.number="form.handling_fee"
-                      type="number"
-                      step="0.01"
-                      id="handling_fee"
-                      placeholder="0.00"
-                      class="w-full px-4 py-3 pl-8 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    >
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span class="text-gray-500">$</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Quoted Amount -->
-                <div>
-                  <label for="quoted_amount" class="block text-sm font-semibold text-gray-900 mb-2">
-                    {{ t.quotedAmountLabel }}
-                  </label>
-                  <div class="relative">
-                    <input
-                      v-model.number="form.quoted_amount"
-                      type="number"
-                      step="0.01"
-                      id="quoted_amount"
-                      placeholder="0.00"
-                      class="w-full px-4 py-3 pl-8 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    >
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span class="text-gray-500">$</span>
-                    </div>
-                  </div>
-                </div>
+                
 
                 <!-- Amount Paid -->
                 <div>
@@ -562,18 +462,7 @@
                   >
                 </div>
 
-                <!-- Estimated Delivery -->
-                <div>
-                  <label for="estimated_delivery_date" class="block text-sm font-semibold text-gray-900 mb-2">
-                    {{ t.estimatedDeliveryLabel }}
-                  </label>
-                  <input
-                    v-model="form.estimated_delivery_date"
-                    type="date"
-                    id="estimated_delivery_date"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                </div>
+                
               </div>
             </div>
 
