@@ -1079,18 +1079,18 @@ const fetchOrder = async () => {
 
 const getStatusColor = (status) => {
   const colors = {
-    collecting: 'bg-blue-100 text-blue-700',
-    awaiting_packages: 'bg-amber-100 text-amber-700',
-    packages_complete: 'bg-purple-100 text-purple-700',
-    processing: 'bg-primary-100 text-primary-700',
-    shipped: 'bg-primary-100 text-primary-700',
-    delivered: 'bg-green-100 text-green-700',
-    awaiting_payment: 'bg-orange-100 text-orange-700',
-    paid: 'bg-emerald-100 text-emerald-700',
-    cancelled: 'bg-red-100 text-red-700',
-  }
-  return colors[status] || 'bg-gray-100 text-gray-700'
-}
+    collecting: "bg-primary-100 text-primary-700",
+    awaiting_packages: "bg-amber-100 text-amber-700",
+    packages_complete: "bg-primary-100 text-primary-700",
+    processing: "bg-primary-100 text-primary-700",
+    quote_sent: "bg-orange-100 text-orange-700",
+    paid: "bg-green-100 text-green-700",
+    shipped: "bg-primary-100 text-primary-700",
+    delivered: "bg-green-100 text-green-700",
+    cancelled: "bg-red-100 text-red-700",
+  };
+  return colors[status] || "bg-gray-100 text-gray-700";
+};
 
 const getStatusLabel = (status) => {
   return t.value[status] || status
