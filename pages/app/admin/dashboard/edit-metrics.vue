@@ -82,15 +82,65 @@
   
         <!-- Form -->
         <form v-if="!loading" @submit.prevent="handleSubmit" class="space-y-4 sm:space-y-6">
+          
+          <!-- 🔥 MANUAL MODE TOGGLE CARD 🔥 -->
+          <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl sm:rounded-2xl shadow-sm border-2 border-primary-200 p-4 sm:p-6 lg:p-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div class="flex-1">
+                <h2 class="text-lg sm:text-xl font-bold text-primary-900 mb-2">{{ t.manualModeTitle }}</h2>
+                <p class="text-sm text-primary-700 leading-relaxed">
+                  {{ form.is_manual_mode ? t.manualModeDescriptionOn : t.manualModeDescriptionOff }}
+                </p>
+              </div>
+              
+              <!-- Toggle Switch -->
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-primary-900">
+                  {{ form.is_manual_mode ? t.manualMode : t.autoMode }}
+                </span>
+                <button
+                  type="button"
+                  @click="form.is_manual_mode = !form.is_manual_mode"
+                  :class="[
+                    'relative inline-flex h-8 w-16 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                    form.is_manual_mode ? 'bg-primary-600' : 'bg-gray-300'
+                  ]"
+                >
+                  <span
+                    :class="[
+                      'pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                      form.is_manual_mode ? 'translate-x-8' : 'translate-x-0'
+                    ]"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+  
           <!-- Financial Metrics Card -->
-          <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8">
-            <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">{{ t.financialMetrics }}</h2>
+          <div 
+            :class="[
+              'bg-white rounded-xl sm:rounded-2xl shadow-sm border p-4 sm:p-6 lg:p-8 transition-all duration-300',
+              form.is_manual_mode ? 'border-primary-200 ring-2 ring-primary-100' : 'border-gray-100'
+            ]"
+          >
+            <div class="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 class="text-lg sm:text-xl font-bold text-gray-900">{{ t.financialMetrics }}</h2>
+              <span 
+                v-if="!form.is_manual_mode" 
+                class="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full"
+              >
+                {{ t.calculatedFromDB }}
+              </span>
+            </div>
             
             <div class="space-y-3 sm:space-y-4">
               <!-- Revenue -->
               <div>
                 <label for="total_revenue" class="block text-sm font-medium text-gray-700 mb-1.5">
-                  {{ t.totalRevenue }} <span class="text-red-500">*</span>
+                  {{ t.totalRevenue }}
+                  <span v-if="form.is_manual_mode" class="text-red-500">*</span>
+                  <span v-else class="text-xs text-gray-500 ml-2">({{ t.optional }})</span>
                 </label>
                 <div class="relative">
                   <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
@@ -101,17 +151,26 @@
                     step="0.01"
                     min="0"
                     :placeholder="t.revenuePlaceholder"
-                    class="w-full pl-8 pr-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    required
+                    :required="form.is_manual_mode"
+                    :class="[
+                      'w-full pl-8 pr-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border text-sm sm:text-base focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200',
+                      form.is_manual_mode 
+                        ? 'border-primary-300 focus:ring-primary-500' 
+                        : 'border-gray-200 focus:ring-gray-400 bg-gray-50'
+                    ]"
                   >
                 </div>
-                <p class="text-xs text-gray-500 mt-1">{{ t.revenueHelp }}</p>
+                <p class="text-xs text-gray-500 mt-1">
+                  {{ form.is_manual_mode ? t.revenueHelp : t.revenueHelpAuto }}
+                </p>
               </div>
   
               <!-- Expenses -->
               <div>
                 <label for="total_expenses" class="block text-sm font-medium text-gray-700 mb-1.5">
-                  {{ t.totalExpenses }} <span class="text-red-500">*</span>
+                  {{ t.totalExpenses }}
+                  <span v-if="form.is_manual_mode" class="text-red-500">*</span>
+                  <span v-else class="text-xs text-gray-500 ml-2">({{ t.optional }})</span>
                 </label>
                 <div class="relative">
                   <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
@@ -122,15 +181,25 @@
                     step="0.01"
                     min="0"
                     :placeholder="t.expensesPlaceholder"
-                    class="w-full pl-8 pr-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    required
+                    :required="form.is_manual_mode"
+                    :class="[
+                      'w-full pl-8 pr-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border text-sm sm:text-base focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200',
+                      form.is_manual_mode 
+                        ? 'border-primary-300 focus:ring-primary-500' 
+                        : 'border-gray-200 focus:ring-gray-400 bg-gray-50'
+                    ]"
                   >
                 </div>
-                <p class="text-xs text-gray-500 mt-1">{{ t.expensesHelp }}</p>
+                <p class="text-xs text-gray-500 mt-1">
+                  {{ form.is_manual_mode ? t.expensesHelp : t.expensesHelpAuto }}
+                </p>
               </div>
   
               <!-- Profit (Calculated) -->
-              <div class="bg-primary-50 rounded-lg p-4 border border-primary-200">
+              <div 
+                v-if="form.is_manual_mode && (form.total_revenue > 0 || form.total_expenses > 0)"
+                class="bg-primary-50 rounded-lg p-4 border border-primary-200"
+              >
                 <label class="block text-sm font-medium text-primary-900 mb-1">{{ t.netProfit }}</label>
                 <p :class="['text-2xl font-bold', calculatedProfit >= 0 ? 'text-green-600' : 'text-red-600']">
                   ${{ formatMoney(Math.abs(calculatedProfit)) }}
@@ -141,39 +210,68 @@
           </div>
   
           <!-- Order Metrics Card -->
-          <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8">
-            <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">{{ t.orderMetrics }}</h2>
+          <div 
+            :class="[
+              'bg-white rounded-xl sm:rounded-2xl shadow-sm border p-4 sm:p-6 lg:p-8 transition-all duration-300',
+              form.is_manual_mode ? 'border-primary-200 ring-2 ring-primary-100' : 'border-gray-100'
+            ]"
+          >
+            <div class="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 class="text-lg sm:text-xl font-bold text-gray-900">{{ t.orderMetrics }}</h2>
+              <span 
+                v-if="!form.is_manual_mode" 
+                class="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full"
+              >
+                {{ t.calculatedFromDB }}
+              </span>
+            </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <!-- Total Orders -->
-              <div>
-                <label for="total_orders" class="block text-sm font-medium text-gray-700 mb-1.5">
-                  {{ t.totalOrders }} <span class="text-red-500">*</span>
-                </label>
-                <input
-                  v-model.number="form.total_orders"
-                  type="number"
-                  id="total_orders"
-                  min="0"
-                  :placeholder="t.ordersPlaceholder"
-                  class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                  required
-                >
-              </div>
-  
-            
+            <div>
+              <label for="total_orders" class="block text-sm font-medium text-gray-700 mb-1.5">
+                {{ t.totalOrders }}
+                <span v-if="form.is_manual_mode" class="text-red-500">*</span>
+                <span v-else class="text-xs text-gray-500 ml-2">({{ t.optional }})</span>
+              </label>
+              <input
+                v-model.number="form.total_orders"
+                type="number"
+                id="total_orders"
+                min="0"
+                :placeholder="t.ordersPlaceholder"
+                :required="form.is_manual_mode"
+                :class="[
+                  'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border text-sm sm:text-base focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200',
+                  form.is_manual_mode 
+                    ? 'border-primary-300 focus:ring-primary-500' 
+                    : 'border-gray-200 focus:ring-gray-400 bg-gray-50'
+                ]"
+              >
             </div>
           </div>
   
           <!-- Box Distribution Card -->
-          <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8">
-            <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">{{ t.boxDistribution }}</h2>
+          <div 
+            :class="[
+              'bg-white rounded-xl sm:rounded-2xl shadow-sm border p-4 sm:p-6 lg:p-8 transition-all duration-300',
+              form.is_manual_mode ? 'border-primary-200 ring-2 ring-primary-100' : 'border-gray-100'
+            ]"
+          >
+            <div class="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 class="text-lg sm:text-xl font-bold text-gray-900">{{ t.boxDistribution }}</h2>
+              <span 
+                v-if="!form.is_manual_mode" 
+                class="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full"
+              >
+                {{ t.calculatedFromDB }}
+              </span>
+            </div>
             
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
               <!-- Extra Small -->
               <div>
                 <label for="boxes_extra_small" class="block text-sm font-medium text-gray-700 mb-1.5">
-                  XS <span class="text-red-500">*</span>
+                  XS
+                  <span v-if="form.is_manual_mode" class="text-red-500">*</span>
                 </label>
                 <input
                   v-model.number="form.boxes_extra_small"
@@ -181,15 +279,21 @@
                   id="boxes_extra_small"
                   min="0"
                   placeholder="0"
-                  class="w-full px-3 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                  required
+                  :required="form.is_manual_mode"
+                  :class="[
+                    'w-full px-3 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border text-sm sm:text-base focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200',
+                    form.is_manual_mode 
+                      ? 'border-primary-300 focus:ring-primary-500' 
+                      : 'border-gray-200 focus:ring-gray-400 bg-gray-50'
+                  ]"
                 >
               </div>
   
               <!-- Small -->
               <div>
                 <label for="boxes_small" class="block text-sm font-medium text-gray-700 mb-1.5">
-                  S <span class="text-red-500">*</span>
+                  S
+                  <span v-if="form.is_manual_mode" class="text-red-500">*</span>
                 </label>
                 <input
                   v-model.number="form.boxes_small"
@@ -197,15 +301,21 @@
                   id="boxes_small"
                   min="0"
                   placeholder="0"
-                  class="w-full px-3 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                  required
+                  :required="form.is_manual_mode"
+                  :class="[
+                    'w-full px-3 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border text-sm sm:text-base focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200',
+                    form.is_manual_mode 
+                      ? 'border-primary-300 focus:ring-primary-500' 
+                      : 'border-gray-200 focus:ring-gray-400 bg-gray-50'
+                  ]"
                 >
               </div>
   
               <!-- Medium -->
               <div>
                 <label for="boxes_medium" class="block text-sm font-medium text-gray-700 mb-1.5">
-                  M <span class="text-red-500">*</span>
+                  M
+                  <span v-if="form.is_manual_mode" class="text-red-500">*</span>
                 </label>
                 <input
                   v-model.number="form.boxes_medium"
@@ -213,15 +323,21 @@
                   id="boxes_medium"
                   min="0"
                   placeholder="0"
-                  class="w-full px-3 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                  required
+                  :required="form.is_manual_mode"
+                  :class="[
+                    'w-full px-3 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border text-sm sm:text-base focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200',
+                    form.is_manual_mode 
+                      ? 'border-primary-300 focus:ring-primary-500' 
+                      : 'border-gray-200 focus:ring-gray-400 bg-gray-50'
+                  ]"
                 >
               </div>
   
               <!-- Large -->
               <div>
                 <label for="boxes_large" class="block text-sm font-medium text-gray-700 mb-1.5">
-                  L <span class="text-red-500">*</span>
+                  L
+                  <span v-if="form.is_manual_mode" class="text-red-500">*</span>
                 </label>
                 <input
                   v-model.number="form.boxes_large"
@@ -229,15 +345,21 @@
                   id="boxes_large"
                   min="0"
                   placeholder="0"
-                  class="w-full px-3 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                  required
+                  :required="form.is_manual_mode"
+                  :class="[
+                    'w-full px-3 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border text-sm sm:text-base focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200',
+                    form.is_manual_mode 
+                      ? 'border-primary-300 focus:ring-primary-500' 
+                      : 'border-gray-200 focus:ring-gray-400 bg-gray-50'
+                  ]"
                 >
               </div>
   
               <!-- Extra Large -->
               <div>
                 <label for="boxes_extra_large" class="block text-sm font-medium text-gray-700 mb-1.5">
-                  XL <span class="text-red-500">*</span>
+                  XL
+                  <span v-if="form.is_manual_mode" class="text-red-500">*</span>
                 </label>
                 <input
                   v-model.number="form.boxes_extra_large"
@@ -245,19 +367,26 @@
                   id="boxes_extra_large"
                   min="0"
                   placeholder="0"
-                  class="w-full px-3 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                  required
+                  :required="form.is_manual_mode"
+                  :class="[
+                    'w-full px-3 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border text-sm sm:text-base focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200',
+                    form.is_manual_mode 
+                      ? 'border-primary-300 focus:ring-primary-500' 
+                      : 'border-gray-200 focus:ring-gray-400 bg-gray-50'
+                  ]"
                 >
               </div>
             </div>
   
             <!-- Total Boxes Display -->
-            <div class="mt-4 p-3 bg-gray-50 rounded-lg">
-              <p class="text-sm text-gray-600">{{ t.totalBoxes }}: <span class="font-bold text-gray-900">{{ totalBoxes }}</span></p>
+            <div v-if="form.is_manual_mode && totalBoxes > 0" class="mt-4 p-3 bg-primary-50 rounded-lg border border-primary-200">
+              <p class="text-sm text-primary-900">
+                {{ t.totalBoxes }}: <span class="font-bold">{{ totalBoxes }}</span>
+              </p>
             </div>
           </div>
   
-          <!-- Marketing Metrics Card -->
+          <!-- Marketing Metrics Card (ALWAYS REQUIRED) -->
           <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8">
             <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">{{ t.marketingMetrics }}</h2>
             
@@ -349,6 +478,7 @@
   const successMessage = ref('')
   
   const form = ref({
+    is_manual_mode: false, // 👈 NEW TOGGLE
     total_revenue: 0,
     total_expenses: 0,
     total_orders: 0,
@@ -380,148 +510,157 @@
   })
   
   // Translations
-const translations = {
-  editMetrics: { es: 'Editar Métricas', en: 'Edit Metrics' },
-  editMetricsSubtitle: { es: 'Editar métricas manuales del mes', en: 'Edit manual metrics for the month' },
-  financialMetrics: { es: 'Métricas Financieras', en: 'Financial Metrics' },
-  totalRevenue: { es: 'Ingresos Totales', en: 'Total Revenue' },
-  revenuePlaceholder: { es: '45000.00', en: '45000.00' },
-  revenueHelp: { es: 'Total de ingresos del mes en MXN', en: 'Total revenue for the month in MXN' },
-  totalExpenses: { es: 'Gastos Totales', en: 'Total Expenses' },
-  expensesPlaceholder: { es: '12000.00', en: '12000.00' },
-  expensesHelp: { es: 'Total de gastos del mes en MXN', en: 'Total expenses for the month in MXN' },
-  netProfit: { es: 'Ganancia Neta', en: 'Net Profit' },
-  autoCalculated: { es: 'Calculado automáticamente', en: 'Automatically calculated' },
-  orderMetrics: { es: 'Métricas de Órdenes', en: 'Order Metrics' },
-  totalOrders: { es: 'Órdenes Totales', en: 'Total Orders' },
-  ordersPlaceholder: { es: '87', en: '87' },
-  ordersDelivered: { es: 'Órdenes Entregadas', en: 'Orders Delivered' },
-  deliveredPlaceholder: { es: '82', en: '82' },
-  boxDistribution: { es: 'Distribución de Cajas', en: 'Box Distribution' },
-  totalBoxes: { es: 'Total de Cajas', en: 'Total Boxes' },
-  marketingMetrics: { es: 'Métricas de Marketing', en: 'Marketing Metrics' },
-  totalConversations: { es: 'Total de Conversaciones', en: 'Total Conversations' },
-  conversationsPlaceholder: { es: '450', en: '450' },
-  conversationsHelp: { es: 'Conversaciones en WhatsApp, Meta, etc.', en: 'Conversations on WhatsApp, Meta, etc.' },
-  notes: { es: 'Notas', en: 'Notes' },
-  notesLabel: { es: 'Notas Opcionales', en: 'Optional Notes' },
-  notesPlaceholder: { es: 'Ej: Gran mes, temporada alta, promoción especial...', en: 'Ex: Great month, high season, special promotion...' },
-  notesHelp: { es: 'Cualquier nota o comentario sobre este mes', en: 'Any notes or comments about this month' },
-  cancel: { es: 'Cancelar', en: 'Cancel' },
-  saveMetrics: { es: 'Guardar Métricas', en: 'Save Metrics' },
-  saving: { es: 'Guardando...', en: 'Saving...' },
-  successMessage: { es: '¡Métricas guardadas exitosamente!', en: 'Metrics saved successfully!' },
-  errorSaving: { es: 'Error al guardar las métricas. Intenta de nuevo.', en: 'Error saving metrics. Please try again.' },
-}
-
-const t = createTranslations(translations)
-
-// Methods
-const fetchExistingMetrics = async () => {
-  loading.value = true
-  errorMessage.value = ''
+  const translations = {
+    editMetrics: { es: 'Editar Métricas', en: 'Edit Metrics' },
+    editMetricsSubtitle: { es: 'Editar métricas del mes', en: 'Edit metrics for the month' },
+    manualModeTitle: { es: 'Modo de Entrada de Datos', en: 'Data Entry Mode' },
+    manualModeDescriptionOn: { es: 'Modo Manual activado: Ingresa todos los datos manualmente. El dashboard usará estos valores para este mes.', en: 'Manual Mode enabled: Enter all data manually. Dashboard will use these values for this month.' },
+    manualModeDescriptionOff: { es: 'Modo Automático: Solo agrega conversaciones. Ingresos, órdenes y cajas se calcularán desde la base de datos.', en: 'Automatic Mode: Only add conversations. Revenue, orders, and boxes will be calculated from database.' },
+    manualMode: { es: 'Manual', en: 'Manual' },
+    autoMode: { es: 'Automático', en: 'Automatic' },
+    calculatedFromDB: { es: 'Calculado desde DB', en: 'Calculated from DB' },
+    optional: { es: 'opcional', en: 'optional' },
+    financialMetrics: { es: 'Métricas Financieras', en: 'Financial Metrics' },
+    totalRevenue: { es: 'Ingresos Totales', en: 'Total Revenue' },
+    revenuePlaceholder: { es: '45000.00', en: '45000.00' },
+    revenueHelp: { es: 'Ingresa el total de ingresos del mes', en: 'Enter total revenue for the month' },
+    revenueHelpAuto: { es: 'Se calculará desde las órdenes pagadas', en: 'Will be calculated from paid orders' },
+    totalExpenses: { es: 'Gastos Totales', en: 'Total Expenses' },
+    expensesPlaceholder: { es: '12000.00', en: '12000.00' },
+    expensesHelp: { es: 'Ingresa el total de gastos del mes', en: 'Enter total expenses for the month' },
+    expensesHelpAuto: { es: 'Se calculará desde la tabla de gastos', en: 'Will be calculated from expenses table' },
+    netProfit: { es: 'Ganancia Neta', en: 'Net Profit' },
+    autoCalculated: { es: 'Calculado automáticamente', en: 'Automatically calculated' },
+    orderMetrics: { es: 'Métricas de Órdenes', en: 'Order Metrics' },
+    totalOrders: { es: 'Órdenes Totales', en: 'Total Orders' },
+    ordersPlaceholder: { es: '87', en: '87' },
+    boxDistribution: { es: 'Distribución de Cajas', en: 'Box Distribution' },
+    totalBoxes: { es: 'Total de Cajas', en: 'Total Boxes' },
+    marketingMetrics: { es: 'Métricas de Marketing', en: 'Marketing Metrics' },
+    totalConversations: { es: 'Total de Conversaciones', en: 'Total Conversations' },
+    conversationsPlaceholder: { es: '450', en: '450' },
+    conversationsHelp: { es: 'Conversaciones en WhatsApp, Meta, etc. (Siempre requerido)', en: 'Conversations on WhatsApp, Meta, etc. (Always required)' },
+    notes: { es: 'Notas', en: 'Notes' },
+    notesLabel: { es: 'Notas Opcionales', en: 'Optional Notes' },
+    notesPlaceholder: { es: 'Ej: Gran mes, temporada alta, promoción especial...', en: 'Ex: Great month, high season, special promotion...' },
+    notesHelp: { es: 'Cualquier nota o comentario sobre este mes', en: 'Any notes or comments about this month' },
+    cancel: { es: 'Cancelar', en: 'Cancel' },
+    saveMetrics: { es: 'Guardar Métricas', en: 'Save Metrics' },
+    saving: { es: 'Guardando...', en: 'Saving...' },
+    successMessage: { es: '¡Métricas guardadas exitosamente!', en: 'Metrics saved successfully!' },
+    errorSaving: { es: 'Error al guardar las métricas. Intenta de nuevo.', en: 'Error saving metrics. Please try again.' },
+  }
   
-  try {
-    const response = await $customFetch('/admin/dashboard/manual-metrics', {
-      params: {
-        year: year.value,
-        month: month.value
-      }
-    })
+  const t = createTranslations(translations)
+  
+  // Methods
+  const fetchExistingMetrics = async () => {
+    loading.value = true
+    errorMessage.value = ''
     
-    if (response.data) {
-      // Populate form with existing data
-      form.value = {
-        total_revenue: response.data.total_revenue || 0,
-        total_expenses: response.data.total_expenses || 0,
-        total_orders: response.data.total_orders || 0,
-        boxes_extra_small: response.data.boxes_extra_small || 0,
-        boxes_small: response.data.boxes_small || 0,
-        boxes_medium: response.data.boxes_medium || 0,
-        boxes_large: response.data.boxes_large || 0,
-        boxes_extra_large: response.data.boxes_extra_large || 0,
-        total_conversations: response.data.total_conversations || 0,
-        notes: response.data.notes || ''
+    try {
+      const response = await $customFetch('/admin/dashboard/manual-metrics', {
+        params: {
+          year: year.value,
+          month: month.value
+        }
+      })
+      
+      if (response.data) {
+        // Populate form with existing data
+        form.value = {
+          is_manual_mode: response.data.is_manual_mode || false, // 👈 Load the flag
+          total_revenue: response.data.total_revenue || 0,
+          total_expenses: response.data.total_expenses || 0,
+          total_orders: response.data.total_orders || 0,
+          boxes_extra_small: response.data.boxes_extra_small || 0,
+          boxes_small: response.data.boxes_small || 0,
+          boxes_medium: response.data.boxes_medium || 0,
+          boxes_large: response.data.boxes_large || 0,
+          boxes_extra_large: response.data.boxes_extra_large || 0,
+          total_conversations: response.data.total_conversations || 0,
+          notes: response.data.notes || ''
+        }
       }
+    } catch (error) {
+      console.error('Error fetching metrics:', error)
+      // If no metrics exist yet, that's okay - form will be empty
+    } finally {
+      loading.value = false
     }
-  } catch (error) {
-    console.error('Error fetching metrics:', error)
-    // If no metrics exist yet, that's okay - form will be empty
-  } finally {
-    loading.value = false
   }
-}
-
-const handleSubmit = async () => {
-  saving.value = true
-  errorMessage.value = ''
-  successMessage.value = ''
   
-  try {
-    // Calculate profit
-    const total_profit = form.value.total_revenue - form.value.total_expenses
+  const handleSubmit = async () => {
+    saving.value = true
+    errorMessage.value = ''
+    successMessage.value = ''
     
-    await $customFetch('/admin/dashboard/manual-metrics', {
-      method: 'POST',
-      body: {
-        year: year.value,
-        month: month.value,
-        total_revenue: form.value.total_revenue,
-        total_expenses: form.value.total_expenses,
-        total_profit: total_profit,
-        total_orders: form.value.total_orders,
-        boxes_extra_small: form.value.boxes_extra_small,
-        boxes_small: form.value.boxes_small,
-        boxes_medium: form.value.boxes_medium,
-        boxes_large: form.value.boxes_large,
-        boxes_extra_large: form.value.boxes_extra_large,
-        total_conversations: form.value.total_conversations,
-        notes: form.value.notes
-      }
-    })
-    
-    successMessage.value = t.value.successMessage
-    
-    // Redirect back to dashboard after 2 seconds
-    setTimeout(() => {
-      router.push('/app/admin/dashboard')
-    }, 2000)
-    
-  } catch (error) {
-    console.error('Error saving metrics:', error)
-    errorMessage.value = t.value.errorSaving
-  } finally {
-    saving.value = false
+    try {
+      // Calculate profit
+      const total_profit = form.value.total_revenue - form.value.total_expenses
+      
+      await $customFetch('/admin/dashboard/manual-metrics', {
+        method: 'POST',
+        body: {
+          year: year.value,
+          month: month.value,
+          is_manual_mode: form.value.is_manual_mode, // 👈 Send the flag
+          total_revenue: form.value.total_revenue,
+          total_expenses: form.value.total_expenses,
+          total_profit: total_profit,
+          total_orders: form.value.total_orders,
+          boxes_extra_small: form.value.boxes_extra_small,
+          boxes_small: form.value.boxes_small,
+          boxes_medium: form.value.boxes_medium,
+          boxes_large: form.value.boxes_large,
+          boxes_extra_large: form.value.boxes_extra_large,
+          total_conversations: form.value.total_conversations,
+          notes: form.value.notes
+        }
+      })
+      
+      successMessage.value = t.value.successMessage
+      
+      // Redirect back to dashboard after 2 seconds
+      setTimeout(() => {
+        router.push('/app/admin/dashboard')
+      }, 2000)
+      
+    } catch (error) {
+      console.error('Error saving metrics:', error)
+      errorMessage.value = t.value.errorSaving
+    } finally {
+      saving.value = false
+    }
   }
-}
-
-const formatMoney = (amount) => {
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(amount)
-}
-
-onMounted(() => {
-  fetchExistingMetrics()
-})
-</script>
-
-<style scoped>
-/* Reuse the same fade-in animation */
-@keyframes fadeIn {
-  from {
+  
+  const formatMoney = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount)
+  }
+  
+  onMounted(() => {
+    fetchExistingMetrics()
+  })
+  </script>
+  
+  <style scoped>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-out forwards;
     opacity: 0;
-    transform: translateY(10px);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.6s ease-out forwards;
-  opacity: 0;
-}
-</style>
+  </style>
+  
