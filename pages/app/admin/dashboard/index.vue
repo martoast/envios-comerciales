@@ -9,18 +9,26 @@
               <p class="text-sm text-gray-600 mt-1">{{ t.welcomeBack }}, {{ user?.name }}</p>
             </div>
             <div class="flex items-center gap-3">
-              <!-- Month Selector -->
+              <!-- Period Selector -->
               <select
-                v-model="selectedMonth"
+                v-model="selectedPeriod"
                 @change="fetchDashboard"
                 class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
               >
+                <!-- All Time Option -->
+                <option value="all">{{ t.allTime }}</option>
+                
+                <!-- Separator -->
+                <option disabled>────────────</option>
+                
+                <!-- Monthly Options -->
                 <option v-for="month in availableMonths" :key="month.value" :value="month.value">
                   {{ month.label }}
                 </option>
               </select>
   
               <NuxtLink
+                v-if="selectedPeriod !== 'all'"
                 :to="`/app/admin/dashboard/edit-metrics?year=${selectedYear}&month=${selectedMonthNum}`"
                 class="inline-flex items-center px-4 py-2 bg-primary-500 text-white text-sm font-medium rounded-xl hover:bg-primary-600 shadow-sm hover:shadow-md transition-all duration-300"
               >
@@ -68,7 +76,7 @@
   
         <div v-else class="space-y-6">
           <!-- Data Source Badge -->
-          <div v-if="dashboardData?.financial?.source === 'manual'" class="bg-primary-50 border border-primary-200 rounded-xl p-4 flex items-center gap-3">
+          <div v-if="selectedPeriod !== 'all' && dashboardData?.financial?.source === 'manual'" class="bg-primary-50 border border-primary-200 rounded-xl p-4 flex items-center gap-3">
             <div class="flex-shrink-0">
               <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -86,6 +94,19 @@
             </NuxtLink>
           </div>
   
+          <!-- Combined Data Badge for All Time -->
+          <div v-if="selectedPeriod === 'all' && dashboardData?.financial?.source === 'combined'" class="bg-accent-blue-light border border-primary-200 rounded-xl p-4 flex items-center gap-3">
+            <div class="flex-shrink-0">
+              <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-primary-900">{{ t.combinedData }}</p>
+              <p class="text-xs text-primary-700 mt-0.5">{{ t.combinedDataDescription }}</p>
+            </div>
+          </div>
+  
           <!-- Quick Stats Row -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Total Orders Card -->
@@ -99,7 +120,7 @@
               </div>
               <p class="text-xs font-medium text-text-secondary uppercase tracking-wider mb-1">{{ t.totalOrders }}</p>
               <p class="text-2xl font-bold text-text-primary">{{ totalOrdersCount }}</p>
-              <p class="text-xs text-text-secondary mt-1">{{ t.thisMonth }}</p>
+              <p class="text-xs text-text-secondary mt-1">{{ periodLabel }}</p>
             </div>
   
             <!-- Total Packages Card -->
@@ -128,7 +149,7 @@
               <p class="text-xs font-medium text-text-secondary uppercase tracking-wider mb-1">{{ t.totalCustomers }}</p>
               <p class="text-2xl font-bold text-text-primary">{{ dashboardData?.overview?.total_customers || 0 }}</p>
               <p class="text-xs text-text-secondary mt-1">
-                {{ dashboardData?.financial?.metrics?.new_customers || 0 }} {{ t.newThisMonth }}
+                {{ dashboardData?.financial?.metrics?.new_customers || 0 }} {{ periodLabel }}
               </p>
             </div>
   
@@ -143,7 +164,7 @@
               </div>
               <p class="text-xs font-medium text-text-secondary uppercase tracking-wider mb-1">{{ t.conversations }}</p>
               <p class="text-2xl font-bold text-text-primary">{{ dashboardData?.financial?.metrics?.total_conversations || 0 }}</p>
-              <p class="text-xs text-text-secondary mt-1">{{ t.thisMonth }}</p>
+              <p class="text-xs text-text-secondary mt-1">{{ periodLabel }}</p>
             </div>
           </div>
   
@@ -160,7 +181,7 @@
               </div>
               <p class="text-sm font-medium text-green-900 uppercase tracking-wider">{{ t.totalRevenue }}</p>
               <p class="mt-2 text-3xl font-bold text-green-900">${{ formatMoney(dashboardData?.financial?.revenue?.period_total || 0) }}</p>
-              <p class="text-xs text-green-700 mt-1">{{ dashboardData?.period?.month_name }} {{ dashboardData?.period?.year }}</p>
+              <p class="text-xs text-green-700 mt-1">{{ periodLabelFull }}</p>
             </div>
   
             <!-- Expenses Card -->
@@ -195,7 +216,7 @@
           </div>
   
           <!-- No Metrics Warning -->
-          <div v-if="!hasMetrics" class="bg-amber-50 border border-amber-300 rounded-2xl p-6 animate-fadeIn">
+          <div v-if="!hasMetrics && selectedPeriod !== 'all'" class="bg-amber-50 border border-amber-300 rounded-2xl p-6 animate-fadeIn">
             <div class="flex items-start gap-3">
               <div class="flex-shrink-0">
                 <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -235,34 +256,37 @@
             </div>
   
             <!-- Box Sizes -->
-<div :class="['bg-white rounded-2xl shadow-sm border border-border p-6 animate-fadeIn', !hasMetrics ? 'lg:col-start-2' : 'lg:col-span-2']" style="animation-delay: 0.8s">
-  <h3 class="text-lg font-bold text-text-primary mb-4">{{ t.boxSizeDistribution }}</h3>
-  <div v-if="Object.keys(boxDistribution).length > 0">
-    <div class="space-y-2">
-      <div v-for="(count, size) in boxDistribution" :key="size" class="flex items-center justify-between py-2 border-b border-border-light">
-        <span class="text-sm font-medium text-text-primary">{{ formatBoxSize(size) }}</span>
-        <span class="text-lg font-bold text-text-primary">{{ count }}</span>
-      </div>
-    </div>
-    
-    <!-- Total Row -->
-    <div class="mt-4 pt-4 border-t-2 border-primary-200 bg-primary-50 rounded-lg p-3">
-      <div class="flex items-center justify-between">
-        <span class="text-base font-bold text-primary-900 uppercase tracking-wide">{{ t.totalBoxes }}</span>
-        <span class="text-2xl font-bold text-primary-600">{{ totalBoxes }}</span>
-      </div>
-    </div>
-  </div>
-  <div v-else class="text-center py-8">
-    <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-    </svg>
-    <p class="text-sm text-text-secondary">{{ t.noBoxes }}</p>
-  </div>
-  <div v-if="dashboardData?.box_distribution?.source === 'manual'" class="mt-4 pt-4 border-t border-border-light">
-    <p class="text-xs text-text-secondary italic">{{ t.manualBoxData }}</p>
-  </div>
-</div>
+            <div :class="['bg-white rounded-2xl shadow-sm border border-border p-6 animate-fadeIn', !hasMetrics ? '' : 'lg:col-span-2']" style="animation-delay: 0.8s">
+              <h3 class="text-lg font-bold text-text-primary mb-4">{{ t.boxSizeDistribution }}</h3>
+              <div v-if="Object.keys(boxDistribution).length > 0">
+                <div class="space-y-2">
+                  <div v-for="(count, size) in boxDistribution" :key="size" class="flex items-center justify-between py-2 border-b border-border-light">
+                    <span class="text-sm font-medium text-text-primary">{{ formatBoxSize(size) }}</span>
+                    <span class="text-lg font-bold text-text-primary">{{ count }}</span>
+                  </div>
+                </div>
+                
+                <!-- Total Row -->
+                <div class="mt-4 pt-4 border-t-2 border-primary-200 bg-primary-50 rounded-lg p-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-base font-bold text-primary-900 uppercase tracking-wide">{{ t.totalBoxes }}</span>
+                    <span class="text-2xl font-bold text-primary-600">{{ totalBoxes }}</span>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="text-center py-8">
+                <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <p class="text-sm text-text-secondary">{{ t.noBoxes }}</p>
+              </div>
+              <div v-if="dashboardData?.box_distribution?.source === 'manual'" class="mt-4 pt-4 border-t border-border-light">
+                <p class="text-xs text-text-secondary italic">{{ t.manualBoxData }}</p>
+              </div>
+              <div v-if="dashboardData?.box_distribution?.source === 'combined'" class="mt-4 pt-4 border-t border-border-light">
+                <p class="text-xs text-text-secondary italic">{{ t.combinedBoxData }}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -284,7 +308,7 @@
   // State
   const loading = ref(true)
   const dashboardData = ref(null)
-  const selectedMonth = ref('')
+  const selectedPeriod = ref('')
   
   // Get current date
   const currentDate = new Date()
@@ -313,18 +337,35 @@
   
   // Computed - Selected year and month
   const selectedYear = computed(() => {
-    const [year] = selectedMonth.value.split('-')
+    if (selectedPeriod.value === 'all') return null
+    const [year] = selectedPeriod.value.split('-')
     return parseInt(year)
   })
   
   const selectedMonthNum = computed(() => {
-    const [, month] = selectedMonth.value.split('-')
+    if (selectedPeriod.value === 'all') return null
+    const [, month] = selectedPeriod.value.split('-')
     return parseInt(month)
+  })
+  
+  // Computed - Period label
+  const periodLabel = computed(() => {
+    if (selectedPeriod.value === 'all') {
+      return t.value.allTime
+    }
+    return t.value.thisMonth
+  })
+  
+  const periodLabelFull = computed(() => {
+    if (selectedPeriod.value === 'all') {
+      return t.value.allTime
+    }
+    return `${dashboardData.value?.period?.month_name || ''} ${dashboardData.value?.period?.year || ''}`
   })
   
   // Computed - Total orders count
   const totalOrdersCount = computed(() => {
-    if (dashboardData.value?.financial?.source === 'manual') {
+    if (dashboardData.value?.financial?.source === 'manual' || dashboardData.value?.financial?.source === 'combined') {
       return dashboardData.value?.financial?.metrics?.total_orders || 0
     }
     if (!dashboardData.value?.orders?.by_status) return 0
@@ -359,128 +400,142 @@
     delete dist.source
     return dist
   })
-
+  
+  // Computed - Total boxes
   const totalBoxes = computed(() => {
-  if (!dashboardData.value?.box_distribution) return 0
-  const dist = boxDistribution.value
-  return Object.values(dist).reduce((sum, count) => sum + count, 0)
-})
+    if (!dashboardData.value?.box_distribution) return 0
+    const dist = boxDistribution.value
+    return Object.values(dist).reduce((sum, count) => sum + count, 0)
+  })
   
   // Translations
-  const translations = {
-    dashboard: { es: 'Panel de Control', en: 'Dashboard' },
-    welcomeBack: { es: 'Bienvenido de vuelta', en: 'Welcome back' },
-    editMetrics: { es: 'Editar Métricas', en: 'Edit Metrics' },
-    manageExpenses: { es: 'Gestionar Gastos', en: 'Manage Expenses' },
-    totalRevenue: { es: 'Ingresos Totales', en: 'Total Revenue' },
-    totalExpenses: { es: 'Gastos Totales', en: 'Total Expenses' },
-    netProfit: { es: 'Ganancia Neta', en: 'Net Profit' },
-    margin: { es: 'margen', en: 'margin' },
-    conversations: { es: 'Conversaciones', en: 'Conversations' },
-    thisMonth: { es: 'este mes', en: 'this month' },
-    totalOrders: { es: 'Órdenes Totales', en: 'Total Orders' },
-    totalPackages: { es: 'Paquetes Totales', en: 'Total Packages' },
-    totalBoxes: { es: 'Total de Cajas', en: 'Total Boxes' },
-    totalCustomers: { es: 'Clientes Totales', en: 'Total Customers' },
-    awaiting: { es: 'esperando', en: 'awaiting' },
-    newThisMonth: { es: 'nuevos este mes', en: 'new this month' },
-    expenseBreakdown: { es: 'Desglose de Gastos', en: 'Expense Breakdown' },
-    boxSizeDistribution: { es: 'Distribución de Tamaños', en: 'Box Size Distribution' },
-    noMetricsTitle: { es: 'Métricas Manuales Faltantes', en: 'Missing Manual Metrics' },
-    noMetricsDescription: { es: 'Agrega métricas manuales para este mes para ver datos históricos completos.', en: 'Add manual metrics for this month to see complete historical data.' },
-    addMetrics: { es: 'Agregar Métricas', en: 'Add Metrics' },
-    usingManualData: { es: 'Usando Datos Manuales', en: 'Using Manual Data' },
-    manualDataDescription: { es: 'Los datos de ingresos y órdenes provienen de métricas manuales. Gastos siempre desde base de datos.', en: 'Revenue and order data from manual metrics. Expenses always from database.' },
-    editData: { es: 'Editar', en: 'Edit' },
-    manualBoxData: { es: 'Datos de cajas ingresados manualmente', en: 'Box data manually entered' },
-    fromDatabase: { es: 'desde base de datos', en: 'from database' },
-    noExpenses: { es: 'No hay gastos registrados', en: 'No expenses recorded' },
-    noBoxes: { es: 'No hay cajas registradas', en: 'No boxes recorded' },
-    shipping: { es: 'Envíos', en: 'Shipping' },
-    ads: { es: 'Publicidad', en: 'Advertising' },
-    software: { es: 'Software', en: 'Software' },
-    office: { es: 'Oficina', en: 'Office' },
-    po_box: { es: 'Apartado Postal', en: 'PO Box' },
-    misc: { es: 'Varios', en: 'Miscellaneous' },
-  }
-  
-  const t = createTranslations(translations)
-  
-  // Methods
-  const fetchDashboard = async () => {
-    loading.value = true
-    try {
-      const [year, month] = selectedMonth.value.split('-')
-      
-      const response = await $customFetch('/admin/dashboard', {
-        params: {
-          period: 'month',
-          year: parseInt(year),
-          month: parseInt(month)
-        }
-      })
-      
-      dashboardData.value = response.data
-    } catch (error) {
-      console.error('Error fetching dashboard:', error)
-    } finally {
-      loading.value = false
+const translations = {
+  dashboard: { es: 'Panel de Control', en: 'Dashboard' },
+  welcomeBack: { es: 'Bienvenido de vuelta', en: 'Welcome back' },
+  editMetrics: { es: 'Editar Métricas', en: 'Edit Metrics' },
+  manageExpenses: { es: 'Gestionar Gastos', en: 'Manage Expenses' },
+  totalRevenue: { es: 'Ingresos Totales', en: 'Total Revenue' },
+  totalExpenses: { es: 'Gastos Totales', en: 'Total Expenses' },
+  netProfit: { es: 'Ganancia Neta', en: 'Net Profit' },
+  margin: { es: 'margen', en: 'margin' },
+  conversations: { es: 'Conversaciones', en: 'Conversations' },
+  thisMonth: { es: 'este mes', en: 'this month' },
+  allTime: { es: 'Todo el Tiempo', en: 'All Time' },
+  totalOrders: { es: 'Órdenes Totales', en: 'Total Orders' },
+  totalPackages: { es: 'Paquetes Totales', en: 'Total Packages' },
+  totalCustomers: { es: 'Clientes Totales', en: 'Total Customers' },
+  awaiting: { es: 'esperando', en: 'awaiting' },
+  newThisMonth: { es: 'nuevos este mes', en: 'new this month' },
+  expenseBreakdown: { es: 'Desglose de Gastos', en: 'Expense Breakdown' },
+  boxSizeDistribution: { es: 'Distribución de Tamaños', en: 'Box Size Distribution' },
+  totalBoxes: { es: 'Total de Cajas', en: 'Total Boxes' },
+  noMetricsTitle: { es: 'Métricas Manuales Faltantes', en: 'Missing Manual Metrics' },
+  noMetricsDescription: { es: 'Agrega métricas manuales para este mes para ver datos históricos completos.', en: 'Add manual metrics for this month to see complete historical data.' },
+  addMetrics: { es: 'Agregar Métricas', en: 'Add Metrics' },
+  usingManualData: { es: 'Usando Datos Manuales', en: 'Using Manual Data' },
+  manualDataDescription: { es: 'Los datos de ingresos y órdenes provienen de métricas manuales. Gastos siempre desde base de datos.', en: 'Revenue and order data from manual metrics. Expenses always from database.' },
+  combinedData: { es: 'Datos Combinados', en: 'Combined Data' },
+  combinedDataDescription: { es: 'Mostrando totales históricos: métricas manuales + datos calculados del sistema.', en: 'Showing historical totals: manual metrics + calculated system data.' },
+  editData: { es: 'Editar', en: 'Edit' },
+  manualBoxData: { es: 'Datos de cajas ingresados manualmente', en: 'Box data manually entered' },
+  combinedBoxData: { es: 'Cajas combinadas: métricas manuales + sistema', en: 'Combined boxes: manual metrics + system' },
+  fromDatabase: { es: 'desde base de datos', en: 'from database' },
+  noExpenses: { es: 'No hay gastos registrados', en: 'No expenses recorded' },
+  noBoxes: { es: 'No hay cajas registradas', en: 'No boxes recorded' },
+  shipping: { es: 'Envíos', en: 'Shipping' },
+  ads: { es: 'Publicidad', en: 'Advertising' },
+  software: { es: 'Software', en: 'Software' },
+  office: { es: 'Oficina', en: 'Office' },
+  po_box: { es: 'Apartado Postal', en: 'PO Box' },
+  misc: { es: 'Varios', en: 'Miscellaneous' },
+}
+
+const t = createTranslations(translations)
+
+// Methods
+const fetchDashboard = async () => {
+  loading.value = true
+  try {
+    let params = {}
+    
+    if (selectedPeriod.value === 'all') {
+      // All time
+      params = {
+        period: 'all'
+      }
+    } else {
+      // Specific month
+      const [year, month] = selectedPeriod.value.split('-')
+      params = {
+        period: 'month',
+        year: parseInt(year),
+        month: parseInt(month)
+      }
     }
+    
+    const response = await $customFetch('/admin/dashboard', { params })
+    
+    dashboardData.value = response.data
+  } catch (error) {
+    console.error('Error fetching dashboard:', error)
+  } finally {
+    loading.value = false
   }
-  
-  const refreshData = async () => {
-    await fetchDashboard()
+}
+
+const refreshData = async () => {
+  await fetchDashboard()
+}
+
+const getCategoryLabel = (category) => {
+  return t.value[category] || category
+}
+
+const formatMoney = (amount) => {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount)
+}
+
+const formatPercentage = (percent) => {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+  }).format(percent)
+}
+
+const formatBoxSize = (size) => {
+  const labels = {
+    'extra-small': 'XS - Extra Small',
+    'small': 'S - Small',
+    'medium': 'M - Medium',
+    'large': 'L - Large',
+    'extra-large': 'XL - Extra Large'
   }
-  
-  const getCategoryLabel = (category) => {
-    return t.value[category] || category
-  }
-  
-  const formatMoney = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(amount)
-  }
-  
-  const formatPercentage = (percent) => {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 1
-    }).format(percent)
-  }
-  
-  const formatBoxSize = (size) => {
-    const labels = {
-      'extra-small': 'XS - Extra Small',
-      'small': 'S - Small',
-      'medium': 'M - Medium',
-      'large': 'L - Large',
-      'extra-large': 'XL - Extra Large'
-    }
-    return labels[size] || size
-  }
-  
-  onMounted(() => {
-    selectedMonth.value = `${currentYear}-${String(currentMonth).padStart(2, '0')}`
-    fetchDashboard()
-  })
-  </script>
-  
-  <style scoped>
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .animate-fadeIn {
-    animation: fadeIn 0.6s ease-out forwards;
+  return labels[size] || size
+}
+
+onMounted(() => {
+  selectedPeriod.value = `${currentYear}-${String(currentMonth).padStart(2, '0')}`
+  fetchDashboard()
+})
+</script>
+
+<style scoped>
+@keyframes fadeIn {
+  from {
     opacity: 0;
+    transform: translateY(10px);
   }
-  </style>
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
+  opacity: 0;
+}
+</style>
