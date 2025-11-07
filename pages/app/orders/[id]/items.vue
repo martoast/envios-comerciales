@@ -234,16 +234,16 @@
                     >({{ t.optional }})</span
                   >
                 </label>
+                
                 <input
                   v-model="itemForm.declared_value"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="999999.99"
-                  id="declared_value_desktop"
+                  type="text"
+                  inputmode="decimal"
+                  @input="itemForm.declared_value = itemForm.declared_value.replace(/[^0-9.]/g, '')"
                   :placeholder="t.declaredValuePlaceholder"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
+
               </div>
 
               <!-- Estimated Delivery Date (NEW) -->
