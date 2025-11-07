@@ -56,7 +56,7 @@
           
           <!-- Instagram -->
           <a 
-            href="https://www.instagram.com/official_boxlyj?igsh=dmcyMW93OWNzODU3&utm_source=qr"
+            href="https://www.instagram.com/official_boxly?igsh=dmcyMW93OWNzODU3&utm_source=qr"
             target="_blank"
             rel="noopener noreferrer"
             class="group p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all duration-300"
@@ -69,7 +69,7 @@
           
           <!-- TikTok -->
           <a 
-            href="https://www.tiktok.com/@official_boxlyj?_t=ZP-8yEE34krzqR&_r=1"
+            href="https://www.tiktok.com/@official_boxly?_t=ZP-8yEE34krzqR&_r=1"
             target="_blank"
             rel="noopener noreferrer"
             class="group p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all duration-300"

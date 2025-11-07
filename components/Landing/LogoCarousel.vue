@@ -64,8 +64,8 @@ const { t: createTranslations } = useLanguage()
 // Translations
 const translations = {
   logosHeader: {
-    es: 'Compra en tus tiendas favoritas y recibe tu producto seguro y rápido',
-    en: 'Shop at your favorite stores and receive your product safely and quickly'
+    es: 'Compra en tus tiendas favoritas de EE. UU. y ahorra en el envío a México',
+    en: 'Shop from your favorite U.S. stores and save on shipping to Mexico'
   }
 }
 
