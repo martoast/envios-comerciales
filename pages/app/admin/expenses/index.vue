@@ -604,7 +604,14 @@
   }
   
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString(user?.preferred_language === 'es' ? 'es-MX' : 'en-US', {
+    // Extract just the date part to avoid timezone conversion
+    const dateOnly = date.split('T')[0]
+    const [year, month, day] = dateOnly.split('-')
+    
+    // Create date in local timezone at noon to avoid any edge cases
+    const localDate = new Date(year, month - 1, day, 12, 0, 0)
+    
+    return localDate.toLocaleDateString(user?.preferred_language === 'es' ? 'es-MX' : 'en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
