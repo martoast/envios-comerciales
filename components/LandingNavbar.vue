@@ -28,9 +28,9 @@
           </NuxtLink>
 
           <NuxtLink 
-            to="/shopping"
+            to="/stores"
             :class="[
-              isActiveRoute('/shopping')
+              isActiveRoute('/stores')
                 ? 'text-primary-600 font-semibold'
                 : 'text-gray-700 hover:text-primary-600',
               'transition-colors duration-200 flex items-center gap-1'
@@ -39,7 +39,7 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
             </svg>
-            {{ t.shopping }}
+            {{ t.stores }}
           </NuxtLink>
 
           <NuxtLink 
@@ -49,12 +49,7 @@
             {{ t.howItWorks }}
           </NuxtLink>
 
-          <NuxtLink 
-            to="/shipping-calculator"
-            class="text-gray-700 hover:text-primary-600 transition-colors duration-200"
-          >
-            {{ t.calculator }}
-          </NuxtLink>
+         
 
           <NuxtLink 
             to="/track"
@@ -214,11 +209,11 @@
           </NuxtLink>
 
           <NuxtLink
-            to="/shopping"
+            to="/stores"
             @click="mobileMenuOpen = false"
             class="flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium"
             :class="[
-              isActiveRoute('/shopping')
+              isActiveRoute('/stores')
                 ? 'bg-primary-50 text-primary-600'
                 : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
             ]"
@@ -226,7 +221,7 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
             </svg>
-            {{ t.shopping }}
+            {{ t.stores }}
           </NuxtLink>
 
           <NuxtLink
@@ -237,13 +232,7 @@
             {{ t.howItWorks }}
           </NuxtLink>
 
-          <NuxtLink
-            to="/shipping-calculator"
-            @click="mobileMenuOpen = false"
-            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-          >
-            {{ t.calculator }}
-          </NuxtLink>
+          
 
           <NuxtLink
             to="/track"
@@ -342,9 +331,9 @@ const translations = {
     es: 'Inicio',
     en: 'Home'
   },
-  shopping: {
-    es: 'Ofertas',
-    en: 'Offers'
+  stores: {
+    es: 'tiendas',
+    en: 'Stores'
   },
   services: {
     es: '¿Para quién?',

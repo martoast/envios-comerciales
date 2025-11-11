@@ -123,41 +123,56 @@
   })
   
   // Slides data
-  const slides = computed(() => {
-    const baseSlides = language.value === 'es' ? [
-      {
-        image: '/yellow2.jpg',
-        title: '¿Primera vez comprando?',
-        description: 'Te guiamos paso a paso en tu primera compra internacional. Soporte 24/7 en español.',
-        buttonText: 'Comenzar Ahora',
-        link: '/register?source=cta_first_time'
-      },
-      {
-        image: '/newbanner.jpeg',
-        title: 'Ahorra hasta 60% en envíos',
-        description: 'Consolidamos todos tus paquetes en uno solo. Paga un solo envío a México.',
-        buttonText: 'Calcular Envio',
-        link: '/shipping-calculator'
-      }
-    ] : [
-      {
-        image: '/yellow2.jpg',
-        title: 'First time shopping abroad?',
-        description: 'We guide you step by step in your first international purchase. 24/7 support.',
-        buttonText: 'Start Now',
-        link: '/register?source=landing_page_shoppers&preselect=shopper'
-      },
-      {
-        image: '/newbanner.jpeg',
-        title: 'Save up to 60% on shipping',
-        description: 'We consolidate all your packages into one. Pay only one shipment to Mexico.',
-        buttonText: 'Calculate Savings',
-        link: '/shipping-calculator'
-      }
-    ]
-    
-    return baseSlides
-  })
+const slides = computed(() => {
+  const baseSlides = language.value === 'es' ? [
+    {
+      image: '/yellow2.jpg',
+      title: '¿Primera vez comprando?',
+      description: 'Te guiamos paso a paso en tu primera compra internacional. Soporte 24/7 en español.',
+      buttonText: 'Comenzar Ahora',
+      link: '/register?source=cta_first_time'
+    },
+    {
+      image: '/newbanner.jpeg',
+      title: 'Ahorra hasta 60% en envíos',
+      description: 'Consolidamos todos tus paquetes en uno solo. Paga un solo envío a México.',
+      buttonText: 'Calcular Envío',
+      link: '/shipping-calculator'
+    },
+    {
+      image: '/stanley.webp',
+      title: 'Compra en tus tiendas favoritas de EE.UU.',
+      description: 'Aprovecha las mejores ofertas y descuentos en Estados Unidos, y recibe todo fácilmente en México con Boxly.',
+      buttonText: 'Ver tiendas',
+      link: '/stores'
+    }
+  ] : [
+    {
+      image: '/yellow2.jpg',
+      title: 'First time shopping abroad?',
+      description: 'We guide you step by step in your first international purchase. 24/7 support.',
+      buttonText: 'Start Now',
+      link: '/register?source=landing_page_shoppers&preselect=shopper'
+    },
+    {
+      image: '/newbanner.jpeg',
+      title: 'Save up to 60% on shipping',
+      description: 'We consolidate all your packages into one. Pay only one shipment to Mexico.',
+      buttonText: 'Calculate Savings',
+      link: '/shipping-calculator'
+    },
+    {
+      image: '/stanley.webp',
+      title: 'Shop from any US store',
+      description: 'Take advantage of the best deals and sales in the US, and get everything delivered easily to Mexico with Boxly.',
+      buttonText: 'Shop Now',
+      link: '/stores'
+    }
+  ]
+  
+  return baseSlides
+})
+
   
   // Carousel methods
   const nextSlide = () => {
