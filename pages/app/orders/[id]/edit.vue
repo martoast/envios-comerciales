@@ -482,8 +482,10 @@ const t = createTranslations(translations)
 
 // Computed
 const canEdit = computed(() => {
-  return order.value?.status === 'collecting'
+  if (!order.value) return false
+  return ['collecting', 'awaiting_packages', 'packages_complete'].includes(order.value.status)
 })
+
 
 const hasChanges = computed(() => {
   return JSON.stringify(form.value) !== JSON.stringify(originalData.value)
@@ -507,13 +509,14 @@ const fetchOrder = async () => {
     order.value = response.data
     
     // Check if order can be edited
-    if (order.value.status !== 'collecting') {
+    const editableStatuses = ['collecting', 'awaiting_packages', 'packages_complete']
+    if (!editableStatuses.includes(order.value.status)) {
       $toast.error(t.value.orderNotEditable)
       await router.push(`/app/orders/${orderId}`)
       return
     }
     
-    // Populate form with current data
+    // Populate form...
     form.value = {
       delivery_address: { 
         ...order.value.delivery_address,
@@ -522,7 +525,6 @@ const fetchOrder = async () => {
       is_rural: order.value.is_rural
     }
     
-    // Store original data for comparison
     originalData.value = JSON.parse(JSON.stringify(form.value))
     
   } catch (error) {

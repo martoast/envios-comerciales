@@ -942,79 +942,79 @@
       </div>
 
       <!-- Delivery Address -->
-      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
-          <div class="flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-gray-900">
-              {{ t.deliveryAddress }}
-            </h2>
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+  <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-gray-900">
+        {{ t.deliveryAddress }}
+      </h2>
 
-            <!-- Edit Address Button - Only show in collecting status -->
-            <NuxtLink
-              v-if="order.status === 'collecting'"
-              :to="`/app/orders/${order.id}/edit`"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                />
-              </svg>
-              <span class="hidden sm:inline">{{ t.editAddress }}</span>
-              <span class="sm:hidden">{{ t.edit }}</span>
-            </NuxtLink>
-          </div>
-        </div>
+      <!-- Edit Address Button - Show for editable statuses -->
+      <NuxtLink
+        v-if="canEditAddress"
+        :to="`/app/orders/${order.id}/edit`"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+          />
+        </svg>
+        <span class="hidden sm:inline">{{ t.editAddress }}</span>
+        <span class="sm:hidden">{{ t.edit }}</span>
+      </NuxtLink>
+    </div>
+  </div>
 
-        <!-- Address Content - Mobile optimized -->
-        <div class="p-4 sm:p-6">
-          <div class="space-y-3">
-            <!-- Main Address -->
-            <div>
-              <p class="text-sm font-medium text-gray-900">
-                {{ order.delivery_address.street }}
-                {{ order.delivery_address.exterior_number
-                }}<span v-if="order.delivery_address.interior_number"
-                  >, Int. {{ order.delivery_address.interior_number }}</span
-                >
-              </p>
-              <p class="text-sm text-gray-600 mt-1">
-                {{ order.delivery_address.colonia }}
-              </p>
-              <p class="text-sm text-gray-600">
-                {{ order.delivery_address.municipio }},
-                {{ order.delivery_address.estado }}
-              </p>
-              <p class="text-sm text-gray-600">
-                C.P. {{ order.delivery_address.postal_code }}
-              </p>
-            </div>
-
-            <!-- References - if exists -->
-            <div
-              v-if="order.delivery_address.referencias"
-              class="pt-3 border-t border-gray-100"
-            >
-              <p
-                class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-1"
-              >
-                {{ t.references }}
-              </p>
-              <p class="text-sm text-gray-700">
-                {{ order.delivery_address.referencias }}
-              </p>
-            </div>
-          </div>
-        </div>
+  <!-- Address Content - Mobile optimized -->
+  <div class="p-4 sm:p-6">
+    <div class="space-y-3">
+      <!-- Main Address -->
+      <div>
+        <p class="text-sm font-medium text-gray-900">
+          {{ order.delivery_address.street }}
+          {{ order.delivery_address.exterior_number
+          }}<span v-if="order.delivery_address.interior_number"
+            >, Int. {{ order.delivery_address.interior_number }}</span
+          >
+        </p>
+        <p class="text-sm text-gray-600 mt-1">
+          {{ order.delivery_address.colonia }}
+        </p>
+        <p class="text-sm text-gray-600">
+          {{ order.delivery_address.municipio }},
+          {{ order.delivery_address.estado }}
+        </p>
+        <p class="text-sm text-gray-600">
+          C.P. {{ order.delivery_address.postal_code }}
+        </p>
       </div>
+
+      <!-- References - if exists -->
+      <div
+        v-if="order.delivery_address.referencias"
+        class="pt-3 border-t border-gray-100"
+      >
+        <p
+          class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-1"
+        >
+          {{ t.references }}
+        </p>
+        <p class="text-sm text-gray-700">
+          {{ order.delivery_address.referencias }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 
       <!-- Progress Timeline Component -->
       <OrderProgressTimeline :order="order" />
@@ -1810,6 +1810,14 @@ const translations = {
     es: "Todos los artículos recibidos",
     en: "All items received",
   },
+  editAddress: {
+    es: 'Editar Dirección',
+    en: 'Edit Address'
+  },
+  edit: {
+    es: 'Editar',
+    en: 'Edit'
+  }
 };
 
 // Get reactive translations
@@ -1893,6 +1901,12 @@ const dismissSuccessBanner = () => {
     "true"
   );
 };
+
+const canEditAddress = computed(() => {
+  if (!order.value) return false
+  const editableStatuses = ['collecting', 'awaiting_packages', 'packages_complete']
+  return editableStatuses.includes(order.value.status)
+})
 
 const handleCompleteOrder = async () => {
   completingOrder.value = true;
