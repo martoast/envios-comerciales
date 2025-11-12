@@ -241,7 +241,8 @@ import { ref, computed, watch } from 'vue'
 
 // Define page meta to use default layout
 definePageMeta({
-  layout: 'default'
+  layout: 'default',
+  middleware: 'loggedin'
 })
 
 // Nuxt imports
