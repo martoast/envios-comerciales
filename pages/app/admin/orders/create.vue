@@ -1,3 +1,4 @@
+<!-- pages/app/admin/orders/create.vue -->
 <template>
     <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
       <!-- Header -->
@@ -546,6 +547,25 @@
     form.value.user_id = user.id
     userSearch.value = ''
     showUserDropdown.value = false
+    
+    // Automatically copy user's address if they have one
+    if (user.street) {
+      form.value.delivery_address = {
+        street: user.street || '',
+        exterior_number: user.exterior_number || '',
+        interior_number: user.interior_number || '',
+        colonia: user.colonia || '',
+        municipio: user.municipio || '',
+        estado: user.estado || '',
+        postal_code: user.postal_code || '',
+        referencias: ''
+      }
+      
+      // Show a subtle toast notification
+      setTimeout(() => {
+        $toast.success(t.value.addressCopied)
+      }, 300)
+    }
   }
   
   const clearUserSelection = () => {
