@@ -93,7 +93,7 @@
                   </label>
                   <div class="relative group">
                     <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                      <MagnifyingGlassIcon class="w-5 h-5 text-gray-500 group-focus-within:text-primary-500 transition-colors" />
+                      <MagnifyingGlassIcon class="w-5 h-5 text-gray-400 group-focus-within:text-primary-500 transition-colors" />
                     </div>
                     <input
                       v-model="trackingNumber"
@@ -104,7 +104,7 @@
                       :disabled="loading"
                       required
                       @input="clearError"
-                    >
+                    />
                   </div>
                   <p v-if="error" class="mt-2 text-sm text-red-600 flex items-center gap-2 bg-red-50 px-3 py-2 rounded-lg">
                     <ExclamationCircleIcon class="w-4 h-4 flex-shrink-0" />
@@ -142,6 +142,7 @@
                     :key="carrier" 
                     class="group relative px-3 py-1.5 bg-gradient-to-br from-gray-50 to-gray-100 hover:from-primary-50 hover:to-primary-100 text-gray-700 hover:text-primary-700 text-xs font-semibold rounded-full border border-gray-200 hover:border-primary-300 transition-all duration-200 cursor-default shadow-sm hover:shadow-md transform hover:scale-105"
                   >
+                    <TruckIcon class="w-3 h-3 inline mr-1 opacity-60 group-hover:opacity-100" />
                     {{ carrier }}
                   </span>
                 </div>
@@ -232,7 +233,7 @@
 
                 <div v-if="trackingData.origin?.location" class="group">
                   <p class="text-xs font-semibold text-gray-500 mb-1 flex items-center gap-1.5">
-                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                     {{ t.origin }}
                   </p>
                   <p class="font-bold text-gray-900 text-base">{{ translateLocation(trackingData.origin.location) }}</p>
@@ -240,7 +241,7 @@
 
                 <div v-if="trackingData.destination?.location" class="group">
                   <p class="text-xs font-semibold text-gray-500 mb-1 flex items-center gap-1.5">
-                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
                     {{ t.destination }}
                   </p>
                   <p class="font-bold text-gray-900 text-base">{{ translateLocation(trackingData.destination.location) }}</p>
@@ -298,7 +299,7 @@
                           {{ translateCheckpointMessage(checkpoint.message) }}
                         </p>
                         <p v-if="checkpoint.location" class="text-xs text-gray-600 mb-1 flex items-center gap-1.5">
-                          <div class="w-1 h-1 rounded-full bg-primary-500"></div>
+                          <span class="w-1 h-1 rounded-full bg-primary-500"></span>
                           {{ checkpoint.location }}
                         </p>
                         <p class="text-[11px] text-gray-500 font-medium">
@@ -373,7 +374,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { 
   ArrowLeftIcon,
   MagnifyingGlassIcon,
@@ -403,7 +404,7 @@ const trackingData = ref(null)
 const notFound = ref(false)
 
 // Popular carriers for display
-const popularCarriers = ['USPS', 'FedEx', 'UPS', 'DHL', 'Estafeta']
+const popularCarriers = ['USPS', 'FedEx', 'UPS', 'DHL', 'Estafeta', 'Redpack', 'OnTrac']
 
 // Computed property to reverse checkpoints (latest first)
 const reversedCheckpoints = computed(() => {
@@ -618,7 +619,7 @@ const translations = {
 const t = createTranslations(translations)
 
 // Methods
-const formatDate = (dateString: string) => {
+const formatDate = (dateString) => {
   if (!dateString) return ''
   const date = new Date(dateString)
   const lang = language.value === 'es' ? 'es-MX' : 'en-US'
@@ -631,7 +632,7 @@ const formatDate = (dateString: string) => {
   })
 }
 
-const translateMessage = (message: string) => {
+const translateMessage = (message) => {
   if (!message) return ''
   
   const lowerMessage = message.toLowerCase()
@@ -680,11 +681,11 @@ const translateMessage = (message: string) => {
   return message
 }
 
-const translateCheckpointMessage = (message: string) => {
+const translateCheckpointMessage = (message) => {
   return translateMessage(message)
 }
 
-const translateLocation = (location: string) => {
+const translateLocation = (location) => {
   if (!location) return ''
   
   // Translate country names
@@ -701,7 +702,7 @@ const translateLocation = (location: string) => {
   return location
 }
 
-const getStatusLabel = (status: string) => {
+const getStatusLabel = (status) => {
   const statusMap = {
     'Pending': t.value.statusPending,
     'InfoReceived': t.value.statusInfoReceived,
@@ -716,7 +717,7 @@ const getStatusLabel = (status: string) => {
   return statusMap[status] || status
 }
 
-const getStatusColor = (status: string) => {
+const getStatusColor = (status) => {
   const colors = {
     'Pending': 'bg-gradient-to-br from-gray-600 to-gray-700',
     'InfoReceived': 'bg-gradient-to-br from-yellow-500 to-yellow-600',
@@ -731,7 +732,7 @@ const getStatusColor = (status: string) => {
   return colors[status] || 'bg-gradient-to-br from-gray-600 to-gray-700'
 }
 
-const getStatusIconComponent = (status: string) => {
+const getStatusIconComponent = (status) => {
   const icons = {
     'Pending': ClockIcon,
     'InfoReceived': InformationCircleIcon,
@@ -746,7 +747,7 @@ const getStatusIconComponent = (status: string) => {
   return icons[status] || QuestionMarkCircleIcon
 }
 
-const getStatusIconBg = (status: string) => {
+const getStatusIconBg = (status) => {
   return 'bg-white/30 backdrop-blur-sm'
 }
 
@@ -783,7 +784,7 @@ const handleTrack = async () => {
     if (response.success && response.data) {
       trackingData.value = response.data
     }
-  } catch (err: any) {
+  } catch (err) {
     console.error('Tracking error:', err)
     if (err.statusCode === 404 || err.data?.message?.includes('not found')) {
       notFound.value = true
