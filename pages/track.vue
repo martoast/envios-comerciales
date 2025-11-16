@@ -49,7 +49,10 @@
           <div class="relative inline-block mb-4">
             <div class="absolute inset-0 bg-primary-400 rounded-full blur-xl opacity-30 animate-pulse"></div>
             <div class="relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300">
-              <MagnifyingGlassIcon class="w-8 h-8 text-white" />
+              <button @click="resetSearch">
+                <MagnifyingGlassIcon class="w-8 h-8 text-white" />
+              </button>
+              
             </div>
           </div>
 
@@ -142,7 +145,6 @@
                     :key="carrier" 
                     class="group relative px-3 py-1.5 bg-gradient-to-br from-gray-50 to-gray-100 hover:from-primary-50 hover:to-primary-100 text-gray-700 hover:text-primary-700 text-xs font-semibold rounded-full border border-gray-200 hover:border-primary-300 transition-all duration-200 cursor-default shadow-sm hover:shadow-md transform hover:scale-105"
                   >
-                    <TruckIcon class="w-3 h-3 inline mr-1 opacity-60 group-hover:opacity-100" />
                     {{ carrier }}
                   </span>
                 </div>
@@ -404,7 +406,7 @@ const trackingData = ref(null)
 const notFound = ref(false)
 
 // Popular carriers for display
-const popularCarriers = ['USPS', 'FedEx', 'UPS', 'DHL', 'Estafeta', 'Redpack', 'OnTrac']
+const popularCarriers = ['USPS', 'FedEx', 'UPS', 'DHL', 'Estafeta']
 
 // Computed property to reverse checkpoints (latest first)
 const reversedCheckpoints = computed(() => {
