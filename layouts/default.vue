@@ -91,6 +91,11 @@ import LandingNavbar from '~/components/LandingNavbar.vue'
 const route = useRoute()
 const { t: createTranslations } = useLanguage()
 
+// Check if we're on the index page
+const isIndexPage = computed(() => {
+  return route.path === '/'
+})
+
 // Check if we're on login or register page
 const isAuthPage = computed(() => {
   return route.path === '/login' || route.path === '/register'
@@ -106,9 +111,9 @@ const showLandingNavbar = computed(() => {
   return !isAuthPage.value && !isAppPage.value
 })
 
-// Check if we should show funnel capture (landing pages only)
+// Only show funnel capture on the index page
 const shouldShowFunnelCapture = computed(() => {
-  return showLandingNavbar.value
+  return isIndexPage.value
 })
 
 const translations = {
@@ -170,7 +175,7 @@ const hasCompletedForm = () => {
 
 // Unified function to show the funnel capture
 const showFunnelCapturePopup = (triggerType) => {
-  // Don't show if not on appropriate page
+  // Don't show if not on index page
   if (!shouldShowFunnelCapture.value) return
   
   // Don't show if already showing
