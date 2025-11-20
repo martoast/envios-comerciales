@@ -8,12 +8,7 @@
             to="/app/purchase-requests"
             class="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <svg
-              class="w-5 h-5 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </NuxtLink>
@@ -325,13 +320,10 @@
                     </div>
                   </div>
 
-                  <!-- Image Upload (NEW) -->
+                  <!-- Image Upload -->
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.productImage }} <span class="text-gray-400 font-normal">({{ t.optional }})</span></label>
-                    <div 
-                        class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-primary-400 transition-colors"
-                        @click="$refs.imageInput.click()"
-                    >
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-primary-400 transition-colors" @click="$refs.imageInput.click()">
                         <input ref="imageInput" type="file" class="hidden" accept="image/*" @change="handleImageSelect">
                         
                         <div v-if="!currentItem.imagePreview" class="text-gray-500">
@@ -340,9 +332,7 @@
                         </div>
                         <div v-else class="relative">
                             <img :src="currentItem.imagePreview" class="h-24 mx-auto rounded-lg shadow-sm object-cover">
-                            <button @click.stop="removeImage" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            </button>
+                            <button @click.stop="removeImage" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                         </div>
                     </div>
                   </div>
@@ -434,6 +424,7 @@ const translations = {
   productImage: { es: 'Imagen del Producto', en: 'Product Image' },
   uploadImage: { es: 'Haz clic para subir imagen', en: 'Click to upload image' },
   imageAttached: { es: 'Imagen adjunta', en: 'Image attached' },
+  saveItem: { es: 'Guardar Artículo', en: 'Save Item' },
 };
 
 const t = createTranslations(translations);
@@ -519,12 +510,18 @@ const fixUrl = (url) => {
 };
 
 const saveItem = () => {
+  // Auto-add pending option if user typed but forgot to click +
+  if (newOptionType.value && newOptionValue.value) {
+     currentItem.value.options[newOptionType.value] = newOptionValue.value;
+     newOptionType.value = '';
+     newOptionValue.value = '';
+  }
+
   currentItem.value.product_url = fixUrl(currentItem.value.product_url);
 
   form.value.items.push({ 
       ...currentItem.value,
       options: { ...currentItem.value.options },
-      // Preserve image file logic
       image: currentItem.value.image,
       imagePreview: currentItem.value.imagePreview 
   });
@@ -545,7 +542,7 @@ const truncateUrl = (url) => {
   }
 };
 
-// IMPORTANT: SUBMIT USING FORMDATA FOR FILE UPLOADS
+// IMPORTANT: SUBMIT USING FORMDATA FOR FILE UPLOADS & PROPER JSON SERIALIZATION
 const submitRequest = async () => {
   loading.value = true;
   
@@ -562,9 +559,11 @@ const submitRequest = async () => {
             formData.append(`items[${index}][notes]`, item.notes);
         }
         
-        // Send options as JSON string
+        // FIX: Correctly serialize options object
         if (Object.keys(item.options).length > 0) {
             formData.append(`items[${index}][options]`, JSON.stringify(item.options));
+        } else {
+             formData.append(`items[${index}][options]`, '{}');
         }
         
         // Append Image

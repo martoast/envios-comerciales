@@ -16,7 +16,18 @@
             </div>
           </div>
           
-          <div v-if="request">
+          <div v-if="request" class="flex items-center gap-3">
+            <!-- Edit Button (Only if pending_review) -->
+            <NuxtLink 
+              v-if="request.status === 'pending_review'"
+              :to="`/app/purchase-requests/${request.id}/edit`"
+              class="px-3 py-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors flex items-center gap-2 border border-transparent hover:border-primary-200"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+              <span class="hidden sm:inline">{{ t.editRequest }}</span>
+              <span class="sm:hidden">{{ t.edit }}</span>
+            </NuxtLink>
+
             <span :class="['px-3 py-1 rounded-full text-sm font-medium border', getStatusColor(request.status)]">
               {{ getStatusLabel(request.status) }}
             </span>
@@ -82,7 +93,7 @@
         <!-- Items List -->
         <div class="md:col-span-2 space-y-6">
           <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
               <h3 class="font-semibold text-gray-900">{{ t.requestedItems }}</h3>
             </div>
             <div class="divide-y divide-gray-100">
@@ -105,7 +116,7 @@
                   </a>
                   
                   <!-- Fallback Icon if no image -->
-                  <div v-else class="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                  <div v-else class="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 border border-gray-200">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                   </div>
 
@@ -229,6 +240,8 @@ const translations = {
   total: { es: 'Total (USD)', en: 'Total (USD)' },
   pendingCalculation: { es: 'Calculando costos finales...', en: 'Calculating final costs...' },
   viewImage: { es: 'Ver Imagen', en: 'View Image' }, 
+  editRequest: { es: 'Editar Solicitud', en: 'Edit Request' },
+  edit: { es: 'Editar', en: 'Edit' },
   // Status Labels
   pending_review: { es: 'Pendiente de Revisión', en: 'Pending Review' },
   quoted: { es: 'Cotizado', en: 'Quoted' },
@@ -246,7 +259,6 @@ const fetchRequest = async () => {
   loading.value = true;
   try {
     const response = await $customFetch(`/purchase-requests/${route.params.id}`);
-    // Handle API response structure
     request.value = response.data || response;
   } catch (e) {
     console.error('Error fetching request:', e);
