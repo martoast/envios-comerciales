@@ -30,7 +30,6 @@
             >
               <!-- Logo -->
               <img src="/logo.svg" class="h-20 w-20 inline-flex items-center justify-center">
-              <!-- <span class="text-gray-900 font-bold text-xl hidden sm:block">{{ t.appName }}</span> -->
             </a>
           </div>
           <div class="hidden md:ml-6 md:flex md:space-x-8">
@@ -122,9 +121,22 @@
               </div>
             </div>
 
-            
+            <!-- Purchase Requests (NEW) -->
+            <button
+              @click="handleNavigation('/app/purchase-requests')"
+              :class="[
+                isActiveRoute('/app/purchase-requests')
+                  ? 'border-primary-500 text-gray-900'
+                  : 'border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900',
+                'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors duration-200',
+              ]"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              {{ t.purchaseRequests }}
+            </button>
 
-            
           </div>
         </div>
         <div class="flex items-center">
@@ -133,17 +145,6 @@
             <div class="mr-3">
               <LanguageToggle />
             </div>
-            
-            <!-- Notifications (optional - placeholder) -->
-            <!-- <button class="relative p-2 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full">
-              <span class="absolute -inset-1.5" />
-              <span class="sr-only">View notifications</span>
-              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-              </svg>
-
-              <span v-if="hasNotifications" class="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-            </button> -->
             
             <!-- Profile dropdown -->
             <Menu as="div" class="relative ml-3">
@@ -281,7 +282,28 @@
           </DisclosureButton>
         </div>
 
-        
+        <!-- Mobile Purchase Requests (NEW) -->
+        <div class="pl-4 mt-2">
+            <DisclosureButton
+            as="a"
+            href="/app/purchase-requests"
+            @click.prevent="handleNavigation('/app/purchase-requests')"
+            :class="[
+              isActiveRoute('/app/purchase-requests')
+                ? 'bg-primary-50 border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900',
+              'block border-l-4 py-2 pl-3 pr-4 text-base font-medium sm:pl-5 sm:pr-6 w-full text-left',
+            ]"
+            >
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {{ t.purchaseRequests }}
+            </div>
+            </DisclosureButton>
+        </div>
+
       </div>
       
       <div class="border-t border-gray-200 pb-3 pt-4">
@@ -294,12 +316,6 @@
               <div class="text-base font-medium text-gray-900">{{ user?.name }}</div>
               <div class="text-sm font-medium text-gray-500">{{ user?.email }}</div>
             </div>
-            <!-- <button class="relative ml-auto p-2 text-gray-400 hover:text-gray-500">
-              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-              </svg>
-              <span v-if="hasNotifications" class="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-red-500"></span>
-            </button> -->
           </div>
           
           <!-- Language Toggle (Mobile) -->
@@ -343,126 +359,62 @@ import {
   MenuItems,
 } from "@headlessui/vue";
 import { Bars3Icon, XMarkIcon } from "@heroicons/vue/24/outline";
-import { reactive, computed, ref } from "vue";
+import { reactive, computed } from "vue";
 import LanguageToggle from '~/components/LanguageToggle.vue';
 
 const { $customFetch } = useNuxtApp();
 const user = useUser().value;
 const router = useRouter();
 
-// Placeholder for notifications - you can connect this to your actual notification system
-const hasNotifications = ref(false);
-
 // Use the language composable
 const { t: createTranslations } = useLanguage();
 
 // Translations
 const translations = {
-  appName: {
-    es: 'Tu Casillero USA',
-    en: 'Your USA Address'
-  },
-  dashboard: {
-    es: 'Panel Principal',
-    en: 'Dashboard'
-  },
-  orders: {
-    es: 'Mis Envios',
-    en: 'My Orders'
-  },
-  allOrders: {
-    es: 'Todos los Envios',
-    en: 'All Orders'
-  },
-  allOrdersDesc: {
-    es: 'Ver historial completo',
-    en: 'View complete history'
-  },
-
-  createNewOrder: {
-    es: 'Crear Nuevo Envio',
-    en: 'Create New Order'
-  },
-  yourAddress: {
-    es: 'Tu Dirección USA',
-    en: 'Your US Address'
-  },
-  pricing: {
-    es: 'Tarifas',
-    en: 'Pricing'
-  },
-  signedInAs: {
-    es: 'Sesión iniciada como',
-    en: 'Signed in as'
-  },
-  myAccount: {
-    es: 'Mi Cuenta',
-    en: 'My Account'
-  },
-  adminPanel: {
-    es: 'Panel de Admin',
-    en: 'Admin Panel'
-  },
-  helpSupport: {
-    es: 'Ayuda y Soporte',
-    en: 'Help & Support'
-  },
-  logout: {
-    es: 'Cerrar Sesión',
-    en: 'Sign out'
-  },
-  language: {
-    es: 'Idioma',
-    en: 'Language'
-  }
+  appName: { es: 'Tu Casillero USA', en: 'Your USA Address' },
+  dashboard: { es: 'Panel Principal', en: 'Dashboard' },
+  orders: { es: 'Mis Envios', en: 'My Orders' },
+  allOrders: { es: 'Todos los Envios', en: 'All Orders' },
+  allOrdersDesc: { es: 'Ver historial completo', en: 'View complete history' },
+  createNewOrder: { es: 'Crear Nuevo Envio', en: 'Create New Order' },
+  purchaseRequests: { es: 'Compra Asistida', en: 'Assisted Purchase' },
+  signedInAs: { es: 'Sesión iniciada como', en: 'Signed in as' },
+  myAccount: { es: 'Mi Cuenta', en: 'My Account' },
+  adminPanel: { es: 'Panel de Admin', en: 'Admin Panel' },
+  logout: { es: 'Cerrar Sesión', en: 'Sign out' },
+  language: { es: 'Idioma', en: 'Language' }
 };
 
-// Get reactive translations
 const t = createTranslations(translations);
 
-// Get user initials
 const userInitials = computed(() => {
   if (!user?.name) return 'U';
   const names = user.name.split(' ');
   return names.map(n => n[0]).join('').toUpperCase().slice(0, 2);
 });
 
-// Dropdown state management
-const dropdowns = reactive({
-  orders: false,
-});
-
+const dropdowns = reactive({ orders: false });
 const dropdownTimers = reactive({});
 
 const showDropdown = (key) => {
-  if (dropdownTimers[key]) {
-    clearTimeout(dropdownTimers[key]);
-  }
+  if (dropdownTimers[key]) clearTimeout(dropdownTimers[key]);
   dropdowns[key] = true;
 };
 
 const hideDropdown = (key) => {
   dropdownTimers[key] = setTimeout(() => {
     dropdowns[key] = false;
-  }, 200); // 200ms delay before closing
+  }, 200);
 };
 
 const isActiveRoute = (route) => {
   const currentPath = router.currentRoute.value.path;
-  // Special handling for root app path
-  if (route === "/app/" && currentPath === "/app/") {
-    return true;
-  }
-  return (
-    currentPath.startsWith(route) &&
-    (currentPath === route || currentPath.charAt(route.length) === "/")
-  );
+  if (route === "/app/" && currentPath === "/app/") return true;
+  return currentPath.startsWith(route) && (currentPath === route || currentPath.charAt(route.length) === "/");
 };
 
 const handleNavigation = async (path) => {
-  // Check if we're already on the same page
   if (router.currentRoute.value.path === path) {
-    // Force a page reload
     window.location.href = path;
   } else {
     await navigateTo(path);
@@ -470,22 +422,15 @@ const handleNavigation = async (path) => {
 };
 
 const handleCreateOrder = async () => {
-  // You can implement order creation logic here
-  // For now, just navigate to orders page
   await navigateTo('/app/orders/create');
 };
 
 const handleLogout = async () => {
   try {
-    await $customFetch("/auth/logout", {
-      method: "POST",
-    });
+    await $customFetch("/auth/logout", { method: "POST" });
     useState("user", () => null);
-    
-    // Clear any stored data
     const csrfCookie = useCookie("XSRF-TOKEN");
     csrfCookie.value = null;
-    
     window.location.href = "/login";
   } catch (error) {
     console.error('Logout error:', error);

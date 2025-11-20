@@ -1,3 +1,4 @@
+<!-- pages/app/orders/[id]/index.vue -->
 <template>
   <section class="min-h-screen bg-gray-50">
     <!-- Header - Simplified & Clean -->

@@ -59,6 +59,19 @@
               {{ t.orders }}
             </button>
 
+            <!-- Purchase Requests (NEW) -->
+            <button
+              @click="handleNavigation('/app/admin/purchase-requests')"
+              :class="[
+                isActiveRoute('/app/admin/purchase-requests')
+                  ? 'border-primary-500 text-gray-900'
+                  : 'border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900',
+                'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors duration-200',
+              ]"
+            >
+              {{ t.purchaseRequests }}
+            </button>
+
             <!-- Packages -->
             <button
               @click="handleNavigation('/app/admin/packages')"
@@ -198,6 +211,18 @@
           ]"
         >{{ t.orders }}</DisclosureButton>
 
+        <!-- Purchase Requests (Mobile) -->
+        <DisclosureButton
+          as="button"
+          @click="handleNavigation('/app/admin/purchase-requests')"
+          :class="[
+            isActiveRoute('/app/admin/purchase-requests')
+              ? 'bg-primary-50 border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900',
+            'block border-l-4 py-2 pl-3 pr-4 text-base font-medium sm:pl-5 sm:pr-6 w-full text-left',
+          ]"
+        >{{ t.purchaseRequests }}</DisclosureButton>
+
         <!-- Packages -->
         <DisclosureButton
           as="button"
@@ -222,7 +247,7 @@
           ]"
         >{{ t.customers }}</DisclosureButton>
 
-        <!-- Expenses (mobile) -->
+        <!-- Expenses -->
         <DisclosureButton
           as="button"
           @click="handleNavigation('/app/admin/expenses')"
@@ -291,9 +316,10 @@ const { t: createTranslations } = useLanguage();
 const translations = {
   dashboard: { es: 'Panel de Control', en: 'Dashboard' },
   orders: { es: 'Órdenes', en: 'Orders' },
+  purchaseRequests: { es: 'Compra Asistida', en: 'Assisted Purchase' },
   packages: { es: 'Paquetes', en: 'Packages' },
   customers: { es: 'Clientes', en: 'Customers' },
-  expenses: { es: 'Gastos', en: 'Expenses' }, // ✅ new translation
+  expenses: { es: 'Gastos', en: 'Expenses' },
   adminRole: { es: 'Administrador', en: 'Administrator' },
   signedInAs: { es: 'Sesión iniciada como', en: 'Signed in as' },
   account: { es: 'Cuenta', en: 'Account' },

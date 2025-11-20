@@ -1,3 +1,4 @@
+<!-- pages/app/orders/[id]/items.vue -->
 <template>
   <section class="min-h-screen bg-gray-50 pb-20">
     <!-- Fixed Header with Progress -->
