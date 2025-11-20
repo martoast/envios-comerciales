@@ -40,7 +40,7 @@
                   <span>${{ subtotal }}</span>
               </div>
               <div class="flex justify-between text-blue-600 font-medium">
-                  <span>Service Fee (5%)</span>
+                  <span>Service Fee (8%)</span>
                   <span>${{ fee }}</span>
               </div>
               <div class="flex justify-between pt-2 border-t border-gray-200 text-lg font-bold text-gray-900">

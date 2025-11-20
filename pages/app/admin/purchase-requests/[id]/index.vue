@@ -423,7 +423,7 @@ const translations = {
   merchandise: { es: 'Mercancía', en: 'Merchandise' },
   shippingToWarehouse: { es: 'Envío a Almacén', en: 'Shipping to Warehouse' },
   salesTax: { es: 'Impuestos (Sales Tax)', en: 'Sales Tax' },
-  fee: { es: 'Tarifa (5%)', en: 'Fee (5%)' },
+  fee: { es: 'Tarifa (8%)', en: 'Fee (8%)' },
   total: { es: 'Total', en: 'Total' },
   stripeLink: { es: 'Enlace de Pago Stripe', en: 'Stripe Payment Link' },
   customerInfo: { es: 'Cliente', en: 'Customer Info' },
