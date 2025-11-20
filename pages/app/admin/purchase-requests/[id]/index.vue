@@ -423,7 +423,7 @@ const translations = {
   merchandise: { es: 'Mercancía', en: 'Merchandise' },
   shippingToWarehouse: { es: 'Envío a Almacén', en: 'Shipping to Warehouse' },
   salesTax: { es: 'Impuestos (Sales Tax)', en: 'Sales Tax' },
-  fee: { es: 'Tarifa (8%)', en: 'Fee (8%)' },
+  fee: { es: 'Tarifa (5%)', en: 'Fee (5%)' },
   total: { es: 'Total', en: 'Total' },
   stripeLink: { es: 'Enlace de Pago Stripe', en: 'Stripe Payment Link' },
   customerInfo: { es: 'Cliente', en: 'Customer Info' },
@@ -484,8 +484,8 @@ const getStatusColor = (status) => {
   const map = {
     pending_review: 'bg-yellow-100 text-yellow-800 border-yellow-200',
     quoted: 'bg-blue-100 text-blue-800 border-blue-200',
-    paid: 'bg-green-100 text-green-800 border-green-200',
-    purchased: 'bg-primary-100 text-primary-800 border-primary-200',
+    paid: 'bg-primary-100 text-primary-800 border-primary-200',
+    purchased: 'bg-green-100 text-green-800 border-green-200',
     rejected: 'bg-red-100 text-red-800 border-red-200',
   };
   return map[status] || 'bg-gray-100 text-gray-800';
