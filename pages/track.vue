@@ -175,7 +175,7 @@
           enter-to-class="transform opacity-100 scale-100 translate-y-0"
           leave-active-class="transition ease-in duration-300"
           leave-from-class="transform opacity-100 scale-100"
-          leave-to-class="transform opacity-0 scale-95"
+          leave-to="transform opacity-0 scale-95"
         >
           <div v-if="trackingData" class="space-y-6">
             <!-- Status Card -->
@@ -274,7 +274,7 @@
          <!-- Not Found State -->
         <Transition
           enter-active-class="transition ease-out duration-500"
-          enter-from-class="transform opacity-0 scale-95"
+          enter-from="transform opacity-0 scale-95"
           enter-to-class="transform opacity-100 scale-100"
         >
           <div v-if="notFound" class="bg-white rounded-3xl shadow-2xl p-8 text-center border border-gray-100">
@@ -316,9 +316,12 @@ import {
   ArrowTopRightOnSquareIcon,
   ChatBubbleLeftRightIcon
 } from '@heroicons/vue/24/outline'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const { $customFetch } = useNuxtApp()
 const { t: createTranslations, language } = useLanguage()
+const route = useRoute()
 
 // State
 const trackingNumber = ref('')
@@ -685,6 +688,16 @@ const handleTrack = async () => {
 useSeoMeta({
   title: 'Rastrear Paquete - Boxly',
   description: 'Rastrea el status de tu envío en tiempo real.',
+})
+
+// Handle URL param on mount
+onMounted(() => {
+  const trackingParam = route.query.tracking_number || route.query.tracking
+  
+  if (trackingParam) {
+    trackingNumber.value = trackingParam
+    handleTrack()
+  }
 })
 </script>
 

@@ -70,7 +70,40 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-     
+      
+      <!-- Stats Cards (Desktop Only) -->
+      <div class="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 animate-fadeIn" style="animation-delay: 0.2s">
+        <div v-for="(stat, index) in stats" :key="index" 
+          class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 group"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <div :class="`p-3 rounded-xl ${stat.bgColor} group-hover:scale-110 transition-transform duration-300`">
+              <svg class="w-6 h-6" :class="stat.iconColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="stat.icon"/>
+              </svg>
+            </div>
+            <span class="text-2xl font-bold text-gray-900">{{ stat.value }}</span>
+          </div>
+          <p class="text-sm font-medium text-gray-500">{{ stat.label }}</p>
+        </div>
+      </div>
+
+      <!-- Mobile Horizontal Scroll Stats -->
+      <div class="sm:hidden mb-6 -mx-4 px-4 overflow-x-auto scrollbar-hide pb-2">
+        <div class="flex gap-3 min-w-max">
+          <div v-for="(stat, index) in stats" :key="index" 
+            class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 min-w-[140px]"
+          >
+            <div :class="`w-8 h-8 rounded-lg ${stat.bgColor} flex items-center justify-center mb-2`">
+              <svg class="w-4 h-4" :class="stat.iconColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="stat.icon"/>
+              </svg>
+            </div>
+            <p class="text-xl font-bold text-gray-900">{{ stat.value }}</p>
+            <p class="text-xs font-medium text-gray-500">{{ stat.label }}</p>
+          </div>
+        </div>
+      </div>
 
       <!-- Orders Section -->
       <div
@@ -222,6 +255,7 @@
                     {{ order.tracking_number }}
                   </p>
                 </div>
+                <!-- Use Composable for Color and Label -->
                 <span
                   :class="[
                     'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
@@ -321,6 +355,7 @@
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
+                    <!-- Use Composable -->
                     <span
                       :class="[
                         'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
@@ -413,13 +448,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, onUnmounted } from "vue";
 
 // Define page meta to use app layout
 definePageMeta({
   layout: "app",
   middleware: ["auth", "customer", "complete-profile"],
 });
+
+// Use composable for status colors/labels
+const { getStatusColor, getStatusLabel } = useOrderStatus();
 
 // Nuxt imports
 const { $customFetch } = useNuxtApp();
@@ -430,7 +468,7 @@ const { t: createTranslations } = useLanguage();
 
 // State
 const orders = ref([]);
-const allOrders = ref([]); // Store all orders for stats calculation
+const allOrders = ref([]);
 const loading = ref(true);
 const searchQuery = ref("");
 const searchDebounce = ref(null);
@@ -442,180 +480,52 @@ const pagination = ref({
   total: 0,
 });
 
-// Define translations
+// Translations
 const translations = {
-  myOrders: {
-    es: "Mis Envios",
-    en: "My Orders",
-  },
-  createOrder: {
-    es: "Crear Envio",
-    en: "Create Order",
-  },
-  searchPlaceholder: {
-    es: "Buscar por número de orden...",
-    en: "Search by order name or number...",
-  },
-  loadingOrders: {
-    es: "Cargando órdenes...",
-    en: "Loading orders...",
-  },
-  noOrders: {
-    es: "No hay envios todavía",
-    en: "No orders yet",
-  },
-  noSearchResults: {
-    es: "No se encontraron resultados",
-    en: "No results found",
-  },
-  getStarted: {
-    es: "Comienza creando tu primer envio.",
-    en: "Get started by creating your first consolidation order.",
-  },
-  tryDifferentSearch: {
-    es: "Intenta con diferentes términos de búsqueda.",
-    en: "Try different search terms.",
-  },
-  createFirstOrder: {
-    es: "Crear tu primer envio",
-    en: "Create your first order",
-  },
-  orderInfo: {
-    es: "Número de Orden",
-    en: "Order Number",
-  },
-  status: {
-    es: "Estado",
-    en: "Status",
-  },
-  items: {
-    es: "Artículos",
-    en: "Items",
-  },
-  created: {
-    es: "Creado",
-    en: "Created",
-  },
-  actions: {
-    es: "Acciones",
-    en: "Actions",
-  },
-  viewDetails: {
-    es: "Ver detalles",
-    en: "View details",
-  },
-  showing: {
-    es: "Mostrando",
-    en: "Showing",
-  },
-  to: {
-    es: "a",
-    en: "to",
-  },
-  of: {
-    es: "de",
-    en: "of",
-  },
-  results: {
-    es: "resultados",
-    en: "results",
-  },
-  previous: {
-    es: "Anterior",
-    en: "Previous",
-  },
-  next: {
-    es: "Siguiente",
-    en: "Next",
-  },
-  showingSearchResults: {
-    es: "Mostrando resultados de búsqueda",
-    en: "Showing search results",
-  },
-  clearSearch: {
-    es: "Limpiar búsqueda",
-    en: "Clear search",
-  },
-  // Status translations - UPDATED
-  collecting: {
-    es: "Agregando Artículos",
-    en: "Adding Items",
-  },
-  awaiting_packages: {
-    es: "Esperando Paquetes",
-    en: "Awaiting Packages",
-  },
-  packages_complete: {
-    es: "Paquetes Completos",
-    en: "Packages Complete",
-  },
-  processing: {
-    es: "Procesando",
-    en: "Processing",
-  },
-  shipped: {
-    es: "Enviado",
-    en: "Shipped",
-  },
-  delivered: {
-    es: "Entregado",
-    en: "Delivered",
-  },
-  awaiting_payment: {
-    es: "Esperando Pago",
-    en: "Awaiting Payment",
-  },
-  paid: {
-    es: "Pagado",
-    en: "Paid",
-  },
-  cancelled: {
-    es: "Cancelado",
-    en: "Cancelled",
-  },
+  myOrders: { es: "Mis Envios", en: "My Orders" },
+  createOrder: { es: "Crear Envio", en: "Create Order" },
+  searchPlaceholder: { es: "Buscar por número de orden...", en: "Search by order number..." },
+  loadingOrders: { es: "Cargando órdenes...", en: "Loading orders..." },
+  noOrders: { es: "No hay envios todavía", en: "No orders yet" },
+  noSearchResults: { es: "No se encontraron resultados", en: "No results found" },
+  getStarted: { es: "Comienza creando tu primer envio.", en: "Get started by creating your first order." },
+  tryDifferentSearch: { es: "Intenta con diferentes términos de búsqueda.", en: "Try different search terms." },
+  createFirstOrder: { es: "Crear tu primer envio", en: "Create your first order" },
+  orderInfo: { es: "Número de Orden", en: "Order Number" },
+  status: { es: "Estado", en: "Status" },
+  items: { es: "Artículos", en: "Items" },
+  created: { es: "Creado", en: "Created" },
+  actions: { es: "Acciones", en: "Actions" },
+  viewDetails: { es: "Ver detalles", en: "View details" },
+  showing: { es: "Mostrando", en: "Showing" },
+  to: { es: "a", en: "to" },
+  of: { es: "de", en: "of" },
+  results: { es: "resultados", en: "results" },
+  previous: { es: "Anterior", en: "Previous" },
+  next: { es: "Siguiente", en: "Next" },
+  showingSearchResults: { es: "Mostrando resultados de búsqueda", en: "Showing search results" },
+  clearSearch: { es: "Limpiar búsqueda", en: "Clear search" },
+  
   // Stats
-  totalOrders: {
-    es: "Total",
-    en: "Total",
-  },
-  activeOrders: {
-    es: "Activas",
-    en: "Active",
-  },
-  inTransit: {
-    es: "En Tránsito",
-    en: "In Transit",
-  },
-  delivered: {
-    es: "Entregadas",
-    en: "Delivered",
-  },
+  totalOrders: { es: "Total", en: "Total" },
+  activeOrders: { es: "Activas", en: "Active" },
+  inTransit: { es: "En Tránsito", en: "In Transit" },
+  delivered: { es: "Entregadas", en: "Delivered" },
 };
 
-// Get reactive translations
 const t = createTranslations(translations);
 
-// Computed stats - based on ALL orders, not filtered - UPDATED
+// Computed stats - UPDATED for new statuses
 const stats = computed(() => {
-  // Use allOrders for stats if available, otherwise use current orders
-  const ordersForStats =
-    allOrders.value.length > 0 ? allOrders.value : orders.value;
+  const ordersForStats = allOrders.value.length > 0 ? allOrders.value : orders.value;
   const totalOrders = ordersForStats.length;
   
-  // Active orders: collecting, awaiting_packages, packages_complete, processing
   const activeOrders = ordersForStats.filter((o) =>
-    [
-      "collecting",
-      "awaiting_packages",
-      "packages_complete",
-      "processing",
-    ].includes(o.status)
+    ["collecting", "awaiting_packages", "packages_complete", "processing"].includes(o.status)
   ).length;
   
-  // In transit: shipped status
   const inTransit = ordersForStats.filter((o) => o.status === "shipped").length;
   
-  // Delivered: delivered, awaiting_payment, and paid statuses
   const delivered = ordersForStats.filter((o) =>
     ["delivered", "awaiting_payment", "paid"].includes(o.status)
   ).length;
@@ -678,7 +588,6 @@ const fetchOrders = async (page = 1) => {
   }
 };
 
-// Fetch all orders for stats (without filters)
 const fetchAllOrdersForStats = async () => {
   try {
     const response = await $customFetch("/orders", {
@@ -699,24 +608,9 @@ const changePage = (page) => {
   }
 };
 
-// Updated status colors to match new flow
-const getStatusColor = (status) => {
-  const colors = {
-    collecting: "bg-primary-100 text-primary-700",
-    awaiting_packages: "bg-amber-100 text-amber-700",
-    packages_complete: "bg-primary-100 text-primary-700",
-    processing: "bg-primary-100 text-primary-700",
-    shipped: "bg-primary-100 text-primary-700",
-    delivered: "bg-green-100 text-green-700",
-    awaiting_payment: "bg-orange-100 text-orange-700",
-    paid: "bg-green-100 text-green-700",
-    cancelled: "bg-red-100 text-red-700",
-  };
-  return colors[status] || "bg-gray-100 text-gray-700";
-};
-
-const getStatusLabel = (status) => {
-  return t.value[status] || status;
+const navigateTo = (path) => {
+  const router = useRouter();
+  router.push(path);
 };
 
 const formatDate = (date) => {
@@ -727,21 +621,18 @@ const formatDate = (date) => {
   });
 };
 
-// Watch search query with debounce
 watch(searchQuery, (newValue) => {
   clearTimeout(searchDebounce.value);
   searchDebounce.value = setTimeout(() => {
     fetchOrders(1);
-  }, 300); // 300ms debounce
+  }, 300);
 });
 
-// Fetch orders on mount
 onMounted(() => {
   fetchOrders();
   fetchAllOrdersForStats();
 });
 
-// Cleanup
 onUnmounted(() => {
   clearTimeout(searchDebounce.value);
 });
@@ -764,7 +655,6 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-/* Hide scrollbar for stats cards on mobile */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;

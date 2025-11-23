@@ -42,8 +42,6 @@
         </div>
       </div>
 
-     
-
       <!-- Error Alert -->
       <Transition
         enter-active-class="transform ease-out duration-300 transition"
@@ -51,7 +49,7 @@
         enter-to-class="translate-y-0 opacity-100"
         leave-active-class="transition ease-in duration-200"
         leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
+        leave-to="opacity-0"
       >
         <div v-if="errorMessage" class="mb-6 bg-red-50 border-l-4 border-red-500 rounded-lg p-4 shadow-sm animate-shake">
           <div class="flex">
@@ -75,8 +73,10 @@
       <!-- Edit Form -->
       <form v-if="order" @submit.prevent="handleSubmit" class="space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
           <!-- Left Column - Main Fields -->
           <div class="lg:col-span-2 space-y-6">
+            
             <!-- Basic Order Info -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn">
               <h2 class="text-xl font-bold text-gray-900 mb-6">{{ t.orderInformation }}</h2>
@@ -143,7 +143,7 @@
                   </div>
                 </div>
 
-                <!-- Actual Weight -->
+                <!-- Actual Weight (Calculated) -->
                 <div>
                   <label for="actual_weight" class="block text-sm font-semibold text-gray-900 mb-2">
                     {{ t.actualWeightLabel }}
@@ -162,26 +162,18 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <!-- Financial Information -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn" style="animation-delay: 0.1s">
-              <h2 class="text-xl font-bold text-gray-900 mb-6">{{ t.financialInformation }}</h2>
-              
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                <!-- Shipping Cost -->
+                <!-- Declared Value -->
                 <div>
-                  <label for="shipping_cost" class="block text-sm font-semibold text-gray-900 mb-2">
-                    {{ t.shippingCostLabel }}
+                  <label for="declared_value" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.declaredValueLabel }}
                   </label>
                   <div class="relative">
                     <input
-                      v-model.number="form.shipping_cost"
+                      v-model.number="form.declared_value"
                       type="number"
                       step="0.01"
-                      id="shipping_cost"
+                      id="declared_value"
                       placeholder="0.00"
                       class="w-full px-4 py-3 pl-8 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     >
@@ -190,9 +182,55 @@
                     </div>
                   </div>
                 </div>
-                
 
-                <!-- Amount Paid -->
+                <!-- IVA Amount -->
+                <div>
+                  <label for="iva_amount" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.ivaAmountLabel }}
+                  </label>
+                  <div class="relative">
+                    <input
+                      v-model.number="form.iva_amount"
+                      type="number"
+                      step="0.01"
+                      id="iva_amount"
+                      placeholder="0.00"
+                      class="w-full px-4 py-3 pl-8 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    >
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span class="text-gray-500">$</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Financial Information (Simplified) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn" style="animation-delay: 0.1s">
+              <h2 class="text-xl font-bold text-gray-900 mb-6">{{ t.financialInformation }}</h2>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                
+                <!-- Deposit Amount (50%) -->
+                <div>
+                  <label for="deposit_amount" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.depositAmountLabel }} (50%)
+                  </label>
+                  <div class="relative">
+                    <input
+                      v-model.number="form.deposit_amount"
+                      type="number"
+                      step="0.01"
+                      id="deposit_amount"
+                      class="w-full px-4 py-3 pl-8 rounded-xl border border-blue-200 bg-blue-50 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span class="text-blue-500">$</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Total Paid So Far -->
                 <div>
                   <label for="amount_paid" class="block text-sm font-semibold text-gray-900 mb-2">
                     {{ t.amountPaidLabel }}
@@ -203,13 +241,13 @@
                       type="number"
                       step="0.01"
                       id="amount_paid"
-                      placeholder="0.00"
-                      class="w-full px-4 py-3 pl-8 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      class="w-full px-4 py-3 pl-8 rounded-xl border border-green-200 bg-green-50 font-bold text-green-700 text-base focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span class="text-gray-500">$</span>
+                      <span class="text-green-500">$</span>
                     </div>
                   </div>
+                  <p class="text-xs text-gray-500 mt-1">{{ t.updatedViaStripe }}</p>
                 </div>
               </div>
             </div>
@@ -376,21 +414,35 @@
               <h2 class="text-lg font-bold text-gray-900 mb-4">{{ t.shippingInformation }}</h2>
               
               <div class="space-y-4">
-                <!-- DHL Waybill -->
+                <!-- Guia Number (Replaces DHL Waybill) -->
                 <div>
-                  <label for="dhl_waybill_number" class="block text-sm font-semibold text-gray-900 mb-2">
+                  <label for="guia_number" class="block text-sm font-semibold text-gray-900 mb-2">
                     {{ t.dhlWaybillLabel }}
                   </label>
                   <input
-                    v-model="form.dhl_waybill_number"
+                    v-model="form.guia_number"
                     type="text"
-                    id="dhl_waybill_number"
-                    placeholder="84 1597 5142"
+                    id="guia_number"
+                    placeholder="1234567890"
                     class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                 </div>
 
-                <!-- Payment Link -->
+                <!-- Deposit Payment Link -->
+                <div>
+                  <label for="deposit_payment_link" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.depositPaymentLinkLabel }}
+                  </label>
+                  <input
+                    v-model="form.deposit_payment_link"
+                    type="url"
+                    id="deposit_payment_link"
+                    placeholder="https://buy.stripe.com/..."
+                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                </div>
+
+                <!-- Final Payment Link -->
                 <div>
                   <label for="payment_link" class="block text-sm font-semibold text-gray-900 mb-2">
                     {{ t.paymentLinkLabel }}
@@ -399,7 +451,7 @@
                     v-model="form.payment_link"
                     type="url"
                     id="payment_link"
-                    placeholder="https://..."
+                    placeholder="https://invoice.stripe.com/..."
                     class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                 </div>
@@ -411,7 +463,20 @@
               <h2 class="text-lg font-bold text-gray-900 mb-4">{{ t.importantDates }}</h2>
               
               <div class="space-y-4">
-                <!-- Paid At -->
+                <!-- Deposit Paid At -->
+                <div>
+                  <label for="deposit_paid_at" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.depositPaidAtLabel }}
+                  </label>
+                  <input
+                    v-model="form.deposit_paid_at"
+                    type="datetime-local"
+                    id="deposit_paid_at"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                </div>
+
+                <!-- Final Paid At -->
                 <div>
                   <label for="paid_at" class="block text-sm font-semibold text-gray-900 mb-2">
                     {{ t.paidAtLabel }}
@@ -420,19 +485,6 @@
                     v-model="form.paid_at"
                     type="datetime-local"
                     id="paid_at"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                </div>
-
-                <!-- Quote Sent At -->
-                <div>
-                  <label for="quote_sent_at" class="block text-sm font-semibold text-gray-900 mb-2">
-                    {{ t.quoteSentAtLabel }}
-                  </label>
-                  <input
-                    v-model="form.quote_sent_at"
-                    type="datetime-local"
-                    id="quote_sent_at"
                     class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                 </div>
@@ -463,7 +515,18 @@
                   >
                 </div>
 
-                
+                <!-- Quote Sent At -->
+                <div>
+                  <label for="quote_sent_at" class="block text-sm font-semibold text-gray-900 mb-2">
+                    {{ t.quoteSentAtLabel }}
+                  </label>
+                  <input
+                    v-model="form.quote_sent_at"
+                    type="datetime-local"
+                    id="quote_sent_at"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                </div>
               </div>
             </div>
 
@@ -536,9 +599,12 @@ const originalData = ref(null)
 const form = ref({
   status: '',
   box_size: '',
-  box_price: null,
+  // Financial fields
+  deposit_amount: null, // New
+  amount_paid: null,
   declared_value: null,
   iva_amount: null,
+  
   is_rural: false,
   rural_surcharge: null,
   delivery_address: {
@@ -553,14 +619,20 @@ const form = ref({
   },
   total_weight: null,
   actual_weight: null,
+  
+  // Extra fields we want to keep in state even if hidden from UI
+  box_price: null,
   shipping_cost: null,
   handling_fee: null,
   insurance_fee: null,
   quoted_amount: null,
-  amount_paid: null,
   currency: 'mxn',
+  
   notes: '',
+  
+  // Dates
   paid_at: null,
+  deposit_paid_at: null, // New
   completed_at: null,
   processing_started_at: null,
   quote_sent_at: null,
@@ -569,7 +641,13 @@ const form = ref({
   delivered_at: null,
   estimated_delivery_date: null,
   actual_delivery_date: null,
-  dhl_waybill_number: '',
+  
+  // Updated Fields
+  guia_number: '', // Renamed from dhl_waybill_number
+  deposit_invoice_id: '', // New
+  deposit_payment_link: '', // New
+  
+  // Legacy / Standard Invoice
   stripe_invoice_id: '',
   payment_link: ''
 })
@@ -585,251 +663,66 @@ const mexicanStates = [
 
 // Translations
 const translations = {
-  editOrder: {
-    es: 'Editar Orden (Admin)',
-    en: 'Edit Order (Admin)'
-  },
-  adminModeTitle: {
-    es: 'Modo Administrador',
-    en: 'Administrator Mode'
-  },
-  adminModeMessage: {
-    es: 'Tienes control total sobre todos los campos de esta orden. Los cambios se aplicarán inmediatamente.',
-    en: 'You have full control over all fields in this order. Changes will be applied immediately.'
-  },
-  orderInformation: {
-    es: 'Información de la Orden',
-    en: 'Order Information'
-  },
-  financialInformation: {
-    es: 'Información Financiera',
-    en: 'Financial Information'
-  },
-  shippingInformation: {
-    es: 'Información de Envío',
-    en: 'Shipping Information'
-  },
-  importantDates: {
-    es: 'Fechas Importantes',
-    en: 'Important Dates'
-  },
-  notesTitle: {
-    es: 'Notas',
-    en: 'Notes'
-  },
-  statusLabel: {
-    es: 'Estado',
-    en: 'Status'
-  },
-  boxSizeLabel: {
-    es: 'Tamaño de Caja',
-    en: 'Box Size'
-  },
-  selectBoxSize: {
-    es: 'Seleccionar tamaño',
-    en: 'Select size'
-  },
-  totalWeightLabel: {
-    es: 'Peso Total',
-    en: 'Total Weight'
-  },
-  actualWeightLabel: {
-    es: 'Peso Real',
-    en: 'Actual Weight'
-  },
-  declaredValueLabel: {
-    es: 'Valor Declarado',
-    en: 'Declared Value'
-  },
-  ivaAmountLabel: {
-    es: 'Monto IVA',
-    en: 'IVA Amount'
-  },
-  shippingCostLabel: {
-    es: 'Costo de Envío',
-    en: 'Shipping Cost'
-  },
-  handlingFeeLabel: {
-    es: 'Tarifa de Manejo',
-    en: 'Handling Fee'
-  },
-  quotedAmountLabel: {
-    es: 'Monto Cotizado',
-    en: 'Quoted Amount'
-  },
-  amountPaidLabel: {
-    es: 'Monto Pagado',
-    en: 'Amount Paid'
-  },
-  dhlWaybillLabel: {
-    es: 'Número de Guía',
-    en: 'Waybill Number'
-  },
-  paymentLinkLabel: {
-    es: 'Link de Pago',
-    en: 'Payment Link'
-  },
-  paidAtLabel: {
-    es: 'Fecha de Pago',
-    en: 'Paid At'
-  },
-  quoteSentAtLabel: {
-    es: 'Cotización Enviada',
-    en: 'Quote Sent At'
-  },
-  shippedAtLabel: {
-    es: 'Fecha de Envío',
-    en: 'Shipped At'
-  },
-  deliveredAtLabel: {
-    es: 'Fecha de Entrega',
-    en: 'Delivered At'
-  },
-  estimatedDeliveryLabel: {
-    es: 'Entrega Estimada',
-    en: 'Estimated Delivery'
-  },
-  notesPlaceholder: {
-    es: 'Notas internas sobre esta orden...',
-    en: 'Internal notes about this order...'
-  },
-  deliveryAddressTitle: {
-    es: 'Dirección de Entrega',
-    en: 'Delivery Address'
-  },
-  streetLabel: {
-    es: 'Calle',
-    en: 'Street'
-  },
-  streetPlaceholder: {
-    es: 'Nombre de la calle',
-    en: 'Street name'
-  },
-  exteriorNumberLabel: {
-    es: 'Número Exterior',
-    en: 'Exterior Number'
-  },
-  exteriorNumberPlaceholder: {
-    es: '123',
-    en: '123'
-  },
-  interiorNumberLabel: {
-    es: 'Número Interior',
-    en: 'Interior Number'
-  },
-  interiorNumberPlaceholder: {
-    es: 'Opcional',
-    en: 'Optional'
-  },
-  coloniaLabel: {
-    es: 'Colonia',
-    en: 'Neighborhood'
-  },
-  coloniaPlaceholder: {
-    es: 'Nombre de la colonia',
-    en: 'Neighborhood name'
-  },
-  municipioLabel: {
-    es: 'Municipio/Delegación',
-    en: 'Municipality'
-  },
-  municipioPlaceholder: {
-    es: 'Municipio o delegación',
-    en: 'Municipality'
-  },
-  estadoLabel: {
-    es: 'Estado',
-    en: 'State'
-  },
-  selectEstado: {
-    es: 'Selecciona un estado',
-    en: 'Select a state'
-  },
-  postalCodeLabel: {
-    es: 'Código Postal',
-    en: 'Postal Code'
-  },
-  postalCodePlaceholder: {
-    es: '12345',
-    en: '12345'
-  },
-  referenciasLabel: {
-    es: 'Referencias',
-    en: 'References'
-  },
-  referenciasPlaceholder: {
-    es: 'Entre calles, puntos de referencia, color de la casa, etc.',
-    en: 'Between streets, landmarks, house color, etc.'
-  },
-  ruralAreaLabel: {
-    es: 'Zona Rural',
-    en: 'Rural Area'
-  },
-  ruralAreaDescription: {
-    es: 'Marca si la dirección está en una zona rural.',
-    en: 'Check if the address is in a rural area.'
-  },
-  ruralSurchargeLabel: {
-    es: 'Recargo Rural',
-    en: 'Rural Surcharge'
-  },
-  cancel: {
-    es: 'Cancelar',
-    en: 'Cancel'
-  },
-  saveChanges: {
-    es: 'Guardar Cambios',
-    en: 'Save Changes'
-  },
-  saving: {
-    es: 'Guardando...',
-    en: 'Saving...'
-  },
-  orderUpdatedSuccess: {
-    es: 'Orden actualizada exitosamente',
-    en: 'Order updated successfully'
-  },
-  generalError: {
-    es: 'Ocurrió un error. Por favor, intenta de nuevo.',
-    en: 'An error occurred. Please try again.'
-  },
+  editOrder: { es: 'Editar Orden (Admin)', en: 'Edit Order (Admin)' },
+  orderInformation: { es: 'Información de la Orden', en: 'Order Information' },
+  financialInformation: { es: 'Información Financiera', en: 'Financial Information' },
+  shippingInformation: { es: 'Información de Envío', en: 'Shipping Information' },
+  importantDates: { es: 'Fechas Importantes', en: 'Important Dates' },
+  notesTitle: { es: 'Notas', en: 'Notes' },
+  statusLabel: { es: 'Estado', en: 'Status' },
+  boxSizeLabel: { es: 'Tamaño de Caja', en: 'Box Size' },
+  selectBoxSize: { es: 'Seleccionar tamaño', en: 'Select size' },
+  totalWeightLabel: { es: 'Peso Total', en: 'Total Weight' },
+  actualWeightLabel: { es: 'Peso Real', en: 'Actual Weight' },
+  declaredValueLabel: { es: 'Valor Declarado', en: 'Declared Value' },
+  ivaAmountLabel: { es: 'Monto IVA', en: 'IVA Amount' },
+  amountPaidLabel: { es: 'Monto Pagado (Total)', en: 'Amount Paid (Total)' },
+  depositAmountLabel: { es: 'Monto Depósito', en: 'Deposit Amount' },
+  updatedViaStripe: { es: 'Actualizado automáticamente vía Stripe', en: 'Automatically updated via Stripe' },
+  dhlWaybillLabel: { es: 'Número de Guía', en: 'Waybill Number' },
+  depositPaymentLinkLabel: { es: 'Link Depósito', en: 'Deposit Link' },
+  paymentLinkLabel: { es: 'Link Pago Final', en: 'Final Payment Link' },
+  paidAtLabel: { es: 'Fecha Pago Final', en: 'Final Paid At' },
+  depositPaidAtLabel: { es: 'Fecha Pago Depósito', en: 'Deposit Paid At' },
+  quoteSentAtLabel: { es: 'Cotización Enviada', en: 'Quote Sent At' },
+  shippedAtLabel: { es: 'Fecha de Envío', en: 'Shipped At' },
+  deliveredAtLabel: { es: 'Fecha de Entrega', en: 'Delivered At' },
+  notesPlaceholder: { es: 'Notas internas sobre esta orden...', en: 'Internal notes about this order...' },
+  deliveryAddressTitle: { es: 'Dirección de Entrega', en: 'Delivery Address' },
+  streetLabel: { es: 'Calle', en: 'Street' },
+  streetPlaceholder: { es: 'Nombre de la calle', en: 'Street name' },
+  exteriorNumberLabel: { es: 'Número Exterior', en: 'Exterior Number' },
+  exteriorNumberPlaceholder: { es: '123', en: '123' },
+  interiorNumberLabel: { es: 'Número Interior', en: 'Interior Number' },
+  interiorNumberPlaceholder: { es: 'Opcional', en: 'Optional' },
+  coloniaLabel: { es: 'Colonia', en: 'Neighborhood' },
+  coloniaPlaceholder: { es: 'Nombre de la colonia', en: 'Neighborhood name' },
+  municipioLabel: { es: 'Municipio/Delegación', en: 'Municipality' },
+  municipioPlaceholder: { es: 'Municipio o delegación', en: 'Municipality' },
+  estadoLabel: { es: 'Estado', en: 'State' },
+  selectEstado: { es: 'Selecciona un estado', en: 'Select a state' },
+  postalCodeLabel: { es: 'Código Postal', en: 'Postal Code' },
+  postalCodePlaceholder: { es: '12345', en: '12345' },
+  referenciasLabel: { es: 'Referencias', en: 'References' },
+  referenciasPlaceholder: { es: 'Entre calles, puntos de referencia...', en: 'Between streets, landmarks...' },
+  ruralAreaLabel: { es: 'Zona Rural', en: 'Rural Area' },
+  ruralAreaDescription: { es: 'Marca si la dirección está en una zona rural.', en: 'Check if the address is in a rural area.' },
+  ruralSurchargeLabel: { es: 'Recargo Rural', en: 'Rural Surcharge' },
+  cancel: { es: 'Cancelar', en: 'Cancel' },
+  saveChanges: { es: 'Guardar Cambios', en: 'Save Changes' },
+  saving: { es: 'Guardando...', en: 'Saving...' },
+  orderUpdatedSuccess: { es: 'Orden actualizada exitosamente', en: 'Order updated successfully' },
+  generalError: { es: 'Ocurrió un error.', en: 'An error occurred.' },
   // Status translations
-  collecting: {
-    es: 'Agregando Artículos',
-    en: 'Adding Items'
-  },
-  awaitingPackages: {
-    es: 'Esperando Paquetes',
-    en: 'Awaiting Packages'
-  },
-  packagesComplete: {
-    es: 'Paquetes Completos',
-    en: 'Packages Complete'
-  },
-  processing: {
-    es: 'Procesando',
-    en: 'Processing'
-  },
-  shipped: {
-    es: 'Enviado',
-    en: 'Shipped'
-  },
-  delivered: {
-    es: 'Entregado',
-    en: 'Delivered'
-  },
-  awaitingPayment: {
-    es: 'Esperando Pago',
-    en: 'Awaiting Payment'
-  },
-  paid: {
-    es: 'Pagado',
-    en: 'Paid'
-  },
-  cancelled: {
-    es: 'Cancelado',
-    en: 'Cancelled'
-  }
+  collecting: { es: 'Agregando Artículos', en: 'Adding Items' },
+  awaitingPackages: { es: 'Esperando Paquetes', en: 'Awaiting Packages' },
+  packagesComplete: { es: 'Paquetes Completos', en: 'Packages Complete' },
+  processing: { es: 'Procesando', en: 'Processing' },
+  shipped: { es: 'Enviado', en: 'Shipped' },
+  delivered: { es: 'Entregado', en: 'Delivered' },
+  awaitingPayment: { es: 'Esperando Pago', en: 'Awaiting Payment' },
+  paid: { es: 'Pagado', en: 'Paid' },
+  cancelled: { es: 'Cancelado', en: 'Cancelled' }
 }
 
 // Get reactive translations
@@ -868,7 +761,6 @@ const formatDateTimeForInput = (date) => {
   if (!date) return null
   const d = new Date(date)
   if (isNaN(d.getTime())) return null
-  // Format as YYYY-MM-DDTHH:mm for datetime-local input
   const year = d.getFullYear()
   const month = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
@@ -877,12 +769,10 @@ const formatDateTimeForInput = (date) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
-// Helper function to format date for input
 const formatDateForInput = (date) => {
   if (!date) return null
   const d = new Date(date)
   if (isNaN(d.getTime())) return null
-  // Format as YYYY-MM-DD for date input
   const year = d.getFullYear()
   const month = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
@@ -924,7 +814,10 @@ const fetchOrder = async () => {
       amount_paid: order.value.amount_paid || null,
       currency: order.value.currency || 'mxn',
       notes: order.value.notes || '',
+      
+      // Timestamps
       paid_at: formatDateTimeForInput(order.value.paid_at),
+      deposit_paid_at: formatDateTimeForInput(order.value.deposit_paid_at),
       completed_at: formatDateTimeForInput(order.value.completed_at),
       processing_started_at: formatDateTimeForInput(order.value.processing_started_at),
       quote_sent_at: formatDateTimeForInput(order.value.quote_sent_at),
@@ -933,7 +826,12 @@ const fetchOrder = async () => {
       delivered_at: formatDateTimeForInput(order.value.delivered_at),
       estimated_delivery_date: formatDateForInput(order.value.estimated_delivery_date),
       actual_delivery_date: formatDateForInput(order.value.actual_delivery_date),
-      dhl_waybill_number: order.value.dhl_waybill_number || '',
+      
+      // Updated Fields
+      guia_number: order.value.guia_number || '', 
+      deposit_amount: order.value.deposit_amount || null, 
+      deposit_invoice_id: order.value.deposit_invoice_id || '', 
+      deposit_payment_link: order.value.deposit_payment_link || '', 
       stripe_invoice_id: order.value.stripe_invoice_id || '',
       payment_link: order.value.payment_link || ''
     }
@@ -959,34 +857,19 @@ const handleSubmit = async () => {
   try {
     // Prepare the data - only send changed fields
     const updates = {}
-    
-    // Check each field for changes
-    if (form.value.status !== originalData.value.status) updates.status = form.value.status
-    if (form.value.box_size !== originalData.value.box_size) updates.box_size = form.value.box_size
-    if (form.value.box_price !== originalData.value.box_price) updates.box_price = form.value.box_price
-    if (form.value.declared_value !== originalData.value.declared_value) updates.declared_value = form.value.declared_value
-    if (form.value.iva_amount !== originalData.value.iva_amount) updates.iva_amount = form.value.iva_amount
-    if (form.value.is_rural !== originalData.value.is_rural) updates.is_rural = form.value.is_rural
-    if (form.value.rural_surcharge !== originalData.value.rural_surcharge) updates.rural_surcharge = form.value.rural_surcharge
-    if (JSON.stringify(form.value.delivery_address) !== JSON.stringify(originalData.value.delivery_address)) {
-      updates.delivery_address = form.value.delivery_address
-    }
-    if (form.value.total_weight !== originalData.value.total_weight) updates.total_weight = form.value.total_weight
-    if (form.value.actual_weight !== originalData.value.actual_weight) updates.actual_weight = form.value.actual_weight
-    if (form.value.shipping_cost !== originalData.value.shipping_cost) updates.shipping_cost = form.value.shipping_cost
-    if (form.value.handling_fee !== originalData.value.handling_fee) updates.handling_fee = form.value.handling_fee
-    if (form.value.insurance_fee !== originalData.value.insurance_fee) updates.insurance_fee = form.value.insurance_fee
-    if (form.value.quoted_amount !== originalData.value.quoted_amount) updates.quoted_amount = form.value.quoted_amount
-    if (form.value.amount_paid !== originalData.value.amount_paid) updates.amount_paid = form.value.amount_paid
-    if (form.value.currency !== originalData.value.currency) updates.currency = form.value.currency
-    if (form.value.notes !== originalData.value.notes) updates.notes = form.value.notes
-    if (form.value.paid_at !== originalData.value.paid_at) updates.paid_at = form.value.paid_at
-    if (form.value.quote_sent_at !== originalData.value.quote_sent_at) updates.quote_sent_at = form.value.quote_sent_at
-    if (form.value.shipped_at !== originalData.value.shipped_at) updates.shipped_at = form.value.shipped_at
-    if (form.value.delivered_at !== originalData.value.delivered_at) updates.delivered_at = form.value.delivered_at
-    if (form.value.estimated_delivery_date !== originalData.value.estimated_delivery_date) updates.estimated_delivery_date = form.value.estimated_delivery_date
-    if (form.value.dhl_waybill_number !== originalData.value.dhl_waybill_number) updates.dhl_waybill_number = form.value.dhl_waybill_number
-    if (form.value.payment_link !== originalData.value.payment_link) updates.payment_link = form.value.payment_link
+    const keys = Object.keys(form.value)
+
+    keys.forEach(key => {
+      if (key === 'delivery_address') {
+        if (JSON.stringify(form.value.delivery_address) !== JSON.stringify(originalData.value.delivery_address)) {
+          updates.delivery_address = form.value.delivery_address
+        }
+      } else {
+        if (form.value[key] !== originalData.value[key]) {
+          updates[key] = form.value[key]
+        }
+      }
+    })
 
     const response = await $customFetch(`/admin/management/orders/${orderId}`, {
       method: 'PUT',
@@ -1014,14 +897,8 @@ onMounted(() => {
 
 <style scoped>
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes shake {
