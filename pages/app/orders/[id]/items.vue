@@ -81,7 +81,20 @@
 
           <form @submit.prevent="handleAddItem" class="space-y-4">
             
-            <!-- Row 1: Name & Quantity -->
+            <!-- Row 1: Product URL (Full Width) - NEW -->
+            <div class="w-full">
+                <label for="product_url_desktop" class="block text-sm font-medium text-gray-700 mb-1">
+                  {{ t.productUrl }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                    </div>
+                    <input v-model="itemForm.product_url" type="url" id="product_url_desktop" :placeholder="t.productUrlPlaceholder" class="w-full pl-9 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+                </div>
+            </div>
+
+            <!-- Row 2: Name & Quantity -->
             <div class="grid sm:grid-cols-2 gap-4">
               <!-- Product Name -->
               <div class="sm:col-span-1">
@@ -108,7 +121,7 @@
               </div>
             </div>
 
-            <!-- Row 2: Value, Tracking, Date -->
+            <!-- Row 3: Value, Tracking, Date -->
             <div class="grid sm:grid-cols-3 gap-4">
               <!-- Declared Value -->
               <div>
@@ -118,7 +131,7 @@
                 <input v-model="itemForm.declared_value" type="text" inputmode="decimal" @input="itemForm.declared_value = itemForm.declared_value.replace(/[^0-9.]/g, '')" :placeholder="t.declaredValuePlaceholder" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
               </div>
 
-              <!-- Tracking Number (NEW) -->
+              <!-- Tracking Number -->
               <div>
                 <label for="tracking_number_desktop" class="block text-sm font-medium text-gray-700 mb-1">
                   {{ t.trackingNumber }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
@@ -126,7 +139,7 @@
                 <input v-model="itemForm.tracking_number" type="text" id="tracking_number_desktop" :placeholder="t.trackingPlaceholder" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
               </div>
 
-              <!-- Estimated Delivery Date (NEW) -->
+              <!-- Estimated Delivery Date -->
               <div>
                 <label for="estimated_delivery_date_desktop" class="block text-sm font-medium text-gray-700 mb-1">
                   {{ t.estimatedDeliveryDate }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
@@ -135,7 +148,7 @@
               </div>
             </div>
 
-            <!-- Row 3: Files (Receipt & Product Image) -->
+            <!-- Row 4: Files (Receipt & Product Image) -->
             <div class="grid sm:grid-cols-2 gap-4">
               <!-- Receipt Upload -->
               <div>
@@ -156,7 +169,7 @@
                 </div>
               </div>
 
-              <!-- Product Image Upload (NEW) -->
+              <!-- Product Image Upload -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                   {{ t.productImage }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
@@ -208,7 +221,14 @@
                 </div>
 
                 <div class="flex-1 min-w-0">
-                  <p class="font-medium text-gray-900 truncate">{{ item.product_name }}</p>
+                  <div class="flex items-start justify-between">
+                    <p class="font-medium text-gray-900 truncate">{{ item.product_name }}</p>
+                    <!-- Link Icon if URL exists -->
+                    <a v-if="item.product_url" :href="item.product_url" target="_blank" class="ml-2 text-gray-400 hover:text-primary-600 flex-shrink-0">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    </a>
+                  </div>
+                  
                   <div class="flex flex-wrap items-center gap-3 mt-1">
                     <p class="text-sm text-gray-500">{{ t.quantity }}: {{ item.quantity }}</p>
                     
@@ -330,6 +350,14 @@
                       <input v-model="itemForm.product_name" type="text" id="product_name_mobile" :placeholder="t.productPlaceholder" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" required autofocus />
                     </div>
 
+                    <!-- Product URL (NEW) -->
+                    <div>
+                      <label for="product_url_mobile" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ t.productUrl }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
+                      </label>
+                      <input v-model="itemForm.product_url" type="url" id="product_url_mobile" :placeholder="t.productUrlPlaceholder" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+                    </div>
+
                     <!-- Quantity -->
                     <div>
                       <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -354,7 +382,7 @@
                       <input v-model="itemForm.declared_value" type="number" step="0.01" min="0" max="999999.99" id="declared_value_mobile" :placeholder="t.declaredValuePlaceholder" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                     </div>
 
-                    <!-- Tracking Number (NEW) -->
+                    <!-- Tracking Number -->
                     <div>
                       <label for="tracking_number_mobile" class="block text-sm font-medium text-gray-700 mb-1">
                         {{ t.trackingNumber }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
@@ -362,7 +390,7 @@
                       <input v-model="itemForm.tracking_number" type="text" id="tracking_number_mobile" :placeholder="t.trackingPlaceholder" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                     </div>
 
-                    <!-- Estimated Delivery Date (NEW) -->
+                    <!-- Estimated Delivery Date -->
                     <div>
                       <label for="estimated_delivery_date_mobile" class="block text-sm font-medium text-gray-700 mb-1">
                         {{ t.estimatedDeliveryDate }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
@@ -388,7 +416,7 @@
                       </div>
                     </div>
 
-                    <!-- Product Image (NEW) -->
+                    <!-- Product Image -->
                     <div>
                       <label class="block text-sm font-medium text-gray-700 mb-1">
                         {{ t.productImage }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
@@ -508,10 +536,11 @@ const totalItemQuantity = computed(() => {
 
 const itemForm = ref({
   product_name: "",
+  product_url: "", // NEW
   quantity: 1,
   declared_value: "",
-  tracking_number: "", // NEW
-  estimated_delivery_date: "", // NEW
+  tracking_number: "",
+  estimated_delivery_date: "",
 });
 
 const translations = {
@@ -533,14 +562,16 @@ const translations = {
   addAnotherProduct: { es: "Agregar otro producto", en: "Add another product" },
   productName: { es: "Nombre del producto", en: "Product name" },
   productPlaceholder: { es: "ej: iPhone 15 Pro", en: "e.g. iPhone 15 Pro" },
+  productUrl: { es: "Link del producto", en: "Product Link" }, // NEW
+  productUrlPlaceholder: { es: "https://...", en: "https://..." }, // NEW
   quantity: { es: "Cantidad", en: "Quantity" },
   receipt: { es: "Recibo", en: "Receipt" },
-  productImage: { es: "Imagen del Producto", en: "Product Image" }, // NEW
+  productImage: { es: "Imagen del Producto", en: "Product Image" },
   optional: { es: "opcional", en: "optional" },
   clickToUpload: { es: "Haz clic para subir archivo", en: "Click to upload file" },
   tapToUpload: { es: "Toca para subir archivo", en: "Tap to upload file" },
-  clickToUploadImage: { es: "Subir imagen", en: "Upload image" }, // NEW
-  tapToUploadImage: { es: "Subir imagen", en: "Tap to upload image" }, // NEW
+  clickToUploadImage: { es: "Subir imagen", en: "Upload image" },
+  tapToUploadImage: { es: "Subir imagen", en: "Tap to upload image" },
   remove: { es: "Quitar", en: "Remove" },
   adding: { es: "Agregando...", en: "Adding..." },
   addProductButton: { es: "Agregar producto", en: "Add product" },
@@ -556,8 +587,8 @@ const translations = {
   declaredValuePlaceholder: { es: "ej: 999.99", en: "e.g. 999.99" },
   totalProducts: { es: "Total de productos", en: "Total products" },
   estimatedDeliveryDate: { es: "Fecha estimada de entrega", en: "Estimated delivery date" },
-  trackingNumber: { es: "Número de rastreo", en: "Tracking Number" }, // NEW
-  trackingPlaceholder: { es: "ej: 1Z999AA101...", en: "e.g. 1Z999AA101..." }, // NEW
+  trackingNumber: { es: "Número de rastreo", en: "Tracking Number" },
+  trackingPlaceholder: { es: "ej: 1Z999AA101...", en: "e.g. 1Z999AA101..." },
 };
 
 const t = createTranslations(translations);
@@ -615,12 +646,15 @@ const handleAddItem = async () => {
     formData.append("product_name", itemForm.value.product_name.trim());
     formData.append("quantity", itemForm.value.quantity);
 
+    // NEW: Append product_url if it exists
+    if (itemForm.value.product_url) formData.append("product_url", itemForm.value.product_url);
+
     if (itemForm.value.declared_value) formData.append("declared_value", itemForm.value.declared_value);
-    if (itemForm.value.tracking_number) formData.append("tracking_number", itemForm.value.tracking_number); // NEW
+    if (itemForm.value.tracking_number) formData.append("tracking_number", itemForm.value.tracking_number);
     if (itemForm.value.estimated_delivery_date) formData.append("estimated_delivery_date", itemForm.value.estimated_delivery_date);
 
     if (selectedFile.value) formData.append("proof_of_purchase", selectedFile.value);
-    if (selectedProductImage.value) formData.append("product_image", selectedProductImage.value); // NEW
+    if (selectedProductImage.value) formData.append("product_image", selectedProductImage.value);
 
     await $customFetch(`/orders/${order.value.id}/items`, {
       method: "POST",
@@ -629,7 +663,14 @@ const handleAddItem = async () => {
 
     $toast.success(t.value.productAdded || "Product added!");
 
-    itemForm.value = { product_name: "", quantity: 1, declared_value: "", tracking_number: "", estimated_delivery_date: "" };
+    itemForm.value = { 
+        product_name: "", 
+        product_url: "", // Reset
+        quantity: 1, 
+        declared_value: "", 
+        tracking_number: "", 
+        estimated_delivery_date: "" 
+    };
     selectedFile.value = null;
     selectedProductImage.value = null;
 
