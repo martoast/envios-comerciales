@@ -2,442 +2,311 @@
 <template>
   <section class="min-h-screen bg-gray-50 pb-20">
     <!-- Fixed Header with Progress -->
-    <div class="bg-white border-b sticky top-0 z-40">
+    <div class="bg-white border-b sticky top-0 z-40 shadow-sm">
       <div class="max-w-3xl mx-auto px-4 py-4">
         <div class="flex items-center gap-3 mb-4">
           <NuxtLink
             :to="'/app/orders/' + order?.id"
-            class="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
+            class="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500 hover:text-gray-900"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7 7-7" />
             </svg>
           </NuxtLink>
           <div class="flex-1">
-            <h1 class="text-lg sm:text-xl font-semibold text-gray-900">
+            <h1 class="text-lg sm:text-xl font-bold text-gray-900">
               {{ t.addYourProducts }}
             </h1>
-            <p class="text-sm text-gray-500">
-              {{ t.orderNumber }} {{ order?.tracking_number }}
+            <p class="text-sm text-gray-500 font-medium">
+              {{ t.orderNumber }} <span class="text-gray-900">#{{ order?.tracking_number }}</span>
             </p>
           </div>
-          <!-- Mobile Item Counter -->
-          <div v-if="hasItems" class="sm:hidden bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+          <div v-if="hasItems" class="sm:hidden bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-sm">
             {{ totalItemQuantity }}
           </div>
         </div>
 
-        <!-- Progress Bar -->
-        <div class="relative">
-          <div class="bg-gray-200 rounded-full h-2 overflow-hidden">
+        <div class="relative mt-2">
+          <div class="bg-gray-100 rounded-full h-1.5 overflow-hidden">
             <div :class="[
-                'h-full bg-gradient-to-r from-green-500 to-primary-500 transition-all duration-500 ease-out',
-                order?.items_confirmed ? 'w-full' : hasItems ? 'w-2/3' : 'w-1/3',
+                'h-full bg-primary-600 rounded-full transition-all duration-500 ease-out',
+                !isCollecting ? 'w-full' : hasItems ? 'w-2/3' : 'w-1/3',
               ]"></div>
           </div>
-          <div class="flex justify-between mt-2 text-xs">
-            <span class="text-green-600 font-medium">✓ {{ t.stepAddress }}</span>
-            <span :class="hasItems ? 'text-green-600 font-medium' : 'text-primary-600 font-medium'">
-              {{ hasItems ? "✓" : "•" }} {{ t.stepAddItems }}
-            </span>
-            <span :class="order?.items_confirmed ? 'text-green-600 font-medium' : 'text-gray-400'">
-              {{ order?.items_confirmed ? "✓" : "" }} {{ t.stepComplete }}
-            </span>
+          <div class="flex justify-between mt-2 text-xs font-medium text-gray-400">
+            <span class="text-primary-600">{{ t.stepAddress }}</span>
+            <span :class="hasItems ? 'text-primary-600' : 'text-primary-600'">{{ t.stepAddItems }}</span>
+            <span :class="!isCollecting ? 'text-primary-600' : ''">{{ t.stepComplete }}</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-4xl mx-auto px-4 py-6">
+    <div class="max-w-3xl mx-auto px-4 py-8">
       <!-- Loading -->
       <div v-if="loading" class="flex justify-center py-12">
         <div class="animate-spin h-8 w-8 border-3 border-primary-600 border-t-transparent rounded-full"></div>
       </div>
 
       <div v-else-if="order">
-        <!-- Add Product Button (Mobile) -->
-        <div v-if="!order.items_confirmed" class="sm:hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
-          <button @click="showAddProductModal = true" class="w-full flex items-center justify-between py-3 px-4 bg-primary-50 text-primary-700 rounded-xl hover:bg-primary-100 transition-colors">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
+        <!-- Mobile "Add Product" Action Button -->
+        <div v-if="canEdit" class="sm:hidden mb-6">
+          <button @click="openAddModal" class="w-full group bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between hover:border-primary-200 transition-all active:scale-[0.99]">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center group-hover:bg-primary-100 transition-colors">
+                <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
               </div>
-              <span class="font-semibold">{{ hasItems ? t.addAnotherProduct : t.addProduct }}</span>
+              <div class="text-left">
+                <span class="block font-bold text-gray-900 text-lg">{{ hasItems ? t.addAnotherProduct : t.addProduct }}</span>
+                <span class="text-sm text-gray-500">{{ t.tapToStart }}</span>
+              </div>
             </div>
-            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
+            <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+            </div>
           </button>
         </div>
 
-        <!-- Desktop Add Product Form -->
-        <div v-if="!order.items_confirmed" class="hidden sm:block bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">
-            {{ hasItems ? t.addAnotherProduct : t.addProduct }}
-          </h2>
+        <!-- Desktop Add/Edit Form -->
+        <div v-if="canEdit" id="desktop-form" class="hidden sm:block bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 transition-all duration-200">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-gray-900">
+              {{ editingItemId ? t.editProduct : (hasItems ? t.addAnotherProduct : t.addProduct) }}
+            </h2>
+            <button v-if="editingItemId" @click="cancelEdit" class="text-sm text-red-600 hover:text-red-700 font-medium px-3 py-1 hover:bg-red-50 rounded-lg transition-colors">
+              {{ t.cancelEdit }}
+            </button>
+          </div>
 
-          <form @submit.prevent="handleAddItem" class="space-y-4">
-            
-            <!-- Row 1: Product URL (Full Width) - NEW -->
-            <div class="w-full">
-                <label for="product_url_desktop" class="block text-sm font-medium text-gray-700 mb-1">
-                  {{ t.productUrl }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+          <form @submit.prevent="handleSubmit" class="space-y-6">
+            <!-- HERO SECTION -->
+            <div class="flex items-start gap-4">
+                <div class="flex-1">
+                    <label for="product_name_desktop" class="block text-sm font-semibold text-gray-700 mb-1.5">{{ t.productName }} <span class="text-red-500">*</span></label>
+                    <input v-model="itemForm.product_name" type="text" id="product_name_desktop" :placeholder="t.productPlaceholder" class="w-full px-4 py-3 border-gray-200 bg-gray-50 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-100 focus:border-primary-500 transition-all font-medium text-gray-900 placeholder-gray-400" required />
+                </div>
+                <div class="w-32 flex-shrink-0">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ t.quantity }} <span class="text-red-500">*</span></label>
+                    <div class="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
+                        <button type="button" @click="decrementQuantity" class="w-8 h-[38px] flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-primary-600 transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg></button>
+                        <input v-model.number="itemForm.quantity" type="number" min="1" max="999" class="w-full bg-transparent border-0 text-center font-bold text-gray-900 focus:ring-0 p-0" />
+                        <button type="button" @click="incrementQuantity" class="w-8 h-[38px] flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-primary-600 transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg></button>
                     </div>
-                    <input v-model="itemForm.product_url" type="url" id="product_url_desktop" :placeholder="t.productUrlPlaceholder" class="w-full pl-9 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
                 </div>
             </div>
 
-            <!-- Row 2: Name & Quantity -->
-            <div class="grid sm:grid-cols-2 gap-4">
-              <!-- Product Name -->
-              <div class="sm:col-span-1">
-                <label for="product_name_desktop" class="block text-sm font-medium text-gray-700 mb-1">
-                  {{ t.productName }}
-                </label>
-                <input v-model="itemForm.product_name" type="text" id="product_name_desktop" :placeholder="t.productPlaceholder" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" required />
-              </div>
-
-              <!-- Quantity -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  {{ t.quantity }}
-                </label>
-                <div class="flex items-center gap-2">
-                  <button type="button" @click="decrementQuantity" class="w-10 h-10 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors flex items-center justify-center">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg>
-                  </button>
-                  <input v-model.number="itemForm.quantity" type="number" min="1" max="9999" @input="validateQuantity" class="flex-1 text-center border border-gray-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
-                  <button type="button" @click="incrementQuantity" class="w-10 h-10 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors flex items-center justify-center">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                  </button>
-                </div>
-              </div>
+            <!-- OPTIONAL TOGGLE -->
+            <div>
+                <button type="button" @click="showDetails = !showDetails" class="flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors focus:outline-none">
+                    <svg :class="{'rotate-180': showDetails}" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    {{ showDetails ? t.hideOptional : t.showOptional }}
+                </button>
             </div>
 
-            <!-- Row 3: Value, Tracking, Date -->
-            <div class="grid sm:grid-cols-3 gap-4">
-              <!-- Declared Value -->
-              <div>
-                <label for="declared_value_desktop" class="block text-sm font-medium text-gray-700 mb-1">
-                  {{ t.declaredValue }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                </label>
-                <input v-model="itemForm.declared_value" type="text" inputmode="decimal" @input="itemForm.declared_value = itemForm.declared_value.replace(/[^0-9.]/g, '')" :placeholder="t.declaredValuePlaceholder" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
-              </div>
+            <!-- OPTIONAL DETAILS -->
+            <div v-show="showDetails" class="bg-gray-50/80 rounded-xl p-5 border border-gray-100 space-y-5">
+                <div class="grid sm:grid-cols-2 gap-5">
+                    <div><label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">{{ t.productUrl }}</label><input v-model="itemForm.product_url" type="url" :placeholder="t.productUrlPlaceholder" class="w-full px-3 py-2.5 border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm" /></div>
+                    <div><label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">{{ t.merchantOrderId }}</label><input v-model="itemForm.merchant_order_id" type="text" :placeholder="t.merchantOrderPlaceholder" class="w-full px-3 py-2.5 border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm" /></div>
+                </div>
+                <div class="grid sm:grid-cols-3 gap-5">
+                    <div><label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">{{ t.trackingNumber }}</label><input v-model="itemForm.tracking_number" type="text" :placeholder="t.trackingPlaceholder" class="w-full px-3 py-2.5 border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm" /></div>
+                    <div><label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">{{ t.declaredValue }}</label><div class="relative"><span class="absolute left-3 top-2.5 text-gray-400">$</span><input v-model="itemForm.declared_value" type="text" inputmode="decimal" class="w-full pl-7 px-3 py-2.5 border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm" /></div></div>
+                    <div><label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">{{ t.estimatedDeliveryDate }}</label><input v-model="itemForm.estimated_delivery_date" type="date" :min="todayDate" class="w-full px-3 py-2.5 border-gray-200 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm" /></div>
+                </div>
 
-              <!-- Tracking Number -->
-              <div>
-                <label for="tracking_number_desktop" class="block text-sm font-medium text-gray-700 mb-1">
-                  {{ t.trackingNumber }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                </label>
-                <input v-model="itemForm.tracking_number" type="text" id="tracking_number_desktop" :placeholder="t.trackingPlaceholder" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
-              </div>
+                <!-- File Uploads (Desktop) -->
+                <div class="grid sm:grid-cols-2 gap-5">
+                    <!-- Receipt -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">{{ t.receipt }}</label>
+                        <input ref="fileInputDesktop" type="file" accept=".pdf,.jpg,.jpeg,.png" @change="handleFileSelect" class="hidden" />
+                        <div v-if="selectedFile" class="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center justify-between">
+                            <span class="text-xs text-green-700 font-medium truncate pr-2">{{ selectedFile.name }}</span>
+                            <button type="button" @click="removeFile" class="text-green-600 hover:text-green-800"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                        </div>
+                        <div v-else-if="existingFiles.proof.url && !markedForDeletion.proof" class="bg-white border border-gray-200 rounded-lg p-3 flex items-center justify-between group">
+                            <div class="flex items-center gap-2 overflow-hidden">
+                                <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                <a :href="existingFiles.proof.url" target="_blank" class="text-xs font-medium text-blue-600 hover:underline truncate">{{ existingFiles.proof.name }}</a>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button type="button" @click="fileInputDesktop?.click()" class="p-1.5 text-gray-400 hover:text-primary-600 rounded hover:bg-gray-100" title="Replace"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg></button>
+                                <button type="button" @click="markedForDeletion.proof = true" class="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-red-50" title="Delete"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                            </div>
+                        </div>
+                        <div v-else @click="fileInputDesktop?.click()" class="bg-white border border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer hover:border-primary-400 hover:bg-primary-50/30 transition-all"><span class="text-xs text-gray-500">{{ t.clickToUpload }}</span></div>
+                    </div>
 
-              <!-- Estimated Delivery Date -->
-              <div>
-                <label for="estimated_delivery_date_desktop" class="block text-sm font-medium text-gray-700 mb-1">
-                  {{ t.estimatedDeliveryDate }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                </label>
-                <input v-model="itemForm.estimated_delivery_date" type="date" :min="todayDate" id="estimated_delivery_date_desktop" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
-              </div>
+                    <!-- Image -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">{{ t.productImage }}</label>
+                        <input ref="productImageInputDesktop" type="file" accept=".jpg,.jpeg,.png,.webp" @change="handleProductImageSelect" class="hidden" />
+                        <div v-if="selectedProductImage" class="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center justify-between">
+                            <span class="text-xs text-green-700 font-medium truncate pr-2">{{ selectedProductImage.name }}</span>
+                            <button type="button" @click="removeProductImage" class="text-green-600 hover:text-green-800"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                        </div>
+                        <div v-else-if="existingFiles.image.url && !markedForDeletion.image" class="bg-white border border-gray-200 rounded-lg p-3 flex items-center justify-between group">
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <img :src="existingFiles.image.url" class="w-8 h-8 rounded object-cover border border-gray-100 flex-shrink-0" />
+                                <a :href="existingFiles.image.url" target="_blank" class="text-xs font-medium text-blue-600 hover:underline truncate">{{ existingFiles.image.name }}</a>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button type="button" @click="productImageInputDesktop?.click()" class="p-1.5 text-gray-400 hover:text-primary-600 rounded hover:bg-gray-100" title="Replace"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg></button>
+                                <button type="button" @click="markedForDeletion.image = true" class="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-red-50" title="Delete"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                            </div>
+                        </div>
+                        <div v-else @click="productImageInputDesktop?.click()" class="bg-white border border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer hover:border-primary-400 hover:bg-primary-50/30 transition-all"><span class="text-xs text-gray-500">{{ t.clickToUploadImage }}</span></div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Row 4: Files (Receipt & Product Image) -->
-            <div class="grid sm:grid-cols-2 gap-4">
-              <!-- Receipt Upload -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  {{ t.receipt }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                </label>
-                <div @click="$refs.fileInputDesktop.click()" class="border-2 border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer hover:border-gray-400 transition-colors h-[84px] flex flex-col justify-center">
-                  <input ref="fileInputDesktop" type="file" accept=".pdf,.jpg,.jpeg,.png" @change="handleFileSelect" class="hidden" />
-                  
-                  <div v-if="!selectedFile" class="text-xs text-gray-500">
-                    <svg class="w-6 h-6 mx-auto mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-                    {{ t.clickToUpload }}
-                  </div>
-                  <div v-else class="flex items-center justify-between px-2">
-                    <span class="text-xs text-gray-700 truncate flex-1">{{ selectedFile.name }}</span>
-                    <button type="button" @click.stop="removeFile" class="ml-2 text-xs text-red-600 hover:text-red-700">{{ t.remove }}</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Product Image Upload -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  {{ t.productImage }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                </label>
-                <div @click="$refs.productImageInputDesktop.click()" class="border-2 border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer hover:border-gray-400 transition-colors h-[84px] flex flex-col justify-center">
-                  <input ref="productImageInputDesktop" type="file" accept=".jpg,.jpeg,.png,.webp" @change="handleProductImageSelect" class="hidden" />
-                  
-                  <div v-if="!selectedProductImage" class="text-xs text-gray-500">
-                    <svg class="w-6 h-6 mx-auto mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    {{ t.clickToUploadImage }}
-                  </div>
-                  <div v-else class="flex items-center justify-between px-2">
-                    <span class="text-xs text-gray-700 truncate flex-1">{{ selectedProductImage.name }}</span>
-                    <button type="button" @click.stop="removeProductImage" class="ml-2 text-xs text-red-600 hover:text-red-700">{{ t.remove }}</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Add Button -->
-            <button type="submit" :disabled="addingItem || !itemForm.product_name.trim()" class="w-full py-3 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-              {{ addingItem ? t.adding : t.addProductButton }}
+            <button type="submit" :disabled="submitting || !itemForm.product_name.trim()" class="w-full py-3.5 bg-gray-900 text-white font-bold text-lg rounded-xl hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed transition-all transform active:scale-[0.99] shadow-lg shadow-gray-200">
+              {{ submitting ? t.processing : (editingItemId ? t.updateProductButton : t.addProductButton) }}
             </button>
           </form>
         </div>
 
         <!-- Products List -->
         <div v-if="hasItems" class="space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-900">
-              {{ t.yourProducts }}
-            </h3>
-            <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-semibold">
-              {{ totalItemQuantity }} {{ totalItemQuantity === 1 ? t.product : t.products }}
-            </span>
+          <div class="flex items-end justify-between border-b border-gray-100 pb-2">
+            <h3 class="text-lg font-bold text-gray-900">{{ t.yourProducts }}</h3>
+            <span class="text-sm font-medium text-gray-500">{{ totalItemQuantity }} {{ totalItemQuantity === 1 ? t.product : t.products }}</span>
           </div>
 
-          <!-- Product Cards -->
           <TransitionGroup name="list" tag="div" class="space-y-3">
-            <div v-for="(item, index) in order.items" :key="item.id" class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
-              <div class="flex items-start gap-3">
+            <div v-for="(item, index) in order.items" :key="item.id" class="group bg-white rounded-xl border border-gray-200 p-4 hover:border-primary-300 hover:shadow-md transition-all duration-200">
+              <div class="flex items-start gap-4">
                 
-                <!-- Product Image Thumbnail (or Index) -->
-                <div v-if="item.product_image_url" class="w-10 h-10 flex-shrink-0 rounded-lg border border-gray-100 overflow-hidden">
+                <!-- Product Image / Thumbnail -->
+                <a v-if="item.product_image_url" :href="item.product_image_url" target="_blank" class="w-14 h-14 flex-shrink-0 rounded-lg bg-gray-50 border border-gray-100 overflow-hidden relative group/img cursor-zoom-in">
                     <img :src="item.product_image_url" class="w-full h-full object-cover" alt="Product">
-                </div>
-                <div v-else class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span class="font-semibold text-gray-600">{{ index + 1 }}</span>
+                    <div class="absolute inset-0 bg-black/5 group-hover/img:bg-black/0 transition-colors"></div>
+                </a>
+                <div v-else class="w-14 h-14 flex-shrink-0 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center">
+                  <span class="text-gray-400 font-bold text-lg">{{ index + 1 }}</span>
                 </div>
 
+                <!-- Product Details -->
                 <div class="flex-1 min-w-0">
                   <div class="flex items-start justify-between">
-                    <p class="font-medium text-gray-900 truncate">{{ item.product_name }}</p>
-                    <!-- Link Icon if URL exists -->
-                    <a v-if="item.product_url" :href="item.product_url" target="_blank" class="ml-2 text-gray-400 hover:text-primary-600 flex-shrink-0">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                    </a>
+                    <h4 class="font-bold text-gray-900 truncate text-base">{{ item.product_name }}</h4>
+                    <a v-if="item.product_url" :href="item.product_url" target="_blank" class="ml-2 text-gray-400 hover:text-primary-600 flex-shrink-0" title="Open Product Link"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>
                   </div>
                   
-                  <div class="flex flex-wrap items-center gap-3 mt-1">
-                    <p class="text-sm text-gray-500">{{ t.quantity }}: {{ item.quantity }}</p>
-                    
-                    <!-- Tracking Info -->
-                    <p v-if="item.tracking_number" class="text-sm text-indigo-600 flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
-                        {{ item.tracking_number }}
-                    </p>
-
-                    <!-- Estimated Delivery -->
-                    <p v-if="item.estimated_delivery_date" class="text-sm text-blue-600 flex items-center gap-1">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                      {{ formatDate(item.estimated_delivery_date) }}
-                    </p>
-
-                    <!-- Receipt Info -->
-                    <p v-if="item.proof_of_purchase_url" class="text-sm text-green-600 flex items-center gap-1">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      {{ t.receiptAttached }}
-                    </p>
+                  <!-- Meta Badges -->
+                  <div class="flex flex-wrap items-center gap-2 mt-2">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">{{ t.qty }}: {{ item.quantity }}</span>
+                    <a v-if="item.proof_of_purchase_url" :href="item.proof_of_purchase_url" target="_blank" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-green-50 text-green-700 border border-green-100 hover:bg-green-100 transition-colors cursor-pointer" title="View Receipt"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>{{ t.receiptAttached }}</a>
+                    <span v-if="item.declared_value" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>{{ formatCurrency(item.declared_value) }}</span>
+                    <span v-if="item.tracking_number" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>{{ item.tracking_number }}</span>
+                    <span v-if="item.estimated_delivery_date" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-orange-50 text-orange-700 border border-orange-100"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>{{ formatDate(item.estimated_delivery_date) }}</span>
+                    <span v-if="item.merchant_order_id" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200"><span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Ref</span> {{ item.merchant_order_id }}</span>
                   </div>
                 </div>
-                <button v-if="!order.items_confirmed" @click="removeItem(item.id)" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                </button>
+
+                <div v-if="canEdit" class="flex items-center">
+                    <button @click="editItem(item)" class="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
+                    <button @click="removeItem(item.id)" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                </div>
               </div>
             </div>
           </TransitionGroup>
 
-          <!-- Clean Confirmation Section (Desktop Only) -->
-          <div v-if="!order.items_confirmed" class="hidden sm:block mt-6 bg-white rounded-xl p-6 border-2 border-primary-200 shadow-sm">
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0">
-                <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                  <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <!-- Footer Action (Confirmation or Done) -->
+          <div v-if="canEdit" class="hidden sm:block mt-8">
+            <div class="bg-gradient-to-r from-primary-50 to-white rounded-xl p-6 border border-primary-100 flex items-center justify-between shadow-sm">
+                <div>
+                    <h3 class="font-bold text-gray-900 text-lg mb-1">{{ isCollecting ? t.reviewAndConfirm : t.finishedEditing }}</h3>
+                    <p class="text-sm text-gray-600">{{ isCollecting ? t.confirmExplanation : t.returnToOrder }}</p>
                 </div>
-              </div>
-              <div class="flex-1">
-                <h3 class="font-semibold text-gray-900 mb-1">
-                  {{ t.reviewAndConfirm }}
-                </h3>
-                <p class="text-sm text-gray-600 mb-4">
-                  {{ t.confirmExplanation }}
-                </p>
-                <button @click="showCompleteModal = true" class="w-full sm:w-auto px-6 py-2.5 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors shadow-sm hover:shadow-md">
-                  {{ t.confirmProducts }}
+                <button @click="handleFooterAction" class="px-8 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-colors shadow-md hover:shadow-lg transform active:scale-95">
+                    {{ isCollecting ? t.confirmProducts : t.saveAndReturn }}
                 </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Already Confirmed Message -->
-          <div v-else class="mt-6 bg-green-50 rounded-xl p-5 border border-green-200">
-            <div class="flex items-center gap-3">
-              <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <div>
-                <p class="font-semibold text-green-900">
-                  {{ t.orderConfirmed }}
-                </p>
-                <p class="text-sm text-green-700 mt-0.5">
-                  {{ t.orderConfirmedDesc }}
-                </p>
-              </div>
             </div>
           </div>
         </div>
 
-        <!-- Empty State -->
-        <div v-else class="text-center py-12">
-          <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <img src="/empty-box.svg" class="w-12 h-12"/>
-          </div>
-          <p class="text-gray-500 mb-2">{{ t.noProducts }}</p>
-          <p class="text-sm text-gray-400">{{ t.startByAdding }}</p>
+        <div v-else class="text-center py-16 bg-white rounded-xl border border-dashed border-gray-300 mt-6">
+          <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4"><img src="public/empty-box.svg" class="h-12 w-12"/></div>
+          <p class="text-gray-900 font-medium text-lg mb-1">{{ t.noProducts }}</p>
+          <p class="text-sm text-gray-500">{{ t.startByAdding }}</p>
         </div>
       </div>
     </div>
 
-    <!-- Simplified Fixed Bottom Bar (Mobile Only) -->
-    <div v-if="hasItems && order && !order.items_confirmed" class="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-30">
+    <!-- Mobile Sticky Footer -->
+    <div v-if="hasItems && order && canEdit" class="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-30 pb-safe">
       <div class="px-4 py-3">
-        <button @click="showCompleteModal = true" class="w-full py-3.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors shadow-sm relative">
-          <span class="absolute -top-1 -right-1 flex h-3 w-3">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-          </span>
-          {{ t.confirmAndContinue }}
+        <button @click="handleFooterAction" class="w-full py-3.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-colors shadow-lg relative flex items-center justify-center gap-2">
+            <span>{{ isCollecting ? t.confirmAndContinue : t.saveAndReturn }}</span>
+            <span v-if="isCollecting" class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span>
         </button>
       </div>
     </div>
 
-    <!-- Mobile Add Product Modal -->
+    <!-- Mobile Modal (Same as before) -->
     <TransitionRoot as="template" :show="showAddProductModal">
-      <Dialog class="relative z-50" @close="showAddProductModal = false">
-        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
-          <div class="fixed inset-0 bg-black/30" />
-        </TransitionChild>
+      <Dialog class="relative z-50" @close="closeModal">
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0"><div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm" /></TransitionChild>
         <div class="fixed inset-0 z-10 overflow-y-auto">
           <div class="flex min-h-full items-end justify-center">
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-full" enter-to="opacity-100 translate-y-0" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0" leave-to="opacity-0 translate-y-full">
-              <DialogPanel class="w-full bg-white rounded-t-2xl shadow-xl">
-                <div class="px-4 pb-4 pt-5">
-                  <div class="flex items-center justify-between mb-4">
-                    <DialogTitle class="text-lg font-semibold text-gray-900">
-                      {{ t.addProduct }}
-                    </DialogTitle>
-                    <button @click="showAddProductModal = false" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
+              <DialogPanel class="w-full bg-white rounded-t-3xl shadow-2xl">
+                <div class="px-6 pb-6 pt-6">
+                  <div class="flex items-center justify-between mb-6">
+                    <DialogTitle class="text-xl font-bold text-gray-900">{{ editingItemId ? t.editProduct : t.addProduct }}</DialogTitle>
+                    <button @click="closeModal" class="p-2 -mr-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 rounded-full transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
                   </div>
-                  
-                  <!-- Mobile Form -->
-                  <form @submit.prevent="handleAddItemMobile" class="space-y-4">
-                    <!-- Product Name -->
-                    <div>
-                      <label for="product_name_mobile" class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ t.productName }}
-                      </label>
-                      <input v-model="itemForm.product_name" type="text" id="product_name_mobile" :placeholder="t.productPlaceholder" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" required autofocus />
-                    </div>
-
-                    <!-- Product URL (NEW) -->
-                    <div>
-                      <label for="product_url_mobile" class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ t.productUrl }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                      </label>
-                      <input v-model="itemForm.product_url" type="url" id="product_url_mobile" :placeholder="t.productUrlPlaceholder" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
-                    </div>
-
-                    <!-- Quantity -->
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ t.quantity }}
-                      </label>
-                      <div class="flex items-center gap-3">
-                        <button type="button" @click="decrementQuantity" class="w-12 h-12 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center">
-                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg>
-                        </button>
-                        <input v-model.number="itemForm.quantity" type="number" min="1" max="9999" @input="validateQuantity" class="flex-1 text-center text-lg font-semibold border border-gray-300 rounded-lg px-2 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
-                        <button type="button" @click="incrementQuantity" class="w-12 h-12 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center">
-                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                        </button>
-                      </div>
-                    </div>
-
-                    <!-- Declared Value -->
-                    <div>
-                      <label for="declared_value_mobile" class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ t.declaredValue }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                      </label>
-                      <input v-model="itemForm.declared_value" type="number" step="0.01" min="0" max="999999.99" id="declared_value_mobile" :placeholder="t.declaredValuePlaceholder" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
-                    </div>
-
-                    <!-- Tracking Number -->
-                    <div>
-                      <label for="tracking_number_mobile" class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ t.trackingNumber }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                      </label>
-                      <input v-model="itemForm.tracking_number" type="text" id="tracking_number_mobile" :placeholder="t.trackingPlaceholder" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
-                    </div>
-
-                    <!-- Estimated Delivery Date -->
-                    <div>
-                      <label for="estimated_delivery_date_mobile" class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ t.estimatedDeliveryDate }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                      </label>
-                      <input v-model="itemForm.estimated_delivery_date" type="date" :min="todayDate" id="estimated_delivery_date_mobile" class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
-                    </div>
-
-                    <!-- Receipt -->
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ t.receipt }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                      </label>
-                      <div @click="$refs.fileInputMobile.click()" class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-gray-400">
-                        <input ref="fileInputMobile" type="file" accept=".pdf,.jpg,.jpeg,.png" @change="handleFileSelect" class="hidden" />
-                        <div v-if="!selectedFile" class="text-sm text-gray-500">
-                          <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /></svg>
-                          {{ t.tapToUpload }}
+                  <form @submit.prevent="handleSubmitMobile" class="space-y-6">
+                    <div class="space-y-4">
+                        <div><label class="block text-sm font-bold text-gray-900 mb-2">{{ t.productName }} <span class="text-red-500">*</span></label><input v-model="itemForm.product_name" type="text" :placeholder="t.productPlaceholder" class="w-full px-4 py-3.5 bg-gray-50 border-transparent rounded-xl focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all font-medium text-lg" required /></div>
+                        <div>
+                          <label class="block text-sm font-bold text-gray-900 mb-2">{{ t.quantity }} <span class="text-red-500">*</span></label>
+                          <div class="flex items-center gap-4">
+                            <button type="button" @click="decrementQuantity" class="w-14 h-14 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg></button>
+                            <div class="flex-1 bg-gray-50 rounded-xl border border-transparent h-14 flex items-center justify-center"><span class="text-2xl font-bold text-gray-900">{{ itemForm.quantity }}</span></div>
+                            <button type="button" @click="incrementQuantity" class="w-14 h-14 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg></button>
+                          </div>
                         </div>
-                        <div v-else class="flex items-center justify-between">
-                          <span class="text-sm text-gray-700 truncate flex-1">{{ selectedFile.name }}</span>
-                          <button type="button" @click.stop="removeFile" class="ml-2 text-sm text-red-600 hover:text-red-700">{{ t.remove }}</button>
-                        </div>
-                      </div>
                     </div>
-
-                    <!-- Product Image -->
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ t.productImage }} <span class="text-gray-400 font-normal">({{ t.optional }})</span>
-                      </label>
-                      <div @click="$refs.productImageInputMobile.click()" class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-gray-400">
-                        <input ref="productImageInputMobile" type="file" accept=".jpg,.jpeg,.png,.webp" @change="handleProductImageSelect" class="hidden" />
-                        <div v-if="!selectedProductImage" class="text-sm text-gray-500">
-                          <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                          {{ t.tapToUploadImage }}
+                    <button type="button" @click="showDetails = !showDetails" class="w-full py-3 flex items-center justify-center gap-2 text-primary-600 font-semibold bg-primary-50/50 rounded-xl hover:bg-primary-50 transition-colors">{{ showDetails ? t.hideOptional : t.showOptional }}<svg :class="{'rotate-180': showDetails}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
+                    <div v-show="showDetails" class="space-y-4 pt-2">
+                        <input v-model="itemForm.product_url" type="url" :placeholder="t.productUrlPlaceholder" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
+                        <input v-model="itemForm.merchant_order_id" type="text" :placeholder="t.merchantOrderPlaceholder" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
+                        <input v-model="itemForm.tracking_number" type="text" :placeholder="t.trackingPlaceholder" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
+                        <div class="grid grid-cols-2 gap-3">
+                            <input v-model="itemForm.declared_value" type="number" :placeholder="t.declaredValue" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
+                            <input v-model="itemForm.estimated_delivery_date" type="date" :min="todayDate" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
                         </div>
-                        <div v-else class="flex items-center justify-between">
-                          <span class="text-sm text-gray-700 truncate flex-1">{{ selectedProductImage.name }}</span>
-                          <button type="button" @click.stop="removeProductImage" class="ml-2 text-sm text-red-600 hover:text-red-700">{{ t.remove }}</button>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div @click="fileInputMobile?.click()" class="border border-dashed rounded-xl p-3 text-center h-24 flex flex-col items-center justify-center relative overflow-hidden" :class="selectedFile ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-300'">
+                                <input ref="fileInputMobile" type="file" accept=".pdf,.jpg,.jpeg,.png" @change="handleFileSelect" class="hidden" />
+                                <div v-if="selectedFile" class="w-full text-center"><span class="text-xs text-green-700 font-bold block mb-1">New Selected</span><span class="text-[10px] text-green-600 truncate block px-2">{{ selectedFile.name }}</span></div>
+                                <div v-else-if="existingFiles.proof.url && !markedForDeletion.proof" class="w-full h-full flex flex-col items-center justify-center bg-white absolute inset-0">
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase mb-1">Current File</span>
+                                    <a :href="existingFiles.proof.url" target="_blank" @click.stop class="text-xs font-bold text-blue-600 underline truncate max-w-[90%]">{{ existingFiles.proof.name }}</a>
+                                    <div class="flex gap-2 mt-1"><button type="button" @click.stop="fileInputMobile?.click()" class="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Replace</button><button type="button" @click.stop="markedForDeletion.proof = true" class="text-[10px] text-red-500 bg-red-50 px-2 py-0.5 rounded">Delete</button></div>
+                                </div>
+                                <div v-else><span class="text-xs font-semibold text-gray-500 block mb-1">{{ t.receipt }}</span><span class="text-[10px] text-primary-600 font-bold truncate max-w-full px-1">{{ editingItemId ? t.tapToReplace : t.tapToUpload }}</span></div>
+                            </div>
+                            <div @click="productImageInputMobile?.click()" class="border border-dashed rounded-xl p-3 text-center h-24 flex flex-col items-center justify-center relative overflow-hidden" :class="selectedProductImage ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-300'">
+                                <input ref="productImageInputMobile" type="file" accept=".jpg,.jpeg,.png,.webp" @change="handleProductImageSelect" class="hidden" />
+                                <div v-if="selectedProductImage" class="w-full text-center"><span class="text-xs text-green-700 font-bold block mb-1">New Selected</span><span class="text-[10px] text-green-600 truncate block px-2">{{ selectedProductImage.name }}</span></div>
+                                <div v-else-if="existingFiles.image.url && !markedForDeletion.image" class="w-full h-full absolute inset-0">
+                                    <img :src="existingFiles.image.url" class="w-full h-full object-cover opacity-50" />
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center bg-white/60">
+                                        <a :href="existingFiles.image.url" target="_blank" @click.stop class="text-xs font-bold text-blue-800 underline mb-1">View Image</a>
+                                        <div class="flex gap-2"><button type="button" @click.stop="productImageInputMobile?.click()" class="text-[10px] font-bold text-gray-600 bg-white/90 px-2 py-1 rounded shadow-sm">Replace</button><button type="button" @click.stop="markedForDeletion.image = true" class="text-[10px] font-bold text-red-600 bg-white/90 px-2 py-1 rounded shadow-sm">Del</button></div>
+                                    </div>
+                                </div>
+                                <div v-else><span class="text-xs font-semibold text-gray-500 block mb-1">{{ t.productImage }}</span><span class="text-[10px] text-primary-600 font-bold truncate max-w-full px-1">{{ editingItemId ? t.tapToReplace : t.tapToUpload }}</span></div>
+                            </div>
                         </div>
-                      </div>
                     </div>
-
-                    <!-- Add Button -->
-                    <button type="submit" :disabled="addingItem || !itemForm.product_name.trim()" class="w-full py-4 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors">
-                      {{ addingItem ? t.adding : t.addProductButton }}
-                    </button>
+                    <button type="submit" :disabled="submitting || !itemForm.product_name.trim()" class="w-full py-4 bg-gray-900 text-white font-bold text-lg rounded-xl hover:bg-black disabled:opacity-50 transition-all shadow-xl shadow-gray-200">{{ submitting ? t.processing : (editingItemId ? t.updateProductButton : t.addProductButton) }}</button>
+                    <div class="h-6"></div>
                   </form>
                 </div>
               </DialogPanel>
@@ -450,40 +319,14 @@
     <!-- Confirmation Modal -->
     <TransitionRoot as="template" :show="showCompleteModal">
       <Dialog class="relative z-50" @close="showCompleteModal = false">
-        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
-          <div class="fixed inset-0 bg-black/50" />
-        </TransitionChild>
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0"><div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm" /></TransitionChild>
         <div class="fixed inset-0 z-10 overflow-y-auto">
           <div class="flex min-h-full items-center justify-center p-4">
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="ease-in duration-200" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
-              <DialogPanel class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6">
-                <div class="text-center mb-4">
-                  <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  </div>
-                </div>
-                <div class="text-center mb-6">
-                  <DialogTitle class="text-lg font-semibold text-gray-900 mb-2">
-                    {{ t.confirmOrder }}
-                  </DialogTitle>
-                  <p class="text-sm text-gray-600">
-                    {{ t.confirmMessage }}
-                  </p>
-                </div>
-                <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                  <div class="flex items-center justify-between">
-                    <span class="text-gray-600">{{ t.totalProducts }}:</span>
-                    <span class="text-2xl font-bold text-gray-900">{{ totalItemQuantity }}</span>
-                  </div>
-                </div>
-                <div class="flex gap-3">
-                  <button @click="showCompleteModal = false" class="flex-1 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors">
-                    {{ t.cancel }}
-                  </button>
-                  <button @click="handleCompleteOrder" :disabled="completingOrder" class="flex-1 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium transition-colors">
-                    {{ completingOrder ? t.confirming : t.confirm }}
-                  </button>
-                </div>
+              <DialogPanel class="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6">
+                <div class="text-center mb-5"><div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg></div><DialogTitle class="text-xl font-bold text-gray-900 mb-2">{{ t.confirmOrder }}</DialogTitle><p class="text-sm text-gray-500">{{ t.confirmMessage }}</p></div>
+                <div class="bg-gray-50 rounded-xl p-4 mb-6 flex justify-between items-center border border-gray-100"><span class="text-gray-600 font-medium">{{ t.totalProducts }}</span><span class="text-2xl font-bold text-gray-900">{{ totalItemQuantity }}</span></div>
+                <div class="flex gap-3"><button @click="showCompleteModal = false" class="flex-1 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 font-bold transition-colors">{{ t.cancel }}</button><button @click="confirmOrderAction" :disabled="completingOrder" class="flex-1 py-3 bg-gray-900 text-white rounded-xl hover:bg-black disabled:opacity-50 font-bold transition-colors shadow-lg">{{ completingOrder ? t.confirming : t.confirm }}</button></div>
               </DialogPanel>
             </TransitionChild>
           </div>
@@ -495,53 +338,44 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  TransitionChild,
-  TransitionRoot,
-} from "@headlessui/vue";
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 
-definePageMeta({
-  layout: "app",
-  middleware: ["auth", "customer", "complete-profile"],
-});
+definePageMeta({ layout: "app", middleware: ["auth", "customer", "complete-profile"] });
 
 const { $customFetch, $toast } = useNuxtApp();
 const route = useRoute();
 const router = useRouter();
 const { t: createTranslations } = useLanguage();
 
+// State
 const order = ref(null);
 const loading = ref(true);
-const addingItem = ref(false);
+const submitting = ref(false); 
 const completingOrder = ref(false);
 const showCompleteModal = ref(false);
 const showAddProductModal = ref(false);
 const selectedFile = ref(null);
 const selectedProductImage = ref(null);
+const editingItemId = ref(null);
+const showDetails = ref(false); 
 
-const todayDate = computed(() => {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
-});
+// File State & Refs
+const existingFiles = ref({ image: { url: null, name: null }, proof: { url: null, name: null } });
+const markedForDeletion = ref({ image: false, proof: false });
+const fileInputDesktop = ref(null);
+const fileInputMobile = ref(null);
+const productImageInputDesktop = ref(null);
+const productImageInputMobile = ref(null);
 
+const itemForm = ref({ product_name: "", product_url: "", merchant_order_id: "", quantity: 1, declared_value: "", tracking_number: "", estimated_delivery_date: "" });
+
+// Computed
+const todayDate = computed(() => { const today = new Date(); return today.toISOString().split('T')[0]; });
 const hasItems = computed(() => order.value?.items && order.value.items.length > 0);
-
-const totalItemQuantity = computed(() => {
-  if (!order.value?.items) return 0;
-  return order.value.items.reduce((total, item) => total + item.quantity, 0);
-});
-
-const itemForm = ref({
-  product_name: "",
-  product_url: "", // NEW
-  quantity: 1,
-  declared_value: "",
-  tracking_number: "",
-  estimated_delivery_date: "",
-});
+const totalItemQuantity = computed(() => order.value?.items ? order.value.items.reduce((total, item) => total + item.quantity, 0) : 0);
+const isCollecting = computed(() => order.value?.status === 'collecting');
+// If order allows adding items (controlled by API 'can_add_items' or logic), we show form.
+const canEdit = computed(() => order.value?.can_add_items ?? false);
 
 const translations = {
   addYourProducts: { es: "Agrega tus productos", en: "Add your products" },
@@ -549,59 +383,73 @@ const translations = {
   stepAddress: { es: "Dirección", en: "Address" },
   stepAddItems: { es: "Productos", en: "Products" },
   stepComplete: { es: "Confirmar", en: "Confirm" },
-  reviewAndConfirm: { es: "Revisa y confirma tus productos", en: "Review and confirm your products" },
-  confirmExplanation: { es: "Confirma que estos son los productos que vas a enviar. Podrás modificarlos más tarde si es necesario.", en: "Confirm that these are the products you're shipping. You can modify them later if needed." },
-  confirmProducts: { es: "Confirmar productos", en: "Confirm products" },
+  reviewAndConfirm: { es: "Revisa y confirma tus productos", en: "Review & Confirm" },
+  confirmExplanation: { es: "Confirma que estos son los productos que vas a enviar.", en: "Confirm these are the items you are shipping." },
+  confirmProducts: { es: "Confirmar todo", en: "Confirm All" },
   confirmAndContinue: { es: "Confirmar y Continuar", en: "Confirm & Continue" },
+  saveAndReturn: { es: "Guardar y Volver", en: "Save & Return" },
+  finishedEditing: { es: "¿Terminaste de editar?", en: "Finished editing?" },
+  returnToOrder: { es: "Vuelve al detalle de la orden.", en: "Return to order details." },
   orderConfirmed: { es: "Orden confirmada", en: "Order confirmed" },
-  orderConfirmedDesc: { es: "Tu orden está lista para ser procesada", en: "Your order is ready to be processed" },
-  confirmOrder: { es: "¿Confirmar orden?", en: "Confirm order?" },
-  confirmMessage: { es: "¿Has agregado todos los productos que necesitas?", en: "Have you added all the products you need?" },
+  confirmOrder: { es: "¿Confirmar orden?", en: "Confirm Order?" },
+  confirmMessage: { es: "¿Has agregado todos los productos?", en: "Have you added all your products?" },
   confirming: { es: "Confirmando...", en: "Confirming..." },
   addProduct: { es: "Agregar producto", en: "Add product" },
+  editProduct: { es: "Editar producto", en: "Edit product" },
   addAnotherProduct: { es: "Agregar otro producto", en: "Add another product" },
-  productName: { es: "Nombre del producto", en: "Product name" },
+  tapToStart: { es: "Toca para comenzar", en: "Tap to add item" },
+  productName: { es: "Nombre del producto", en: "Product Name" },
   productPlaceholder: { es: "ej: iPhone 15 Pro", en: "e.g. iPhone 15 Pro" },
-  productUrl: { es: "Link del producto", en: "Product Link" }, // NEW
-  productUrlPlaceholder: { es: "https://...", en: "https://..." }, // NEW
-  quantity: { es: "Cantidad", en: "Quantity" },
+  productUrl: { es: "Link (URL)", en: "Product Link" },
+  productUrlPlaceholder: { es: "https://...", en: "https://..." },
+  merchantOrderId: { es: "No. Orden Tienda", en: "Store Order No." },
+  merchantOrderPlaceholder: { es: "ej: #114-1234...", en: "e.g. #114-1234..." },
+  quantity: { es: "Cant.", en: "Qty" },
+  qty: { es: "Cant", en: "Qty" },
   receipt: { es: "Recibo", en: "Receipt" },
-  productImage: { es: "Imagen del Producto", en: "Product Image" },
-  optional: { es: "opcional", en: "optional" },
-  clickToUpload: { es: "Haz clic para subir archivo", en: "Click to upload file" },
-  tapToUpload: { es: "Toca para subir archivo", en: "Tap to upload file" },
-  clickToUploadImage: { es: "Subir imagen", en: "Upload image" },
-  tapToUploadImage: { es: "Subir imagen", en: "Tap to upload image" },
+  receiptAttached: { es: "Recibo", en: "Receipt" },
+  productImage: { es: "Imagen", en: "Image" },
+  showOptional: { es: "Agregar detalles (opcional)", en: "Add more details (optional)" },
+  hideOptional: { es: "Ocultar detalles", en: "Hide details" },
+  clickToUpload: { es: "Subir archivo", en: "Upload file" },
+  clickToReplace: { es: "Reemplazar", en: "Replace" },
+  tapToUpload: { es: "Subir", en: "Upload" },
+  tapToReplace: { es: "Reemplazar", en: "Replace" },
+  clickToUploadImage: { es: "Subir imagen", en: "Upload img" },
+  clickToReplaceImage: { es: "Reemplazar", en: "Replace" },
+  tapToUploadImage: { es: "Subir", en: "Upload" },
+  tapToReplaceImage: { es: "Reemplazar", en: "Replace" },
   remove: { es: "Quitar", en: "Remove" },
-  adding: { es: "Agregando...", en: "Adding..." },
-  addProductButton: { es: "Agregar producto", en: "Add product" },
-  yourProducts: { es: "Tus productos", en: "Your products" },
-  receiptAttached: { es: "Recibo adjunto", en: "Receipt attached" },
-  noProducts: { es: "No has agregado productos todavía", en: "You haven't added any products yet" },
-  startByAdding: { es: "Comienza agregando tu primer producto", en: "Start by adding your first product" },
-  product: { es: "producto", en: "product" },
-  products: { es: "productos", en: "products" },
-  cancel: { es: "Cancelar", en: "Cancel" },
-  confirm: { es: "Confirmar", en: "Confirm" },
-  declaredValue: { es: "Valor declarado", en: "Declared value" },
-  declaredValuePlaceholder: { es: "ej: 999.99", en: "e.g. 999.99" },
-  totalProducts: { es: "Total de productos", en: "Total products" },
-  estimatedDeliveryDate: { es: "Fecha estimada de entrega", en: "Estimated delivery date" },
-  trackingNumber: { es: "Número de rastreo", en: "Tracking Number" },
-  trackingPlaceholder: { es: "ej: 1Z999AA101...", en: "e.g. 1Z999AA101..." },
+  processing: { es: "Guardando...", en: "Saving..." },
+  addProductButton: { es: "Agregar producto", en: "Add Product" },
+  updateProductButton: { es: "Actualizar producto", en: "Update Product" },
+  cancelEdit: { es: "Cancelar", en: "Cancel" },
+  yourProducts: { es: "Tus productos", en: "Your Products" },
+  noProducts: { es: "Tu lista está vacía", en: "Your list is empty" },
+  startByAdding: { es: "Agrega los productos que compraste", en: "Add the items you purchased" },
+  product: { es: "item", en: "item" },
+  products: { es: "items", en: "items" },
+  cancel: { es: "Volver", en: "Back" },
+  confirm: { es: "Sí, confirmar", en: "Yes, Confirm" },
+  declaredValue: { es: "Valor", en: "Value" },
+  totalProducts: { es: "Total productos", en: "Total items" },
+  estimatedDeliveryDate: { es: "Entrega estimada", en: "Est. Delivery" },
+  trackingNumber: { es: "Rastreo (Tracking)", en: "Tracking No." },
+  trackingPlaceholder: { es: "ej: 1Z999...", en: "e.g. 1Z999..." },
 };
-
 const t = createTranslations(translations);
 
-const incrementQuantity = () => { if (itemForm.value.quantity < 9999) itemForm.value.quantity++; };
+const incrementQuantity = () => { if (itemForm.value.quantity < 999) itemForm.value.quantity++; };
 const decrementQuantity = () => { if (itemForm.value.quantity > 1) itemForm.value.quantity--; };
-const validateQuantity = () => { if (!itemForm.value.quantity || itemForm.value.quantity < 1) itemForm.value.quantity = 1; else if (itemForm.value.quantity > 9999) itemForm.value.quantity = 9999; };
+const formatCurrency = (value) => value ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value) : '';
+const formatDate = (date) => date ? `${date.split('T')[0].split('-')[1]}/${date.split('T')[0].split('-')[2]}/${date.split('T')[0].split('-')[0]}` : '';
 
 const handleFileSelect = (event) => {
   const file = event.target.files[0];
   if (file) {
     if (file.size > 10 * 1024 * 1024) { $toast.error("File too large"); return; }
     selectedFile.value = file;
+    markedForDeletion.value.proof = false; 
   }
 };
 
@@ -610,129 +458,94 @@ const handleProductImageSelect = (event) => {
   if (file) {
     if (file.size > 5 * 1024 * 1024) { $toast.error("Image too large"); return; }
     selectedProductImage.value = file;
+    markedForDeletion.value.image = false; 
   }
 };
 
-const removeFile = () => {
-  selectedFile.value = null;
-  ['fileInputMobile', 'fileInputDesktop'].forEach(ref => { if ($refs[ref]) $refs[ref].value = ""; });
-};
+const removeFile = () => { selectedFile.value = null; if (fileInputMobile.value) fileInputMobile.value.value = ""; if (fileInputDesktop.value) fileInputDesktop.value.value = ""; };
+const removeProductImage = () => { selectedProductImage.value = null; if (productImageInputMobile.value) productImageInputMobile.value.value = ""; if (productImageInputDesktop.value) productImageInputDesktop.value.value = ""; };
 
-const removeProductImage = () => {
-  selectedProductImage.value = null;
-  ['productImageInputMobile', 'productImageInputDesktop'].forEach(ref => { if ($refs[ref]) $refs[ref].value = ""; });
-};
-
-const fetchOrder = async () => {
-  loading.value = true;
+const fetchOrder = async (background = false) => {
+  if (!background) loading.value = true;
   try {
     const response = await $customFetch(`/orders/${route.params.id}`);
     order.value = response.data;
-  } catch (error) {
-    $toast.error("Error loading order");
-    navigateTo("/app/orders");
-  } finally {
-    loading.value = false;
-  }
+  } catch (error) { $toast.error("Error loading order"); navigateTo("/app/orders"); } 
+  finally { if (!background) loading.value = false; }
 };
 
-const handleAddItem = async () => {
+const editItem = (item) => {
+    editingItemId.value = item.id;
+    itemForm.value = { product_name: item.product_name, product_url: item.product_url || '', merchant_order_id: item.merchant_order_id || '', quantity: item.quantity, declared_value: item.declared_value || '', tracking_number: item.tracking_number || '', estimated_delivery_date: item.estimated_delivery_date ? item.estimated_delivery_date.split('T')[0] : '' };
+    existingFiles.value = { image: { url: item.product_image_url, name: item.product_image_filename || 'Product Image' }, proof: { url: item.proof_of_purchase_url, name: item.proof_of_purchase_filename || 'Receipt' } };
+    markedForDeletion.value = { image: false, proof: false };
+    selectedFile.value = null; selectedProductImage.value = null; showDetails.value = true; 
+    if (window.innerWidth < 640) { showAddProductModal.value = true; } else { document.getElementById('desktop-form')?.scrollIntoView({ behavior: 'smooth' }); }
+};
+
+const cancelEdit = () => { editingItemId.value = null; resetForm(); };
+const resetForm = () => { itemForm.value = { product_name: "", product_url: "", merchant_order_id: "", quantity: 1, declared_value: "", tracking_number: "", estimated_delivery_date: "" }; existingFiles.value = { image: { url: null, name: null }, proof: { url: null, name: null } }; markedForDeletion.value = { image: false, proof: false }; removeFile(); removeProductImage(); showDetails.value = false; };
+const openAddModal = () => { if (editingItemId.value) cancelEdit(); showAddProductModal.value = true; };
+const closeModal = () => { showAddProductModal.value = false; cancelEdit(); };
+
+const handleSubmit = async () => {
   if (!itemForm.value.product_name.trim()) return;
-
-  addingItem.value = true;
-
+  submitting.value = true;
   try {
     const formData = new FormData();
     formData.append("product_name", itemForm.value.product_name.trim());
     formData.append("quantity", itemForm.value.quantity);
-
-    // NEW: Append product_url if it exists
     if (itemForm.value.product_url) formData.append("product_url", itemForm.value.product_url);
-
+    if (itemForm.value.merchant_order_id) formData.append("merchant_order_id", itemForm.value.merchant_order_id);
     if (itemForm.value.declared_value) formData.append("declared_value", itemForm.value.declared_value);
     if (itemForm.value.tracking_number) formData.append("tracking_number", itemForm.value.tracking_number);
     if (itemForm.value.estimated_delivery_date) formData.append("estimated_delivery_date", itemForm.value.estimated_delivery_date);
-
     if (selectedFile.value) formData.append("proof_of_purchase", selectedFile.value);
     if (selectedProductImage.value) formData.append("product_image", selectedProductImage.value);
+    if (markedForDeletion.value.image) formData.append("remove_product_image", "1");
+    if (markedForDeletion.value.proof) formData.append("remove_proof_of_purchase", "1");
 
-    await $customFetch(`/orders/${order.value.id}/items`, {
-      method: "POST",
-      body: formData,
-    });
+    let url = `/orders/${order.value.id}/items`;
+    if (editingItemId.value) { url = `/orders/${order.value.id}/items/${editingItemId.value}`; formData.append('_method', 'PUT'); }
 
-    $toast.success(t.value.productAdded || "Product added!");
-
-    itemForm.value = { 
-        product_name: "", 
-        product_url: "", // Reset
-        quantity: 1, 
-        declared_value: "", 
-        tracking_number: "", 
-        estimated_delivery_date: "" 
-    };
-    selectedFile.value = null;
-    selectedProductImage.value = null;
-
-    await fetchOrder();
-  } catch (error) {
-    $toast.error("Error adding product");
-  } finally {
-    addingItem.value = false;
-  }
+    await $customFetch(url, { method: "POST", body: formData });
+    const wasEditing = !!editingItemId.value;
+    resetForm(); editingItemId.value = null; showAddProductModal.value = false; 
+    $toast.success(wasEditing ? t.value.updateProductButton : t.value.productAdded || "Added!");
+    await fetchOrder(true);
+  } catch (error) { $toast.error("Error saving product"); } finally { submitting.value = false; }
 };
 
-const handleAddItemMobile = async () => {
-  await handleAddItem();
-  if (!addingItem.value) showAddProductModal.value = false;
-};
+const handleSubmitMobile = async () => { await handleSubmit(); };
 
 const removeItem = async (itemId) => {
-  try {
-    await $customFetch(`/orders/${order.value.id}/items/${itemId}`, { method: "DELETE" });
-    $toast.success("Product removed");
-    await fetchOrder();
-  } catch (error) {
-    $toast.error("Error removing product");
-  }
+  try { await $customFetch(`/orders/${order.value.id}/items/${itemId}`, { method: "DELETE" }); $toast.success("Removed"); if (editingItemId.value === itemId) cancelEdit(); await fetchOrder(true); } catch (error) { $toast.error("Error removing"); }
 };
 
-const handleCompleteOrder = async () => {
+// Smart Footer Logic
+const handleFooterAction = () => {
+    if (isCollecting.value) {
+        showCompleteModal.value = true; // Open confirmation modal
+    } else {
+        navigateTo(`/app/orders/${order.value.id}`); // Just go back
+    }
+};
+
+const confirmOrderAction = async () => {
   completingOrder.value = true;
   try {
     await $customFetch(`/orders/${order.value.id}/complete`, { method: "PUT" });
     showCompleteModal.value = false;
     $toast.success("Order confirmed!");
     return navigateTo({ path: `/app/orders/${order.value.id}`, query: { completed: "true" } });
-  } catch (error) {
-    $toast.error("Error confirming order");
-  } finally {
-    completingOrder.value = false;
-  }
+  } catch (error) { $toast.error("Error confirming order"); } finally { completingOrder.value = false; }
 };
 
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-};
-
-onMounted(() => {
-  fetchOrder();
-});
+onMounted(() => { fetchOrder(false); });
 </script>
 
 <style scoped>
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.3s ease;
-}
-.list-enter-from {
-  opacity: 0;
-  transform: translateX(-30px);
-}
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.list-enter-active, .list-leave-active { transition: all 0.3s ease; }
+.list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-10px); }
 </style>
