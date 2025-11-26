@@ -214,7 +214,7 @@
             </div>
           </TransitionGroup>
 
-          <!-- Footer Action (Confirmation or Done) -->
+          <!-- Footer Action -->
           <div v-if="canEdit" class="hidden sm:block mt-8">
             <div class="bg-gradient-to-r from-primary-50 to-white rounded-xl p-6 border border-primary-100 flex items-center justify-between shadow-sm">
                 <div>
@@ -229,7 +229,7 @@
         </div>
 
         <div v-else class="text-center py-16 bg-white rounded-xl border border-dashed border-gray-300 mt-6">
-          <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4"><img src="public/empty-box.svg" class="h-12 w-12"/></div>
+          <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></div>
           <p class="text-gray-900 font-medium text-lg mb-1">{{ t.noProducts }}</p>
           <p class="text-sm text-gray-500">{{ t.startByAdding }}</p>
         </div>
@@ -246,7 +246,7 @@
       </div>
     </div>
 
-    <!-- Mobile Modal (Same as before) -->
+    <!-- Mobile Modal -->
     <TransitionRoot as="template" :show="showAddProductModal">
       <Dialog class="relative z-50" @close="closeModal">
         <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0"><div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm" /></TransitionChild>
@@ -273,32 +273,58 @@
                     </div>
                     <button type="button" @click="showDetails = !showDetails" class="w-full py-3 flex items-center justify-center gap-2 text-primary-600 font-semibold bg-primary-50/50 rounded-xl hover:bg-primary-50 transition-colors">{{ showDetails ? t.hideOptional : t.showOptional }}<svg :class="{'rotate-180': showDetails}" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg></button>
                     <div v-show="showDetails" class="space-y-4 pt-2">
-                        <input v-model="itemForm.product_url" type="url" :placeholder="t.productUrlPlaceholder" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
-                        <input v-model="itemForm.merchant_order_id" type="text" :placeholder="t.merchantOrderPlaceholder" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
-                        <input v-model="itemForm.tracking_number" type="text" :placeholder="t.trackingPlaceholder" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
-                        <div class="grid grid-cols-2 gap-3">
-                            <input v-model="itemForm.declared_value" type="number" :placeholder="t.declaredValue" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
-                            <input v-model="itemForm.estimated_delivery_date" type="date" :min="todayDate" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.productUrl }}</label>
+                            <input v-model="itemForm.product_url" type="url" :placeholder="t.productUrlPlaceholder" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.merchantOrderId }}</label>
+                            <input v-model="itemForm.merchant_order_id" type="text" :placeholder="t.merchantOrderPlaceholder" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.trackingNumber }}</label>
+                            <input v-model="itemForm.tracking_number" type="text" :placeholder="t.trackingPlaceholder" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
                         </div>
                         <div class="grid grid-cols-2 gap-3">
-                            <div @click="fileInputMobile?.click()" class="border border-dashed rounded-xl p-3 text-center h-24 flex flex-col items-center justify-center relative overflow-hidden" :class="selectedFile ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-300'">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.declaredValue }}</label>
+                                <input v-model="itemForm.declared_value" type="number" :placeholder="t.declaredValue" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.estimatedDeliveryDate }}</label>
+                                <input v-model="itemForm.estimated_delivery_date" type="date" :min="todayDate" class="w-full px-4 py-3 bg-gray-50 border-gray-100 rounded-xl text-sm" />
+                            </div>
+                        </div>
+                        
+                        <!-- Mobile File Inputs (Smart) -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- Mobile Receipt -->
+                            <div @click="fileInputMobile?.click()" class="border border-dashed rounded-xl p-3 text-center h-24 flex flex-col items-center justify-center relative overflow-hidden cursor-pointer" :class="selectedFile ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-300 hover:bg-gray-100'">
                                 <input ref="fileInputMobile" type="file" accept=".pdf,.jpg,.jpeg,.png" @change="handleFileSelect" class="hidden" />
                                 <div v-if="selectedFile" class="w-full text-center"><span class="text-xs text-green-700 font-bold block mb-1">New Selected</span><span class="text-[10px] text-green-600 truncate block px-2">{{ selectedFile.name }}</span></div>
                                 <div v-else-if="existingFiles.proof.url && !markedForDeletion.proof" class="w-full h-full flex flex-col items-center justify-center bg-white absolute inset-0">
                                     <span class="text-[10px] text-gray-400 font-bold uppercase mb-1">Current File</span>
                                     <a :href="existingFiles.proof.url" target="_blank" @click.stop class="text-xs font-bold text-blue-600 underline truncate max-w-[90%]">{{ existingFiles.proof.name }}</a>
-                                    <div class="flex gap-2 mt-1"><button type="button" @click.stop="fileInputMobile?.click()" class="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Replace</button><button type="button" @click.stop="markedForDeletion.proof = true" class="text-[10px] text-red-500 bg-red-50 px-2 py-0.5 rounded">Delete</button></div>
+                                    <div class="flex gap-2 mt-1">
+                                        <button type="button" @click.stop="fileInputMobile?.click()" class="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Replace</button>
+                                        <button type="button" @click.stop="markedForDeletion.proof = true" class="text-[10px] text-red-500 bg-red-50 px-2 py-0.5 rounded">Delete</button>
+                                    </div>
                                 </div>
                                 <div v-else><span class="text-xs font-semibold text-gray-500 block mb-1">{{ t.receipt }}</span><span class="text-[10px] text-primary-600 font-bold truncate max-w-full px-1">{{ editingItemId ? t.tapToReplace : t.tapToUpload }}</span></div>
                             </div>
-                            <div @click="productImageInputMobile?.click()" class="border border-dashed rounded-xl p-3 text-center h-24 flex flex-col items-center justify-center relative overflow-hidden" :class="selectedProductImage ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-300'">
+
+                            <!-- Mobile Image -->
+                            <div @click="productImageInputMobile?.click()" class="border border-dashed rounded-xl p-3 text-center h-24 flex flex-col items-center justify-center relative overflow-hidden cursor-pointer" :class="selectedProductImage ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-300 hover:bg-gray-100'">
                                 <input ref="productImageInputMobile" type="file" accept=".jpg,.jpeg,.png,.webp" @change="handleProductImageSelect" class="hidden" />
                                 <div v-if="selectedProductImage" class="w-full text-center"><span class="text-xs text-green-700 font-bold block mb-1">New Selected</span><span class="text-[10px] text-green-600 truncate block px-2">{{ selectedProductImage.name }}</span></div>
                                 <div v-else-if="existingFiles.image.url && !markedForDeletion.image" class="w-full h-full absolute inset-0">
                                     <img :src="existingFiles.image.url" class="w-full h-full object-cover opacity-50" />
                                     <div class="absolute inset-0 flex flex-col items-center justify-center bg-white/60">
                                         <a :href="existingFiles.image.url" target="_blank" @click.stop class="text-xs font-bold text-blue-800 underline mb-1">View Image</a>
-                                        <div class="flex gap-2"><button type="button" @click.stop="productImageInputMobile?.click()" class="text-[10px] font-bold text-gray-600 bg-white/90 px-2 py-1 rounded shadow-sm">Replace</button><button type="button" @click.stop="markedForDeletion.image = true" class="text-[10px] font-bold text-red-600 bg-white/90 px-2 py-1 rounded shadow-sm">Del</button></div>
+                                        <div class="flex gap-2">
+                                            <button type="button" @click.stop="productImageInputMobile?.click()" class="text-[10px] font-bold text-gray-600 bg-white/90 px-2 py-1 rounded shadow-sm">Replace</button>
+                                            <button type="button" @click.stop="markedForDeletion.image = true" class="text-[10px] font-bold text-red-600 bg-white/90 px-2 py-1 rounded shadow-sm">Del</button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div v-else><span class="text-xs font-semibold text-gray-500 block mb-1">{{ t.productImage }}</span><span class="text-[10px] text-primary-600 font-bold truncate max-w-full px-1">{{ editingItemId ? t.tapToReplace : t.tapToUpload }}</span></div>
@@ -374,7 +400,6 @@ const todayDate = computed(() => { const today = new Date(); return today.toISOS
 const hasItems = computed(() => order.value?.items && order.value.items.length > 0);
 const totalItemQuantity = computed(() => order.value?.items ? order.value.items.reduce((total, item) => total + item.quantity, 0) : 0);
 const isCollecting = computed(() => order.value?.status === 'collecting');
-// If order allows adding items (controlled by API 'can_add_items' or logic), we show form.
 const canEdit = computed(() => order.value?.can_add_items ?? false);
 
 const translations = {
@@ -519,6 +544,7 @@ const handleSubmit = async () => {
 const handleSubmitMobile = async () => { await handleSubmit(); };
 
 const removeItem = async (itemId) => {
+  if (!confirm(t.value.confirmMessage || "Are you sure?")) return;
   try { await $customFetch(`/orders/${order.value.id}/items/${itemId}`, { method: "DELETE" }); $toast.success("Removed"); if (editingItemId.value === itemId) cancelEdit(); await fetchOrder(true); } catch (error) { $toast.error("Error removing"); }
 };
 
