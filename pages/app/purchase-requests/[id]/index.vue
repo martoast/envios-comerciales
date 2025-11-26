@@ -183,9 +183,7 @@
                 </div>
               </div>
               
-              <div v-else class="bg-gray-100 rounded-lg p-3 text-xs text-gray-500 text-center mt-4">
-                {{ t.pendingCalculation }}
-              </div>
+              
 
               <div v-if="request.status !== 'pending_review'" class="pt-4 mt-4 border-t border-gray-200 flex justify-between font-bold text-lg text-gray-900">
                 <span>{{ t.total }}</span>
@@ -238,7 +236,6 @@ const translations = {
   tax: { es: 'Impuestos (USA)', en: 'Sales Tax' },
   fee: { es: 'Tarifa de Servicio', en: 'Service Fee' },
   total: { es: 'Total (USD)', en: 'Total (USD)' },
-  pendingCalculation: { es: 'Calculando costos finales...', en: 'Calculating final costs...' },
   viewImage: { es: 'Ver Imagen', en: 'View Image' }, 
   editRequest: { es: 'Editar Solicitud', en: 'Edit Request' },
   edit: { es: 'Editar', en: 'Edit' },
