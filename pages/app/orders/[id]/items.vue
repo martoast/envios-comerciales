@@ -90,7 +90,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ t.quantity }} <span class="text-red-500">*</span></label>
                     <div class="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
                         <button type="button" @click="decrementQuantity" class="w-8 h-[38px] flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-primary-600 transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg></button>
-                        <input v-model.number="itemForm.quantity" type="number" min="1" max="999" class="w-full bg-transparent border-0 text-center font-bold text-gray-900 focus:ring-0 p-0" />
+                        <input v-model.number="itemForm.quantity" type="number" min="1" max="9999" class="w-full bg-transparent border-0 text-center font-bold text-gray-900 focus:ring-0 p-0" />
                         <button type="button" @click="incrementQuantity" class="w-8 h-[38px] flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-primary-600 transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg></button>
                     </div>
                 </div>
