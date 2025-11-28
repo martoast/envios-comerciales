@@ -8,7 +8,7 @@
     >
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3 sm:gap-4">
             <NuxtLink
               :to="`/app/admin/orders/${orderId}`"
               class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -28,10 +28,10 @@
               </svg>
             </NuxtLink>
             <div>
-              <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">
+              <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900">
                 {{ t.editOrder }}
               </h1>
-              <p class="text-sm text-gray-600 mt-1">
+              <p class="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">
                 {{ order?.order_number }} - {{ order?.user?.name }}
               </p>
             </div>
@@ -40,7 +40,7 @@
           <span
             v-if="order"
             :class="[
-              'px-3 py-1 rounded-full text-xs font-medium',
+              'px-2 sm:px-3 py-1 rounded-full text-xs font-medium',
               getStatusColor(order.status),
             ]"
           >
@@ -51,7 +51,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-16">
         <div
@@ -87,11 +87,11 @@
         enter-to-class="translate-y-0 opacity-100"
         leave-active-class="transition ease-in duration-200"
         leave-from-class="opacity-100"
-        leave-to="opacity-0"
+        leave-to-class="opacity-0"
       >
         <div
           v-if="errorMessage"
-          class="mb-6 bg-red-50 border-l-4 border-red-500 rounded-lg p-4 shadow-sm animate-shake"
+          class="mb-4 sm:mb-6 bg-red-50 border-l-4 border-red-500 rounded-lg p-3 sm:p-4 shadow-sm animate-shake"
         >
           <div class="flex">
             <div class="flex-shrink-0">
@@ -128,15 +128,15 @@
       </Transition>
 
       <!-- Edit Form -->
-      <form v-if="order" @submit.prevent="handleSubmit" class="space-y-6">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <form v-if="order" @submit.prevent="handleSubmit" class="space-y-4 sm:space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <!-- Left Column - Main Fields -->
-          <div class="lg:col-span-2 space-y-6">
+          <div class="lg:col-span-2 space-y-4 sm:space-y-6">
             <!-- Basic Order Info -->
             <div
-              class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn"
+              class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8 animate-fadeIn"
             >
-              <h2 class="text-xl font-bold text-gray-900 mb-6">
+              <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
                 {{ t.orderInformation }}
               </h2>
 
@@ -152,45 +152,17 @@
                   <select
                     v-model="form.status"
                     id="status"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="collecting">{{ t.collecting }}</option>
-                    <option value="awaiting_packages">
-                      {{ t.awaitingPackages }}
-                    </option>
-                    <option value="packages_complete">
-                      {{ t.packagesComplete }}
-                    </option>
+                    <option value="awaiting_packages">{{ t.awaitingPackages }}</option>
+                    <option value="packages_complete">{{ t.packagesComplete }}</option>
                     <option value="processing">{{ t.processing }}</option>
                     <option value="shipped">{{ t.shipped }}</option>
                     <option value="delivered">{{ t.delivered }}</option>
-                    <option value="awaiting_payment">
-                      {{ t.awaitingPayment }}
-                    </option>
+                    <option value="awaiting_payment">{{ t.awaitingPayment }}</option>
                     <option value="paid">{{ t.paidStatus }}</option>
                     <option value="cancelled">{{ t.cancelled }}</option>
-                  </select>
-                </div>
-
-                <!-- Legacy Box Size (only show if no multi-box) -->
-                <div v-if="!hasMultipleBoxes">
-                  <label
-                    for="box_size"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
-                  >
-                    {{ t.boxSizeLabel }}
-                  </label>
-                  <select
-                    v-model="form.box_size"
-                    id="box_size"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                  >
-                    <option value="">{{ t.selectBoxSize }}</option>
-                    <option value="extra-small">Extra Small</option>
-                    <option value="small">Small</option>
-                    <option value="medium">Medium</option>
-                    <option value="large">Large</option>
-                    <option value="extra-large">Extra Large</option>
                   </select>
                 </div>
 
@@ -209,18 +181,18 @@
                       step="0.01"
                       id="total_weight"
                       placeholder="0.00"
-                      class="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     />
                     <div
-                      class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none"
+                      class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center pointer-events-none"
                     >
-                      <span class="text-gray-500">kg</span>
+                      <span class="text-gray-500 text-sm">kg</span>
                     </div>
                   </div>
                 </div>
 
                 <!-- Declared Value -->
-                <div>
+                <div class="sm:col-span-2">
                   <label
                     for="declared_value"
                     class="block text-sm font-semibold text-gray-900 mb-2"
@@ -234,7 +206,7 @@
                       step="0.01"
                       id="declared_value"
                       placeholder="0.00"
-                      class="w-full px-4 py-3 pl-8 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 pl-7 sm:pl-8 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     />
                     <div
                       class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
@@ -246,13 +218,13 @@
               </div>
             </div>
 
-            <!-- Multi-Box Section -->
+            <!-- Boxes Section -->
             <div
-              v-if="hasMultipleBoxes"
-              class="bg-white rounded-2xl shadow-sm border border-indigo-200 p-6 sm:p-8 animate-fadeIn"
+              class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-indigo-200 p-4 sm:p-6 lg:p-8 animate-fadeIn"
               style="animation-delay: 0.05s"
             >
-              <div class="flex items-center justify-between mb-6">
+              <!-- Section Header -->
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
                 <div class="flex items-center gap-3">
                   <div class="p-2 bg-indigo-100 rounded-lg">
                     <svg
@@ -270,30 +242,35 @@
                     </svg>
                   </div>
                   <div>
-                    <h2 class="text-xl font-bold text-gray-900">
-                      {{ t.boxesSection }}
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-900">
+                      {{ t.boxes }}
                     </h2>
-                    <p class="text-sm text-gray-500">{{ t.multiBoxOrder }}</p>
+                    <p class="text-xs sm:text-sm text-gray-500">
+                      {{ t.boxesDescription }}
+                    </p>
                   </div>
                 </div>
+
+                <!-- Box Count Badge -->
                 <span
-                  class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-semibold rounded-full"
+                  v-if="form.boxes.length > 0"
+                  class="self-start sm:self-auto px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-semibold rounded-full"
                 >
-                  {{ totalBoxCount }}
-                  {{ totalBoxCount === 1 ? t.box : t.boxesLabel }}
+                  {{ totalBoxCount }} {{ totalBoxCount === 1 ? t.box : t.boxesLabel }}
                 </span>
               </div>
 
               <!-- Box List -->
-              <div class="space-y-3 mb-4">
+              <div v-if="form.boxes.length > 0" class="space-y-2 sm:space-y-3 mb-4">
                 <div
                   v-for="(box, index) in form.boxes"
                   :key="box.id || index"
-                  class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200"
+                  class="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-200 gap-3"
                 >
+                  <!-- Box Info -->
                   <div class="flex items-center gap-3">
                     <div
-                      class="w-10 h-10 rounded-lg flex items-center justify-center"
+                      class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                       :class="getBoxSizeColorClass(box.box_size)"
                     >
                       <svg
@@ -310,51 +287,45 @@
                         />
                       </svg>
                     </div>
-                    <div>
-                      <p class="font-semibold text-gray-900">
+                    <div class="min-w-0">
+                      <p class="font-semibold text-gray-900 text-sm sm:text-base truncate">
                         {{ box.box_name }}
                       </p>
-                      <p class="text-sm text-gray-500">
+                      <p class="text-xs sm:text-sm text-gray-500">
                         {{ formatBoxSizeLabel(box.box_size) }}
                       </p>
                     </div>
                   </div>
 
-                  <div class="flex items-center gap-4">
+                  <!-- Controls -->
+                  <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
                     <!-- Quantity Editor -->
                     <div class="flex items-center gap-2">
-                      <label class="text-xs text-gray-500"
-                        >{{ t.quantity }}:</label
-                      >
+                      <label class="text-xs text-gray-500">{{ t.qty }}:</label>
                       <input
                         v-model.number="box.quantity"
                         type="number"
                         min="1"
                         max="10"
-                        class="w-16 px-2 py-1 text-center border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        class="w-14 sm:w-16 px-2 py-1.5 text-center border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       />
                     </div>
 
-                    <!-- Price per box -->
-                    <div class="text-right">
-                      <p class="text-sm text-gray-500">
+                    <!-- Price -->
+                    <div class="text-right min-w-[80px]">
+                      <p class="text-xs text-gray-500">
                         @ ${{ formatNumber(box.box_price) }}
                       </p>
-                      <p class="font-bold text-gray-900">
-                        ${{
-                          formatNumber(
-                            parseFloat(box.box_price) * (box.quantity || 1)
-                          )
-                        }}
+                      <p class="font-bold text-gray-900 text-sm sm:text-base">
+                        ${{ formatNumber(parseFloat(box.box_price) * (box.quantity || 1)) }}
                       </p>
                     </div>
 
                     <!-- Remove Button -->
                     <button
-                      v-if="form.boxes.length > 1"
                       type="button"
                       @click="removeBox(index)"
-                      class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
                     >
                       <svg
                         class="w-4 h-4"
@@ -366,7 +337,7 @@
                           stroke-linecap="round"
                           stroke-linejoin="round"
                           stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                         />
                       </svg>
                     </button>
@@ -374,11 +345,22 @@
                 </div>
               </div>
 
+              <!-- Empty State -->
+              <div v-else class="text-center py-6 sm:py-8 mb-4">
+                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                  </svg>
+                </div>
+                <p class="text-sm text-gray-500 mb-1">{{ t.noBoxesYet }}</p>
+                <p class="text-xs text-gray-400">{{ t.addBoxToStart }}</p>
+              </div>
+
               <!-- Add Box Button -->
               <button
                 type="button"
                 @click="showAddBoxModal = true"
-                class="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center gap-2"
+                class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg sm:rounded-xl text-gray-500 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
               >
                 <svg
                   class="w-5 h-5"
@@ -397,36 +379,28 @@
               </button>
 
               <!-- Totals -->
-              <div class="mt-6 pt-4 border-t border-gray-200">
+              <div v-if="form.boxes.length > 0" class="mt-4 sm:mt-6 pt-4 border-t border-gray-200">
                 <div class="flex justify-between items-center mb-2">
-                  <span class="text-sm text-gray-600"
-                    >{{ t.totalBoxPrice }}:</span
-                  >
-                  <span class="text-lg font-bold text-gray-900"
-                    >${{ formatNumber(calculatedTotalBoxPrice) }}</span
-                  >
+                  <span class="text-sm text-gray-600">{{ t.totalBoxPrice }}:</span>
+                  <span class="text-lg font-bold text-gray-900">${{ formatNumber(calculatedTotalBoxPrice) }}</span>
                 </div>
                 <div class="flex justify-between items-center">
-                  <span class="text-sm text-indigo-600 font-medium"
-                    >{{ t.depositAmount }} (50%):</span
-                  >
-                  <span class="text-lg font-bold text-indigo-600"
-                    >${{ formatNumber(calculatedTotalBoxPrice * 0.5) }}</span
-                  >
+                  <span class="text-sm text-indigo-600 font-medium">{{ t.depositAmount }} (50%):</span>
+                  <span class="text-lg font-bold text-indigo-600">${{ formatNumber(calculatedTotalBoxPrice * 0.5) }}</span>
                 </div>
               </div>
             </div>
 
             <!-- Financial Information -->
             <div
-              class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn"
+              class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8 animate-fadeIn"
               style="animation-delay: 0.1s"
             >
-              <h2 class="text-xl font-bold text-gray-900 mb-6">
+              <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
                 {{ t.financialInformation }}
               </h2>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <!-- Deposit Amount -->
                 <div>
                   <label
@@ -441,7 +415,7 @@
                       type="number"
                       step="0.01"
                       id="deposit_amount"
-                      class="w-full px-4 py-3 pl-8 rounded-xl border border-blue-200 bg-blue-50 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 pl-7 sm:pl-8 rounded-lg sm:rounded-xl border border-blue-200 bg-blue-50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <div
                       class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
@@ -465,7 +439,7 @@
                       type="number"
                       step="0.01"
                       id="amount_paid"
-                      class="w-full px-4 py-3 pl-8 rounded-xl border border-green-200 bg-green-50 font-bold text-green-700 text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 pl-7 sm:pl-8 rounded-lg sm:rounded-xl border border-green-200 bg-green-50 font-bold text-green-700 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                     <div
                       class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
@@ -481,8 +455,8 @@
 
               <!-- Payment Summary -->
               <div
-                v-if="form.box_price > 0 || calculatedTotalBoxPrice > 0"
-                class="mt-6 p-4 bg-gray-50 rounded-xl"
+                v-if="calculatedTotalBoxPrice > 0"
+                class="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 rounded-lg sm:rounded-xl"
               >
                 <h3 class="text-sm font-semibold text-gray-700 mb-3">
                   {{ t.paymentSummary }}
@@ -490,25 +464,13 @@
                 <div class="space-y-2 text-sm">
                   <div class="flex justify-between">
                     <span class="text-gray-600">{{ t.totalBoxPrice }}:</span>
-                    <span class="font-medium"
-                      >${{
-                        formatNumber(
-                          hasMultipleBoxes
-                            ? calculatedTotalBoxPrice
-                            : form.box_price || 0
-                        )
-                      }}</span
-                    >
+                    <span class="font-medium">${{ formatNumber(calculatedTotalBoxPrice) }}</span>
                   </div>
                   <div class="flex justify-between text-blue-600">
                     <span>{{ t.depositAmount }} (50%):</span>
-                    <span class="font-medium"
-                      >${{ formatNumber(form.deposit_amount || 0) }}</span
-                    >
+                    <span class="font-medium">${{ formatNumber(form.deposit_amount || 0) }}</span>
                   </div>
-                  <div
-                    class="flex justify-between pt-2 border-t border-gray-200 text-green-600 font-bold"
-                  >
+                  <div class="flex justify-between pt-2 border-t border-gray-200 text-green-600 font-bold">
                     <span>{{ t.totalPaid }}:</span>
                     <span>${{ formatNumber(form.amount_paid || 0) }}</span>
                   </div>
@@ -518,14 +480,91 @@
 
             <!-- Delivery Address Section -->
             <div
-              class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn"
+              class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8 animate-fadeIn"
               style="animation-delay: 0.2s"
             >
-              <h2 class="text-xl font-bold text-gray-900 mb-6">
-                {{ t.deliveryAddressTitle }}
-              </h2>
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
+                <h2 class="text-lg sm:text-xl font-bold text-gray-900">
+                  {{ t.deliveryAddressTitle }}
+                </h2>
 
-              <div class="space-y-4">
+                <!-- Simple Address Toggle -->
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <span class="text-xs sm:text-sm text-gray-600">{{ t.simpleMode }}</span>
+                  <button
+                    type="button"
+                    @click="useSimpleAddress = !useSimpleAddress"
+                    :class="[
+                      'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
+                      useSimpleAddress ? 'bg-primary-600' : 'bg-gray-200',
+                    ]"
+                  >
+                    <span
+                      :class="[
+                        'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
+                        useSimpleAddress ? 'translate-x-6' : 'translate-x-1',
+                      ]"
+                    />
+                  </button>
+                </label>
+              </div>
+
+              <!-- Simple Address Mode -->
+              <div v-if="useSimpleAddress" class="space-y-4">
+                <div>
+                  <label
+                    for="full_address"
+                    class="block text-sm font-semibold text-gray-900 mb-2"
+                  >
+                    {{ t.fullAddressLabel }}
+                  </label>
+                  <textarea
+                    v-model="form.delivery_address.full_address"
+                    id="full_address"
+                    rows="3"
+                    :placeholder="t.fullAddressPlaceholder"
+                    class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none"
+                  ></textarea>
+                  <p class="text-xs text-gray-500 mt-1">
+                    {{ t.fullAddressHint }}
+                  </p>
+                </div>
+
+                <!-- Rural Checkbox in Simple Mode -->
+                <div class="bg-yellow-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-yellow-200">
+                  <label class="flex items-start gap-3 cursor-pointer">
+                    <input
+                      v-model="form.is_rural"
+                      type="checkbox"
+                      class="mt-1 h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
+                    />
+                    <div class="flex-1">
+                      <span class="text-sm font-semibold text-gray-900">{{ t.ruralAreaLabel }}</span>
+                      <p class="text-xs sm:text-sm text-gray-600 mt-1">
+                        {{ t.ruralAreaDescription }}
+                      </p>
+                      <div v-if="form.is_rural" class="mt-2">
+                        <label class="block text-xs font-medium text-yellow-700 mb-1">{{ t.ruralSurchargeLabel }}</label>
+                        <div class="relative">
+                          <input
+                            v-model.number="form.rural_surcharge"
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            class="w-full px-3 py-2 pl-6 rounded-lg border border-yellow-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                          />
+                          <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                            <span class="text-yellow-600 text-sm">$</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Detailed Address Mode -->
+              <div v-else class="space-y-4">
                 <!-- Street -->
                 <div>
                   <label
@@ -539,12 +578,12 @@
                     type="text"
                     id="street"
                     :placeholder="t.streetPlaceholder"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
 
                 <!-- Numbers -->
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label
                       for="exterior_number"
@@ -557,7 +596,7 @@
                       type="text"
                       id="exterior_number"
                       :placeholder="t.exteriorNumberPlaceholder"
-                      class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     />
                   </div>
                   <div>
@@ -572,13 +611,13 @@
                       type="text"
                       id="interior_number"
                       :placeholder="t.interiorNumberPlaceholder"
-                      class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     />
                   </div>
                 </div>
 
                 <!-- Colonia and Municipio -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label
                       for="colonia"
@@ -591,7 +630,7 @@
                       type="text"
                       id="colonia"
                       :placeholder="t.coloniaPlaceholder"
-                      class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     />
                   </div>
                   <div>
@@ -606,13 +645,13 @@
                       type="text"
                       id="municipio"
                       :placeholder="t.municipioPlaceholder"
-                      class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     />
                   </div>
                 </div>
 
                 <!-- Estado and Postal Code -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label
                       for="estado"
@@ -623,7 +662,7 @@
                     <select
                       v-model="form.delivery_address.estado"
                       id="estado"
-                      class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     >
                       <option value="">{{ t.selectEstado }}</option>
                       <option
@@ -649,7 +688,7 @@
                       :placeholder="t.postalCodePlaceholder"
                       maxlength="5"
                       pattern="[0-9]{5}"
-                      class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                     />
                   </div>
                 </div>
@@ -667,14 +706,12 @@
                     id="referencias"
                     rows="3"
                     :placeholder="t.referenciasPlaceholder"
-                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none"
+                    class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none"
                   ></textarea>
                 </div>
 
                 <!-- Rural Checkbox -->
-                <div
-                  class="bg-yellow-50 rounded-xl p-4 border border-yellow-200"
-                >
+                <div class="bg-yellow-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-yellow-200">
                   <label class="flex items-start gap-3 cursor-pointer">
                     <input
                       v-model="form.is_rural"
@@ -682,17 +719,12 @@
                       class="mt-1 h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
                     />
                     <div class="flex-1">
-                      <span class="text-sm font-semibold text-gray-900">{{
-                        t.ruralAreaLabel
-                      }}</span>
-                      <p class="text-sm text-gray-600 mt-1">
+                      <span class="text-sm font-semibold text-gray-900">{{ t.ruralAreaLabel }}</span>
+                      <p class="text-xs sm:text-sm text-gray-600 mt-1">
                         {{ t.ruralAreaDescription }}
                       </p>
                       <div v-if="form.is_rural" class="mt-2">
-                        <label
-                          class="block text-xs font-medium text-yellow-700 mb-1"
-                          >{{ t.ruralSurchargeLabel }}</label
-                        >
+                        <label class="block text-xs font-medium text-yellow-700 mb-1">{{ t.ruralSurchargeLabel }}</label>
                         <div class="relative">
                           <input
                             v-model.number="form.rural_surcharge"
@@ -701,9 +733,7 @@
                             placeholder="0.00"
                             class="w-full px-3 py-2 pl-6 rounded-lg border border-yellow-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                           />
-                          <div
-                            class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none"
-                          >
+                          <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                             <span class="text-yellow-600 text-sm">$</span>
                           </div>
                         </div>
@@ -716,22 +746,22 @@
           </div>
 
           <!-- Right Column - Additional Fields & Dates -->
-          <div class="space-y-6">
+          <div class="space-y-4 sm:space-y-6">
             <!-- Shipping Information -->
             <div
-              class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn"
+              class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 animate-fadeIn"
               style="animation-delay: 0.3s"
             >
-              <h2 class="text-lg font-bold text-gray-900 mb-4">
+              <h2 class="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
                 {{ t.shippingInformation }}
               </h2>
 
-              <div class="space-y-4">
+              <div class="space-y-3 sm:space-y-4">
                 <!-- Guia Number -->
                 <div>
                   <label
                     for="guia_number"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
+                    class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
                   >
                     {{ t.guiaNumberLabel }}
                   </label>
@@ -748,7 +778,7 @@
                 <div>
                   <label
                     for="deposit_payment_link"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
+                    class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
                   >
                     {{ t.depositPaymentLinkLabel }}
                   </label>
@@ -766,18 +796,8 @@
                     class="text-xs text-primary-600 hover:underline mt-1 inline-flex items-center gap-1"
                   >
                     {{ t.openLink }}
-                    <svg
-                      class="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                     </svg>
                   </a>
                 </div>
@@ -786,7 +806,7 @@
                 <div>
                   <label
                     for="payment_link"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
+                    class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
                   >
                     {{ t.paymentLinkLabel }}
                   </label>
@@ -804,18 +824,8 @@
                     class="text-xs text-primary-600 hover:underline mt-1 inline-flex items-center gap-1"
                   >
                     {{ t.openLink }}
-                    <svg
-                      class="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                     </svg>
                   </a>
                 </div>
@@ -824,19 +834,19 @@
 
             <!-- Important Dates -->
             <div
-              class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn"
+              class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 animate-fadeIn"
               style="animation-delay: 0.4s"
             >
-              <h2 class="text-lg font-bold text-gray-900 mb-4">
+              <h2 class="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
                 {{ t.importantDates }}
               </h2>
 
-              <div class="space-y-4">
+              <div class="space-y-3 sm:space-y-4">
                 <!-- Deposit Paid At -->
                 <div>
                   <label
                     for="deposit_paid_at"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
+                    class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
                   >
                     {{ t.depositPaidAtLabel }}
                   </label>
@@ -852,7 +862,7 @@
                 <div>
                   <label
                     for="paid_at"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
+                    class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
                   >
                     {{ t.paidAtLabel }}
                   </label>
@@ -868,7 +878,7 @@
                 <div>
                   <label
                     for="shipped_at"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
+                    class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
                   >
                     {{ t.shippedAtLabel }}
                   </label>
@@ -884,7 +894,7 @@
                 <div>
                   <label
                     for="delivered_at"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
+                    class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
                   >
                     {{ t.deliveredAtLabel }}
                   </label>
@@ -900,10 +910,10 @@
 
             <!-- Notes -->
             <div
-              class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn"
+              class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 animate-fadeIn"
               style="animation-delay: 0.5s"
             >
-              <h2 class="text-lg font-bold text-gray-900 mb-4">
+              <h2 class="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
                 {{ t.notesTitle }}
               </h2>
               <textarea
@@ -917,10 +927,10 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row gap-3 sm:justify-between mt-8">
+        <div class="flex flex-col-reverse sm:flex-row gap-3 sm:justify-between pt-2 sm:pt-4">
           <NuxtLink
             :to="`/app/admin/orders/${orderId}`"
-            class="order-2 sm:order-1 px-6 py-3 bg-white text-gray-700 font-semibold rounded-xl border border-gray-300 hover:bg-gray-50 transition-all duration-300 text-center"
+            class="px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-gray-700 font-semibold rounded-lg sm:rounded-xl border border-gray-300 hover:bg-gray-50 transition-all duration-300 text-center text-sm sm:text-base"
           >
             {{ t.cancel }}
           </NuxtLink>
@@ -928,11 +938,11 @@
           <button
             type="submit"
             :disabled="saving || !hasChanges"
-            class="order-1 sm:order-2 px-8 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl shadow-lg hover:from-primary-600 hover:to-primary-700 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+            class="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-lg sm:rounded-xl shadow-lg hover:from-primary-600 hover:to-primary-700 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 text-sm sm:text-base"
           >
             <svg
               v-if="saving"
-              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block"
+              class="animate-spin -ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-white inline-block"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -965,20 +975,20 @@
         <div class="fixed inset-0 overflow-y-auto">
           <div class="flex min-h-full items-center justify-center p-4">
             <DialogPanel
-              class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+              class="w-full max-w-md rounded-xl sm:rounded-2xl bg-white p-4 sm:p-6 shadow-xl"
             >
-              <DialogTitle class="text-lg font-semibold mb-4">{{
-                t.addBoxTitle
-              }}</DialogTitle>
+              <DialogTitle class="text-base sm:text-lg font-semibold mb-4">
+                {{ t.addBoxTitle }}
+              </DialogTitle>
 
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">{{
-                    t.selectProduct
-                  }}</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ t.selectProduct }}
+                  </label>
                   <select
                     v-model="newBox.stripe_price_id"
-                    class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
                   >
                     <option value="" disabled>{{ t.selectBoxSize }}</option>
                     <option
@@ -992,30 +1002,32 @@
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">{{
-                    t.quantity
-                  }}</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    {{ t.quantity }}
+                  </label>
                   <input
                     v-model.number="newBox.quantity"
                     type="number"
                     min="1"
                     max="10"
-                    class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
                   />
                 </div>
               </div>
 
               <div class="mt-6 flex gap-3 justify-end">
                 <button
+                  type="button"
                   @click="showAddBoxModal = false"
-                  class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                  class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm"
                 >
                   {{ t.cancel }}
                 </button>
                 <button
+                  type="button"
                   @click="addNewBox"
                   :disabled="!newBox.stripe_price_id"
-                  class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+                  class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 text-sm"
                 >
                   {{ t.addBox }}
                 </button>
@@ -1028,7 +1040,7 @@
   </section>
 </template>
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import {
   Dialog,
   DialogPanel,
@@ -1056,11 +1068,11 @@ const originalData = ref(null);
 const products = ref([]);
 const showAddBoxModal = ref(false);
 const newBox = ref({ stripe_price_id: "", quantity: 1 });
+const useSimpleAddress = ref(false);
 
 // Form data
 const form = ref({
   status: "",
-  box_size: "",
   boxes: [],
   box_price: null,
   deposit_amount: null,
@@ -1069,6 +1081,7 @@ const form = ref({
   is_rural: false,
   rural_surcharge: null,
   delivery_address: {
+    full_address: "",
     street: "",
     exterior_number: "",
     interior_number: "",
@@ -1137,39 +1150,24 @@ const mexicanStates = [
 
 // Translations
 const translations = {
-  editOrder: { es: "Editar Orden (Admin)", en: "Edit Order (Admin)" },
+  editOrder: { es: "Editar Orden", en: "Edit Order" },
   orderInformation: { es: "Información de la Orden", en: "Order Information" },
-  financialInformation: {
-    es: "Información Financiera",
-    en: "Financial Information",
-  },
-  shippingInformation: {
-    es: "Información de Envío",
-    en: "Shipping Information",
-  },
+  financialInformation: { es: "Información Financiera", en: "Financial Information" },
+  shippingInformation: { es: "Información de Envío", en: "Shipping Information" },
   importantDates: { es: "Fechas Importantes", en: "Important Dates" },
   notesTitle: { es: "Notas", en: "Notes" },
   statusLabel: { es: "Estado", en: "Status" },
-  boxSizeLabel: { es: "Tamaño de Caja (Legado)", en: "Box Size (Legacy)" },
-  selectBoxSize: { es: "Seleccionar tamaño", en: "Select size" },
+  boxes: { es: "Cajas", en: "Boxes" },
+  boxesDescription: { es: "Administra las cajas de este pedido", en: "Manage boxes for this order" },
+  noBoxesYet: { es: "No hay cajas agregadas", en: "No boxes added yet" },
+  addBoxToStart: { es: "Agrega una caja para comenzar", en: "Add a box to get started" },
   totalWeightLabel: { es: "Peso Total", en: "Total Weight" },
-  declaredValueLabel: {
-    es: "Valor Declarado (USD)",
-    en: "Declared Value (USD)",
-  },
+  declaredValueLabel: { es: "Valor Declarado (USD)", en: "Declared Value (USD)" },
   amountPaidLabel: { es: "Monto Pagado (Total)", en: "Amount Paid (Total)" },
   depositAmountLabel: { es: "Monto Depósito", en: "Deposit Amount" },
   depositAmount: { es: "Depósito", en: "Deposit" },
-  totalBoxPriceLabel: { es: "Precio Total Cajas", en: "Total Box Price" },
   totalBoxPrice: { es: "Precio Total Cajas", en: "Total Box Price" },
-  calculatedFromBoxes: {
-    es: "Calculado automáticamente de las cajas",
-    en: "Automatically calculated from boxes",
-  },
-  updatedViaStripe: {
-    es: "Actualizado automáticamente vía Stripe",
-    en: "Automatically updated via Stripe",
-  },
+  updatedViaStripe: { es: "Actualizado automáticamente vía Stripe", en: "Automatically updated via Stripe" },
   guiaNumberLabel: { es: "Número de Guía", en: "Waybill Number" },
   depositPaymentLinkLabel: { es: "Link Depósito", en: "Deposit Link" },
   paymentLinkLabel: { es: "Link Pago Final", en: "Final Payment Link" },
@@ -1178,43 +1176,35 @@ const translations = {
   depositPaidAtLabel: { es: "Fecha Pago Depósito", en: "Deposit Paid At" },
   shippedAtLabel: { es: "Fecha de Envío", en: "Shipped At" },
   deliveredAtLabel: { es: "Fecha de Entrega", en: "Delivered At" },
-  notesPlaceholder: {
-    es: "Notas internas sobre esta orden...",
-    en: "Internal notes about this order...",
-  },
+  notesPlaceholder: { es: "Notas internas sobre esta orden...", en: "Internal notes about this order..." },
   deliveryAddressTitle: { es: "Dirección de Entrega", en: "Delivery Address" },
+  simpleMode: { es: "Modo simple", en: "Simple mode" },
+  fullAddressLabel: { es: "Dirección Completa", en: "Full Address" },
+  fullAddressPlaceholder: { es: "Ej: Av. Revolución 123, Col. Centro, Tijuana, BC 22000", en: "E.g.: Av. Revolución 123, Col. Centro, Tijuana, BC 22000" },
+  fullAddressHint: { es: "Pega la dirección completa en un solo campo", en: "Paste the complete address in a single field" },
   streetLabel: { es: "Calle", en: "Street" },
   streetPlaceholder: { es: "Nombre de la calle", en: "Street name" },
-  exteriorNumberLabel: { es: "Número Exterior", en: "Exterior Number" },
+  exteriorNumberLabel: { es: "Núm. Exterior", en: "Ext. Number" },
   exteriorNumberPlaceholder: { es: "123", en: "123" },
-  interiorNumberLabel: { es: "Número Interior", en: "Interior Number" },
+  interiorNumberLabel: { es: "Núm. Interior", en: "Int. Number" },
   interiorNumberPlaceholder: { es: "Opcional", en: "Optional" },
   coloniaLabel: { es: "Colonia", en: "Neighborhood" },
   coloniaPlaceholder: { es: "Nombre de la colonia", en: "Neighborhood name" },
-  municipioLabel: { es: "Municipio/Delegación", en: "Municipality" },
+  municipioLabel: { es: "Municipio", en: "Municipality" },
   municipioPlaceholder: { es: "Municipio o delegación", en: "Municipality" },
   estadoLabel: { es: "Estado", en: "State" },
   selectEstado: { es: "Selecciona un estado", en: "Select a state" },
   postalCodeLabel: { es: "Código Postal", en: "Postal Code" },
   postalCodePlaceholder: { es: "12345", en: "12345" },
   referenciasLabel: { es: "Referencias", en: "References" },
-  referenciasPlaceholder: {
-    es: "Entre calles, puntos de referencia...",
-    en: "Between streets, landmarks...",
-  },
+  referenciasPlaceholder: { es: "Entre calles, puntos de referencia...", en: "Between streets, landmarks..." },
   ruralAreaLabel: { es: "Zona Rural", en: "Rural Area" },
-  ruralAreaDescription: {
-    es: "Marca si la dirección está en una zona rural.",
-    en: "Check if the address is in a rural area.",
-  },
+  ruralAreaDescription: { es: "Marca si la dirección está en una zona rural.", en: "Check if the address is in a rural area." },
   ruralSurchargeLabel: { es: "Recargo Rural", en: "Rural Surcharge" },
   cancel: { es: "Cancelar", en: "Cancel" },
   saveChanges: { es: "Guardar Cambios", en: "Save Changes" },
   saving: { es: "Guardando...", en: "Saving..." },
-  orderUpdatedSuccess: {
-    es: "Orden actualizada exitosamente",
-    en: "Order updated successfully",
-  },
+  orderUpdatedSuccess: { es: "Orden actualizada exitosamente", en: "Order updated successfully" },
   generalError: { es: "Ocurrió un error.", en: "An error occurred." },
   collecting: { es: "Agregando Artículos", en: "Adding Items" },
   awaitingPackages: { es: "Esperando Paquetes", en: "Awaiting Packages" },
@@ -1225,17 +1215,14 @@ const translations = {
   awaitingPayment: { es: "Esperando Pago", en: "Awaiting Payment" },
   paidStatus: { es: "Pagado", en: "Paid" },
   cancelled: { es: "Cancelado", en: "Cancelled" },
-  boxesSection: { es: "Cajas del Pedido", en: "Order Boxes" },
-  multiBoxOrder: {
-    es: "Este pedido tiene múltiples cajas",
-    en: "This order has multiple boxes",
-  },
   box: { es: "caja", en: "box" },
   boxesLabel: { es: "cajas", en: "boxes" },
   quantity: { es: "Cantidad", en: "Quantity" },
+  qty: { es: "Cant", en: "Qty" },
   addBox: { es: "Agregar Caja", en: "Add Box" },
   addBoxTitle: { es: "Agregar Nueva Caja", en: "Add New Box" },
   selectProduct: { es: "Seleccionar Producto", en: "Select Product" },
+  selectBoxSize: { es: "Seleccionar tamaño", en: "Select size" },
   paymentSummary: { es: "Resumen de Pagos", en: "Payment Summary" },
   totalPaid: { es: "Total Pagado", en: "Total Paid" },
 };
@@ -1243,10 +1230,6 @@ const translations = {
 const t = createTranslations(translations);
 
 // Computed
-const hasMultipleBoxes = computed(() => {
-  return form.value.boxes && form.value.boxes.length > 0;
-});
-
 const totalBoxCount = computed(() => {
   if (!form.value.boxes || form.value.boxes.length === 0) return 0;
   return form.value.boxes.reduce((sum, box) => sum + (box.quantity || 1), 0);
@@ -1265,13 +1248,12 @@ const hasChanges = computed(() => {
   return JSON.stringify(form.value) !== JSON.stringify(originalData.value);
 });
 
-// Helper function to safely format numbers
+// Helper functions
 const formatNumber = (value) => {
   const num = parseFloat(value) || 0;
   return num.toFixed(2);
 };
 
-// Methods
 const getStatusColor = (status) => {
   const colors = {
     collecting: "bg-blue-100 text-blue-700",
@@ -1288,11 +1270,18 @@ const getStatusColor = (status) => {
 };
 
 const getStatusLabel = (status) => {
-  const statusKey = status?.replace(/_/g, "") || "";
-  const camelCase =
-    statusKey.charAt(0).toLowerCase() +
-    statusKey.slice(1).replace(/([A-Z])/g, (match) => match.toLowerCase());
-  return t.value[camelCase] || status;
+  const statusMap = {
+    collecting: "collecting",
+    awaiting_packages: "awaitingPackages",
+    packages_complete: "packagesComplete",
+    processing: "processing",
+    shipped: "shipped",
+    delivered: "delivered",
+    awaiting_payment: "awaitingPayment",
+    paid: "paidStatus",
+    cancelled: "cancelled",
+  };
+  return t.value[statusMap[status]] || status;
 };
 
 const getBoxSizeColorClass = (size) => {
@@ -1314,7 +1303,7 @@ const formatBoxSizeLabel = (size) => {
     large: "L - Large",
     "extra-large": "XL - Extra Large",
   };
-  return labels[size] || size;
+  return labels[size] || size || "";
 };
 
 const formatDateTimeForInput = (date) => {
@@ -1339,11 +1328,21 @@ const formatDateForInput = (date) => {
   return `${year}-${month}-${day}`;
 };
 
+// Watch for box changes to update total price
+watch(
+  () => form.value.boxes,
+  () => {
+    if (form.value.boxes.length > 0) {
+      form.value.box_price = calculatedTotalBoxPrice.value;
+    }
+  },
+  { deep: true }
+);
+
+// Methods
 const removeBox = (index) => {
-  if (form.value.boxes.length > 1) {
-    form.value.boxes.splice(index, 1);
-    form.value.box_price = calculatedTotalBoxPrice.value;
-  }
+  form.value.boxes.splice(index, 1);
+  form.value.box_price = calculatedTotalBoxPrice.value;
 };
 
 const addNewBox = () => {
@@ -1364,7 +1363,6 @@ const addNewBox = () => {
   });
 
   form.value.box_price = calculatedTotalBoxPrice.value;
-
   newBox.value = { stripe_price_id: "", quantity: 1 };
   showAddBoxModal.value = false;
 };
@@ -1384,25 +1382,53 @@ const fetchOrder = async () => {
     const response = await $customFetch(`/admin/orders/${orderId}`);
     order.value = response.data;
 
+    // Check if this order uses simple address format
+    const hasFullAddress = order.value.delivery_address?.full_address;
+    useSimpleAddress.value = !!hasFullAddress;
+
+    // Build boxes array - include legacy box_size if no boxes array exists
+    let boxesArray = [];
+    if (order.value.boxes && order.value.boxes.length > 0) {
+      boxesArray = order.value.boxes.map((box) => ({
+        id: box.id,
+        stripe_price_id: box.stripe_price_id,
+        stripe_product_id: box.stripe_product_id,
+        box_size: box.box_size,
+        box_name: box.box_name,
+        box_price: parseFloat(box.box_price) || 0,
+        currency: box.currency || "mxn",
+        quantity: box.quantity || 1,
+      }));
+    } else if (order.value.box_size) {
+      // Convert legacy single box to boxes array format
+      // Try to find matching product to get stripe_price_id
+      const matchingProduct = products.value.find(
+        (p) => p.metadata?.type === order.value.box_size
+      );
+      
+      boxesArray = [
+        {
+          id: null,
+          stripe_price_id: matchingProduct?.price_id || order.value.stripe_price_id || null,
+          stripe_product_id: matchingProduct?.stripe_product_id || order.value.stripe_product_id || null,
+          box_size: order.value.box_size,
+          box_name: matchingProduct?.name || formatBoxSizeLabel(order.value.box_size),
+          box_price: parseFloat(order.value.box_price) || 0,
+          currency: "mxn",
+          quantity: 1,
+        },
+      ];
+    }
+
     form.value = {
       status: order.value.status || "",
-      box_size: order.value.box_size || "",
-      boxes:
-        order.value.boxes?.map((box) => ({
-          id: box.id,
-          stripe_price_id: box.stripe_price_id,
-          stripe_product_id: box.stripe_product_id,
-          box_size: box.box_size,
-          box_name: box.box_name,
-          box_price: parseFloat(box.box_price) || 0,
-          currency: box.currency || "mxn",
-          quantity: box.quantity || 1,
-        })) || [],
+      boxes: boxesArray,
       box_price: parseFloat(order.value.box_price) || null,
       declared_value: parseFloat(order.value.declared_value) || null,
       is_rural: order.value.is_rural || false,
       rural_surcharge: parseFloat(order.value.rural_surcharge) || null,
       delivery_address: {
+        full_address: order.value.delivery_address?.full_address || "",
         street: order.value.delivery_address?.street || "",
         exterior_number: order.value.delivery_address?.exterior_number || "",
         interior_number: order.value.delivery_address?.interior_number || "",
@@ -1422,17 +1448,11 @@ const fetchOrder = async () => {
       paid_at: formatDateTimeForInput(order.value.paid_at),
       deposit_paid_at: formatDateTimeForInput(order.value.deposit_paid_at),
       completed_at: formatDateTimeForInput(order.value.completed_at),
-      processing_started_at: formatDateTimeForInput(
-        order.value.processing_started_at
-      ),
+      processing_started_at: formatDateTimeForInput(order.value.processing_started_at),
       shipped_at: formatDateTimeForInput(order.value.shipped_at),
       delivered_at: formatDateTimeForInput(order.value.delivered_at),
-      estimated_delivery_date: formatDateForInput(
-        order.value.estimated_delivery_date
-      ),
-      actual_delivery_date: formatDateForInput(
-        order.value.actual_delivery_date
-      ),
+      estimated_delivery_date: formatDateForInput(order.value.estimated_delivery_date),
+      actual_delivery_date: formatDateForInput(order.value.actual_delivery_date),
       guia_number: order.value.guia_number || "",
       deposit_amount: parseFloat(order.value.deposit_amount) || null,
       deposit_invoice_id: order.value.deposit_invoice_id || "",
@@ -1459,32 +1479,88 @@ const handleSubmit = async () => {
 
   try {
     const updates = {};
-    const keys = Object.keys(form.value);
 
-    keys.forEach((key) => {
-      if (key === "delivery_address") {
-        if (
-          JSON.stringify(form.value.delivery_address) !==
-          JSON.stringify(originalData.value.delivery_address)
-        ) {
-          updates.delivery_address = form.value.delivery_address;
-        }
-      } else if (key === "boxes") {
-        if (
-          JSON.stringify(form.value.boxes) !==
-          JSON.stringify(originalData.value.boxes)
-        ) {
-          updates.boxes = form.value.boxes;
-        }
+    // Compare and add changed fields
+    if (form.value.status !== originalData.value.status) {
+      updates.status = form.value.status;
+    }
+    if (form.value.total_weight !== originalData.value.total_weight) {
+      updates.total_weight = form.value.total_weight;
+    }
+    if (form.value.declared_value !== originalData.value.declared_value) {
+      updates.declared_value = form.value.declared_value;
+    }
+    if (form.value.is_rural !== originalData.value.is_rural) {
+      updates.is_rural = form.value.is_rural;
+    }
+    if (form.value.rural_surcharge !== originalData.value.rural_surcharge) {
+      updates.rural_surcharge = form.value.rural_surcharge;
+    }
+    if (form.value.deposit_amount !== originalData.value.deposit_amount) {
+      updates.deposit_amount = form.value.deposit_amount;
+    }
+    if (form.value.amount_paid !== originalData.value.amount_paid) {
+      updates.amount_paid = form.value.amount_paid;
+    }
+    if (form.value.notes !== originalData.value.notes) {
+      updates.notes = form.value.notes;
+    }
+    if (form.value.guia_number !== originalData.value.guia_number) {
+      updates.guia_number = form.value.guia_number;
+    }
+    if (form.value.deposit_payment_link !== originalData.value.deposit_payment_link) {
+      updates.deposit_payment_link = form.value.deposit_payment_link;
+    }
+    if (form.value.payment_link !== originalData.value.payment_link) {
+      updates.payment_link = form.value.payment_link;
+    }
+    if (form.value.paid_at !== originalData.value.paid_at) {
+      updates.paid_at = form.value.paid_at;
+    }
+    if (form.value.deposit_paid_at !== originalData.value.deposit_paid_at) {
+      updates.deposit_paid_at = form.value.deposit_paid_at;
+    }
+    if (form.value.shipped_at !== originalData.value.shipped_at) {
+      updates.shipped_at = form.value.shipped_at;
+    }
+    if (form.value.delivered_at !== originalData.value.delivered_at) {
+      updates.delivered_at = form.value.delivered_at;
+    }
+
+    // Handle delivery address
+    if (
+      JSON.stringify(form.value.delivery_address) !==
+      JSON.stringify(originalData.value.delivery_address)
+    ) {
+      if (useSimpleAddress.value) {
+        updates.delivery_address = {
+          full_address: form.value.delivery_address.full_address,
+        };
       } else {
-        if (form.value[key] !== originalData.value[key]) {
-          updates[key] = form.value[key];
-        }
+        updates.delivery_address = {
+          street: form.value.delivery_address.street,
+          exterior_number: form.value.delivery_address.exterior_number,
+          interior_number: form.value.delivery_address.interior_number,
+          colonia: form.value.delivery_address.colonia,
+          municipio: form.value.delivery_address.municipio,
+          estado: form.value.delivery_address.estado,
+          postal_code: form.value.delivery_address.postal_code,
+          referencias: form.value.delivery_address.referencias,
+        };
       }
-    });
+    }
 
-    if (updates.boxes) {
-      updates.box_price = calculatedTotalBoxPrice.value;
+    // Handle boxes - ONLY send stripe_price_id and quantity
+    // Backend will fetch the rest from Stripe
+    if (form.value.boxes.length > 0) {
+      updates.boxes = form.value.boxes
+        .filter((box) => box.stripe_price_id) // Only include boxes with stripe_price_id
+        .map((box) => ({
+          stripe_price_id: box.stripe_price_id,
+          quantity: box.quantity || 1,
+        }));
+    } else {
+      updates.boxes = [];
     }
 
     const response = await $customFetch(`/admin/management/orders/${orderId}`, {
@@ -1505,11 +1581,54 @@ const handleSubmit = async () => {
   }
 };
 
-onMounted(() => {
-  fetchOrder();
-  fetchProducts();
+onMounted(async () => {
+  // Fetch products first so we can match legacy box_size to stripe_price_id
+  await fetchProducts();
+  await fetchOrder();
 });
 </script>
+
+<style scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-2px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+</style>
 
 <style scoped>
 @keyframes fadeIn {
