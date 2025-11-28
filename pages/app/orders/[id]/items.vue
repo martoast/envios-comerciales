@@ -516,29 +516,63 @@ const closeModal = () => { showAddProductModal.value = false; cancelEdit(); };
 const handleSubmit = async () => {
   if (!itemForm.value.product_name.trim()) return;
   submitting.value = true;
+  
   try {
     const formData = new FormData();
+    
+    // Required fields
     formData.append("product_name", itemForm.value.product_name.trim());
     formData.append("quantity", itemForm.value.quantity);
-    if (itemForm.value.product_url) formData.append("product_url", itemForm.value.product_url);
-    if (itemForm.value.merchant_order_id) formData.append("merchant_order_id", itemForm.value.merchant_order_id);
-    if (itemForm.value.declared_value) formData.append("declared_value", itemForm.value.declared_value);
-    if (itemForm.value.tracking_number) formData.append("tracking_number", itemForm.value.tracking_number);
-    if (itemForm.value.estimated_delivery_date) formData.append("estimated_delivery_date", itemForm.value.estimated_delivery_date);
-    if (selectedFile.value) formData.append("proof_of_purchase", selectedFile.value);
-    if (selectedProductImage.value) formData.append("product_image", selectedProductImage.value);
-    if (markedForDeletion.value.image) formData.append("remove_product_image", "1");
-    if (markedForDeletion.value.proof) formData.append("remove_proof_of_purchase", "1");
+    
+    // Optional fields - ALWAYS send them so empty values can clear the field
+    formData.append("product_url", itemForm.value.product_url || '');
+    formData.append("merchant_order_id", itemForm.value.merchant_order_id || '');
+    formData.append("declared_value", itemForm.value.declared_value || '');
+    formData.append("tracking_number", itemForm.value.tracking_number || '');
+    formData.append("estimated_delivery_date", itemForm.value.estimated_delivery_date || '');
+    
+    // File uploads - only send if new file selected
+    if (selectedFile.value) {
+      formData.append("proof_of_purchase", selectedFile.value);
+    }
+    if (selectedProductImage.value) {
+      formData.append("product_image", selectedProductImage.value);
+    }
+    
+    // File deletions - send flags if marked for deletion
+    if (markedForDeletion.value.proof) {
+      formData.append("remove_proof_of_purchase", "1");
+    }
+    if (markedForDeletion.value.image) {
+      formData.append("remove_product_image", "1");
+    }
 
     let url = `/orders/${order.value.id}/items`;
-    if (editingItemId.value) { url = `/orders/${order.value.id}/items/${editingItemId.value}`; formData.append('_method', 'PUT'); }
+    
+    if (editingItemId.value) {
+      url = `/orders/${order.value.id}/items/${editingItemId.value}`;
+      formData.append('_method', 'PUT');
+    }
 
     await $customFetch(url, { method: "POST", body: formData });
+    
     const wasEditing = !!editingItemId.value;
-    resetForm(); editingItemId.value = null; showAddProductModal.value = false; 
-    $toast.success(wasEditing ? t.value.updateProductButton : t.value.productAdded || "Added!");
+    
+    // Reset form state
+    resetForm();
+    editingItemId.value = null;
+    showAddProductModal.value = false;
+    
+    $toast.success(wasEditing ? t.value.updateProductButton : (t.value.productAdded || "Added!"));
+    
     await fetchOrder(true);
-  } catch (error) { $toast.error("Error saving product"); } finally { submitting.value = false; }
+    
+  } catch (error) {
+    console.error('Error saving product:', error);
+    $toast.error("Error saving product");
+  } finally {
+    submitting.value = false;
+  }
 };
 
 const handleSubmitMobile = async () => { await handleSubmit(); };

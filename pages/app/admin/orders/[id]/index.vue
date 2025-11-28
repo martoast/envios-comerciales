@@ -92,7 +92,7 @@
       <!-- Quick Actions Bar -->
       <div class="mb-6 bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
         <div class="flex flex-wrap gap-3 items-center">
-          <span class="text-sm font-medium text-gray-500 mr-2">Current Stage:</span>
+          <span class="text-sm font-medium text-gray-500 mr-2">{{ t.currentStage }}:</span>
           
           <!-- 1. Waiting for Packages -->
           <div v-if="['collecting', 'awaiting_packages'].includes(order.status)" class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 text-sm rounded-lg">
@@ -186,7 +186,7 @@
 
         <!-- Right Column -->
         <div class="space-y-6">
-          <!-- Order Summary & Financials -->
+          <!-- Order Summary -->
           <div class="bg-white rounded-xl border border-gray-200 p-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">{{ t.orderSummary }}</h2>
             <div class="space-y-3">
@@ -202,12 +202,62 @@
                 <p class="text-sm text-gray-500">{{ t.totalWeight }}</p>
                 <p class="font-medium">{{ order.total_weight || 0 }} kg</p>
               </div>
-              <div v-if="order.box_size" class="flex justify-between">
-                <p class="text-sm text-gray-500">Box Size</p>
-                <p class="font-medium capitalize">{{ order.box_size.replace('-', ' ') }}</p>
+
+              <!-- Multi-Box Display (New System) -->
+              <div v-if="hasMultipleBoxes" class="border-t border-gray-100 pt-3 mt-3">
+                <div class="flex items-center justify-between mb-2">
+                  <p class="text-sm font-semibold text-gray-700">{{ t.boxes }}</p>
+                  <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium">
+                    {{ totalBoxCount }} {{ totalBoxCount === 1 ? t.box : t.boxes }}
+                  </span>
+                </div>
+                <div class="space-y-2">
+                  <div 
+                    v-for="box in order.boxes" 
+                    :key="box.id"
+                    class="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                  >
+                    <div class="flex items-center gap-2">
+                      <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="getBoxSizeColor(box.box_size)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="text-sm font-medium text-gray-900">
+                          {{ box.quantity > 1 ? `${box.quantity}x ` : '' }}{{ box.box_name }}
+                        </p>
+                        <p class="text-xs text-gray-500">{{ formatBoxSizeLabel(box.box_size) }}</p>
+                      </div>
+                    </div>
+                    <p class="text-sm font-semibold text-gray-900">
+                      ${{ (box.box_price * box.quantity).toFixed(2) }}
+                    </p>
+                  </div>
+                </div>
+                <!-- Total Box Price -->
+                <div class="flex justify-between items-center mt-3 pt-2 border-t border-gray-200">
+                  <p class="text-sm font-semibold text-gray-700">{{ t.totalBoxPrice }}</p>
+                  <p class="text-base font-bold text-gray-900">${{ totalBoxPrice.toFixed(2) }}</p>
+                </div>
               </div>
-              <div v-if="order.guia_number" class="flex justify-between items-center border-t border-gray-100 pt-2 mt-2">
-                <p class="text-sm font-medium text-primary-700">Guia Number</p>
+
+              <!-- Single Box Display (Legacy System) -->
+              <div v-else-if="order.box_size" class="flex justify-between">
+                <p class="text-sm text-gray-500">{{ t.boxSize }}</p>
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded flex items-center justify-center" :class="getBoxSizeColor(order.box_size)">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                  </span>
+                  <p class="font-medium capitalize">{{ order.box_size.replace('-', ' ') }}</p>
+                </div>
+              </div>
+
+              <!-- Guia Number -->
+              <div v-if="order.guia_number" class="flex justify-between items-center border-t border-gray-100 pt-3 mt-3">
+                <p class="text-sm font-medium text-primary-700">{{ t.guiaNumber }}</p>
                 <NuxtLink 
                   :to="`/track?tracking_number=${order.guia_number}`"
                   target="_blank"
@@ -221,60 +271,110 @@
               </div>
               
               <!-- FINANCIALS SECTION -->
-              <!-- Logic: Show section if we have ANY financial data (deposit, quote, or total paid) -->
               <div v-if="order.deposit_amount || order.quoted_amount || order.amount_paid" class="mt-6 pt-4 border-t-2 border-gray-100">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Financials</h3>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{{ t.financials }}</h3>
                 
-                <!-- 1. Deposit -->
+                <!-- Deposit Section -->
                 <div v-if="order.deposit_amount" class="mb-3 p-3 bg-gray-50 rounded-lg">
-                  <div class="flex justify-between items-center mb-1">
-                    <span class="text-xs font-semibold text-gray-600">Deposit (50%)</span>
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-semibold text-gray-600">{{ t.deposit }} (50%)</span>
                     <span class="text-sm font-bold text-gray-900">${{ order.deposit_amount }}</span>
                   </div>
+                  
+                  <!-- Show box breakdown if multi-box -->
+                  <div v-if="hasMultipleBoxes" class="mb-2 pl-2 border-l-2 border-gray-200">
+                    <div 
+                      v-for="box in order.boxes" 
+                      :key="`deposit-${box.id}`"
+                      class="flex justify-between text-xs text-gray-500 py-0.5"
+                    >
+                      <span>{{ box.quantity > 1 ? `${box.quantity}x ` : '' }}{{ box.box_name }}</span>
+                      <span>${{ ((box.box_price * box.quantity) * 0.5).toFixed(2) }}</span>
+                    </div>
+                  </div>
+                  
                   <div class="flex justify-between items-center">
                     <span class="text-[10px] px-1.5 py-0.5 rounded font-medium" :class="order.deposit_paid_at ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'">
-                      {{ order.deposit_paid_at ? 'PAID' : 'PENDING' }}
+                      {{ order.deposit_paid_at ? t.paid : t.pending }}
                     </span>
                     <a v-if="order.deposit_payment_link" :href="order.deposit_payment_link" target="_blank" class="text-xs text-primary-600 hover:text-primary-800 hover:underline flex items-center gap-1">
-                      Invoice <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      {{ t.invoice }} <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     </a>
                   </div>
                 </div>
 
-                <!-- 2. Final Balance -->
+                <!-- Final Balance -->
                 <div v-if="order.quoted_amount" class="mb-3 p-3 bg-gray-50 rounded-lg">
-                  <div class="flex justify-between items-center mb-1">
-                    <span class="text-xs font-semibold text-gray-600">Final Balance</span>
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-semibold text-gray-600">{{ t.finalBalance }}</span>
                     <span class="text-sm font-bold text-gray-900">${{ order.quoted_amount }}</span>
                   </div>
+                  
+                  <!-- Show remaining box balance breakdown if multi-box -->
+                  <div v-if="hasMultipleBoxes && order.deposit_amount" class="mb-2 pl-2 border-l-2 border-gray-200">
+                    <div 
+                      v-for="box in order.boxes" 
+                      :key="`final-${box.id}`"
+                      class="flex justify-between text-xs text-gray-500 py-0.5"
+                    >
+                      <span>{{ box.quantity > 1 ? `${box.quantity}x ` : '' }}{{ box.box_name }} ({{ t.remaining }})</span>
+                      <span>${{ ((box.box_price * box.quantity) * 0.5).toFixed(2) }}</span>
+                    </div>
+                    <div v-if="order.quote_breakdown && order.quote_breakdown.length > 0" class="border-t border-gray-200 mt-1 pt-1">
+                      <div 
+                        v-for="(item, idx) in order.quote_breakdown" 
+                        :key="`extra-${idx}`"
+                        class="flex justify-between text-xs text-gray-500 py-0.5"
+                      >
+                        <span>{{ item.description || item.item }}</span>
+                        <span>${{ item.amount.toFixed(2) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
                   <div class="flex justify-between items-center">
                     <span class="text-[10px] px-1.5 py-0.5 rounded font-medium" :class="order.paid_at ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'">
-                      {{ order.paid_at ? 'PAID' : 'PENDING' }}
+                      {{ order.paid_at ? t.paid : t.pending }}
                     </span>
                     <a v-if="order.payment_link" :href="order.payment_link" target="_blank" class="text-xs text-primary-600 hover:text-primary-800 hover:underline flex items-center gap-1">
-                      Invoice <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      {{ t.invoice }} <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     </a>
                   </div>
                 </div>
 
-                <!-- 3. Manual/Legacy Payment (If amount_paid exists but no quoted amount and NO invoices) -->
+                <!-- Manual/Legacy Payment -->
                 <div v-else-if="order.amount_paid > 0 && !order.payment_link && !order.deposit_payment_link" class="mb-3 p-3 bg-green-50 rounded-lg border border-green-100">
                   <div class="flex justify-between items-center mb-1">
-                    <span class="text-xs font-semibold text-green-800">Amount Paid (Manual/Legacy)</span>
+                    <span class="text-xs font-semibold text-green-800">{{ t.amountPaidLegacy }}</span>
                     <span class="text-sm font-bold text-green-900">${{ order.amount_paid }}</span>
                   </div>
                   <div class="flex justify-between items-center">
                     <span class="text-[10px] px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-700">
-                      PAID
+                      {{ t.paid }}
                     </span>
-                    <span class="text-xs text-green-600">Manually Updated</span>
+                    <span class="text-xs text-green-600">{{ t.manuallyUpdated }}</span>
                   </div>
                 </div>
 
-                <!-- 4. Total Paid (Aggregate) -->
-                <div v-if="order.amount_paid > 0 && (order.deposit_amount || order.quoted_amount)" class="mt-3 pt-2 border-t border-gray-200 flex justify-between items-center">
-                  <span class="text-sm font-bold text-gray-700">Total Paid</span>
-                  <span class="text-lg font-black text-green-600">${{ order.amount_paid }}</span>
+                <!-- Total Paid (Aggregate) -->
+                <div v-if="order.amount_paid > 0 && (order.deposit_amount || order.quoted_amount)" class="mt-3 pt-3 border-t border-gray-200">
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm font-bold text-gray-700">{{ t.totalPaid }}</span>
+                    <span class="text-xl font-black text-green-600">${{ order.amount_paid }}</span>
+                  </div>
+                  <!-- Payment Progress Bar -->
+                  <div class="mt-2">
+                    <div class="flex justify-between text-xs text-gray-500 mb-1">
+                      <span>{{ t.paymentProgress }}</span>
+                      <span>{{ paymentPercentage }}%</span>
+                    </div>
+                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        class="h-full bg-green-500 rounded-full transition-all duration-500"
+                        :style="{ width: `${paymentPercentage}%` }"
+                      ></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -341,7 +441,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import AdminOrderItemsList from '~/components/admin/AdminOrderItemsList.vue'
 import AdminOrderTimeline from '~/components/admin/AdminOrderTimeline.vue'
 import AdminOrderModalStartProcessing from '~/components/admin/AdminOrderModalStartProcessing.vue'
@@ -381,6 +481,7 @@ const translations = {
   loading: { es: 'Cargando...', en: 'Loading...' },
   editOrder: { es: 'Editar Orden', en: 'Edit Order' },
   deleteOrder: { es: 'Eliminar Orden', en: 'Delete Order' },
+  currentStage: { es: 'Etapa Actual', en: 'Current Stage' },
   waitingForPackages: { es: 'Esperando Paquetes', en: 'Waiting for Packages' },
   startProcessing: { es: 'Iniciar Procesamiento', en: 'Start Processing' },
   shipOrder: { es: 'Enviar Orden (Depósito)', en: 'Ship Order (Deposit)' },
@@ -395,11 +496,55 @@ const translations = {
   orderNumber: { es: 'Orden #', en: 'Order #' },
   trackingNumber: { es: 'Rastreo #', en: 'Tracking #' },
   totalWeight: { es: 'Peso Total', en: 'Total Weight' },
+  boxes: { es: 'Cajas', en: 'Boxes' },
+  box: { es: 'Caja', en: 'Box' },
+  boxSize: { es: 'Tamaño de Caja', en: 'Box Size' },
+  totalBoxPrice: { es: 'Precio Total Cajas', en: 'Total Box Price' },
+  guiaNumber: { es: 'Número de Guía', en: 'Guia Number' },
+  financials: { es: 'Financieros', en: 'Financials' },
+  deposit: { es: 'Depósito', en: 'Deposit' },
+  finalBalance: { es: 'Saldo Final', en: 'Final Balance' },
+  remaining: { es: 'restante', en: 'remaining' },
+  paid: { es: 'PAGADO', en: 'PAID' },
+  pending: { es: 'PENDIENTE', en: 'PENDING' },
+  invoice: { es: 'Factura', en: 'Invoice' },
+  amountPaidLegacy: { es: 'Monto Pagado (Manual/Legado)', en: 'Amount Paid (Manual/Legacy)' },
+  manuallyUpdated: { es: 'Actualizado Manualmente', en: 'Manually Updated' },
+  totalPaid: { es: 'Total Pagado', en: 'Total Paid' },
+  paymentProgress: { es: 'Progreso de Pago', en: 'Payment Progress' },
   items: { es: 'Artículos', en: 'Items' },
   status: { es: 'Estado', en: 'Status' }
 }
 
 const t = createTranslations(translations)
+
+// Computed: Check if order has multiple boxes
+const hasMultipleBoxes = computed(() => {
+  return order.value?.boxes && order.value.boxes.length > 0
+})
+
+// Computed: Total box count (sum of quantities)
+const totalBoxCount = computed(() => {
+  if (!order.value?.boxes) return 0
+  return order.value.boxes.reduce((sum, box) => sum + (box.quantity || 1), 0)
+})
+
+// Computed: Total box price
+const totalBoxPrice = computed(() => {
+  if (!order.value?.boxes || order.value.boxes.length === 0) {
+    return order.value?.box_price || 0
+  }
+  return order.value.boxes.reduce((sum, box) => sum + (box.box_price * (box.quantity || 1)), 0)
+})
+
+// Computed: Payment percentage
+const paymentPercentage = computed(() => {
+  if (!order.value) return 0
+  const totalDue = totalBoxPrice.value + (order.value.quote_breakdown?.reduce((s, i) => s + i.amount, 0) || 0)
+  if (totalDue <= 0) return 0
+  const paid = order.value.amount_paid || 0
+  return Math.min(100, Math.round((paid / totalDue) * 100))
+})
 
 const fetchOrder = async () => {
   loading.value = true
@@ -456,6 +601,28 @@ const getStatusColor = (status) => {
 
 const getStatusLabel = (status) => {
   return status ? status.replace(/_/g, ' ').toUpperCase() : ''
+}
+
+const getBoxSizeColor = (size) => {
+  const colors = {
+    'extra-small': 'bg-gray-100 text-gray-600',
+    'small': 'bg-blue-100 text-blue-600',
+    'medium': 'bg-green-100 text-green-600',
+    'large': 'bg-amber-100 text-amber-600',
+    'extra-large': 'bg-red-100 text-red-600'
+  }
+  return colors[size] || 'bg-gray-100 text-gray-600'
+}
+
+const formatBoxSizeLabel = (size) => {
+  const labels = {
+    'extra-small': 'XS',
+    'small': 'S',
+    'medium': 'M',
+    'large': 'L',
+    'extra-large': 'XL'
+  }
+  return labels[size] || size
 }
 
 const formatAddress = (address) => {

@@ -137,7 +137,7 @@
             <p class="text-xs text-text-secondary mt-1">{{ dashboardData?.packages?.awaiting_arrival || 0 }} {{ t.awaiting }}</p>
           </div>
 
-          <!-- NEW: Purchase Requests Card -->
+          <!-- Purchase Requests Card -->
           <div class="bg-white rounded-2xl shadow-sm border border-border p-6 animate-fadeIn" style="animation-delay: 0.15s">
               <div class="flex items-center justify-between mb-4">
                   <div class="p-2.5 rounded-xl bg-blue-50">
@@ -299,8 +299,6 @@
           </div>
         </div>
 
-        
-
         <!-- Expense Breakdown & Box Sizes -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <!-- Expense Categories - Only show if NOT manual metrics -->
@@ -320,36 +318,78 @@
             </div>
           </div>
 
-          <!-- Box Sizes -->
+          <!-- Box Sizes Distribution -->
           <div :class="['bg-white rounded-2xl shadow-sm border border-border p-6 animate-fadeIn', !hasMetrics ? '' : 'lg:col-span-2']" style="animation-delay: 1.2s">
-            <h3 class="text-lg font-bold text-text-primary mb-4">{{ t.boxSizeDistribution }}</h3>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold text-text-primary">{{ t.boxSizeDistribution }}</h3>
+              <!-- Multi-box indicator -->
+              <span v-if="dashboardData?.box_distribution?.source === 'calculated'" class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full font-medium">
+                {{ t.includesMultiBox }}
+              </span>
+            </div>
+            
             <div v-if="Object.keys(boxDistribution).length > 0">
-              <div class="space-y-2">
-                <div v-for="(count, size) in boxDistribution" :key="size" class="flex items-center justify-between py-2 border-b border-border-light">
-                  <span class="text-sm font-medium text-text-primary">{{ formatBoxSize(size) }}</span>
-                  <span class="text-lg font-bold text-text-primary">{{ count }}</span>
+              <!-- Box Size Bars -->
+              <div class="space-y-3">
+                <div v-for="(count, size) in boxDistribution" :key="size" class="group">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-sm font-medium text-text-primary">{{ formatBoxSize(size) }}</span>
+                    <span class="text-lg font-bold text-text-primary">{{ count }}</span>
+                  </div>
+                  <!-- Progress bar showing relative distribution -->
+                  <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div 
+                      class="h-full rounded-full transition-all duration-500"
+                      :class="getBoxSizeColor(size)"
+                      :style="{ width: `${(count / totalBoxes) * 100}%` }"
+                    ></div>
+                  </div>
                 </div>
               </div>
               
               <!-- Total Row -->
-              <div class="mt-4 pt-4 border-t-2 border-primary-200 bg-primary-50 rounded-lg p-3">
+              <div class="mt-6 pt-4 border-t-2 border-primary-200 bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl p-4">
                 <div class="flex items-center justify-between">
-                  <span class="text-base font-bold text-primary-900 uppercase tracking-wide">{{ t.totalBoxes }}</span>
-                  <span class="text-2xl font-bold text-primary-600">{{ totalBoxes }}</span>
+                  <div>
+                    <span class="text-base font-bold text-primary-900 uppercase tracking-wide">{{ t.totalBoxes }}</span>
+                    <p class="text-xs text-primary-700 mt-0.5">{{ t.acrossAllOrders }}</p>
+                  </div>
+                  <span class="text-3xl font-black text-primary-600">{{ totalBoxes }}</span>
                 </div>
               </div>
             </div>
+            
             <div v-else class="text-center py-8">
               <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
               </svg>
               <p class="text-sm text-text-secondary">{{ t.noBoxes }}</p>
             </div>
+            
+            <!-- Source indicators -->
             <div v-if="dashboardData?.box_distribution?.source === 'manual'" class="mt-4 pt-4 border-t border-border-light">
-              <p class="text-xs text-text-secondary italic">{{ t.manualBoxData }}</p>
+              <p class="text-xs text-text-secondary italic flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                {{ t.manualBoxData }}
+              </p>
             </div>
             <div v-if="dashboardData?.box_distribution?.source === 'combined'" class="mt-4 pt-4 border-t border-border-light">
-              <p class="text-xs text-text-secondary italic">{{ t.combinedBoxData }}</p>
+              <p class="text-xs text-text-secondary italic flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+                </svg>
+                {{ t.combinedBoxData }}
+              </p>
+            </div>
+            <div v-if="dashboardData?.box_distribution?.source === 'calculated'" class="mt-4 pt-4 border-t border-border-light">
+              <p class="text-xs text-text-secondary italic flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                {{ t.calculatedBoxData }}
+              </p>
             </div>
           </div>
         </div>
@@ -461,7 +501,7 @@ const expenses = computed(() => {
   return exp
 })
 
-// Computed - Box distribution
+// Computed - Box distribution (now properly counts quantities from multi-box orders)
 const boxDistribution = computed(() => {
   if (!dashboardData.value?.box_distribution) return {}
   const dist = { ...dashboardData.value.box_distribution }
@@ -471,9 +511,14 @@ const boxDistribution = computed(() => {
   return dist
 })
 
-// Computed - Total boxes
+// Computed - Total boxes (sum of all quantities)
 const totalBoxes = computed(() => {
   if (!dashboardData.value?.box_distribution) return 0
+  // Use the total from API if available (more accurate with multi-box)
+  if (dashboardData.value.box_distribution.total) {
+    return dashboardData.value.box_distribution.total
+  }
+  // Fallback to calculating from distribution
   const dist = boxDistribution.value
   return Object.values(dist).reduce((sum, count) => sum + count, 0)
 })
@@ -496,8 +541,10 @@ const translations = {
   totalCustomers: { es: 'Clientes Totales', en: 'Total Customers' },
   awaiting: { es: 'esperando', en: 'awaiting' },
   expenseBreakdown: { es: 'Desglose de Gastos', en: 'Expense Breakdown' },
-  boxSizeDistribution: { es: 'Distribución de Tamaños', en: 'Box Size Distribution' },
+  boxSizeDistribution: { es: 'Distribución de Cajas', en: 'Box Size Distribution' },
   totalBoxes: { es: 'Total de Cajas', en: 'Total Boxes' },
+  acrossAllOrders: { es: 'en todos los pedidos', en: 'across all orders' },
+  includesMultiBox: { es: 'Incluye multi-caja', en: 'Includes multi-box' },
   noMetricsTitle: { es: 'Agrega Leads', en: 'Add Conversations' },
   noMetricsDescription: { es: 'Agrega el número de leads para ver CAC, ROAS y tasa de conversión.', en: 'Add conversation count to see CAC, ROAS, and conversion rate.' },
   addMetrics: { es: 'Agregar Leads', en: 'Add Leads' },
@@ -508,6 +555,7 @@ const translations = {
   editData: { es: 'Editar', en: 'Edit' },
   manualBoxData: { es: 'Datos de cajas ingresados manualmente', en: 'Box data manually entered' },
   combinedBoxData: { es: 'Cajas combinadas: métricas manuales + sistema', en: 'Combined boxes: manual metrics + system' },
+  calculatedBoxData: { es: 'Calculado del sistema (incluye órdenes multi-caja)', en: 'Calculated from system (includes multi-box orders)' },
   fromDatabase: { es: 'desde base de datos', en: 'from database' },
   noExpenses: { es: 'No hay gastos registrados', en: 'No expenses recorded' },
   noBoxes: { es: 'No hay cajas registradas', en: 'No boxes recorded' },
@@ -526,8 +574,8 @@ const translations = {
   misc: { es: 'Varios', en: 'Miscellaneous' },
   shippingRevenue: { es: 'Ingresos Envíos', en: 'Shipping Revenue' },
   serviceFeeRevenue: { es: 'Ingresos Compras', en: 'Purchase Fees' },
-  purchaseRequests: { es: 'Solicitudes de Compra', en: 'Purchase Requests' }, // NEW
-  itemsPurchased: { es: 'artículos comprados', en: 'items purchased' }, // NEW
+  purchaseRequests: { es: 'Solicitudes de Compra', en: 'Purchase Requests' },
+  itemsPurchased: { es: 'artículos comprados', en: 'items purchased' },
 }
 
 const t = createTranslations(translations)
@@ -596,6 +644,18 @@ const formatBoxSize = (size) => {
     'extra-large': 'XL - Extra Large'
   }
   return labels[size] || size
+}
+
+// Get color class for box size progress bar
+const getBoxSizeColor = (size) => {
+  const colors = {
+    'extra-small': 'bg-gray-400',
+    'small': 'bg-blue-400',
+    'medium': 'bg-green-500',
+    'large': 'bg-amber-500',
+    'extra-large': 'bg-red-500'
+  }
+  return colors[size] || 'bg-primary-500'
 }
 
 onMounted(() => {
