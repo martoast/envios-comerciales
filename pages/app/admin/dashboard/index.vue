@@ -7,47 +7,77 @@
       class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100"
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-        <div
-          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-        >
+        <!-- Top Row: Title + Refresh -->
+        <div class="flex items-center justify-between mb-4 sm:mb-0">
           <div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">
+            <h1
+              class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900"
+            >
               {{ t.dashboard }}
             </h1>
-            <p class="text-sm text-gray-600 mt-1">
+            <p class="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">
               {{ t.welcomeBack }}, {{ user?.name }}
             </p>
           </div>
-          <div class="flex items-center gap-3">
-            <!-- Period Selector -->
-            <select
-              v-model="selectedPeriod"
-              @change="fetchDashboard"
-              class="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+
+          <!-- Refresh Button (always visible) -->
+          <button
+            @click="refreshData"
+            :disabled="loading"
+            class="p-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-300 disabled:opacity-50 sm:hidden"
+          >
+            <svg
+              :class="['w-5 h-5', loading && 'animate-spin']"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <!-- All Time Option -->
-              <option value="all">{{ t.allTime }}</option>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+          </button>
+        </div>
 
-              <!-- Separator -->
-              <option disabled>────────────</option>
+        <!-- Controls Row -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+        >
+          <!-- Period Selector - Full width on mobile -->
+          <select
+            v-model="selectedPeriod"
+            @change="fetchDashboard"
+            class="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+          >
+            <!-- All Time Option -->
+            <option value="all">{{ t.allTime }}</option>
 
-              <!-- Monthly Options -->
-              <option
-                v-for="month in availableMonths"
-                :key="month.value"
-                :value="month.value"
-              >
-                {{ month.label }}
-              </option>
-            </select>
+            <!-- Separator -->
+            <option disabled>────────────</option>
 
+            <!-- Monthly Options -->
+            <option
+              v-for="month in availableMonths"
+              :key="month.value"
+              :value="month.value"
+            >
+              {{ month.label }}
+            </option>
+          </select>
+
+          <!-- Action Buttons -->
+          <div class="flex items-center gap-2 sm:gap-3">
+            <!-- Edit Metrics Button -->
             <NuxtLink
               v-if="selectedPeriod !== 'all'"
               :to="`/app/admin/dashboard/edit-metrics?year=${selectedYear}&month=${selectedMonthNum}`"
-              class="inline-flex items-center px-4 py-2 bg-primary-500 text-white text-sm font-medium rounded-xl hover:bg-primary-600 shadow-sm hover:shadow-md transition-all duration-300"
+              class="flex-1 sm:flex-none inline-flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-2 bg-primary-500 text-white text-sm font-medium rounded-xl hover:bg-primary-600 shadow-sm hover:shadow-md transition-all duration-300"
             >
               <svg
-                class="w-4 h-4 mr-2"
+                class="w-4 h-4 sm:mr-2"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -59,15 +89,17 @@
                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                 />
               </svg>
-              {{ t.editMetrics }}
+              <span class="hidden sm:inline">{{ t.editMetrics }}</span>
+              <span class="sm:hidden ml-1.5">{{ t.edit }}</span>
             </NuxtLink>
 
+            <!-- Manage Expenses Button -->
             <NuxtLink
               to="/app/admin/expenses"
-              class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-200 shadow-sm hover:shadow-md transition-all duration-300"
+              class="flex-1 sm:flex-none inline-flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-200 shadow-sm hover:shadow-md transition-all duration-300"
             >
               <svg
-                class="w-4 h-4 mr-2"
+                class="w-4 h-4 sm:mr-2"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -79,13 +111,15 @@
                   d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              {{ t.manageExpenses }}
+              <span class="hidden sm:inline">{{ t.manageExpenses }}</span>
+              <span class="sm:hidden ml-1.5">{{ t.expenses }}</span>
             </NuxtLink>
 
+            <!-- Refresh Button (desktop only - mobile is in top row) -->
             <button
               @click="refreshData"
               :disabled="loading"
-              class="p-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-300 disabled:opacity-50"
+              class="hidden sm:flex p-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-300 disabled:opacity-50"
             >
               <svg
                 :class="['w-5 h-5', loading && 'animate-spin']"
@@ -229,11 +263,24 @@
             </p>
           </div>
 
-          <!-- Total Packages Card -->
+          <!-- Total Boxes Card -->
           <div
-            class="bg-white rounded-2xl shadow-sm border border-border p-6 animate-fadeIn"
+            :class="[
+              'bg-white rounded-2xl shadow-sm border p-6 animate-fadeIn relative overflow-hidden',
+              isBoxesManual
+                ? 'border-amber-300 ring-2 ring-amber-100'
+                : 'border-border',
+            ]"
             style="animation-delay: 0.1s"
           >
+            <!-- Manual Mode Indicator -->
+            <div v-if="isBoxesManual" class="absolute top-2 right-2">
+              <span
+                class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 uppercase"
+              >
+                {{ t.manual }}
+              </span>
+            </div>
             <div class="flex items-center justify-between mb-4">
               <div class="p-2.5 rounded-xl bg-amber-50">
                 <svg
@@ -254,12 +301,14 @@
             <p
               class="text-xs font-medium text-text-secondary uppercase tracking-wider mb-1"
             >
-              {{ t.totalPackages }}
+              {{ t.totalBoxes }}
             </p>
             <p class="text-2xl font-bold text-text-primary">
-              {{ dashboardData?.packages?.total_items || 0 }}
+              {{ totalBoxes }}
             </p>
-            
+            <p class="text-xs text-text-secondary mt-1">
+              {{ dashboardData?.packages?.total_items || 0 }} {{ t.packages }}
+            </p>
           </div>
 
           <!-- Purchase Requests Card -->
@@ -298,7 +347,7 @@
               {{
                 dashboardData?.financial?.metrics?.purchased_items_count || 0
               }}
-              {{ t.itemsPurchased }}
+              {{ t.itemsPurchased }} {{ periodLabel }}
             </p>
           </div>
 
@@ -1229,7 +1278,7 @@ const translations = {
   shippingRevenue: { es: "Ingresos Envíos", en: "Shipping Revenue" },
   serviceFeeRevenue: { es: "Ingresos Compras", en: "Purchase Fees" },
   purchaseRequests: { es: "Personal Shopping", en: "Personal Shopping" },
-  itemsPurchased: { es: "artículos comprados", en: "items purchased" },
+  itemsPurchased: { es: "artículos", en: "items" },
   // Granular manual mode translations
   granularManualMode: {
     es: "Modo Manual Granular Activo",
@@ -1241,6 +1290,9 @@ const translations = {
   manual: { es: "Manual", en: "Manual" },
   calculated: { es: "Calculado", en: "Calculated" },
   fromDatabase: { es: "desde base de datos", en: "from database" },
+  packages: { es: "paquetes", en: "packages" },
+  edit: { es: "Editar", en: "Edit" },
+  expenses: { es: "Gastos", en: "Expenses" },
 };
 
 const t = createTranslations(translations);
