@@ -745,37 +745,37 @@
                 </div>
 
                 <!-- Total Paid (Aggregate) -->
-                <div
-                  v-if="
-                    order.amount_paid > 0 &&
-                    (order.deposit_amount || order.quoted_amount)
-                  "
-                  class="mt-3 pt-3 border-t border-gray-200"
-                >
-                  <div class="flex justify-between items-center">
-                    <span class="text-sm font-bold text-gray-700">{{
-                      t.totalPaid
-                    }}</span>
-                    <span class="text-xl font-black text-green-600"
-                      >${{ order.amount_paid }}</span
-                    >
-                  </div>
-                  <!-- Payment Progress Bar -->
-                  <div class="mt-2">
-                    <div
-                      class="flex justify-between text-xs text-gray-500 mb-1"
-                    >
-                      <span>{{ t.paymentProgress }}</span>
-                      <span>{{ paymentPercentage }}%</span>
-                    </div>
-                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        class="h-full bg-green-500 rounded-full transition-all duration-500"
-                        :style="{ width: `${paymentPercentage}%` }"
-                      ></div>
-                    </div>
-                  </div>
-                </div>
+<div
+  v-if="
+    (order.amount_paid > 0 || order.deposit_paid_at) &&
+    (order.deposit_amount || order.quoted_amount)
+  "
+  class="mt-3 pt-3 border-t border-gray-200"
+>
+  <div class="flex justify-between items-center">
+    <span class="text-sm font-bold text-gray-700">{{
+      t.totalPaid
+    }}</span>
+    <span class="text-xl font-black text-green-600"
+      >${{ actualAmountPaid }}</span
+    >
+  </div>
+  <!-- Payment Progress Bar -->
+  <div class="mt-2">
+    <div
+      class="flex justify-between text-xs text-gray-500 mb-1"
+    >
+      <span>{{ t.paymentProgress }}</span>
+      <span>{{ paymentPercentage }}%</span>
+    </div>
+    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div
+        class="h-full bg-green-500 rounded-full transition-all duration-500"
+        :style="{ width: `${paymentPercentage}%` }"
+      ></div>
+    </div>
+  </div>
+</div>
               </div>
             </div>
           </div>
@@ -948,6 +948,17 @@ const totalBoxPrice = computed(() => {
   );
 });
 
+const actualAmountPaid = computed(() => {
+  if (order.value?.amount_paid > 0) {
+    return order.value.amount_paid;
+  }
+  // If deposit was paid but amount_paid not updated, use deposit_amount
+  if (order.value?.deposit_paid_at && order.value?.deposit_amount) {
+    return parseFloat(order.value.deposit_amount);
+  }
+  return 0;
+});
+
 // Computed: Payment percentage
 const paymentPercentage = computed(() => {
   if (!order.value) return 0;
@@ -955,7 +966,7 @@ const paymentPercentage = computed(() => {
     totalBoxPrice.value +
     (order.value.quote_breakdown?.reduce((s, i) => s + i.amount, 0) || 0);
   if (totalDue <= 0) return 0;
-  const paid = order.value.amount_paid || 0;
+  const paid = actualAmountPaid.value;
   return Math.min(100, Math.round((paid / totalDue) * 100));
 });
 
