@@ -566,7 +566,7 @@
               ${{ formatMoney(dashboardData?.financial?.expenses?.total || 0) }}
             </p>
             <p v-if="!isFinancialManual" class="text-xs text-red-700 mt-1">
-              {{ t.fromDatabase }}
+              {{ periodLabel }}
             </p>
           </div>
 
