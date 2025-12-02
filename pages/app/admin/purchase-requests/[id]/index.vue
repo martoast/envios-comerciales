@@ -54,6 +54,19 @@
               {{ processing ? t.processing : t.markPurchased }}
             </button>
 
+            <!-- Quoted + Manual Deposit -> Mark as Paid -->
+            <button 
+              v-if="request.status === 'quoted' && request.payment_method === 'manual_deposit'"
+              @click="showMarkPaidModal = true"
+              :disabled="processing"
+              class="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {{ t.markAsPaid }}
+            </button>
+
             <!-- Edit Menu -->
             <Menu as="div" class="relative ml-2">
                 <MenuButton class="p-2 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 bg-white">
@@ -119,6 +132,30 @@
         </div>
       </div>
 
+      <!-- Manual Deposit Awaiting Payment Banner -->
+      <div v-if="request.status === 'quoted' && request.payment_method === 'manual_deposit'" class="bg-purple-50 border border-purple-200 rounded-xl p-4 flex items-start gap-4">
+        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm border border-purple-100">
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Nubank_logo_2021.svg/2560px-Nubank_logo_2021.svg.png" 
+            alt="NU Bank" 
+            class="w-8 h-8 object-contain"
+          >
+        </div>
+        <div class="flex-1">
+          <p class="font-semibold text-purple-900">{{ t.awaitingBankTransfer }}</p>
+          <p class="text-sm text-purple-700 mt-1">{{ t.awaitingBankTransferDesc }}</p>
+          <button 
+            @click="showMarkPaidModal = true"
+            class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ t.confirmPaymentReceived }}
+          </button>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Items List -->
         <div class="lg:col-span-2 space-y-6">
@@ -131,7 +168,7 @@
               <div v-for="(item, index) in request.items" :key="item.id" class="p-6 hover:bg-gray-50 transition-colors">
                 <div class="flex gap-4 items-start">
                   
-                  <!-- Image Thumbnail (New) -->
+                  <!-- Image Thumbnail -->
                   <a 
                     v-if="item.image_full_url" 
                     :href="item.image_full_url" 
@@ -140,7 +177,6 @@
                     :title="t.viewImage"
                   >
                     <img :src="item.image_full_url" class="w-full h-full object-cover" alt="Product Image">
-                    <!-- Hover Overlay -->
                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                         <svg class="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     </div>
@@ -241,13 +277,32 @@
                 <span>${{ request.total_amount }}</span>
               </div>
               
+              <!-- Payment Method Badge -->
+              <div class="mt-4 pt-4 border-t border-gray-100">
+                <p class="text-xs text-gray-500 mb-2">{{ t.paymentMethod }}</p>
+                <div v-if="request.payment_method === 'stripe'" class="flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-3 py-2 rounded-lg">
+                  <svg class="w-5 h-5 text-indigo-600" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
+                  </svg>
+                  <span class="font-medium text-indigo-700">Stripe Invoice</span>
+                </div>
+                <div v-else class="flex items-center gap-2 bg-purple-50 border border-purple-100 px-3 py-2 rounded-lg">
+                  <img 
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Nubank_logo_2021.svg/2560px-Nubank_logo_2021.svg.png" 
+                    alt="NU" 
+                    class="w-5 h-5 object-contain"
+                  >
+                  <span class="font-medium text-purple-700">NU Bank Transfer</span>
+                </div>
+              </div>
+
               <!-- Payment Info -->
-               <div v-if="request.payment_link" class="mt-4 pt-4 border-t border-gray-100">
-                 <p class="text-xs text-gray-500 mb-1">{{ t.stripeLink }}</p>
-                 <a :href="request.payment_link" target="_blank" class="text-blue-600 hover:underline truncate block text-xs">
-                    {{ request.payment_link }}
-                 </a>
-               </div>
+              <div v-if="request.payment_link" class="mt-4 pt-4 border-t border-gray-100">
+                <p class="text-xs text-gray-500 mb-1">{{ t.stripeLink }}</p>
+                <a :href="request.payment_link" target="_blank" class="text-blue-600 hover:underline truncate block text-xs">
+                  {{ request.payment_link }}
+                </a>
+              </div>
             </div>
           </div>
 
@@ -347,6 +402,59 @@
           </div>
       </div>
 
+      <!-- Mark as Paid Modal (Manual Deposit) -->
+      <div v-if="showMarkPaidModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl">
+              <div class="flex items-center gap-3 mb-4">
+                  <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                  </div>
+                  <div>
+                      <h3 class="text-lg font-bold text-gray-900">{{ t.confirmPaymentTitle }}</h3>
+                      <p class="text-sm text-gray-500">{{ t.confirmPaymentSubtitle }}</p>
+                  </div>
+              </div>
+              
+              <div class="bg-purple-50 rounded-lg p-4 mb-4 flex items-start gap-3">
+                  <img 
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Nubank_logo_2021.svg/2560px-Nubank_logo_2021.svg.png" 
+                    alt="NU" 
+                    class="w-8 h-8 object-contain flex-shrink-0"
+                  >
+                  <div>
+                      <p class="text-sm text-purple-800 font-medium">{{ t.confirmPaymentDesc }}</p>
+                      <p class="text-xs text-purple-600 mt-1">{{ t.confirmPaymentAmount }}: <strong>${{ request?.total_amount }} USD</strong></p>
+                  </div>
+              </div>
+
+              <div class="flex justify-end gap-3">
+                  <button 
+                      @click="showMarkPaidModal = false" 
+                      :disabled="processing"
+                      class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                      {{ t.cancel }}
+                  </button>
+                  <button 
+                      @click="handleMarkPaid" 
+                      :disabled="processing"
+                      class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  >
+                      <svg v-if="!processing" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      <svg v-else class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      {{ processing ? t.processing : t.yesPaymentReceived }}
+                  </button>
+              </div>
+          </div>
+      </div>
+
       <!-- Delete Confirmation Modal -->
       <div v-if="showDeleteModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl">
@@ -405,6 +513,7 @@ const translations = {
   createQuote: { es: 'Crear Cotización', en: 'Create Quote' },
   reject: { es: 'Rechazar', en: 'Reject' },
   markPurchased: { es: 'Marcar como Comprado', en: 'Mark as Purchased' },
+  markAsPaid: { es: 'Marcar como Pagado', en: 'Mark as Paid' },
   processing: { es: 'Procesando...', en: 'Processing...' },
   rejected: { es: 'Rechazado', en: 'Rejected' },
   purchaseComplete: { es: 'Compra Completada', en: 'Purchase Complete' },
@@ -412,6 +521,12 @@ const translations = {
     es: 'Los artículos se han convertido en una orden de envío y están esperando llegada.', 
     en: 'Items have been converted to a shipping order and are awaiting arrival.' 
   },
+  awaitingBankTransfer: { es: 'Esperando Transferencia Bancaria', en: 'Awaiting Bank Transfer' },
+  awaitingBankTransferDesc: { 
+    es: 'El cliente ha recibido las instrucciones de pago por NU Bank. Una vez confirmes el pago, podrás proceder con la compra.', 
+    en: 'Customer has received NU Bank payment instructions. Once you confirm payment, you can proceed with the purchase.' 
+  },
+  confirmPaymentReceived: { es: 'Confirmar Pago Recibido', en: 'Confirm Payment Received' },
   items: { es: 'Artículos', en: 'Items' },
   estMerchandise: { es: 'Total', en: 'Total' },
   qty: { es: 'Cant', en: 'Qty' },
@@ -425,6 +540,7 @@ const translations = {
   salesTax: { es: 'Impuestos (Sales Tax)', en: 'Sales Tax' },
   fee: { es: 'Tarifa (8%)', en: 'Fee (8%)' },
   total: { es: 'Total', en: 'Total' },
+  paymentMethod: { es: 'Método de Pago', en: 'Payment Method' },
   stripeLink: { es: 'Enlace de Pago Stripe', en: 'Stripe Payment Link' },
   customerInfo: { es: 'Cliente', en: 'Customer Info' },
   name: { es: 'Nombre', en: 'Name' },
@@ -445,6 +561,11 @@ const translations = {
   purchaseModalPoint1: { es: 'Marcar la solicitud como "Comprado"', en: 'Mark the request as "Purchased"' },
   purchaseModalPoint2: { es: 'Agregar los artículos a la orden de envío del cliente', en: 'Add items to the customer\'s shipping order' },
   purchaseModalPoint3: { es: 'Notificar al cliente que los artículos están en camino', en: 'Notify the customer that items are on the way' },
+  confirmPaymentTitle: { es: 'Confirmar Pago', en: 'Confirm Payment' },
+  confirmPaymentSubtitle: { es: '¿Recibiste la transferencia?', en: 'Did you receive the transfer?' },
+  confirmPaymentDesc: { es: 'Confirma que recibiste el pago por transferencia bancaria en la cuenta NU.', en: 'Confirm that you received the bank transfer payment to the NU account.' },
+  confirmPaymentAmount: { es: 'Monto esperado', en: 'Expected amount' },
+  yesPaymentReceived: { es: 'Sí, Pago Recibido', en: 'Yes, Payment Received' },
   deleteConfirmTitle: { es: 'Eliminar Solicitud', en: 'Delete Request' },
   deleteConfirmSubtitle: { es: 'Esta acción no se puede deshacer', en: 'This action cannot be undone' },
   deleteConfirmDesc: { es: '¿Estás seguro de que deseas eliminar esta solicitud de compra? Toda la información asociada se perderá permanentemente.', en: 'Are you sure you want to delete this purchase request? All associated information will be permanently lost.' },
@@ -459,6 +580,7 @@ const processing = ref(false);
 const showQuoteModal = ref(false);
 const showRejectModal = ref(false);
 const showPurchaseModal = ref(false);
+const showMarkPaidModal = ref(false);
 const showDeleteModal = ref(false);
 const rejectReason = ref('');
 
@@ -516,7 +638,12 @@ const handleCreateQuote = async (quoteData) => {
     request.value = response.data || response;
     
     showQuoteModal.value = false;
-    $toast.success('Quote created and invoice sent');
+    
+    if (quoteData.payment_method === 'manual_deposit') {
+      $toast.success('Quote created - Bank transfer instructions sent');
+    } else {
+      $toast.success('Quote created and Stripe invoice sent');
+    }
   } catch (e) {
     console.error(e);
     $toast.error('Error creating quote');
@@ -535,6 +662,27 @@ const handleMarkPurchased = async () => {
   } catch (e) {
     console.error(e);
     $toast.error('Error marking as purchased');
+  } finally {
+    processing.value = false;
+  }
+};
+
+const handleMarkPaid = async () => {
+  processing.value = true;
+  try {
+    await $customFetch(`/admin/purchase-requests/${request.value.id}`, {
+      method: 'PUT',
+      body: { 
+        status: 'paid',
+        paid_at: new Date().toISOString()
+      }
+    });
+    await fetchRequest();
+    showMarkPaidModal.value = false;
+    $toast.success('Payment confirmed successfully');
+  } catch (e) {
+    console.error(e);
+    $toast.error('Error confirming payment');
   } finally {
     processing.value = false;
   }
