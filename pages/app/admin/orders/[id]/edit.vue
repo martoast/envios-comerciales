@@ -36,16 +36,30 @@
               </p>
             </div>
           </div>
-          <!-- Status Badge -->
-          <span
-            v-if="order"
-            :class="[
-              'px-2 sm:px-3 py-1 rounded-full text-xs font-medium',
-              getStatusColor(order.status),
-            ]"
-          >
-            {{ getStatusLabel(order.status) }}
-          </span>
+
+          <div class="flex items-center gap-2">
+            <!-- Order Type Badge -->
+            <span
+              v-if="order"
+              :class="[
+                'px-2 sm:px-3 py-1 rounded-full text-xs font-medium',
+                isCrossing ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
+              ]"
+            >
+              {{ isCrossing ? t.crossingType : t.shippingType }}
+            </span>
+
+            <!-- Status Badge -->
+            <span
+              v-if="order"
+              :class="[
+                'px-2 sm:px-3 py-1 rounded-full text-xs font-medium',
+                getStatusColor(order.status),
+              ]"
+            >
+              {{ getStatusLabel(order.status) }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -132,9 +146,191 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <!-- Left Column - Main Fields -->
           <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+            
+            <!-- Order Type Section -->
+            <div
+              class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8 animate-fadeIn"
+            >
+              <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
+                {{ t.orderType }}
+              </h2>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <!-- Shipping Option -->
+                <label
+                  :class="[
+                    'relative flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all',
+                    form.order_type === 'shipping'
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  ]"
+                >
+                  <input
+                    v-model="form.order_type"
+                    type="radio"
+                    value="shipping"
+                    class="sr-only"
+                  />
+                  <div class="flex items-center gap-3">
+                    <div
+                      :class="[
+                        'w-10 h-10 rounded-lg flex items-center justify-center',
+                        form.order_type === 'shipping' ? 'bg-blue-100' : 'bg-gray-100'
+                      ]"
+                    >
+                      <svg
+                        :class="[
+                          'w-5 h-5',
+                          form.order_type === 'shipping' ? 'text-blue-600' : 'text-gray-500'
+                        ]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p
+                        :class="[
+                          'font-semibold text-sm',
+                          form.order_type === 'shipping' ? 'text-blue-900' : 'text-gray-900'
+                        ]"
+                      >
+                        {{ t.shippingTypeLabel }}
+                      </p>
+                      <p class="text-xs text-gray-500 mt-0.5">50% {{ t.depositAmount }}</p>
+                    </div>
+                  </div>
+                  <div
+                    v-if="form.order_type === 'shipping'"
+                    class="absolute top-2 right-2"
+                  >
+                    <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </label>
+
+                <!-- Crossing Option -->
+                <label
+                  :class="[
+                    'relative flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all',
+                    form.order_type === 'crossing'
+                      ? 'border-amber-500 bg-amber-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  ]"
+                >
+                  <input
+                    v-model="form.order_type"
+                    type="radio"
+                    value="crossing"
+                    class="sr-only"
+                  />
+                  <div class="flex items-center gap-3">
+                    <div
+                      :class="[
+                        'w-10 h-10 rounded-lg flex items-center justify-center',
+                        form.order_type === 'crossing' ? 'bg-amber-100' : 'bg-gray-100'
+                      ]"
+                    >
+                      <svg
+                        :class="[
+                          'w-5 h-5',
+                          form.order_type === 'crossing' ? 'text-amber-600' : 'text-gray-500'
+                        ]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.5"
+                          d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p
+                        :class="[
+                          'font-semibold text-sm',
+                          form.order_type === 'crossing' ? 'text-amber-900' : 'text-gray-900'
+                        ]"
+                      >
+                        {{ t.crossingTypeLabel }}
+                      </p>
+                      <p class="text-xs text-gray-500 mt-0.5">100% {{ t.fullPayment }}</p>
+                    </div>
+                  </div>
+                  <div
+                    v-if="form.order_type === 'crossing'"
+                    class="absolute top-2 right-2"
+                  >
+                    <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Crossing Pickup Info -->
+              <Transition
+                enter-active-class="transition ease-out duration-200"
+                enter-from-class="opacity-0 -translate-y-2"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition ease-in duration-150"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 -translate-y-2"
+              >
+                <div
+                  v-if="isCrossing"
+                  class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl"
+                >
+                  <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-amber-900 text-sm">{{ t.crossingPickupInfo }}</p>
+                      <p class="text-xs text-amber-700 mt-1">{{ t.crossingPickupAddress }}</p>
+                      <a
+                        href="https://maps.app.goo.gl/4SsEVjy2D4noFM9n8"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-700 mt-2 font-medium"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Ver en Google Maps
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </Transition>
+            </div>
+
             <!-- Basic Order Info -->
             <div
               class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8 animate-fadeIn"
+              style="animation-delay: 0.05s"
             >
               <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
                 {{ t.orderInformation }}
@@ -158,8 +354,8 @@
                     <option value="awaiting_packages">{{ t.awaitingPackages }}</option>
                     <option value="packages_complete">{{ t.packagesComplete }}</option>
                     <option value="processing">{{ t.processing }}</option>
-                    <option value="shipped">{{ t.shipped }}</option>
-                    <option value="delivered">{{ t.delivered }}</option>
+                    <option value="shipped">{{ isCrossing ? t.readyForPickup : t.shipped }}</option>
+                    <option value="delivered">{{ isCrossing ? t.pickedUp : t.delivered }}</option>
                     <option value="awaiting_payment">{{ t.awaitingPayment }}</option>
                     <option value="paid">{{ t.paidStatus }}</option>
                     <option value="cancelled">{{ t.cancelled }}</option>
@@ -220,15 +416,18 @@
 
             <!-- Boxes Section -->
             <div
-              class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-indigo-200 p-4 sm:p-6 lg:p-8 animate-fadeIn"
-              style="animation-delay: 0.05s"
+              :class="[
+                'bg-white rounded-xl sm:rounded-2xl shadow-sm border p-4 sm:p-6 lg:p-8 animate-fadeIn',
+                isCrossing ? 'border-amber-200' : 'border-indigo-200'
+              ]"
+              style="animation-delay: 0.1s"
             >
               <!-- Section Header -->
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
                 <div class="flex items-center gap-3">
-                  <div class="p-2 bg-indigo-100 rounded-lg">
+                  <div :class="['p-2 rounded-lg', isCrossing ? 'bg-amber-100' : 'bg-indigo-100']">
                     <svg
-                      class="w-5 h-5 text-indigo-600"
+                      :class="['w-5 h-5', isCrossing ? 'text-amber-600' : 'text-indigo-600']"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -254,7 +453,10 @@
                 <!-- Box Count Badge -->
                 <span
                   v-if="form.boxes.length > 0"
-                  class="self-start sm:self-auto px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-semibold rounded-full"
+                  :class="[
+                    'self-start sm:self-auto px-3 py-1 text-sm font-semibold rounded-full',
+                    isCrossing ? 'bg-amber-100 text-amber-700' : 'bg-indigo-100 text-indigo-700'
+                  ]"
                 >
                   {{ totalBoxCount }} {{ totalBoxCount === 1 ? t.box : t.boxesLabel }}
                 </span>
@@ -360,7 +562,12 @@
               <button
                 type="button"
                 @click="showAddBoxModal = true"
-                class="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg sm:rounded-xl text-gray-500 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
+                :class="[
+                  'w-full py-3 border-2 border-dashed rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-2 text-sm sm:text-base',
+                  isCrossing 
+                    ? 'border-gray-300 text-gray-500 hover:border-amber-400 hover:text-amber-600 hover:bg-amber-50'
+                    : 'border-gray-300 text-gray-500 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50'
+                ]"
               >
                 <svg
                   class="w-5 h-5"
@@ -384,9 +591,15 @@
                   <span class="text-sm text-gray-600">{{ t.totalBoxPrice }}:</span>
                   <span class="text-lg font-bold text-gray-900">${{ formatNumber(calculatedTotalBoxPrice) }}</span>
                 </div>
-                <div class="flex justify-between items-center">
+                <!-- Shipping: 50% deposit -->
+                <div v-if="!isCrossing" class="flex justify-between items-center">
                   <span class="text-sm text-indigo-600 font-medium">{{ t.depositAmount }} (50%):</span>
                   <span class="text-lg font-bold text-indigo-600">${{ formatNumber(calculatedTotalBoxPrice * 0.5) }}</span>
+                </div>
+                <!-- Crossing: 100% full payment -->
+                <div v-else class="flex justify-between items-center">
+                  <span class="text-sm text-amber-600 font-medium">{{ t.fullPayment }} (100%):</span>
+                  <span class="text-lg font-bold text-amber-600">${{ formatNumber(calculatedTotalBoxPrice) }}</span>
                 </div>
               </div>
             </div>
@@ -394,20 +607,20 @@
             <!-- Financial Information -->
             <div
               class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8 animate-fadeIn"
-              style="animation-delay: 0.1s"
+              style="animation-delay: 0.15s"
             >
               <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">
                 {{ t.financialInformation }}
               </h2>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                <!-- Deposit Amount -->
+                <!-- Deposit/Full Payment Amount -->
                 <div>
                   <label
                     for="deposit_amount"
                     class="block text-sm font-semibold text-gray-900 mb-2"
                   >
-                    {{ t.depositAmountLabel }} (50%)
+                    {{ isCrossing ? t.fullPaymentAmountLabel : t.depositAmountLabel }} {{ isCrossing ? '(100%)' : '(50%)' }}
                   </label>
                   <div class="relative">
                     <input
@@ -415,12 +628,17 @@
                       type="number"
                       step="0.01"
                       id="deposit_amount"
-                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 pl-7 sm:pl-8 rounded-lg sm:rounded-xl border border-blue-200 bg-blue-50 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      :class="[
+                        'w-full px-3 sm:px-4 py-2.5 sm:py-3 pl-7 sm:pl-8 rounded-lg sm:rounded-xl border text-sm sm:text-base focus:outline-none focus:ring-2',
+                        isCrossing 
+                          ? 'border-amber-200 bg-amber-50 focus:ring-amber-500'
+                          : 'border-blue-200 bg-blue-50 focus:ring-blue-500'
+                      ]"
                     />
                     <div
                       class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
                     >
-                      <span class="text-blue-500">$</span>
+                      <span :class="isCrossing ? 'text-amber-500' : 'text-blue-500'">$</span>
                     </div>
                   </div>
                 </div>
@@ -466,8 +684,14 @@
                     <span class="text-gray-600">{{ t.totalBoxPrice }}:</span>
                     <span class="font-medium">${{ formatNumber(calculatedTotalBoxPrice) }}</span>
                   </div>
-                  <div class="flex justify-between text-blue-600">
+                  <!-- Shipping: Show deposit -->
+                  <div v-if="!isCrossing" class="flex justify-between text-blue-600">
                     <span>{{ t.depositAmount }} (50%):</span>
+                    <span class="font-medium">${{ formatNumber(form.deposit_amount || 0) }}</span>
+                  </div>
+                  <!-- Crossing: Show full payment -->
+                  <div v-else class="flex justify-between text-amber-600">
+                    <span>{{ t.fullPayment }} (100%):</span>
                     <span class="font-medium">${{ formatNumber(form.deposit_amount || 0) }}</span>
                   </div>
                   <div class="flex justify-between pt-2 border-t border-gray-200 text-green-600 font-bold">
@@ -475,11 +699,16 @@
                     <span>${{ formatNumber(form.amount_paid || 0) }}</span>
                   </div>
                 </div>
+                <!-- Crossing note -->
+                <p v-if="isCrossing" class="text-xs text-amber-600 mt-3">
+                  {{ t.fullPaymentNote }}
+                </p>
               </div>
             </div>
 
-            <!-- Delivery Address Section -->
+            <!-- Delivery Address Section - ONLY FOR SHIPPING -->
             <div
+              v-if="!isCrossing"
               class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8 animate-fadeIn"
               style="animation-delay: 0.2s"
             >
@@ -747,18 +976,18 @@
 
           <!-- Right Column - Additional Fields & Dates -->
           <div class="space-y-4 sm:space-y-6">
-            <!-- Shipping Information -->
+            <!-- Shipping / Pickup Information -->
             <div
               class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 animate-fadeIn"
               style="animation-delay: 0.3s"
             >
               <h2 class="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
-                {{ t.shippingInformation }}
+                {{ isCrossing ? t.pickupInformation : t.shippingInformation }}
               </h2>
 
               <div class="space-y-3 sm:space-y-4">
-                <!-- Guia Number -->
-                <div>
+                <!-- Guia Number - Only for shipping -->
+                <div v-if="!isCrossing">
                   <label
                     for="guia_number"
                     class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
@@ -774,13 +1003,13 @@
                   />
                 </div>
 
-                <!-- Deposit Payment Link -->
+                <!-- Deposit/Full Payment Link -->
                 <div>
                   <label
                     for="deposit_payment_link"
                     class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
                   >
-                    {{ t.depositPaymentLinkLabel }}
+                    {{ isCrossing ? t.fullPaymentLinkLabel : t.depositPaymentLinkLabel }}
                   </label>
                   <input
                     v-model="form.deposit_payment_link"
@@ -802,8 +1031,8 @@
                   </a>
                 </div>
 
-                <!-- Final Payment Link -->
-                <div>
+                <!-- Final Payment Link - Only for shipping -->
+                <div v-if="!isCrossing">
                   <label
                     for="payment_link"
                     class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
@@ -842,8 +1071,8 @@
               </h2>
 
               <div class="space-y-3 sm:space-y-4">
-                <!-- Deposit Paid At -->
-                <div>
+                <!-- Deposit Paid At (Shipping) / Full Payment At (Crossing) -->
+                <div v-if="!isCrossing">
                   <label
                     for="deposit_paid_at"
                     class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
@@ -864,7 +1093,7 @@
                     for="paid_at"
                     class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
                   >
-                    {{ t.paidAtLabel }}
+                    {{ isCrossing ? t.fullPaymentPaidAtLabel : t.paidAtLabel }}
                   </label>
                   <input
                     v-model="form.paid_at"
@@ -874,13 +1103,13 @@
                   />
                 </div>
 
-                <!-- Shipped At -->
+                <!-- Shipped At / Ready for Pickup At -->
                 <div>
                   <label
                     for="shipped_at"
                     class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
                   >
-                    {{ t.shippedAtLabel }}
+                    {{ isCrossing ? t.readyForPickupAtLabel : t.shippedAtLabel }}
                   </label>
                   <input
                     v-model="form.shipped_at"
@@ -890,13 +1119,13 @@
                   />
                 </div>
 
-                <!-- Delivered At -->
+                <!-- Delivered At / Picked Up At -->
                 <div>
                   <label
                     for="delivered_at"
                     class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
                   >
-                    {{ t.deliveredAtLabel }}
+                    {{ isCrossing ? t.pickedUpAtLabel : t.deliveredAtLabel }}
                   </label>
                   <input
                     v-model="form.delivered_at"
@@ -992,7 +1221,7 @@
                   >
                     <option value="" disabled>{{ t.selectBoxSize }}</option>
                     <option
-                      v-for="prod in products"
+                      v-for="prod in filteredProducts"
                       :key="prod.id"
                       :value="prod.price_id"
                     >
@@ -1027,7 +1256,10 @@
                   type="button"
                   @click="addNewBox"
                   :disabled="!newBox.stripe_price_id"
-                  class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 text-sm"
+                  :class="[
+                    'px-4 py-2 text-white rounded-lg disabled:opacity-50 text-sm',
+                    isCrossing ? 'bg-amber-600 hover:bg-amber-700' : 'bg-primary-600 hover:bg-primary-700'
+                  ]"
                 >
                   {{ t.addBox }}
                 </button>
@@ -1039,8 +1271,9 @@
     </TransitionRoot>
   </section>
 </template>
+
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, nextTick } from "vue";
 import {
   Dialog,
   DialogPanel,
@@ -1069,9 +1302,11 @@ const products = ref([]);
 const showAddBoxModal = ref(false);
 const newBox = ref({ stripe_price_id: "", quantity: 1 });
 const useSimpleAddress = ref(false);
+const isInitialLoad = ref(true);
 
 // Form data
 const form = ref({
+  order_type: 'shipping',
   status: "",
   boxes: [],
   box_price: null,
@@ -1154,9 +1389,17 @@ const translations = {
   orderInformation: { es: "Información de la Orden", en: "Order Information" },
   financialInformation: { es: "Información Financiera", en: "Financial Information" },
   shippingInformation: { es: "Información de Envío", en: "Shipping Information" },
+  pickupInformation: { es: "Información de Recolección", en: "Pickup Information" },
   importantDates: { es: "Fechas Importantes", en: "Important Dates" },
   notesTitle: { es: "Notas", en: "Notes" },
   statusLabel: { es: "Estado", en: "Status" },
+  orderType: { es: "Tipo de Orden", en: "Order Type" },
+  shippingType: { es: "Envío", en: "Shipping" },
+  crossingType: { es: "Solo Cruce", en: "Crossing Only" },
+  shippingTypeLabel: { es: "Envío (Entrega a domicilio)", en: "Shipping (Home Delivery)" },
+  crossingTypeLabel: { es: "Solo Cruce (Recolección en bodega)", en: "Crossing Only (Warehouse Pickup)" },
+  crossingPickupInfo: { es: "El cliente recogerá en nuestra bodega de Tijuana", en: "Customer will pick up at our Tijuana warehouse" },
+  crossingPickupAddress: { es: "Av. Jalisco 2850, Local 5, Col. Madero (Cacho), Tijuana, BC 22040", en: "Av. Jalisco 2850, Local 5, Col. Madero (Cacho), Tijuana, BC 22040" },
   boxes: { es: "Cajas", en: "Boxes" },
   boxesDescription: { es: "Administra las cajas de este pedido", en: "Manage boxes for this order" },
   noBoxesYet: { es: "No hay cajas agregadas", en: "No boxes added yet" },
@@ -1165,17 +1408,24 @@ const translations = {
   declaredValueLabel: { es: "Valor Declarado (USD)", en: "Declared Value (USD)" },
   amountPaidLabel: { es: "Monto Pagado (Total)", en: "Amount Paid (Total)" },
   depositAmountLabel: { es: "Monto Depósito", en: "Deposit Amount" },
+  fullPaymentAmountLabel: { es: "Monto Pago Completo", en: "Full Payment Amount" },
   depositAmount: { es: "Depósito", en: "Deposit" },
+  fullPayment: { es: "Pago Completo", en: "Full Payment" },
+  fullPaymentNote: { es: "Ordenes de solo cruce requieren 100% de pago por adelantado", en: "Crossing-only orders require 100% payment upfront" },
   totalBoxPrice: { es: "Precio Total Cajas", en: "Total Box Price" },
   updatedViaStripe: { es: "Actualizado automáticamente vía Stripe", en: "Automatically updated via Stripe" },
   guiaNumberLabel: { es: "Número de Guía", en: "Waybill Number" },
   depositPaymentLinkLabel: { es: "Link Depósito", en: "Deposit Link" },
+  fullPaymentLinkLabel: { es: "Link de Pago", en: "Payment Link" },
   paymentLinkLabel: { es: "Link Pago Final", en: "Final Payment Link" },
   openLink: { es: "Abrir enlace", en: "Open link" },
   paidAtLabel: { es: "Fecha Pago Final", en: "Final Paid At" },
+  fullPaymentPaidAtLabel: { es: "Fecha de Pago", en: "Payment Date" },
   depositPaidAtLabel: { es: "Fecha Pago Depósito", en: "Deposit Paid At" },
   shippedAtLabel: { es: "Fecha de Envío", en: "Shipped At" },
+  readyForPickupAtLabel: { es: "Fecha Listo para Recoger", en: "Ready for Pickup At" },
   deliveredAtLabel: { es: "Fecha de Entrega", en: "Delivered At" },
+  pickedUpAtLabel: { es: "Fecha de Recolección", en: "Picked Up At" },
   notesPlaceholder: { es: "Notas internas sobre esta orden...", en: "Internal notes about this order..." },
   deliveryAddressTitle: { es: "Dirección de Entrega", en: "Delivery Address" },
   simpleMode: { es: "Modo simple", en: "Simple mode" },
@@ -1211,7 +1461,9 @@ const translations = {
   packagesComplete: { es: "Paquetes Completos", en: "Packages Complete" },
   processing: { es: "Procesando", en: "Processing" },
   shipped: { es: "Enviado", en: "Shipped" },
+  readyForPickup: { es: "Listo para Recoger", en: "Ready for Pickup" },
   delivered: { es: "Entregado", en: "Delivered" },
+  pickedUp: { es: "Recogido", en: "Picked Up" },
   awaitingPayment: { es: "Esperando Pago", en: "Awaiting Payment" },
   paidStatus: { es: "Pagado", en: "Paid" },
   cancelled: { es: "Cancelado", en: "Cancelled" },
@@ -1230,6 +1482,8 @@ const translations = {
 const t = createTranslations(translations);
 
 // Computed
+const isCrossing = computed(() => form.value.order_type === 'crossing');
+
 const totalBoxCount = computed(() => {
   if (!form.value.boxes || form.value.boxes.length === 0) return 0;
   return form.value.boxes.reduce((sum, box) => sum + (box.quantity || 1), 0);
@@ -1247,6 +1501,53 @@ const calculatedTotalBoxPrice = computed(() => {
 const hasChanges = computed(() => {
   return JSON.stringify(form.value) !== JSON.stringify(originalData.value);
 });
+
+// Filter products based on order type (for adding NEW boxes)
+const filteredProducts = computed(() => {
+  if (isCrossing.value) {
+    return products.value.filter(p => {
+      return p.shipping === 'false' || p.shipping === false || !p.shipping;
+    });
+  } else {
+    return products.value.filter(p => {
+      return p.shipping === 'true' || p.shipping === true;
+    });
+  }
+});
+
+// Helper function to infer box size from product name
+const inferBoxSizeFromName = (name) => {
+  if (!name) return 'medium';
+  const lowerName = name.toLowerCase();
+  
+  if (lowerName.includes('extra large') || lowerName.includes('extra-large') || lowerName.includes('xl box') || lowerName.includes('xlarge')) {
+    return 'extra-large';
+  }
+  if (lowerName.includes('extra small') || lowerName.includes('extra-small') || lowerName.includes('xs box') || lowerName.includes('xsmall')) {
+    return 'extra-small';
+  }
+  if (lowerName.includes('large')) {
+    return 'large';
+  }
+  if (lowerName.includes('small')) {
+    return 'small';
+  }
+  if (lowerName.includes('medium') || lowerName.includes('med ')) {
+    return 'medium';
+  }
+  
+  return 'medium';
+};
+
+// Find matching product by stripe_price_id
+const findProductByPriceId = (priceId) => {
+  return products.value.find(p => p.price_id === priceId);
+};
+
+// Find matching product by stripe_product_id
+const findProductByProductId = (productId) => {
+  return products.value.find(p => p.id === productId);
+};
 
 // Helper functions
 const formatNumber = (value) => {
@@ -1270,6 +1571,13 @@ const getStatusColor = (status) => {
 };
 
 const getStatusLabel = (status) => {
+  if (status === 'shipped' && isCrossing.value) {
+    return t.value.readyForPickup;
+  }
+  if (status === 'delivered' && isCrossing.value) {
+    return t.value.pickedUp;
+  }
+  
   const statusMap = {
     collecting: "collecting",
     awaiting_packages: "awaitingPackages",
@@ -1328,6 +1636,34 @@ const formatDateForInput = (date) => {
   return `${year}-${month}-${day}`;
 };
 
+// Watch for order_type changes - only clear shipping-specific fields, NOT boxes
+watch(() => form.value.order_type, (newType, oldType) => {
+  // Skip during initial load
+  if (isInitialLoad.value) {
+    return;
+  }
+  
+  // When switching to crossing, clear shipping-specific fields (but NOT boxes)
+  if (newType === 'crossing' && oldType === 'shipping') {
+    form.value.delivery_address = {
+      full_address: "",
+      street: "",
+      exterior_number: "",
+      interior_number: "",
+      colonia: "",
+      municipio: "",
+      estado: "",
+      postal_code: "",
+      referencias: "",
+    };
+    form.value.is_rural = false;
+    form.value.rural_surcharge = null;
+    form.value.guia_number = "";
+    form.value.payment_link = "";
+  }
+  // Boxes are preserved regardless of order type change
+});
+
 // Watch for box changes to update total price
 watch(
   () => form.value.boxes,
@@ -1346,19 +1682,25 @@ const removeBox = (index) => {
 };
 
 const addNewBox = () => {
-  const selectedProduct = products.value.find(
+  const selectedProduct = filteredProducts.value.find(
     (p) => p.price_id === newBox.value.stripe_price_id
   );
-  if (!selectedProduct) return;
+  
+  if (!selectedProduct) {
+    console.error('Product not found for price_id:', newBox.value.stripe_price_id);
+    return;
+  }
+
+  const boxSize = inferBoxSizeFromName(selectedProduct.name);
 
   form.value.boxes.push({
     id: null,
     stripe_price_id: selectedProduct.price_id,
-    stripe_product_id: selectedProduct.stripe_product_id || null,
-    box_size: selectedProduct.metadata?.type || null,
+    stripe_product_id: selectedProduct.id,
+    box_size: boxSize,
     box_name: selectedProduct.name,
     box_price: parseFloat(selectedProduct.price) || 0,
-    currency: selectedProduct.currency || "mxn",
+    currency: selectedProduct.currency?.toLowerCase() || "mxn",
     quantity: newBox.value.quantity,
   });
 
@@ -1370,14 +1712,17 @@ const addNewBox = () => {
 const fetchProducts = async () => {
   try {
     const res = await $customFetch("/products");
-    products.value = res.data;
+    products.value = res.data || [];
   } catch (e) {
     console.error("Error fetching products:", e);
+    products.value = [];
   }
 };
 
 const fetchOrder = async () => {
   loading.value = true;
+  isInitialLoad.value = true;
+  
   try {
     const response = await $customFetch(`/admin/orders/${orderId}`);
     order.value = response.data;
@@ -1386,8 +1731,9 @@ const fetchOrder = async () => {
     const hasFullAddress = order.value.delivery_address?.full_address;
     useSimpleAddress.value = !!hasFullAddress;
 
-    // Build boxes array - include legacy box_size if no boxes array exists
+    // Build boxes array from order data
     let boxesArray = [];
+    
     if (order.value.boxes && order.value.boxes.length > 0) {
       boxesArray = order.value.boxes.map((box) => ({
         id: box.id,
@@ -1396,31 +1742,27 @@ const fetchOrder = async () => {
         box_size: box.box_size,
         box_name: box.box_name,
         box_price: parseFloat(box.box_price) || 0,
-        currency: box.currency || "mxn",
+        currency: box.currency?.toLowerCase() || "mxn",
         quantity: box.quantity || 1,
       }));
-    } else if (order.value.box_size) {
-      // Convert legacy single box to boxes array format
-      // Try to find matching product to get stripe_price_id
-      const matchingProduct = products.value.find(
-        (p) => p.metadata?.type === order.value.box_size
-      );
+    } else if (order.value.box_size && order.value.stripe_price_id) {
+      const matchingProduct = findProductByPriceId(order.value.stripe_price_id) 
+        || findProductByProductId(order.value.stripe_product_id);
       
-      boxesArray = [
-        {
-          id: null,
-          stripe_price_id: matchingProduct?.price_id || order.value.stripe_price_id || null,
-          stripe_product_id: matchingProduct?.stripe_product_id || order.value.stripe_product_id || null,
-          box_size: order.value.box_size,
-          box_name: matchingProduct?.name || formatBoxSizeLabel(order.value.box_size),
-          box_price: parseFloat(order.value.box_price) || 0,
-          currency: "mxn",
-          quantity: 1,
-        },
-      ];
+      boxesArray = [{
+        id: null,
+        stripe_price_id: order.value.stripe_price_id,
+        stripe_product_id: order.value.stripe_product_id || matchingProduct?.id || null,
+        box_size: order.value.box_size,
+        box_name: matchingProduct?.name || formatBoxSizeLabel(order.value.box_size),
+        box_price: parseFloat(order.value.box_price) || matchingProduct?.price || 0,
+        currency: order.value.currency?.toLowerCase() || matchingProduct?.currency?.toLowerCase() || "mxn",
+        quantity: 1,
+      }];
     }
 
     form.value = {
+      order_type: order.value.order_type || 'shipping',
       status: order.value.status || "",
       boxes: boxesArray,
       box_price: parseFloat(order.value.box_price) || null,
@@ -1443,7 +1785,7 @@ const fetchOrder = async () => {
       handling_fee: parseFloat(order.value.handling_fee) || null,
       insurance_fee: parseFloat(order.value.insurance_fee) || null,
       amount_paid: parseFloat(order.value.amount_paid) || null,
-      currency: order.value.currency || "mxn",
+      currency: order.value.currency?.toLowerCase() || "mxn",
       notes: order.value.notes || "",
       paid_at: formatDateTimeForInput(order.value.paid_at),
       deposit_paid_at: formatDateTimeForInput(order.value.deposit_paid_at),
@@ -1462,6 +1804,11 @@ const fetchOrder = async () => {
     };
 
     originalData.value = JSON.parse(JSON.stringify(form.value));
+    
+    nextTick(() => {
+      isInitialLoad.value = false;
+    });
+    
   } catch (error) {
     console.error("Error fetching order:", error);
     $toast.error(t.value.generalError);
@@ -1480,7 +1827,9 @@ const handleSubmit = async () => {
   try {
     const updates = {};
 
-    // Compare and add changed fields
+    if (form.value.order_type !== originalData.value.order_type) {
+      updates.order_type = form.value.order_type;
+    }
     if (form.value.status !== originalData.value.status) {
       updates.status = form.value.status;
     }
@@ -1528,7 +1877,10 @@ const handleSubmit = async () => {
     }
 
     // Handle delivery address
-    if (
+    if (form.value.order_type === 'crossing') {
+      updates.delivery_address = null;
+      updates.is_rural = false;
+    } else if (
       JSON.stringify(form.value.delivery_address) !==
       JSON.stringify(originalData.value.delivery_address)
     ) {
@@ -1550,17 +1902,18 @@ const handleSubmit = async () => {
       }
     }
 
-    // Handle boxes - ONLY send stripe_price_id and quantity
-    // Backend will fetch the rest from Stripe
-    if (form.value.boxes.length > 0) {
-      updates.boxes = form.value.boxes
-        .filter((box) => box.stripe_price_id) // Only include boxes with stripe_price_id
-        .map((box) => ({
-          stripe_price_id: box.stripe_price_id,
-          quantity: box.quantity || 1,
-        }));
-    } else {
-      updates.boxes = [];
+    // Handle boxes
+    if (JSON.stringify(form.value.boxes) !== JSON.stringify(originalData.value.boxes)) {
+      if (form.value.boxes.length > 0) {
+        updates.boxes = form.value.boxes
+          .filter((box) => box.stripe_price_id)
+          .map((box) => ({
+            stripe_price_id: box.stripe_price_id,
+            quantity: box.quantity || 1,
+          }));
+      } else {
+        updates.boxes = [];
+      }
     }
 
     const response = await $customFetch(`/admin/management/orders/${orderId}`, {
@@ -1582,53 +1935,10 @@ const handleSubmit = async () => {
 };
 
 onMounted(async () => {
-  // Fetch products first so we can match legacy box_size to stripe_price_id
   await fetchProducts();
   await fetchOrder();
 });
 </script>
-
-<style scoped>
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translateX(-2px);
-  }
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translateX(2px);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.6s ease-out forwards;
-  opacity: 0;
-}
-
-.animate-shake {
-  animation: shake 0.5s ease-in-out;
-}
-</style>
 
 <style scoped>
 @keyframes fadeIn {
