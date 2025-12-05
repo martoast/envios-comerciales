@@ -16,6 +16,10 @@
                 <span v-if="request" :class="['px-2.5 py-0.5 rounded-full text-xs font-medium border', getStatusColor(request.status)]">
                   {{ getStatusLabel(request.status) }}
                 </span>
+                <!-- Currency Badge -->
+                <span v-if="request?.currency" class="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                  {{ request.currency.toUpperCase() }}
+                </span>
               </h1>
               <p class="text-sm text-gray-500">{{ request?.user?.name }} ({{ request?.user?.email }})</p>
             </div>
@@ -162,7 +166,7 @@
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
               <h3 class="font-semibold text-gray-900">{{ t.items }} ({{ request.items?.length || 0 }})</h3>
-              <span class="text-sm text-gray-500">{{ t.estMerchandise }}: ${{ estimatedTotal }}</span>
+              <span class="text-sm text-gray-500">{{ t.estMerchandise }}: {{ formatCurrency(estimatedTotal) }}</span>
             </div>
             <div class="divide-y divide-gray-100">
               <div v-for="(item, index) in request.items" :key="item.id" class="p-6 hover:bg-gray-50 transition-colors">
@@ -204,11 +208,11 @@
                       </div>
                       <div class="bg-gray-50 p-2 rounded border border-gray-100">
                         <span class="text-xs text-gray-500 block uppercase">{{ t.price }}</span>
-                        <span class="font-semibold">${{ item.price }}</span>
+                        <span class="font-semibold">{{ formatCurrency(item.price) }}</span>
                       </div>
                       <div class="bg-gray-50 p-2 rounded border border-gray-100 col-span-2">
                         <span class="text-xs text-gray-500 block uppercase">{{ t.subtotal }}</span>
-                        <span class="font-semibold">${{ (item.price * item.quantity).toFixed(2) }}</span>
+                        <span class="font-semibold">{{ formatCurrency(item.price * item.quantity) }}</span>
                       </div>
                     </div>
 
@@ -234,13 +238,18 @@
         <!-- Sidebar: Financials -->
         <div class="lg:col-span-1 space-y-6">
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 class="font-semibold text-gray-900 mb-4 border-b pb-2">{{ t.financials }}</h3>
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+              <h3 class="font-semibold text-gray-900">{{ t.financials }}</h3>
+              <span class="px-2 py-1 rounded text-xs font-bold bg-gray-100 text-gray-700 border border-gray-200">
+                {{ currencyLabel }}
+              </span>
+            </div>
             
             <!-- If pending, showing estimate -->
             <div v-if="request.status === 'pending_review'" class="text-center py-4">
               <div class="bg-gray-100 rounded-lg p-3 mb-3">
                 <span class="text-gray-500 text-sm block">{{ t.estMerchandise }}</span>
-                <span class="text-xl font-bold text-gray-900">${{ estimatedTotal }}</span>
+                <span class="text-xl font-bold text-gray-900">{{ formatCurrency(estimatedTotal) }}</span>
               </div>
               <button 
                 @click="showQuoteModal = true"
@@ -254,27 +263,27 @@
             <div v-else class="space-y-3 text-sm">
               <div class="flex justify-between">
                 <span class="text-gray-600">{{ t.merchandise }}</span>
-                <span class="font-medium">${{ request.items_total }}</span>
+                <span class="font-medium">{{ formatCurrency(request.items_total) }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">{{ t.shippingToWarehouse }}</span>
-                <span class="font-medium">${{ request.shipping_cost }}</span>
+                <span class="font-medium">{{ formatCurrency(request.shipping_cost) }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">{{ t.salesTax }}</span>
-                <span class="font-medium">${{ request.sales_tax }}</span>
+                <span class="font-medium">{{ formatCurrency(request.sales_tax) }}</span>
               </div>
               <div class="flex justify-between pt-2 border-t border-dashed">
                 <span class="text-gray-600">{{ t.subtotal }}</span>
-                <span class="font-medium">${{ (Number(request.items_total) + Number(request.shipping_cost) + Number(request.sales_tax)).toFixed(2) }}</span>
+                <span class="font-medium">{{ formatCurrency(Number(request.items_total) + Number(request.shipping_cost) + Number(request.sales_tax)) }}</span>
               </div>
               <div class="flex justify-between text-blue-600">
                 <span>{{ t.fee }}</span>
-                <span class="font-medium">${{ request.processing_fee }}</span>
+                <span class="font-medium">{{ formatCurrency(request.processing_fee) }}</span>
               </div>
               <div class="flex justify-between pt-3 border-t border-gray-200 text-lg font-bold text-gray-900">
                 <span>{{ t.total }}</span>
-                <span>${{ request.total_amount }}</span>
+                <span>{{ formatCurrency(request.total_amount) }}</span>
               </div>
               
               <!-- Payment Method Badge -->
@@ -425,7 +434,7 @@
                   >
                   <div>
                       <p class="text-sm text-purple-800 font-medium">{{ t.confirmPaymentDesc }}</p>
-                      <p class="text-xs text-purple-600 mt-1">{{ t.confirmPaymentAmount }}: <strong>${{ request?.total_amount }} USD</strong></p>
+                      <p class="text-xs text-purple-600 mt-1">{{ t.confirmPaymentAmount }}: <strong>{{ formatCurrency(request?.total_amount) }}</strong></p>
                   </div>
               </div>
 
@@ -583,6 +592,22 @@ const showPurchaseModal = ref(false);
 const showMarkPaidModal = ref(false);
 const showDeleteModal = ref(false);
 const rejectReason = ref('');
+
+// Currency helpers
+const currencySymbol = computed(() => {
+  return request.value?.currency === 'mxn' ? '$' : '$';
+});
+
+const currencyLabel = computed(() => {
+  const currency = request.value?.currency || 'usd';
+  return currency.toUpperCase();
+});
+
+const formatCurrency = (amount) => {
+  const value = Number(amount || 0).toFixed(2);
+  const currency = request.value?.currency || 'usd';
+  return `$${value} ${currency.toUpperCase()}`;
+};
 
 const fetchRequest = async () => {
   loading.value = true;

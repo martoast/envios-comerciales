@@ -104,15 +104,27 @@
         <!-- 2. Financials Card -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
           <div class="flex justify-between items-center mb-6 pb-2 border-b border-gray-50">
-             <h2 class="text-xl font-bold text-gray-900">{{ t.financials }} (USD)</h2>
+             <h2 class="text-xl font-bold text-gray-900">{{ t.financials }} ({{ form.currency?.toUpperCase() || 'USD' }})</h2>
              <span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded border border-gray-200">Manual Override</span>
           </div>
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <!-- Currency Select -->
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.currency }}</label>
+              <select
+                v-model="form.currency"
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all cursor-pointer bg-gray-50 hover:bg-white"
+              >
+                <option value="usd">USD - US Dollar</option>
+                <option value="mxn">MXN - Peso Mexicano</option>
+              </select>
+            </div>
+
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.itemsTotal }}</label>
               <div class="relative">
-                 <span class="absolute left-3 top-3 text-gray-400">$</span>
+                 <span class="absolute left-3 top-3 text-gray-400">{{ currencySymbol }}</span>
                  <input v-model.number="form.items_total" type="number" step="0.01" class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 transition-all">
               </div>
             </div>
@@ -120,7 +132,7 @@
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.shippingCost }}</label>
               <div class="relative">
-                 <span class="absolute left-3 top-3 text-gray-400">$</span>
+                 <span class="absolute left-3 top-3 text-gray-400">{{ currencySymbol }}</span>
                  <input v-model.number="form.shipping_cost" type="number" step="0.01" class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 transition-all">
               </div>
             </div>
@@ -128,7 +140,7 @@
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.salesTax }}</label>
               <div class="relative">
-                 <span class="absolute left-3 top-3 text-gray-400">$</span>
+                 <span class="absolute left-3 top-3 text-gray-400">{{ currencySymbol }}</span>
                  <input v-model.number="form.sales_tax" type="number" step="0.01" class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 transition-all">
               </div>
             </div>
@@ -136,7 +148,7 @@
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.fee }}</label>
               <div class="relative">
-                 <span class="absolute left-3 top-3 text-gray-400">$</span>
+                 <span class="absolute left-3 top-3 text-gray-400">{{ currencySymbol }}</span>
                  <input v-model.number="form.processing_fee" type="number" step="0.01" class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 transition-all">
               </div>
             </div>
@@ -144,7 +156,7 @@
             <div class="sm:col-span-2 pt-4 border-t border-gray-50">
               <label class="block text-sm font-bold text-gray-900 mb-2">{{ t.total }}</label>
               <div class="relative">
-                 <span class="absolute left-3 top-3 text-gray-900 font-bold">$</span>
+                 <span class="absolute left-3 top-3 text-gray-900 font-bold">{{ currencySymbol }}</span>
                  <input v-model.number="form.total_amount" type="number" step="0.01" class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-300 bg-gray-50 font-bold text-gray-900 focus:ring-2 focus:ring-primary-500 transition-all">
               </div>
             </div>
@@ -211,6 +223,7 @@ const form = ref({
   sales_tax: 0,
   processing_fee: 0,
   total_amount: 0,
+  currency: "usd",
   payment_link: "",
 });
 
@@ -224,6 +237,7 @@ const translations = {
   status: { es: "Estado", en: "Status" },
   adminNotes: { es: "Notas de Admin", en: "Admin Notes" },
   financials: { es: "Finanzas", en: "Financials" },
+  currency: { es: "Moneda", en: "Currency" },
   itemsTotal: { es: "Total Artículos", en: "Items Total" },
   shippingCost: { es: "Costo Envío", en: "Shipping Cost" },
   salesTax: { es: "Impuestos", en: "Sales Tax" },
@@ -249,6 +263,11 @@ const translations = {
 
 const t = createTranslations(translations);
 
+const currencySymbol = computed(() => {
+  return form.value.currency === 'mxn' ? '$' : '$';
+  // Both use $ but you could differentiate with labels if needed
+});
+
 const fetchRequest = async () => {
   loading.value = true;
   try {
@@ -267,12 +286,12 @@ const fetchRequest = async () => {
     form.value = {
       status: data.status,
       admin_notes: data.admin_notes || "",
-      // Use saved total if exists, otherwise use calculated sum
       items_total: data.items_total || calculatedTotal.toFixed(2),
       shipping_cost: data.shipping_cost,
       sales_tax: data.sales_tax,
       processing_fee: data.processing_fee,
       total_amount: data.total_amount,
+      currency: data.currency || "usd",
       payment_link: data.payment_link || "",
     };
 
