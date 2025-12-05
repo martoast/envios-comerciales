@@ -11,7 +11,6 @@
             <div class="px-6 py-4 border-b border-gray-200">
               <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
-                  <!-- Plane Icon -->
                   <svg class="w-5 h-5 text-indigo-600" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
                   </svg>
@@ -58,13 +57,30 @@
                 </div>
 
                 <!-- Box Entries -->
-                <div v-else class="space-y-3">
+                <div v-else class="space-y-4">
                   <div 
                     v-for="(box, index) in form.boxes" 
                     :key="index"
-                    class="flex items-start gap-2 p-3 bg-gray-50 rounded-lg"
+                    class="p-4 bg-gray-50 rounded-xl border border-gray-200"
                   >
-                    <div class="flex-1">
+                    <!-- Box Header -->
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="text-sm font-medium text-gray-700">{{ t.box }} {{ index + 1 }}</span>
+                      <button 
+                        v-if="form.boxes.length > 1"
+                        @click="removeBox(index)" 
+                        type="button"
+                        class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <!-- Box Size -->
+                    <div class="mb-3">
+                      <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.boxSize }}</label>
                       <select 
                         v-model="box.stripe_price_id" 
                         class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
@@ -75,33 +91,41 @@
                         </option>
                       </select>
                     </div>
-                    <div class="w-20">
+
+                    <!-- Guia Number -->
+                    <div class="mb-3">
+                      <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.guiaNumber }}</label>
                       <input 
-                        v-model.number="box.quantity" 
-                        type="number" 
-                        min="1" 
-                        max="10"
-                        class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm text-center"
-                        placeholder="Qty"
+                        v-model="box.guia_number" 
+                        type="text" 
+                        class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm" 
+                        placeholder="e.g. 1234567890"
                       >
                     </div>
-                    <button 
-                      v-if="form.boxes.length > 1"
-                      @click="removeBox(index)" 
-                      type="button"
-                      class="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                    >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                      </svg>
-                    </button>
+
+                    <!-- GIA File -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.giaDocument }}</label>
+                      <input 
+                        type="file" 
+                        @change="(e) => handleFileChange(e, index)" 
+                        accept=".pdf" 
+                        class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                      >
+                      <p v-if="box.gia_file" class="text-xs text-green-600 mt-1 flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ box.gia_file.name }}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
                 <!-- Price Summary -->
                 <div v-if="totalBoxPrice > 0" class="mt-3 p-3 bg-indigo-50 rounded-lg border border-indigo-100">
                   <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">{{ t.totalBoxPrice }}:</span>
+                    <span class="text-gray-600">{{ t.totalBoxPrice }} ({{ form.boxes.length }} {{ form.boxes.length === 1 ? t.boxSingular : t.boxPlural }}):</span>
                     <span class="font-semibold text-gray-900">${{ totalBoxPrice.toFixed(2) }} MXN</span>
                   </div>
                   <div class="flex justify-between text-sm mt-1">
@@ -112,17 +136,6 @@
                 <p class="text-xs text-gray-500 mt-2">{{ t.depositNote }}</p>
               </div>
 
-              <!-- Guia Number -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.guiaNumber }}</label>
-                <input 
-                  v-model="form.guia_number" 
-                  type="text" 
-                  class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500" 
-                  placeholder="e.g. 1234567890"
-                >
-              </div>
-
               <!-- Estimated Delivery -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.estimatedDelivery }}</label>
@@ -130,17 +143,6 @@
                   v-model="form.estimated_delivery_date" 
                   type="date" 
                   class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                >
-              </div>
-
-              <!-- GIA Document -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.giaDocument }}</label>
-                <input 
-                  type="file" 
-                  @change="handleFileChange" 
-                  accept=".pdf" 
-                  class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
                 >
               </div>
 
@@ -195,11 +197,9 @@ const { t: createTranslations } = useLanguage()
 const processing = ref(false)
 const loadingProducts = ref(false)
 const products = ref([])
-const giaFile = ref(null)
 
 const form = ref({
-  boxes: [{ stripe_price_id: '', quantity: 1 }],
-  guia_number: '',
+  boxes: [{ stripe_price_id: '', guia_number: '', gia_file: null }],
   estimated_delivery_date: '',
   notes: ''
 })
@@ -207,11 +207,15 @@ const form = ref({
 const translations = {
   title: { es: 'Enviar Orden y Solicitar Depósito', en: 'Ship Order & Request Deposit' },
   boxes: { es: 'Cajas', en: 'Boxes' },
+  box: { es: 'Caja', en: 'Box' },
+  boxSingular: { es: 'caja', en: 'box' },
+  boxPlural: { es: 'cajas', en: 'boxes' },
+  boxSize: { es: 'Tamaño de Caja', en: 'Box Size' },
   addBox: { es: 'Agregar Caja', en: 'Add Box' },
   selectBoxSize: { es: 'Seleccionar tamaño...', en: 'Select box size...' },
   loadingProducts: { es: 'Cargando productos...', en: 'Loading products...' },
   noShippingProducts: { es: 'No hay productos de envío disponibles', en: 'No shipping products available' },
-  totalBoxPrice: { es: 'Precio Total de Cajas', en: 'Total Box Price' },
+  totalBoxPrice: { es: 'Precio Total', en: 'Total Price' },
   deposit: { es: 'Depósito', en: 'Deposit' },
   depositNote: { es: 'El cliente recibirá una factura por el 50% de depósito inmediatamente.', en: 'Customer will receive an invoice for the 50% deposit immediately.' },
   guiaNumber: { es: 'Número de Guía (Rastreo)', en: 'Guia Number (Tracking)' },
@@ -228,54 +232,43 @@ const translations = {
 
 const t = createTranslations(translations)
 
-// Filter products to only show shipping products
 const shippingProducts = computed(() => {
-  return products.value.filter(p => 
-    p.shipping === 'true' || p.shipping === true
-  )
+  return products.value.filter(p => p.shipping === 'true' || p.shipping === true)
 })
 
 // Reset form when modal opens
 watch(() => props.show, (newVal) => {
   if (newVal) {
     form.value = {
-      boxes: [{ stripe_price_id: '', quantity: 1 }],
-      guia_number: '',
+      boxes: [{ stripe_price_id: '', guia_number: '', gia_file: null }],
       estimated_delivery_date: '',
       notes: ''
     }
-    giaFile.value = null
   }
 })
 
-// Calculate total box price based on selected boxes
 const totalBoxPrice = computed(() => {
   return form.value.boxes.reduce((total, box) => {
     const product = shippingProducts.value.find(p => p.price_id === box.stripe_price_id)
-    if (product) {
-      return total + (product.price * (box.quantity || 1))
-    }
-    return total
+    return product ? total + product.price : total
   }, 0)
 })
 
-// 50% deposit amount
-const depositAmount = computed(() => {
-  return totalBoxPrice.value * 0.5
-})
+const depositAmount = computed(() => totalBoxPrice.value * 0.5)
 
 const isValid = computed(() => {
-  const hasValidBoxes = form.value.boxes.every(box => box.stripe_price_id && box.quantity >= 1)
-  const hasAtLeastOneBox = form.value.boxes.length > 0
+  const hasValidBoxes = form.value.boxes.every(box => 
+    box.stripe_price_id && 
+    box.guia_number.length >= 10 &&
+    box.gia_file
+  )
   return hasValidBoxes && 
-         hasAtLeastOneBox &&
-         form.value.guia_number.length >= 10 && 
-         form.value.estimated_delivery_date && 
-         giaFile.value
+         form.value.boxes.length > 0 &&
+         form.value.estimated_delivery_date
 })
 
 const addBox = () => {
-  form.value.boxes.push({ stripe_price_id: '', quantity: 1 })
+  form.value.boxes.push({ stripe_price_id: '', guia_number: '', gia_file: null })
 }
 
 const removeBox = (index) => {
@@ -296,8 +289,8 @@ const fetchProducts = async () => {
   }
 }
 
-const handleFileChange = (e) => {
-  giaFile.value = e.target.files[0]
+const handleFileChange = (e, index) => {
+  form.value.boxes[index].gia_file = e.target.files[0] || null
 }
 
 const submit = async () => {
@@ -308,12 +301,11 @@ const submit = async () => {
   
   form.value.boxes.forEach((box, index) => {
     formData.append(`boxes[${index}][stripe_price_id]`, box.stripe_price_id)
-    formData.append(`boxes[${index}][quantity]`, box.quantity)
+    formData.append(`boxes[${index}][guia_number]`, box.guia_number)
+    formData.append(`boxes[${index}][gia_file]`, box.gia_file)
   })
   
-  formData.append('guia_number', form.value.guia_number)
   formData.append('estimated_delivery_date', form.value.estimated_delivery_date)
-  formData.append('gia_file', giaFile.value)
   if (form.value.notes) formData.append('notes', form.value.notes)
 
   try {

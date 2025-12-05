@@ -145,8 +145,6 @@
               </div>
             </button>
           </div>
-
-          
         </div>
 
         <!-- Customer Selection Card -->
@@ -154,7 +152,7 @@
           <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">{{ t.selectCustomer }}</h2>
           
           <!-- Customer Search -->
-          <div class="relative">
+          <div class="relative" ref="searchContainer">
             <label for="user_search" class="block text-sm font-medium text-gray-700 mb-2">
               {{ t.customerLabel }} <span class="text-red-500">*</span>
             </label>
@@ -163,15 +161,21 @@
               <input
                 v-model="userSearch"
                 @focus="showUserDropdown = true"
-                @input="filterUsers"
                 type="text"
                 id="user_search"
                 class="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-10 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                 :placeholder="selectedUser ? selectedUser.name + ' - ' + selectedUser.email : t.searchUserPlaceholder"
               >
-              <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
+              <!-- Loading spinner or chevron -->
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg v-if="loadingUsers" class="animate-spin w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <svg v-else class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </div>
             </div>
             
             <!-- Dropdown -->
@@ -183,9 +187,9 @@
               leave-from-class="transform opacity-100 scale-100"
               leave-to-class="transform opacity-0 scale-95"
             >
-              <div v-if="showUserDropdown && filteredUsers.length > 0" class="absolute z-20 mt-1 w-full bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 max-h-48 sm:max-h-60 overflow-auto">
+              <div v-if="showUserDropdown && !loadingUsers && users.length > 0" class="absolute z-20 mt-1 w-full bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 max-h-48 sm:max-h-60 overflow-auto">
                 <div
-                  v-for="user in filteredUsers"
+                  v-for="user in users"
                   :key="user.id"
                   @click="selectUser(user)"
                   class="px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-0"
@@ -193,6 +197,20 @@
                   <p class="text-sm font-medium text-gray-900">{{ user.name }}</p>
                   <p class="text-xs text-gray-500 mt-0.5">{{ user.email }} • {{ user.phone || t.noPhone }}</p>
                 </div>
+              </div>
+            </Transition>
+
+            <!-- No results message -->
+            <Transition
+              enter-active-class="transition ease-out duration-100"
+              enter-from-class="transform opacity-0 scale-95"
+              enter-to-class="transform opacity-100 scale-100"
+              leave-active-class="transition ease-in duration-75"
+              leave-from-class="transform opacity-100 scale-100"
+              leave-to-class="transform opacity-0 scale-95"
+            >
+              <div v-if="showUserDropdown && !loadingUsers && users.length === 0 && userSearch.length > 0" class="absolute z-20 mt-1 w-full bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4">
+                <p class="text-sm text-gray-500 text-center">{{ t.noResultsFound }}</p>
               </div>
             </Transition>
           </div>
@@ -552,7 +570,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 
 definePageMeta({
   layout: 'admin',
@@ -572,12 +590,14 @@ const userSearch = ref('')
 const showUserDropdown = ref(false)
 const loadingUsers = ref(false)
 const useSimpleAddress = ref(true)
+const searchContainer = ref(null)
+const searchTimeout = ref(null)
 
 // Form data
 const form = ref({
   user_id: null,
   status: 'collecting',
-  order_type: 'shipping', // Default to shipping
+  order_type: 'shipping',
   delivery_address: {
     full_address: '',
     street: '',
@@ -618,6 +638,7 @@ const translations = {
   customerLabel: { es: 'Buscar Cliente', en: 'Search Customer' },
   searchUserPlaceholder: { es: 'Buscar por nombre o email...', en: 'Search by name or email...' },
   noPhone: { es: 'Sin teléfono', en: 'No phone' },
+  noResultsFound: { es: 'No se encontraron resultados', en: 'No results found' },
   
   // Delivery Address
   copyFromUser: { es: 'Copiar Dirección', en: 'Copy Address' },
@@ -668,18 +689,6 @@ const translations = {
 const t = createTranslations(translations)
 
 // Computed
-const filteredUsers = computed(() => {
-  if (!userSearch.value) return users.value.slice(0, 10)
-  
-  const search = userSearch.value.toLowerCase()
-  return users.value
-    .filter(user => 
-      user.name.toLowerCase().includes(search) ||
-      user.email.toLowerCase().includes(search)
-    )
-    .slice(0, 10)
-})
-
 const isFormValid = computed(() => {
   if (!selectedUser.value) return false
   
@@ -702,10 +711,15 @@ const isFormValid = computed(() => {
 })
 
 // Methods
-const fetchUsers = async () => {
+const fetchUsers = async (search = '') => {
   loadingUsers.value = true
   try {
-    const response = await $customFetch('/admin/customers?limit=100')
+    const params = new URLSearchParams({ limit: '20' })
+    if (search.trim()) {
+      params.append('search', search.trim())
+    }
+    
+    const response = await $customFetch(`/admin/customers?${params}`)
     if (response.success && response.data) {
       users.value = response.data.data || response.data
     }
@@ -717,9 +731,16 @@ const fetchUsers = async () => {
   }
 }
 
-const filterUsers = () => {
-  showUserDropdown.value = true
-}
+// Debounced search watcher
+watch(userSearch, (newValue) => {
+  if (searchTimeout.value) {
+    clearTimeout(searchTimeout.value)
+  }
+  
+  searchTimeout.value = setTimeout(() => {
+    fetchUsers(newValue)
+  }, 300)
+})
 
 const selectUser = (user) => {
   selectedUser.value = user
@@ -846,7 +867,7 @@ const handleSubmit = async () => {
 }
 
 const handleClickOutside = (event) => {
-  if (!event.target.closest('.relative')) {
+  if (searchContainer.value && !searchContainer.value.contains(event.target)) {
     showUserDropdown.value = false
   }
 }
@@ -858,6 +879,9 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  if (searchTimeout.value) {
+    clearTimeout(searchTimeout.value)
+  }
 })
 </script>
 

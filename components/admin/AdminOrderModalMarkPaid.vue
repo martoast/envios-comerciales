@@ -31,11 +31,23 @@
                   <span class="text-gray-600">{{ t.paymentType }}:</span>
                   <span class="font-medium">{{ isCrossing ? t.fullPayment : t.finalBalance }}</span>
                 </div>
-                <div v-if="order?.deposit_amount || order?.quoted_amount" class="flex justify-between pt-2 border-t border-gray-200">
+                
+                <!-- Show deposit already paid for shipping orders -->
+                <div v-if="!isCrossing && order?.deposit_paid_at" class="flex justify-between text-green-600">
+                  <span>{{ t.depositPaid }}:</span>
+                  <span class="font-medium">${{ formatAmount(order?.deposit_amount) }}</span>
+                </div>
+                
+                <!-- Amount to be marked as paid -->
+                <div v-if="paymentAmount" class="flex justify-between pt-2 border-t border-gray-200">
                   <span class="text-gray-900 font-semibold">{{ t.amount }}:</span>
-                  <span class="font-bold text-green-600">
-                    ${{ isCrossing ? order?.deposit_amount : order?.quoted_amount }}
-                  </span>
+                  <span class="font-bold text-green-600">${{ formatAmount(paymentAmount) }}</span>
+                </div>
+                
+                <!-- Total for shipping orders -->
+                <div v-if="!isCrossing && order?.box_price" class="flex justify-between text-xs text-gray-500">
+                  <span>{{ t.totalOrder }}:</span>
+                  <span>${{ formatAmount(order?.box_price) }}</span>
                 </div>
               </div>
             </div>
@@ -89,6 +101,45 @@ const processing = ref(false)
 
 const isCrossing = computed(() => props.order?.order_type === 'crossing')
 
+// Calculate the payment amount based on order type and available data
+const paymentAmount = computed(() => {
+  if (!props.order) return null
+  
+  if (isCrossing.value) {
+    // Crossing: 100% payment = deposit_amount (which is the full amount)
+    return props.order.deposit_amount
+  }
+  
+  // Shipping: Final balance (remaining 50%)
+  // Priority: quoted_amount > (box_price - deposit_amount) > deposit_amount
+  if (props.order.quoted_amount) {
+    return props.order.quoted_amount
+  }
+  
+  // Calculate remaining from box_price - deposit_amount
+  if (props.order.box_price && props.order.deposit_amount) {
+    const boxPrice = parseFloat(props.order.box_price) || 0
+    const deposit = parseFloat(props.order.deposit_amount) || 0
+    const remaining = boxPrice - deposit
+    if (remaining > 0) {
+      return remaining.toFixed(2)
+    }
+  }
+  
+  // Fallback: deposit_amount is 50%, so remaining is also ~deposit_amount
+  if (props.order.deposit_amount) {
+    return props.order.deposit_amount
+  }
+  
+  return null
+})
+
+const formatAmount = (amount) => {
+  if (!amount) return '0.00'
+  const num = parseFloat(amount)
+  return isNaN(num) ? '0.00' : num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 const translations = {
   title: { es: 'Confirmar Pago', en: 'Confirm Payment' },
   confirmText: { es: '¿Marcar manualmente esta orden como PAGADA?', en: 'Manually mark this order as PAID?' },
@@ -99,8 +150,10 @@ const translations = {
   paymentType: { es: 'Tipo de Pago', en: 'Payment Type' },
   fullPayment: { es: 'Pago Completo (100%)', en: 'Full Payment (100%)' },
   finalBalance: { es: 'Saldo Final (50%)', en: 'Final Balance (50%)' },
-  amount: { es: 'Monto', en: 'Amount' },
-  warning: { es: 'Se le enviara un correo al usuario confirmando su pago', en: 'The user will receive an email notifing them that the payment was received.' },
+  depositPaid: { es: 'Depósito Pagado', en: 'Deposit Paid' },
+  amount: { es: 'Monto a Cobrar', en: 'Amount Due' },
+  totalOrder: { es: 'Total de la Orden', en: 'Order Total' },
+  warning: { es: 'Se le enviará un correo al usuario confirmando su pago', en: 'The user will receive an email notifying them that the payment was received.' },
   cancel: { es: 'Cancelar', en: 'Cancel' },
   confirmBtn: { es: 'Confirmar Pagado', en: 'Confirm Paid' },
   success: { es: 'Orden marcada como pagada', en: 'Order marked as paid' },

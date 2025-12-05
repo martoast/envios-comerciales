@@ -20,8 +20,6 @@
           </div>
 
           <div class="flex items-center gap-3">
-            
-
             <!-- Status Badge -->
             <span
               v-if="order"
@@ -246,13 +244,14 @@
               <!-- Email -->
               <div class="min-w-0">
                 <p class="text-xs sm:text-sm text-gray-500">{{ t.email }}</p>
-                <a
-                  :href="`mailto:${order.user.email}`"
+                <NuxtLink
+                  :to="`mailto:${order.user.email}`"
+                  external
                   class="font-medium text-sm sm:text-base text-primary-600 hover:text-primary-700 hover:underline block truncate"
                   :title="order.user.email"
                 >
                   {{ order.user.email }}
-                </a>
+                </NuxtLink>
               </div>
 
               <!-- Delivery Address (SHIPPING orders only) -->
@@ -265,11 +264,11 @@
                   {{ formatAddress(order.delivery_address) }}
                 </p>
                 <div class="flex flex-wrap gap-2 mt-2">
-                  <a
+                  <NuxtLink
                     v-if="order.delivery_address"
-                    :href="`https://maps.google.com/?q=${encodeURIComponent(formatAddress(order.delivery_address))}`"
+                    :to="`https://maps.google.com/?q=${encodeURIComponent(formatAddress(order.delivery_address))}`"
                     target="_blank"
-                    rel="noopener noreferrer"
+                    external
                     class="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600 transition-colors"
                   >
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -277,7 +276,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                     {{ t.viewOnMap }}
-                  </a>
+                  </NuxtLink>
                   <button
                     v-if="order.delivery_address"
                     @click="copyToClipboard(formatAddress(order.delivery_address))"
@@ -307,10 +306,10 @@
                     <div class="flex-1">
                       <p class="text-sm font-semibold text-gray-900">{{ t.warehouseName }}</p>
                       <p class="text-xs text-gray-600 mt-0.5">{{ t.warehouseAddress }}</p>
-                      <a
-                        href="https://maps.app.goo.gl/4SsEVjy2D4noFM9n8"
+                      <NuxtLink
+                        to="https://maps.app.goo.gl/4SsEVjy2D4noFM9n8"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        external
                         class="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-700 mt-2 font-medium"
                       >
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,9 +317,217 @@
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         {{ t.getDirections }}
-                      </a>
+                      </NuxtLink>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- NEW STRUCTURE: Multiple Boxes with per-box GIA -->
+          <!-- ============================================== -->
+          <div
+            v-if="!isCrossing && hasBoxes"
+            class="bg-white rounded-xl border border-indigo-200 p-4 sm:p-6"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-indigo-100 rounded-lg">
+                  <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="text-base sm:text-lg font-semibold text-gray-900">{{ t.shippingBoxes }}</h2>
+                  <p class="text-xs text-gray-500">{{ t.boxesWithTracking }}</p>
+                </div>
+              </div>
+              <span class="px-3 py-1 text-sm font-semibold rounded-full bg-indigo-100 text-indigo-700">
+                {{ order.boxes.length }} {{ order.boxes.length === 1 ? t.box : t.boxes }}
+              </span>
+            </div>
+
+            <div class="space-y-4">
+              <div
+                v-for="(box, index) in order.boxes"
+                :key="box.id"
+                class="p-4 bg-gray-50 rounded-xl border border-gray-200"
+              >
+                <!-- Box Header -->
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-10 h-10 rounded-lg flex items-center justify-center"
+                      :class="getBoxSizeColor(box.box_size)"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-gray-900">{{ t.boxLabel }} {{ index + 1 }}: {{ box.box_name }}</p>
+                      <p class="text-xs text-gray-500">{{ formatBoxSizeLabelFull(box.box_size) }}</p>
+                    </div>
+                  </div>
+                  <p class="text-lg font-bold text-gray-900">${{ parseFloat(box.box_price).toFixed(2) }}</p>
+                </div>
+
+                <!-- Guia & GIA Info -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-gray-200">
+                  <!-- Guia Number -->
+                  <div>
+                    <p class="text-xs font-medium text-gray-500 mb-1">{{ t.guiaNumber }}</p>
+                    <div v-if="box.guia_number" class="flex items-center gap-2">
+                      <NuxtLink
+                        :to="`https://www.dhl.com/mx-es/home/rastreo.html?tracking-id=${box.guia_number}`"
+                        target="_blank"
+                        external
+                        class="font-mono text-sm font-bold text-primary-700 hover:text-primary-900 hover:underline flex items-center gap-1"
+                      >
+                        {{ box.guia_number }}
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </NuxtLink>
+                      <button
+                        @click="copyToClipboard(box.guia_number)"
+                        class="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                        :title="t.copyGuia"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </div>
+                    <span v-else class="text-xs text-gray-400 italic">{{ t.notAssigned }}</span>
+                  </div>
+
+                  <!-- GIA Document -->
+                  <div>
+                    <p class="text-xs font-medium text-gray-500 mb-1">{{ t.giaDocument }}</p>
+                    <NuxtLink
+                      v-if="box.gia_url || box.gia_full_url"
+                      :to="box.gia_url || box.gia_full_url"
+                      target="_blank"
+                      external
+                      class="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 text-xs font-medium rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
+                    >
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="truncate max-w-[120px]" :title="box.gia_filename">
+                        {{ box.gia_filename || 'GIA.pdf' }}
+                      </span>
+                      <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                      </svg>
+                    </NuxtLink>
+                    <span v-else class="text-xs text-gray-400 italic">{{ t.noGiaFile }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total Box Price -->
+            <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
+              <p class="text-sm font-semibold text-gray-700">{{ t.totalBoxPrice }}</p>
+              <p class="text-xl font-bold text-gray-900">${{ totalBoxPrice.toFixed(2) }}</p>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- LEGACY STRUCTURE: Single Guia/GIA at order level -->
+          <!-- ============================================== -->
+          <div
+            v-if="!isCrossing && !hasBoxes && hasLegacyShippingInfo"
+            class="bg-white rounded-xl border border-indigo-200 p-4 sm:p-6"
+          >
+            <div class="flex items-center gap-3 mb-4">
+              <div class="p-2 bg-indigo-100 rounded-lg">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-base sm:text-lg font-semibold text-gray-900">{{ t.shippingInfo }}</h2>
+                <p class="text-xs text-gray-500">{{ t.trackingAndDocuments }}</p>
+              </div>
+            </div>
+
+            <!-- Single Box Card (Legacy) -->
+            <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <!-- Box Header -->
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-lg flex items-center justify-center"
+                    :class="getBoxSizeColor(order.box_size)"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="font-semibold text-gray-900">{{ formatBoxSizeLabelFull(order.box_size) || t.singleBox }}</p>
+                    <p class="text-xs text-gray-500">{{ t.boxLabel }}</p>
+                  </div>
+                </div>
+                <p v-if="order.box_price" class="text-lg font-bold text-gray-900">${{ parseFloat(order.box_price).toFixed(2) }}</p>
+              </div>
+
+              <!-- Guia & GIA Info -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-gray-200">
+                <!-- Guia Number -->
+                <div>
+                  <p class="text-xs font-medium text-gray-500 mb-1">{{ t.guiaNumber }}</p>
+                  <div v-if="order.guia_number" class="flex items-center gap-2">
+                    <NuxtLink
+                      :to="`https://www.dhl.com/mx-es/home/rastreo.html?tracking-id=${order.guia_number}`"
+                      target="_blank"
+                      external
+                      class="font-mono text-sm font-bold text-primary-700 hover:text-primary-900 hover:underline flex items-center gap-1"
+                    >
+                      {{ order.guia_number }}
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </NuxtLink>
+                    <button
+                      @click="copyToClipboard(order.guia_number)"
+                      class="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                      :title="t.copyGuia"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <span v-else class="text-xs text-gray-400 italic">{{ t.notAssigned }}</span>
+                </div>
+
+                <!-- GIA Document -->
+                <div>
+                  <p class="text-xs font-medium text-gray-500 mb-1">{{ t.giaDocument }}</p>
+                  <NuxtLink
+                    v-if="order.gia_url"
+                    :to="order.gia_url"
+                    target="_blank"
+                    external
+                    class="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 text-xs font-medium rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
+                  >
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="truncate max-w-[120px]" :title="order.gia_filename">
+                      {{ order.gia_filename || 'GIA.pdf' }}
+                    </span>
+                    <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                  </NuxtLink>
+                  <span v-else class="text-xs text-gray-400 italic">{{ t.noGiaFile }}</span>
                 </div>
               </div>
             </div>
@@ -364,12 +571,12 @@
                 <p class="font-medium">{{ order.total_weight || 0 }} kg</p>
               </div>
 
-              <!-- Multi-Box Display -->
-              <div v-if="hasMultipleBoxes" class="border-t border-gray-100 pt-3 mt-3">
+              <!-- Boxes Summary for CROSSING orders -->
+              <div v-if="isCrossing && hasBoxes" class="border-t border-gray-100 pt-3 mt-3">
                 <div class="flex items-center justify-between mb-2">
                   <p class="text-sm font-semibold text-gray-700">{{ t.boxes }}</p>
-                  <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium">
-                    {{ totalBoxCount }} {{ totalBoxCount === 1 ? t.box : t.boxes }}
+                  <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">
+                    {{ order.boxes.length }} {{ order.boxes.length === 1 ? t.box : t.boxes }}
                   </span>
                 </div>
                 <div class="space-y-2">
@@ -385,13 +592,11 @@
                         </svg>
                       </div>
                       <div>
-                        <p class="text-sm font-medium text-gray-900">
-                          {{ box.quantity > 1 ? `${box.quantity}x ` : '' }}{{ box.box_name }}
-                        </p>
+                        <p class="text-sm font-medium text-gray-900">{{ box.box_name }}</p>
                         <p class="text-xs text-gray-500">{{ formatBoxSizeLabel(box.box_size) }}</p>
                       </div>
                     </div>
-                    <p class="text-sm font-semibold text-gray-900">${{ (box.box_price * box.quantity).toFixed(2) }}</p>
+                    <p class="text-sm font-semibold text-gray-900">${{ parseFloat(box.box_price).toFixed(2) }}</p>
                   </div>
                 </div>
                 <div class="flex justify-between items-center mt-3 pt-2 border-t border-gray-200">
@@ -400,35 +605,37 @@
                 </div>
               </div>
 
-              <!-- Single Box Display -->
-              <div v-else-if="order.box_size" class="flex justify-between">
-                <p class="text-sm text-gray-500">{{ t.boxSize }}</p>
-                <div class="flex items-center gap-2">
-                  <span class="w-6 h-6 rounded flex items-center justify-center" :class="getBoxSizeColor(order.box_size)">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                    </svg>
+              <!-- Boxes Summary for SHIPPING orders with boxes array (compact) -->
+              <div v-if="!isCrossing && hasBoxes" class="border-t border-gray-100 pt-3 mt-3">
+                <div class="flex justify-between items-center">
+                  <p class="text-sm text-gray-500">{{ t.boxes }}</p>
+                  <span class="text-sm font-medium">
+                    {{ order.boxes.length }} {{ order.boxes.length === 1 ? t.box : t.boxes }}
                   </span>
-                  <p class="font-medium capitalize">{{ order.box_size.replace('-', ' ') }}</p>
+                </div>
+                <div class="flex justify-between items-center mt-1">
+                  <p class="text-sm text-gray-500">{{ t.totalBoxPrice }}</p>
+                  <p class="font-bold text-gray-900">${{ totalBoxPrice.toFixed(2) }}</p>
                 </div>
               </div>
 
-              <!-- Guia Number (SHIPPING only) -->
-              <div
-                v-if="order.guia_number && !isCrossing"
-                class="flex justify-between items-center border-t border-gray-100 pt-3 mt-3"
-              >
-                <p class="text-sm font-medium text-primary-700">{{ t.guiaNumber }}</p>
-                <NuxtLink
-                  :to="`/track?tracking_number=${order.guia_number}`"
-                  target="_blank"
-                  class="flex items-center gap-1 font-bold text-primary-700 font-mono hover:text-primary-900 hover:underline decoration-2 underline-offset-2 transition-colors"
-                >
-                  {{ order.guia_number }}
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </NuxtLink>
+              <!-- Single Box Display (legacy orders without boxes array) -->
+              <div v-if="!hasBoxes && order.box_size" class="border-t border-gray-100 pt-3 mt-3">
+                <div class="flex justify-between">
+                  <p class="text-sm text-gray-500">{{ t.boxSize }}</p>
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded flex items-center justify-center" :class="getBoxSizeColor(order.box_size)">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </span>
+                    <p class="font-medium capitalize">{{ order.box_size.replace('-', ' ') }}</p>
+                  </div>
+                </div>
+                <div v-if="order.box_price" class="flex justify-between mt-1">
+                  <p class="text-sm text-gray-500">{{ t.boxPrice }}</p>
+                  <p class="font-bold text-gray-900">${{ parseFloat(order.box_price).toFixed(2) }}</p>
+                </div>
               </div>
 
               <!-- FINANCIALS SECTION -->
@@ -455,18 +662,18 @@
                       <span v-if="order.deposit_paid_at" class="text-xs text-gray-500">
                         {{ formatDate(order.deposit_paid_at) }}
                       </span>
-                      <a
+                      <NuxtLink
                         v-if="order.deposit_payment_link"
-                        :href="order.deposit_payment_link"
+                        :to="order.deposit_payment_link"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        external
                         class="text-xs text-primary-600 hover:text-primary-800 hover:underline flex items-center gap-1"
                       >
                         {{ t.invoice }}
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                         </svg>
-                      </a>
+                      </NuxtLink>
                     </div>
                   </div>
                 </div>
@@ -488,18 +695,18 @@
                       <span v-if="order.paid_at" class="text-xs text-gray-500">
                         {{ formatDate(order.paid_at) }}
                       </span>
-                      <a
+                      <NuxtLink
                         v-if="order.deposit_payment_link"
-                        :href="order.deposit_payment_link"
+                        :to="order.deposit_payment_link"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        external
                         class="text-xs text-primary-600 hover:text-primary-800 hover:underline flex items-center gap-1"
                       >
                         {{ t.invoice }}
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                         </svg>
-                      </a>
+                      </NuxtLink>
                     </div>
                   </div>
                 </div>
@@ -521,18 +728,18 @@
                       <span v-if="order.paid_at" class="text-xs text-gray-500">
                         {{ formatDate(order.paid_at) }}
                       </span>
-                      <a
+                      <NuxtLink
                         v-if="order.payment_link"
-                        :href="order.payment_link"
+                        :to="order.payment_link"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        external
                         class="text-xs text-primary-600 hover:text-primary-800 hover:underline flex items-center gap-1"
                       >
                         {{ t.invoice }}
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                         </svg>
-                      </a>
+                      </NuxtLink>
                     </div>
                   </div>
                 </div>
@@ -697,11 +904,22 @@ const translations = {
   trackingNumber: { es: "Rastreo #", en: "Tracking #" },
   orderType: { es: "Tipo", en: "Type" },
   totalWeight: { es: "Peso Total", en: "Total Weight" },
+  shippingBoxes: { es: "Cajas de Envío", en: "Shipping Boxes" },
+  shippingInfo: { es: "Información de Envío", en: "Shipping Info" },
+  boxesWithTracking: { es: "Con guías y documentos GIA", en: "With tracking & GIA documents" },
+  trackingAndDocuments: { es: "Guía de rastreo y documento GIA", en: "Tracking & GIA document" },
   boxes: { es: "Cajas", en: "Boxes" },
   box: { es: "Caja", en: "Box" },
+  boxLabel: { es: "Caja", en: "Box" },
+  singleBox: { es: "Caja de Envío", en: "Shipping Box" },
   boxSize: { es: "Tamaño de Caja", en: "Box Size" },
+  boxPrice: { es: "Precio de Caja", en: "Box Price" },
   totalBoxPrice: { es: "Precio Total Cajas", en: "Total Box Price" },
   guiaNumber: { es: "Número de Guía", en: "Guia Number" },
+  giaDocument: { es: "Documento GIA", en: "GIA Document" },
+  copyGuia: { es: "Copiar guía", en: "Copy guia" },
+  notAssigned: { es: "No asignado", en: "Not assigned" },
+  noGiaFile: { es: "Sin archivo", en: "No file" },
   financials: { es: "Financieros", en: "Financials" },
   deposit: { es: "Depósito", en: "Deposit" },
   fullPayment: { es: "Pago Completo", en: "Full Payment" },
@@ -721,33 +939,32 @@ const t = createTranslations(translations);
 // Helper: Check if this is a crossing order
 const isCrossing = computed(() => order.value?.order_type === 'crossing');
 
-const hasMultipleBoxes = computed(() => {
+// Check if order has boxes array with data (NEW structure)
+const hasBoxes = computed(() => {
   return order.value?.boxes && order.value.boxes.length > 0;
 });
 
-const totalBoxCount = computed(() => {
-  if (!order.value?.boxes) return 0;
-  return order.value.boxes.reduce((sum, box) => sum + (box.quantity || 1), 0);
+// Check if order has legacy shipping info (OLD structure - guia/gia at order level)
+const hasLegacyShippingInfo = computed(() => {
+  return order.value?.guia_number || order.value?.gia_url;
 });
 
 const totalBoxPrice = computed(() => {
-  if (!order.value?.boxes || order.value.boxes.length === 0) {
-    return order.value?.box_price || 0;
+  if (!order.value) return 0;
+  
+  // New structure: sum up boxes array
+  if (hasBoxes.value) {
+    return order.value.boxes.reduce((sum, box) => sum + parseFloat(box.box_price || 0), 0);
   }
-  return order.value.boxes.reduce((sum, box) => sum + box.box_price * (box.quantity || 1), 0);
+  
+  // Legacy structure: use order-level box_price
+  return parseFloat(order.value.box_price) || 0;
 });
 
 // Check if payment is complete based on order type
 const isPaymentComplete = computed(() => {
   if (!order.value) return false;
-  
-  if (isCrossing.value) {
-    // Crossing: single 100% payment, check paid_at
-    return !!order.value.paid_at;
-  } else {
-    // Shipping: check if both deposit and final payment are done
-    return !!order.value.paid_at;
-  }
+  return !!order.value.paid_at;
 });
 
 // Check if deposit/initial payment is complete
@@ -755,10 +972,8 @@ const isInitialPaymentComplete = computed(() => {
   if (!order.value) return false;
   
   if (isCrossing.value) {
-    // Crossing: 100% payment via paid_at
     return !!order.value.paid_at;
   } else {
-    // Shipping: 50% deposit via deposit_paid_at
     return !!order.value.deposit_paid_at;
   }
 });
@@ -766,26 +981,21 @@ const isInitialPaymentComplete = computed(() => {
 const actualAmountPaid = computed(() => {
   if (!order.value) return 0;
   
-  // If amount_paid is explicitly set, use it
   if (order.value.amount_paid > 0) {
     return parseFloat(order.value.amount_paid);
   }
   
   if (isCrossing.value) {
-    // Crossing: 100% payment - check paid_at
     if (order.value.paid_at && order.value.deposit_amount) {
       return parseFloat(order.value.deposit_amount);
     }
   } else {
-    // Shipping: Could have deposit + final payment
     let total = 0;
     
-    // Add deposit if paid
     if (order.value.deposit_paid_at && order.value.deposit_amount) {
       total += parseFloat(order.value.deposit_amount);
     }
     
-    // Add final payment if paid
     if (order.value.paid_at && order.value.quoted_amount) {
       total += parseFloat(order.value.quoted_amount);
     }
@@ -808,7 +1018,6 @@ const paymentPercentage = computed(() => {
   return Math.min(100, Math.round((paid / totalDue) * 100));
 });
 
-// Show total paid section only when there's payment info
 const showTotalPaid = computed(() => {
   if (!order.value) return false;
   
@@ -908,6 +1117,17 @@ const getBoxSizeColor = (size) => {
 const formatBoxSizeLabel = (size) => {
   const labels = { "extra-small": "XS", small: "S", medium: "M", large: "L", "extra-large": "XL" };
   return labels[size] || size;
+};
+
+const formatBoxSizeLabelFull = (size) => {
+  const labels = {
+    "extra-small": "XS - Extra Small",
+    small: "S - Small",
+    medium: "M - Medium",
+    large: "L - Large",
+    "extra-large": "XL - Extra Large",
+  };
+  return labels[size] || size || "";
 };
 
 const formatAddress = (address) => {

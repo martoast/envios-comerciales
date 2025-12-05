@@ -458,69 +458,46 @@
                     isCrossing ? 'bg-amber-100 text-amber-700' : 'bg-indigo-100 text-indigo-700'
                   ]"
                 >
-                  {{ totalBoxCount }} {{ totalBoxCount === 1 ? t.box : t.boxesLabel }}
+                  {{ form.boxes.length }} {{ form.boxes.length === 1 ? t.box : t.boxesLabel }}
                 </span>
               </div>
 
               <!-- Box List -->
-              <div v-if="form.boxes.length > 0" class="space-y-2 sm:space-y-3 mb-4">
+              <div v-if="form.boxes.length > 0" class="space-y-4 mb-4">
                 <div
                   v-for="(box, index) in form.boxes"
                   :key="box.id || index"
-                  class="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-200 gap-3"
+                  class="p-4 bg-gray-50 rounded-xl border border-gray-200"
                 >
-                  <!-- Box Info -->
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                      :class="getBoxSizeColorClass(box.box_size)"
-                    >
-                      <svg
-                        class="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                  <!-- Box Header Row -->
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                        :class="getBoxSizeColorClass(box.box_size)"
                       >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                        />
-                      </svg>
-                    </div>
-                    <div class="min-w-0">
-                      <p class="font-semibold text-gray-900 text-sm sm:text-base truncate">
-                        {{ box.box_name }}
-                      </p>
-                      <p class="text-xs sm:text-sm text-gray-500">
-                        {{ formatBoxSizeLabel(box.box_size) }}
-                      </p>
-                    </div>
-                  </div>
-
-                  <!-- Controls -->
-                  <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
-                    <!-- Quantity Editor -->
-                    <div class="flex items-center gap-2">
-                      <label class="text-xs text-gray-500">{{ t.qty }}:</label>
-                      <input
-                        v-model.number="box.quantity"
-                        type="number"
-                        min="1"
-                        max="10"
-                        class="w-14 sm:w-16 px-2 py-1.5 text-center border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      />
-                    </div>
-
-                    <!-- Price -->
-                    <div class="text-right min-w-[80px]">
-                      <p class="text-xs text-gray-500">
-                        @ ${{ formatNumber(box.box_price) }}
-                      </p>
-                      <p class="font-bold text-gray-900 text-sm sm:text-base">
-                        ${{ formatNumber(parseFloat(box.box_price) * (box.quantity || 1)) }}
-                      </p>
+                        <svg
+                          class="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                          />
+                        </svg>
+                      </div>
+                      <div class="min-w-0">
+                        <p class="font-semibold text-gray-900 text-sm sm:text-base">
+                          {{ t.boxLabel }} {{ index + 1 }}: {{ box.box_name }}
+                        </p>
+                        <p class="text-xs sm:text-sm text-gray-500">
+                          {{ formatBoxSizeLabel(box.box_size) }} · <span class="font-medium text-gray-700">${{ formatNumber(box.box_price) }}</span>
+                        </p>
+                      </div>
                     </div>
 
                     <!-- Remove Button -->
@@ -543,6 +520,67 @@
                         />
                       </svg>
                     </button>
+                  </div>
+
+                  <!-- Shipping Details (Guia & GIA) - Only for shipping orders -->
+                  <div v-if="!isCrossing" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-gray-200">
+                    <!-- Guia Number -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">
+                        {{ t.guiaNumberLabel }}
+                      </label>
+                      <input
+                        v-model="box.guia_number"
+                        type="text"
+                        placeholder="1234567890"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+
+                    <!-- GIA Document -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">
+                        {{ t.giaDocument }}
+                      </label>
+                      
+                      <!-- Show existing GIA file -->
+                      <div v-if="box.gia_url" class="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                        <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-xs text-green-800 truncate flex-1" :title="box.gia_filename">
+                          {{ box.gia_filename || 'GIA.pdf' }}
+                        </span>
+                        <a
+                          :href="box.gia_url"
+                          target="_blank"
+                          class="p-1 text-green-600 hover:text-green-800 hover:bg-green-100 rounded transition-colors"
+                          :title="t.downloadGia"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                          </svg>
+                        </a>
+                      </div>
+
+                      <!-- Upload new GIA file -->
+                      <div v-else class="flex items-center gap-2">
+                        <input
+                          type="file"
+                          @change="(e) => handleGiaFileChange(e, index)"
+                          accept=".pdf"
+                          class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                        />
+                      </div>
+                      
+                      <!-- Show pending upload -->
+                      <p v-if="box.new_gia_file" class="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ t.pendingUpload }}: {{ box.new_gia_file.name }}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -976,33 +1014,16 @@
 
           <!-- Right Column - Additional Fields & Dates -->
           <div class="space-y-4 sm:space-y-6">
-            <!-- Shipping / Pickup Information -->
+            <!-- Payment Links -->
             <div
               class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 animate-fadeIn"
               style="animation-delay: 0.3s"
             >
               <h2 class="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
-                {{ isCrossing ? t.pickupInformation : t.shippingInformation }}
+                {{ t.paymentLinks }}
               </h2>
 
               <div class="space-y-3 sm:space-y-4">
-                <!-- Guia Number - Only for shipping -->
-                <div v-if="!isCrossing">
-                  <label
-                    for="guia_number"
-                    class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
-                  >
-                    {{ t.guiaNumberLabel }}
-                  </label>
-                  <input
-                    v-model="form.guia_number"
-                    type="text"
-                    id="guia_number"
-                    placeholder="1234567890"
-                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-
                 <!-- Deposit/Full Payment Link -->
                 <div>
                   <label
@@ -1198,80 +1219,102 @@
     </div>
 
     <!-- Add Box Modal -->
-    <TransitionRoot :show="showAddBoxModal" as="template">
-      <Dialog class="relative z-50" @close="showAddBoxModal = false">
-        <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" />
-        <div class="fixed inset-0 overflow-y-auto">
-          <div class="flex min-h-full items-center justify-center p-4">
-            <DialogPanel
-              class="w-full max-w-md rounded-xl sm:rounded-2xl bg-white p-4 sm:p-6 shadow-xl"
-            >
-              <DialogTitle class="text-base sm:text-lg font-semibold mb-4">
-                {{ t.addBoxTitle }}
-              </DialogTitle>
+<TransitionRoot :show="showAddBoxModal" as="template">
+  <Dialog class="relative z-50" @close="closeAddBoxModal">
+    <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+    <div class="fixed inset-0 overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <DialogPanel
+          class="w-full max-w-md rounded-xl sm:rounded-2xl bg-white p-4 sm:p-6 shadow-xl"
+        >
+          <DialogTitle class="text-base sm:text-lg font-semibold mb-4">
+            {{ t.addBoxTitle }}
+          </DialogTitle>
 
-              <div class="space-y-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">
-                    {{ t.selectProduct }}
-                  </label>
-                  <select
-                    v-model="newBox.stripe_price_id"
-                    class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
-                  >
-                    <option value="" disabled>{{ t.selectBoxSize }}</option>
-                    <option
-                      v-for="prod in filteredProducts"
-                      :key="prod.id"
-                      :value="prod.price_id"
-                    >
-                      {{ prod.name }} - ${{ prod.price }} {{ prod.currency }}
-                    </option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">
-                    {{ t.quantity }}
-                  </label>
-                  <input
-                    v-model.number="newBox.quantity"
-                    type="number"
-                    min="1"
-                    max="10"
-                    class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
-                  />
-                </div>
-              </div>
-
-              <div class="mt-6 flex gap-3 justify-end">
-                <button
-                  type="button"
-                  @click="showAddBoxModal = false"
-                  class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm"
+          <div class="space-y-4">
+            <!-- Box Size Selection -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                {{ t.selectProduct }}
+              </label>
+              <select
+                v-model="newBox.stripe_price_id"
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
+              >
+                <option value="" disabled>{{ t.selectBoxSize }}</option>
+                <option
+                  v-for="prod in filteredProducts"
+                  :key="prod.id"
+                  :value="prod.price_id"
                 >
-                  {{ t.cancel }}
-                </button>
-                <button
-                  type="button"
-                  @click="addNewBox"
-                  :disabled="!newBox.stripe_price_id"
-                  :class="[
-                    'px-4 py-2 text-white rounded-lg disabled:opacity-50 text-sm',
-                    isCrossing ? 'bg-amber-600 hover:bg-amber-700' : 'bg-primary-600 hover:bg-primary-700'
-                  ]"
-                >
-                  {{ t.addBox }}
-                </button>
-              </div>
-            </DialogPanel>
+                  {{ prod.name }} - ${{ prod.price }} {{ prod.currency }}
+                </option>
+              </select>
+            </div>
+            
+
+            <!-- Guia Number (only for shipping orders) -->
+            <div v-if="!isCrossing">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                {{ t.guiaNumberLabel }}
+                <span class="text-gray-400 font-normal">({{ t.optional }})</span>
+              </label>
+              <input
+                v-model="newBox.guia_number"
+                type="text"
+                placeholder="1234567890"
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
+              />
+            </div>
+
+            <!-- GIA Document (only for shipping orders) -->
+            <div v-if="!isCrossing">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                {{ t.giaDocument }}
+                <span class="text-gray-400 font-normal">({{ t.optional }})</span>
+              </label>
+              <input
+                type="file"
+                @change="handleNewBoxGiaFile"
+                accept=".pdf"
+                class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+              />
+              <p v-if="newBox.gia_file" class="text-xs text-green-600 mt-1 flex items-center gap-1">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                {{ newBox.gia_file.name }}
+              </p>
+            </div>
           </div>
-        </div>
-      </Dialog>
-    </TransitionRoot>
+
+          <div class="mt-6 flex gap-3 justify-end">
+            <button
+              type="button"
+              @click="closeAddBoxModal"
+              class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg text-sm"
+            >
+              {{ t.cancel }}
+            </button>
+            <button
+              type="button"
+              @click="addNewBox"
+              :disabled="!newBox.stripe_price_id"
+              :class="[
+                'px-4 py-2 text-white rounded-lg disabled:opacity-50 text-sm',
+                isCrossing ? 'bg-amber-600 hover:bg-amber-700' : 'bg-primary-600 hover:bg-primary-700'
+              ]"
+            >
+              {{ t.addBox }}
+            </button>
+          </div>
+        </DialogPanel>
+      </div>
+    </div>
+  </Dialog>
+</TransitionRoot>
   </section>
 </template>
-
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from "vue";
 import {
@@ -1300,7 +1343,7 @@ const errorMessage = ref("");
 const originalData = ref(null);
 const products = ref([]);
 const showAddBoxModal = ref(false);
-const newBox = ref({ stripe_price_id: "", quantity: 1 });
+const newBox = ref({ stripe_price_id: "", guia_number: "", gia_file: null });
 const useSimpleAddress = ref(false);
 const isInitialLoad = ref(true);
 
@@ -1340,7 +1383,6 @@ const form = ref({
   delivered_at: null,
   estimated_delivery_date: null,
   actual_delivery_date: null,
-  guia_number: "",
   deposit_invoice_id: "",
   deposit_payment_link: "",
   stripe_invoice_id: "",
@@ -1388,8 +1430,7 @@ const translations = {
   editOrder: { es: "Editar Orden", en: "Edit Order" },
   orderInformation: { es: "Información de la Orden", en: "Order Information" },
   financialInformation: { es: "Información Financiera", en: "Financial Information" },
-  shippingInformation: { es: "Información de Envío", en: "Shipping Information" },
-  pickupInformation: { es: "Información de Recolección", en: "Pickup Information" },
+  paymentLinks: { es: "Links de Pago", en: "Payment Links" },
   importantDates: { es: "Fechas Importantes", en: "Important Dates" },
   notesTitle: { es: "Notas", en: "Notes" },
   statusLabel: { es: "Estado", en: "Status" },
@@ -1415,6 +1456,10 @@ const translations = {
   totalBoxPrice: { es: "Precio Total Cajas", en: "Total Box Price" },
   updatedViaStripe: { es: "Actualizado automáticamente vía Stripe", en: "Automatically updated via Stripe" },
   guiaNumberLabel: { es: "Número de Guía", en: "Waybill Number" },
+  giaDocument: { es: "Documento GIA", en: "GIA Document" },
+  downloadGia: { es: "Descargar GIA", en: "Download GIA" },
+  pendingUpload: { es: "Pendiente de subir", en: "Pending upload" },
+  optional: { es: "Opcional", en: "Optional" },
   depositPaymentLinkLabel: { es: "Link Depósito", en: "Deposit Link" },
   fullPaymentLinkLabel: { es: "Link de Pago", en: "Payment Link" },
   paymentLinkLabel: { es: "Link Pago Final", en: "Final Payment Link" },
@@ -1469,8 +1514,7 @@ const translations = {
   cancelled: { es: "Cancelado", en: "Cancelled" },
   box: { es: "caja", en: "box" },
   boxesLabel: { es: "cajas", en: "boxes" },
-  quantity: { es: "Cantidad", en: "Quantity" },
-  qty: { es: "Cant", en: "Qty" },
+  boxLabel: { es: "Caja", en: "Box" },
   addBox: { es: "Agregar Caja", en: "Add Box" },
   addBoxTitle: { es: "Agregar Nueva Caja", en: "Add New Box" },
   selectProduct: { es: "Seleccionar Producto", en: "Select Product" },
@@ -1484,25 +1528,32 @@ const t = createTranslations(translations);
 // Computed
 const isCrossing = computed(() => form.value.order_type === 'crossing');
 
-const totalBoxCount = computed(() => {
-  if (!form.value.boxes || form.value.boxes.length === 0) return 0;
-  return form.value.boxes.reduce((sum, box) => sum + (box.quantity || 1), 0);
-});
-
 const calculatedTotalBoxPrice = computed(() => {
   if (!form.value.boxes || form.value.boxes.length === 0) return 0;
   return form.value.boxes.reduce((sum, box) => {
     const price = parseFloat(box.box_price) || 0;
-    const qty = box.quantity || 1;
-    return sum + price * qty;
+    return sum + price;
   }, 0);
 });
 
 const hasChanges = computed(() => {
-  return JSON.stringify(form.value) !== JSON.stringify(originalData.value);
+  // Create comparison copies without File objects
+  const formCopy = JSON.parse(JSON.stringify(form.value, (key, value) => {
+    if (key === 'new_gia_file' || key === 'gia_file') return undefined;
+    return value;
+  }));
+  const originalCopy = JSON.parse(JSON.stringify(originalData.value, (key, value) => {
+    if (key === 'new_gia_file' || key === 'gia_file') return undefined;
+    return value;
+  }));
+  
+  // Check if any box has a new GIA file to upload
+  const hasNewGiaFiles = form.value.boxes.some(box => box.new_gia_file);
+  
+  return JSON.stringify(formCopy) !== JSON.stringify(originalCopy) || hasNewGiaFiles;
 });
 
-// Filter products based on order type (for adding NEW boxes)
+// Filter products based on order type
 const filteredProducts = computed(() => {
   if (isCrossing.value) {
     return products.value.filter(p => {
@@ -1636,14 +1687,10 @@ const formatDateForInput = (date) => {
   return `${year}-${month}-${day}`;
 };
 
-// Watch for order_type changes - only clear shipping-specific fields, NOT boxes
+// Watch for order_type changes
 watch(() => form.value.order_type, (newType, oldType) => {
-  // Skip during initial load
-  if (isInitialLoad.value) {
-    return;
-  }
+  if (isInitialLoad.value) return;
   
-  // When switching to crossing, clear shipping-specific fields (but NOT boxes)
   if (newType === 'crossing' && oldType === 'shipping') {
     form.value.delivery_address = {
       full_address: "",
@@ -1658,10 +1705,17 @@ watch(() => form.value.order_type, (newType, oldType) => {
     };
     form.value.is_rural = false;
     form.value.rural_surcharge = null;
-    form.value.guia_number = "";
     form.value.payment_link = "";
+    
+    // Clear guia/gia from boxes when switching to crossing
+    form.value.boxes.forEach(box => {
+      box.guia_number = "";
+      box.gia_url = null;
+      box.gia_filename = null;
+      box.gia_path = null;
+      box.new_gia_file = null;
+    });
   }
-  // Boxes are preserved regardless of order type change
 });
 
 // Watch for box changes to update total price
@@ -1679,6 +1733,15 @@ watch(
 const removeBox = (index) => {
   form.value.boxes.splice(index, 1);
   form.value.box_price = calculatedTotalBoxPrice.value;
+};
+
+const closeAddBoxModal = () => {
+  showAddBoxModal.value = false;
+  newBox.value = { stripe_price_id: "", guia_number: "", gia_file: null };
+};
+
+const handleNewBoxGiaFile = (e) => {
+  newBox.value.gia_file = e.target.files[0] || null;
 };
 
 const addNewBox = () => {
@@ -1701,12 +1764,20 @@ const addNewBox = () => {
     box_name: selectedProduct.name,
     box_price: parseFloat(selectedProduct.price) || 0,
     currency: selectedProduct.currency?.toLowerCase() || "mxn",
-    quantity: newBox.value.quantity,
+    guia_number: newBox.value.guia_number || "",
+    gia_url: null,
+    gia_filename: null,
+    gia_path: null,
+    new_gia_file: newBox.value.gia_file || null,
   });
 
   form.value.box_price = calculatedTotalBoxPrice.value;
-  newBox.value = { stripe_price_id: "", quantity: 1 };
-  showAddBoxModal.value = false;
+  closeAddBoxModal();
+};
+
+const handleGiaFileChange = (e, index) => {
+  const file = e.target.files[0] || null;
+  form.value.boxes[index].new_gia_file = file;
 };
 
 const fetchProducts = async () => {
@@ -1727,11 +1798,9 @@ const fetchOrder = async () => {
     const response = await $customFetch(`/admin/orders/${orderId}`);
     order.value = response.data;
 
-    // Check if this order uses simple address format
     const hasFullAddress = order.value.delivery_address?.full_address;
     useSimpleAddress.value = !!hasFullAddress;
 
-    // Build boxes array from order data
     let boxesArray = [];
     
     if (order.value.boxes && order.value.boxes.length > 0) {
@@ -1743,7 +1812,11 @@ const fetchOrder = async () => {
         box_name: box.box_name,
         box_price: parseFloat(box.box_price) || 0,
         currency: box.currency?.toLowerCase() || "mxn",
-        quantity: box.quantity || 1,
+        guia_number: box.guia_number || "",
+        gia_url: box.gia_url || box.gia_full_url || null,
+        gia_filename: box.gia_filename || null,
+        gia_path: box.gia_path || null,
+        new_gia_file: null,
       }));
     } else if (order.value.box_size && order.value.stripe_price_id) {
       const matchingProduct = findProductByPriceId(order.value.stripe_price_id) 
@@ -1757,7 +1830,11 @@ const fetchOrder = async () => {
         box_name: matchingProduct?.name || formatBoxSizeLabel(order.value.box_size),
         box_price: parseFloat(order.value.box_price) || matchingProduct?.price || 0,
         currency: order.value.currency?.toLowerCase() || matchingProduct?.currency?.toLowerCase() || "mxn",
-        quantity: 1,
+        guia_number: order.value.guia_number || "",
+        gia_url: order.value.gia_url || null,
+        gia_filename: order.value.gia_filename || null,
+        gia_path: order.value.gia_path || null,
+        new_gia_file: null,
       }];
     }
 
@@ -1795,7 +1872,6 @@ const fetchOrder = async () => {
       delivered_at: formatDateTimeForInput(order.value.delivered_at),
       estimated_delivery_date: formatDateForInput(order.value.estimated_delivery_date),
       actual_delivery_date: formatDateForInput(order.value.actual_delivery_date),
-      guia_number: order.value.guia_number || "",
       deposit_amount: parseFloat(order.value.deposit_amount) || null,
       deposit_invoice_id: order.value.deposit_invoice_id || "",
       deposit_payment_link: order.value.deposit_payment_link || "",
@@ -1803,7 +1879,10 @@ const fetchOrder = async () => {
       payment_link: order.value.payment_link || "",
     };
 
-    originalData.value = JSON.parse(JSON.stringify(form.value));
+    originalData.value = JSON.parse(JSON.stringify(form.value, (key, value) => {
+      if (key === 'new_gia_file' || key === 'gia_file') return null;
+      return value;
+    }));
     
     nextTick(() => {
       isInitialLoad.value = false;
@@ -1825,100 +1904,114 @@ const handleSubmit = async () => {
   errorMessage.value = "";
 
   try {
-    const updates = {};
-
+    // Check if we have any GIA files to upload (new or replacement)
+    const hasGiaFiles = form.value.boxes.some(box => box.new_gia_file);
+    
+    // Always use FormData since backend now expects it for boxes with GIA support
+    const formData = new FormData();
+    
+    // Add basic fields only if changed
     if (form.value.order_type !== originalData.value.order_type) {
-      updates.order_type = form.value.order_type;
+      formData.append('order_type', form.value.order_type);
     }
     if (form.value.status !== originalData.value.status) {
-      updates.status = form.value.status;
+      formData.append('status', form.value.status);
     }
     if (form.value.total_weight !== originalData.value.total_weight) {
-      updates.total_weight = form.value.total_weight;
+      formData.append('total_weight', form.value.total_weight ?? '');
     }
     if (form.value.declared_value !== originalData.value.declared_value) {
-      updates.declared_value = form.value.declared_value;
+      formData.append('declared_value', form.value.declared_value ?? '');
     }
     if (form.value.is_rural !== originalData.value.is_rural) {
-      updates.is_rural = form.value.is_rural;
+      formData.append('is_rural', form.value.is_rural ? '1' : '0');
     }
     if (form.value.rural_surcharge !== originalData.value.rural_surcharge) {
-      updates.rural_surcharge = form.value.rural_surcharge;
+      formData.append('rural_surcharge', form.value.rural_surcharge ?? '');
     }
     if (form.value.deposit_amount !== originalData.value.deposit_amount) {
-      updates.deposit_amount = form.value.deposit_amount;
+      formData.append('deposit_amount', form.value.deposit_amount ?? '');
     }
     if (form.value.amount_paid !== originalData.value.amount_paid) {
-      updates.amount_paid = form.value.amount_paid;
+      formData.append('amount_paid', form.value.amount_paid ?? '');
     }
     if (form.value.notes !== originalData.value.notes) {
-      updates.notes = form.value.notes;
-    }
-    if (form.value.guia_number !== originalData.value.guia_number) {
-      updates.guia_number = form.value.guia_number;
+      formData.append('notes', form.value.notes ?? '');
     }
     if (form.value.deposit_payment_link !== originalData.value.deposit_payment_link) {
-      updates.deposit_payment_link = form.value.deposit_payment_link;
+      formData.append('deposit_payment_link', form.value.deposit_payment_link ?? '');
     }
     if (form.value.payment_link !== originalData.value.payment_link) {
-      updates.payment_link = form.value.payment_link;
+      formData.append('payment_link', form.value.payment_link ?? '');
     }
     if (form.value.paid_at !== originalData.value.paid_at) {
-      updates.paid_at = form.value.paid_at;
+      formData.append('paid_at', form.value.paid_at ?? '');
     }
     if (form.value.deposit_paid_at !== originalData.value.deposit_paid_at) {
-      updates.deposit_paid_at = form.value.deposit_paid_at;
+      formData.append('deposit_paid_at', form.value.deposit_paid_at ?? '');
     }
     if (form.value.shipped_at !== originalData.value.shipped_at) {
-      updates.shipped_at = form.value.shipped_at;
+      formData.append('shipped_at', form.value.shipped_at ?? '');
     }
     if (form.value.delivered_at !== originalData.value.delivered_at) {
-      updates.delivered_at = form.value.delivered_at;
+      formData.append('delivered_at', form.value.delivered_at ?? '');
     }
 
     // Handle delivery address
     if (form.value.order_type === 'crossing') {
-      updates.delivery_address = null;
-      updates.is_rural = false;
+      formData.append('delivery_address', '');
     } else if (
       JSON.stringify(form.value.delivery_address) !==
       JSON.stringify(originalData.value.delivery_address)
     ) {
       if (useSimpleAddress.value) {
-        updates.delivery_address = {
-          full_address: form.value.delivery_address.full_address,
-        };
+        formData.append('delivery_address[full_address]', form.value.delivery_address.full_address ?? '');
       } else {
-        updates.delivery_address = {
-          street: form.value.delivery_address.street,
-          exterior_number: form.value.delivery_address.exterior_number,
-          interior_number: form.value.delivery_address.interior_number,
-          colonia: form.value.delivery_address.colonia,
-          municipio: form.value.delivery_address.municipio,
-          estado: form.value.delivery_address.estado,
-          postal_code: form.value.delivery_address.postal_code,
-          referencias: form.value.delivery_address.referencias,
-        };
+        formData.append('delivery_address[street]', form.value.delivery_address.street ?? '');
+        formData.append('delivery_address[exterior_number]', form.value.delivery_address.exterior_number ?? '');
+        formData.append('delivery_address[interior_number]', form.value.delivery_address.interior_number ?? '');
+        formData.append('delivery_address[colonia]', form.value.delivery_address.colonia ?? '');
+        formData.append('delivery_address[municipio]', form.value.delivery_address.municipio ?? '');
+        formData.append('delivery_address[estado]', form.value.delivery_address.estado ?? '');
+        formData.append('delivery_address[postal_code]', form.value.delivery_address.postal_code ?? '');
+        formData.append('delivery_address[referencias]', form.value.delivery_address.referencias ?? '');
       }
     }
 
-    // Handle boxes
-    if (JSON.stringify(form.value.boxes) !== JSON.stringify(originalData.value.boxes)) {
-      if (form.value.boxes.length > 0) {
-        updates.boxes = form.value.boxes
-          .filter((box) => box.stripe_price_id)
-          .map((box) => ({
-            stripe_price_id: box.stripe_price_id,
-            quantity: box.quantity || 1,
-          }));
-      } else {
-        updates.boxes = [];
-      }
+    // Check if boxes changed
+    const originalBoxesCompare = originalData.value.boxes.map(b => ({
+      id: b.id,
+      stripe_price_id: b.stripe_price_id,
+      guia_number: b.guia_number,
+    }));
+    const currentBoxesCompare = form.value.boxes.map(b => ({
+      id: b.id,
+      stripe_price_id: b.stripe_price_id,
+      guia_number: b.guia_number,
+    }));
+    
+    const boxesChanged = JSON.stringify(originalBoxesCompare) !== JSON.stringify(currentBoxesCompare) || hasGiaFiles;
+
+    if (boxesChanged) {
+      // Add all boxes with their GIA data
+      form.value.boxes.forEach((box, index) => {
+        if (box.id) {
+          formData.append(`boxes[${index}][id]`, box.id);
+        }
+        formData.append(`boxes[${index}][stripe_price_id]`, box.stripe_price_id);
+        formData.append(`boxes[${index}][guia_number]`, box.guia_number ?? '');
+        if (box.new_gia_file) {
+          formData.append(`boxes[${index}][gia_file]`, box.new_gia_file);
+        }
+      });
     }
+
+    // Use POST with _method=PUT for FormData (Laravel convention)
+    formData.append('_method', 'PUT');
 
     const response = await $customFetch(`/admin/management/orders/${orderId}`, {
-      method: "PUT",
-      body: updates,
+      method: "POST",
+      body: formData,
     });
 
     if (response.success) {
