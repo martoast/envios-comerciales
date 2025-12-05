@@ -73,19 +73,32 @@
           <h2 class="text-xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-50">{{ t.generalInfo }}</h2>
           
           <div class="space-y-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-900 mb-2">{{ t.status }}</label>
-              <select
-                v-model="form.status"
-                class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all cursor-pointer bg-gray-50 hover:bg-white"
-              >
-                <option value="pending_review">{{ t.pendingReview }}</option>
-                <option value="quoted">{{ t.quoted }}</option>
-                <option value="paid">{{ t.paid }}</option>
-                <option value="purchased">{{ t.purchased }}</option>
-                <option value="rejected">{{ t.rejected }}</option>
-                <option value="cancelled">{{ t.cancelled }}</option>
-              </select>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-semibold text-gray-900 mb-2">{{ t.status }}</label>
+                <select
+                  v-model="form.status"
+                  class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all cursor-pointer bg-gray-50 hover:bg-white"
+                >
+                  <option value="pending_review">{{ t.pendingReview }}</option>
+                  <option value="quoted">{{ t.quoted }}</option>
+                  <option value="paid">{{ t.paid }}</option>
+                  <option value="purchased">{{ t.purchased }}</option>
+                  <option value="rejected">{{ t.rejected }}</option>
+                  <option value="cancelled">{{ t.cancelled }}</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-900 mb-2">{{ t.paymentMethod }}</label>
+                <select
+                  v-model="form.payment_method"
+                  class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all cursor-pointer bg-gray-50 hover:bg-white"
+                >
+                  <option value="stripe">{{ t.stripe }}</option>
+                  <option value="manual_deposit">{{ t.manualDeposit }}</option>
+                </select>
+              </div>
             </div>
 
             <div>
@@ -169,6 +182,7 @@
           <div>
             <label class="block text-sm font-semibold text-gray-900 mb-2">{{ t.paymentLink }}</label>
             <input v-model="form.payment_link" type="url" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 text-sm text-blue-600 font-medium bg-blue-50/30">
+            <p class="mt-1 text-xs text-gray-400">{{ t.paymentLinkHint }}</p>
           </div>
         </div>
 
@@ -217,6 +231,7 @@ const originalData = ref(null);
 
 const form = ref({
   status: "",
+  payment_method: "stripe",
   admin_notes: "",
   items_total: 0,
   shipping_cost: 0,
@@ -235,6 +250,9 @@ const translations = {
   },
   generalInfo: { es: "Información General", en: "General Information" },
   status: { es: "Estado", en: "Status" },
+  paymentMethod: { es: "Método de Pago", en: "Payment Method" },
+  stripe: { es: "Stripe (Factura)", en: "Stripe (Invoice)" },
+  manualDeposit: { es: "Depósito Manual (NU Bank)", en: "Manual Deposit (NU Bank)" },
   adminNotes: { es: "Notas de Admin", en: "Admin Notes" },
   financials: { es: "Finanzas", en: "Financials" },
   currency: { es: "Moneda", en: "Currency" },
@@ -245,6 +263,7 @@ const translations = {
   total: { es: "Total", en: "Total" },
   links: { es: "Enlaces", en: "Links" },
   paymentLink: { es: "Enlace de Pago", en: "Payment Link" },
+  paymentLinkHint: { es: "Solo aplica para pagos con Stripe.", en: "Only applies to Stripe payments." },
   cancel: { es: "Cancelar", en: "Cancel" },
   saveChanges: { es: "Guardar Cambios", en: "Save Changes" },
   saving: { es: "Guardando...", en: "Saving..." },
@@ -265,7 +284,6 @@ const t = createTranslations(translations);
 
 const currencySymbol = computed(() => {
   return form.value.currency === 'mxn' ? '$' : '$';
-  // Both use $ but you could differentiate with labels if needed
 });
 
 const fetchRequest = async () => {
@@ -285,6 +303,7 @@ const fetchRequest = async () => {
 
     form.value = {
       status: data.status,
+      payment_method: data.payment_method || "stripe",
       admin_notes: data.admin_notes || "",
       items_total: data.items_total || calculatedTotal.toFixed(2),
       shipping_cost: data.shipping_cost,
