@@ -1,83 +1,13 @@
 <template>
   <section class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="sticky top-0 z-40 bg-white border-b border-gray-200">
-      <div class="px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          <div class="flex items-center gap-4">
-            <NuxtLink
-              to="/app/admin/orders"
-              class="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-              </svg>
-            </NuxtLink>
-            <div>
-              <h1 class="text-lg font-semibold text-gray-900">{{ t.orderDetails }}</h1>
-              <p class="text-sm text-gray-500">{{ order?.order_number }}</p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <!-- Status Badge -->
-            <span
-              v-if="order"
-              :class="['px-3 py-1 rounded-full text-xs font-medium', getStatusColor(order.status)]"
-            >
-              {{ getStatusLabel(order.status) }}
-            </span>
-
-            <div class="relative">
-              <button
-                @click="showActionsMenu = !showActionsMenu"
-                @blur="() => setTimeout(() => (showActionsMenu = false), 200)"
-                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                </svg>
-              </button>
-
-              <Transition
-                enter-active-class="transition ease-out duration-100"
-                enter-from-class="transform opacity-0 scale-95"
-                enter-to-class="transform opacity-100 scale-100"
-                leave-active-class="transition ease-in duration-75"
-                leave-from-class="transform opacity-100 scale-100"
-                leave-to-class="transform opacity-0 scale-95"
-              >
-                <div
-                  v-if="showActionsMenu"
-                  class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50"
-                >
-                  <NuxtLink
-                    :to="`/app/admin/orders/${order.id}/edit`"
-                    @click="showActionsMenu = false"
-                    class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    {{ t.editOrder }}
-                  </NuxtLink>
-                  <hr class="my-1 border-gray-100" />
-                  <button
-                    @click="openDeleteModal"
-                    class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    {{ t.deleteOrder }}
-                  </button>
-                </div>
-              </Transition>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Header Component -->
+    <AdminOrderHeader
+      :order="order"
+      :show-menu="showActionsMenu"
+      @toggle-menu="showActionsMenu = !showActionsMenu"
+      @close-menu="showActionsMenu = false"
+      @delete="openDeleteModal"
+    />
 
     <!-- Loading State -->
     <div v-if="loading" class="flex items-center justify-center min-h-[60vh]">
@@ -105,6 +35,18 @@
             </svg>
             {{ t.waitingForPackages }}
           </div>
+
+          <!-- Mark All Items Arrived Button (show when awaiting_packages and has pending items) -->
+          <button
+            v-if="order.status === 'awaiting_packages' && hasPendingItems"
+            @click="showMarkAllArrivedModal = true"
+            class="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors shadow-sm"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ t.markAllArrived }}
+          </button>
 
           <!-- 2. Start Processing -->
           <button
@@ -571,6 +513,20 @@
                 <p class="font-medium">{{ order.total_weight || 0 }} kg</p>
               </div>
 
+              <!-- Items Arrival Progress -->
+              <div v-if="order.status === 'awaiting_packages'" class="border-t border-gray-100 pt-3 mt-3">
+                <div class="flex justify-between items-center mb-2">
+                  <p class="text-sm text-gray-500">{{ t.itemsArrived }}</p>
+                  <p class="text-sm font-medium">{{ arrivedItemsCount }} / {{ totalItemsCount }}</p>
+                </div>
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    class="h-full bg-teal-500 rounded-full transition-all duration-500"
+                    :style="{ width: `${arrivalProgress}%` }"
+                  ></div>
+                </div>
+              </div>
+
               <!-- Boxes Summary for CROSSING orders -->
               <div v-if="isCrossing && hasBoxes" class="border-t border-gray-100 pt-3 mt-3">
                 <div class="flex items-center justify-between mb-2">
@@ -830,11 +786,61 @@
       @close="showDeleteModal = false"
       @success="() => router.push('/app/admin/orders')"
     />
+
+    <!-- Mark All Items Arrived Modal -->
+    <div v-if="showMarkAllArrivedModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">{{ t.markAllArrivedTitle }}</h3>
+            <p class="text-sm text-gray-500">{{ t.markAllArrivedSubtitle }}</p>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+          <p class="text-sm text-gray-700">{{ t.markAllArrivedDesc }}</p>
+          <div class="mt-3 flex items-center gap-2 text-sm">
+            <span class="font-semibold text-gray-900">{{ pendingItemsCount }}</span>
+            <span class="text-gray-600">{{ t.itemsWillBeMarked }}</span>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button
+            @click="showMarkAllArrivedModal = false"
+            :disabled="markingAllArrived"
+            class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+          >
+            {{ t.cancel }}
+          </button>
+          <button
+            @click="handleMarkAllArrived"
+            :disabled="markingAllArrived"
+            class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            <svg v-if="markingAllArrived" class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            {{ markingAllArrived ? t.processing : t.confirmMarkAllArrived }}
+          </button>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import AdminOrderHeader from "~/components/admin/AdminOrderHeader.vue";
 import AdminOrderItemsList from "~/components/admin/AdminOrderItemsList.vue";
 import AdminOrderTimeline from "~/components/admin/AdminOrderTimeline.vue";
 import AdminOrderModalStartProcessing from "~/components/admin/AdminOrderModalStartProcessing.vue";
@@ -869,7 +875,9 @@ const showFinalInvoiceModal = ref(false);
 const showMarkPaidModal = ref(false);
 const showMarkArrivedModal = ref(false);
 const showDeleteModal = ref(false);
+const showMarkAllArrivedModal = ref(false);
 const selectedItem = ref(null);
+const markingAllArrived = ref(false);
 
 const translations = {
   orderDetails: { es: "Detalles de la Orden", en: "Order Details" },
@@ -880,6 +888,7 @@ const translations = {
   shipping: { es: "Envío", en: "Shipping" },
   currentStage: { es: "Etapa Actual", en: "Current Stage" },
   waitingForPackages: { es: "Esperando Paquetes", en: "Waiting for Packages" },
+  markAllArrived: { es: "Marcar Todos Llegados", en: "Mark All Arrived" },
   startProcessing: { es: "Iniciar Procesamiento", en: "Start Processing" },
   shipOrder: { es: "Enviar (50% Depósito)", en: "Ship (50% Deposit)" },
   markReadyForPickup: { es: "Listo para Recoger", en: "Ready for Pickup" },
@@ -904,6 +913,7 @@ const translations = {
   trackingNumber: { es: "Rastreo #", en: "Tracking #" },
   orderType: { es: "Tipo", en: "Type" },
   totalWeight: { es: "Peso Total", en: "Total Weight" },
+  itemsArrived: { es: "Artículos Llegados", en: "Items Arrived" },
   shippingBoxes: { es: "Cajas de Envío", en: "Shipping Boxes" },
   shippingInfo: { es: "Información de Envío", en: "Shipping Info" },
   boxesWithTracking: { es: "Con guías y documentos GIA", en: "With tracking & GIA documents" },
@@ -932,6 +942,16 @@ const translations = {
   viewOnMap: { es: "Ver en mapa", en: "View on map" },
   copyAddress: { es: "Copiar", en: "Copy" },
   copiedToClipboard: { es: "¡Copiado!", en: "Copied!" },
+  cancel: { es: "Cancelar", en: "Cancel" },
+  processing: { es: "Procesando...", en: "Processing..." },
+  // Mark All Arrived Modal
+  markAllArrivedTitle: { es: "Marcar Todos como Llegados", en: "Mark All as Arrived" },
+  markAllArrivedSubtitle: { es: "¿Confirmar llegada de todos los artículos?", en: "Confirm arrival of all items?" },
+  markAllArrivedDesc: { es: "Esta acción marcará todos los artículos pendientes de esta orden como llegados al almacén.", en: "This action will mark all pending items in this order as arrived at the warehouse." },
+  itemsWillBeMarked: { es: "artículos serán marcados como llegados", en: "items will be marked as arrived" },
+  confirmMarkAllArrived: { es: "Sí, Marcar Todos", en: "Yes, Mark All" },
+  markAllArrivedSuccess: { es: "Todos los artículos marcados como llegados", en: "All items marked as arrived" },
+  markAllArrivedError: { es: "Error al marcar artículos", en: "Error marking items" },
 };
 
 const t = createTranslations(translations);
@@ -947,6 +967,16 @@ const hasBoxes = computed(() => {
 // Check if order has legacy shipping info (OLD structure - guia/gia at order level)
 const hasLegacyShippingInfo = computed(() => {
   return order.value?.guia_number || order.value?.gia_url;
+});
+
+// Items arrival tracking
+const totalItemsCount = computed(() => order.value?.items?.length || 0);
+const arrivedItemsCount = computed(() => order.value?.items?.filter(item => item.arrived)?.length || 0);
+const pendingItemsCount = computed(() => totalItemsCount.value - arrivedItemsCount.value);
+const hasPendingItems = computed(() => pendingItemsCount.value > 0);
+const arrivalProgress = computed(() => {
+  if (totalItemsCount.value === 0) return 0;
+  return Math.round((arrivedItemsCount.value / totalItemsCount.value) * 100);
 });
 
 const totalBoxPrice = computed(() => {
@@ -1066,7 +1096,27 @@ const handleModalSuccess = async () => {
   showFinalInvoiceModal.value = false;
   showMarkPaidModal.value = false;
   showMarkArrivedModal.value = false;
+  showMarkAllArrivedModal.value = false;
   await fetchOrder();
+};
+
+const handleMarkAllArrived = async () => {
+  markingAllArrived.value = true;
+  try {
+    const response = await $customFetch(`/admin/orders/${order.value.id}/items/mark-all-arrived`, {
+      method: 'PUT',
+    });
+    
+    if (response.success) {
+      $toast.success(t.value.markAllArrivedSuccess);
+      await handleModalSuccess();
+    }
+  } catch (error) {
+    console.error(error);
+    $toast.error(t.value.markAllArrivedError);
+  } finally {
+    markingAllArrived.value = false;
+  }
 };
 
 const openMarkArrivedModal = (item) => {
