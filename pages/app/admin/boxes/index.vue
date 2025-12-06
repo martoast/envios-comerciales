@@ -521,19 +521,44 @@
                 </div>
 
                 <!-- Tracking Status -->
-                <div v-if="box.guia_number && getBoxTrackingInfo(box.guia_number)" class="mt-2 pt-2 border-t border-gray-100">
-                  <div class="flex items-center gap-2">
-                    <span
-                      :class="[
-                        'inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-lg border',
-                        getTrackingStatusColor(getBoxTrackingInfo(box.guia_number).status.tag)
-                      ]"
-                    >
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="getTrackingStatusIcon(getBoxTrackingInfo(box.guia_number).status.tag)" />
-                      </svg>
-                      {{ getTrackingStatusLabel(getBoxTrackingInfo(box.guia_number).status.tag) }}
+                <div v-if="box.guia_number" class="mt-2 pt-2 border-t border-gray-100">
+                  <div class="flex items-center justify-between gap-2">
+                    <!-- Tracking Info Available -->
+                    <div v-if="getBoxTrackingInfo(box.guia_number)" class="flex items-center gap-2">
+                      <span
+                        :class="[
+                          'inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-lg border',
+                          getTrackingStatusColor(getBoxTrackingInfo(box.guia_number).status.tag)
+                        ]"
+                      >
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="getTrackingStatusIcon(getBoxTrackingInfo(box.guia_number).status.tag)" />
+                        </svg>
+                        {{ getTrackingStatusLabel(getBoxTrackingInfo(box.guia_number).status.tag) }}
+                      </span>
+                    </div>
+                    <!-- No tracking yet - show click to track -->
+                    <span v-else-if="!isTrackingLoading(box.guia_number)" class="text-xs text-gray-400">
+                      {{ t.clickToTrack }}
                     </span>
+                    <!-- Loading -->
+                    <div v-else class="flex items-center gap-1 text-gray-400">
+                      <svg class="animate-spin w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </div>
+                    <!-- Refresh Button -->
+                    <button
+                      @click.prevent.stop="refreshTracking(box.guia_number)"
+                      :disabled="isTrackingLoading(box.guia_number)"
+                      class="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors disabled:opacity-50"
+                      :title="t.refreshTracking"
+                    >
+                      <svg :class="['w-4 h-4', isTrackingLoading(box.guia_number) ? 'animate-spin' : '']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </NuxtLink>
@@ -643,34 +668,47 @@
 
                   <!-- Tracking Status -->
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <!-- Loading -->
-                    <div v-if="trackingLoading && box.guia_number" class="flex items-center gap-2 text-gray-400">
-                      <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                    </div>
-                    <!-- Tracking Available -->
-                    <div v-else-if="box.guia_number && getBoxTrackingInfo(box.guia_number)">
-                      <span
-                        :class="[
-                          'inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg border',
-                          getTrackingStatusColor(getBoxTrackingInfo(box.guia_number).status.tag)
-                        ]"
-                      >
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="getTrackingStatusIcon(getBoxTrackingInfo(box.guia_number).status.tag)" />
+                    <div v-if="box.guia_number" class="flex items-center gap-2">
+                      <!-- Loading -->
+                      <div v-if="isTrackingLoading(box.guia_number)" class="flex items-center gap-2 text-gray-400">
+                        <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        {{ getTrackingStatusLabel(getBoxTrackingInfo(box.guia_number).status.tag) }}
-                      </span>
-                      <p v-if="getBoxTrackingInfo(box.guia_number).destination?.location" class="text-xs text-gray-500 mt-1">
-                        📍 {{ getBoxTrackingInfo(box.guia_number).destination.location }}
-                      </p>
+                      </div>
+                      <!-- Tracking Available -->
+                      <div v-else-if="getBoxTrackingInfo(box.guia_number)">
+                        <span
+                          :class="[
+                            'inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg border',
+                            getTrackingStatusColor(getBoxTrackingInfo(box.guia_number).status.tag)
+                          ]"
+                        >
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="getTrackingStatusIcon(getBoxTrackingInfo(box.guia_number).status.tag)" />
+                          </svg>
+                          {{ getTrackingStatusLabel(getBoxTrackingInfo(box.guia_number).status.tag) }}
+                        </span>
+                        <p v-if="getBoxTrackingInfo(box.guia_number).destination?.location" class="text-xs text-gray-500 mt-1">
+                          📍 {{ getBoxTrackingInfo(box.guia_number).destination.location }}
+                        </p>
+                      </div>
+                      <!-- No Tracking Info Yet -->
+                      <span v-else class="text-xs text-gray-400 italic">{{ t.clickToTrack }}</span>
+                      <!-- Refresh Button -->
+                      <button
+                        @click.stop="refreshTracking(box.guia_number)"
+                        :disabled="isTrackingLoading(box.guia_number)"
+                        class="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors disabled:opacity-50"
+                        :title="t.refreshTracking"
+                      >
+                        <svg :class="['w-4 h-4', isTrackingLoading(box.guia_number) ? 'animate-spin' : '']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                      </button>
                     </div>
                     <!-- No Guia -->
-                    <span v-else-if="!box.guia_number" class="text-xs text-gray-400">-</span>
-                    <!-- No Tracking Info -->
-                    <span v-else class="text-xs text-gray-400 italic">{{ t.noTrackingInfo }}</span>
+                    <span v-else class="text-xs text-gray-400">-</span>
                   </td>
 
                   <!-- GIA -->
@@ -786,9 +824,9 @@ const pagination = ref({
   total: 0
 })
 
-// Tracking state
+// Tracking state - per guia number loading state
 const trackingData = ref({})
-const trackingLoading = ref(false)
+const trackingLoadingMap = ref({})
 
 // Define translations
 const translations = {
@@ -837,6 +875,8 @@ const translations = {
   statusExpired: { es: 'Expirado', en: 'Expired' },
   statusUnknown: { es: 'Desconocido', en: 'Unknown' },
   noTrackingInfo: { es: 'Sin info', en: 'No info' },
+  refreshTracking: { es: 'Actualizar', en: 'Refresh' },
+  clickToTrack: { es: 'Click para rastrear', en: 'Click to track' },
   // Date range
   dateRange: { es: 'Rango de Fechas', en: 'Date Range' },
   selectDateRange: { es: 'Seleccionar fechas', en: 'Select dates' },
@@ -1089,9 +1129,9 @@ const fetchBoxes = async (page = 1) => {
       to: Math.min(response.meta.current_page * response.meta.per_page, response.meta.total),
       total: response.meta.total
     }
-
-    // Fetch tracking info for boxes with guia numbers
-    await fetchBulkTracking()
+    // Clear tracking data when boxes change (user must click to refresh)
+    trackingData.value = {}
+    trackingLoadingMap.value = {}
   } catch (error) {
     console.error('Error fetching boxes:', error)
   } finally {
@@ -1099,31 +1139,35 @@ const fetchBoxes = async (page = 1) => {
   }
 }
 
-const fetchBulkTracking = async () => {
-  // Collect all guia numbers from boxes
-  const guiaNumbers = boxes.value
-    .filter(box => box.guia_number)
-    .map(box => box.guia_number)
+// Refresh tracking for a single guia number
+const refreshTracking = async (guiaNumber) => {
+  if (!guiaNumber) return
 
-  if (guiaNumbers.length === 0) return
-
-  trackingLoading.value = true
+  trackingLoadingMap.value[guiaNumber] = true
 
   try {
-    const packages = guiaNumbers.map(num => ({ tracking_number: num }))
-    const response = await $customFetch('/shipment-tracking/track/bulk', {
+    const response = await $customFetch('/shipment-tracking/track', {
       method: 'POST',
-      body: { packages }
+      body: {
+        tracking_number: guiaNumber,
+        carrier: 'estafeta',
+        refresh: true
+      }
     })
 
     if (response.success && response.data) {
-      trackingData.value = response.data
+      trackingData.value[guiaNumber] = response.data
     }
   } catch (error) {
     console.error('Error fetching tracking data:', error)
   } finally {
-    trackingLoading.value = false
+    trackingLoadingMap.value[guiaNumber] = false
   }
+}
+
+// Check if a specific guia is loading
+const isTrackingLoading = (guiaNumber) => {
+  return trackingLoadingMap.value[guiaNumber] === true
 }
 
 const changePage = (page) => {

@@ -318,10 +318,27 @@
 
                 <!-- Tracking Status Card -->
                 <div v-if="box.guia_number" class="mt-3 pt-3 border-t border-gray-200">
-                  <p class="text-xs font-medium text-gray-500 mb-2">{{ t.trackingStatus }}</p>
+                  <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-medium text-gray-500">{{ t.trackingStatus }}</p>
+                    <button
+                      @click="refreshTracking(box.guia_number)"
+                      :disabled="isTrackingLoading(box.guia_number)"
+                      class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-primary-600 hover:text-primary-800 hover:bg-primary-50 rounded transition-colors disabled:opacity-50"
+                    >
+                      <svg
+                        :class="['w-3 h-3', isTrackingLoading(box.guia_number) ? 'animate-spin' : '']"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      {{ t.refreshTracking }}
+                    </button>
+                  </div>
 
                   <!-- Loading State -->
-                  <div v-if="trackingLoading" class="flex items-center gap-2 text-gray-400">
+                  <div v-if="isTrackingLoading(box.guia_number)" class="flex items-center gap-2 text-gray-400">
                     <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -376,9 +393,12 @@
                     </div>
                   </div>
 
-                  <!-- No Tracking Info Yet -->
-                  <div v-else class="text-xs text-gray-400 italic">
-                    {{ t.noTrackingInfo }}
+                  <!-- No Tracking Info Yet - Click to Track -->
+                  <div v-else class="flex items-center gap-2 text-xs text-gray-400 italic">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                    </svg>
+                    {{ t.clickToTrack }}
                   </div>
                 </div>
 
@@ -486,10 +506,27 @@
 
               <!-- Tracking Status Card (Legacy) -->
               <div v-if="order.guia_number" class="mt-3 pt-3 border-t border-gray-200">
-                <p class="text-xs font-medium text-gray-500 mb-2">{{ t.trackingStatus }}</p>
+                <div class="flex items-center justify-between mb-2">
+                  <p class="text-xs font-medium text-gray-500">{{ t.trackingStatus }}</p>
+                  <button
+                    @click="refreshTracking(order.guia_number)"
+                    :disabled="isTrackingLoading(order.guia_number)"
+                    class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-primary-600 hover:text-primary-800 hover:bg-primary-50 rounded transition-colors disabled:opacity-50"
+                  >
+                    <svg
+                      :class="['w-3 h-3', isTrackingLoading(order.guia_number) ? 'animate-spin' : '']"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    {{ t.refreshTracking }}
+                  </button>
+                </div>
 
                 <!-- Loading State -->
-                <div v-if="trackingLoading" class="flex items-center gap-2 text-gray-400">
+                <div v-if="isTrackingLoading(order.guia_number)" class="flex items-center gap-2 text-gray-400">
                   <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -544,9 +581,12 @@
                   </div>
                 </div>
 
-                <!-- No Tracking Info Yet -->
-                <div v-else class="text-xs text-gray-400 italic">
-                  {{ t.noTrackingInfo }}
+                <!-- No Tracking Info Yet - Click to Track -->
+                <div v-else class="flex items-center gap-2 text-xs text-gray-400 italic">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                  </svg>
+                  {{ t.clickToTrack }}
                 </div>
               </div>
 
@@ -996,9 +1036,9 @@ const order = ref(null);
 const loading = ref(true);
 const showActionsMenu = ref(false);
 
-// Tracking state
+// Tracking state - per guia number loading state
 const trackingData = ref({});
-const trackingLoading = ref(false);
+const trackingLoadingMap = ref({});
 
 // Modal States
 const showStartProcessingModal = ref(false);
@@ -1102,6 +1142,8 @@ const translations = {
   loadingTracking: { es: "Cargando rastreo...", en: "Loading tracking..." },
   noTrackingInfo: { es: "Sin info de rastreo", en: "No tracking info" },
   lastUpdate: { es: "Última actualización", en: "Last update" },
+  refreshTracking: { es: "Actualizar", en: "Refresh" },
+  clickToTrack: { es: "Click para rastrear", en: "Click to track" },
 };
 
 const t = createTranslations(translations);
@@ -1227,11 +1269,10 @@ const copyToClipboard = async (text) => {
 
 const fetchOrder = async () => {
   loading.value = true;
+  trackingData.value = {};
   try {
     const response = await $customFetch(`/admin/orders/${route.params.id}`);
     order.value = response.data;
-    // Fetch tracking info after order is loaded
-    await fetchBulkTracking();
   } catch (error) {
     $toast.error("Error loading order");
     router.push("/app/admin/orders");
@@ -1401,42 +1442,34 @@ const formatTrackingDate = (dateString) => {
   });
 };
 
-const fetchBulkTracking = async () => {
-  if (!order.value || isCrossing.value) return;
+// Refresh tracking for a single guia number
+const refreshTracking = async (guiaNumber) => {
+  if (!guiaNumber) return;
 
-  // Collect all guia numbers from boxes
-  const guiaNumbers = [];
-
-  if (hasBoxes.value) {
-    order.value.boxes.forEach(box => {
-      if (box.guia_number) {
-        guiaNumbers.push(box.guia_number);
-      }
-    });
-  } else if (order.value.guia_number) {
-    guiaNumbers.push(order.value.guia_number);
-  }
-
-  if (guiaNumbers.length === 0) return;
-
-  trackingLoading.value = true;
+  trackingLoadingMap.value[guiaNumber] = true;
 
   try {
-    const packages = guiaNumbers.map(num => ({ tracking_number: num }));
-    const response = await $customFetch('/shipment-tracking/track/bulk', {
+    const response = await $customFetch('/shipment-tracking/track', {
       method: 'POST',
-      body: { packages }
+      body: {
+        tracking_number: guiaNumber,
+        carrier: 'estafeta',
+        refresh: true
+      }
     });
 
     if (response.success && response.data) {
-      trackingData.value = response.data;
+      trackingData.value[guiaNumber] = response.data;
     }
   } catch (error) {
     console.error('Error fetching tracking data:', error);
-    // Don't show error toast - tracking is supplementary info
   } finally {
-    trackingLoading.value = false;
+    trackingLoadingMap.value[guiaNumber] = false;
   }
+};
+
+const isTrackingLoading = (guiaNumber) => {
+  return trackingLoadingMap.value[guiaNumber] === true;
 };
 
 onMounted(() => {
