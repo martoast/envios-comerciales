@@ -316,6 +316,72 @@
                   <p class="text-lg font-bold text-gray-900">${{ parseFloat(box.box_price).toFixed(2) }}</p>
                 </div>
 
+                <!-- Tracking Status Card -->
+                <div v-if="box.guia_number" class="mt-3 pt-3 border-t border-gray-200">
+                  <p class="text-xs font-medium text-gray-500 mb-2">{{ t.trackingStatus }}</p>
+
+                  <!-- Loading State -->
+                  <div v-if="trackingLoading" class="flex items-center gap-2 text-gray-400">
+                    <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-xs">{{ t.loadingTracking }}</span>
+                  </div>
+
+                  <!-- Tracking Info Available -->
+                  <div v-else-if="getBoxTrackingInfo(box.guia_number)" class="space-y-2">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <!-- Status Badge -->
+                        <span
+                          :class="[
+                            'inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg border',
+                            getTrackingStatusColor(getBoxTrackingInfo(box.guia_number).status.tag)
+                          ]"
+                        >
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="getTrackingStatusIcon(getBoxTrackingInfo(box.guia_number).status.tag)" />
+                          </svg>
+                          {{ getTrackingStatusLabel(getBoxTrackingInfo(box.guia_number).status.tag) }}
+                        </span>
+                      </div>
+
+                      <!-- Track Link -->
+                      <NuxtLink
+                        :to="`/track?tracking_number=${box.guia_number}`"
+                        target="_blank"
+                        class="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-800 transition-colors"
+                      >
+                        {{ t.viewTracking }}
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </NuxtLink>
+                    </div>
+
+                    <!-- Latest checkpoint message -->
+                    <div v-if="getBoxTrackingInfo(box.guia_number).checkpoints?.length" class="text-xs text-gray-600 bg-white rounded-lg p-2 border border-gray-100">
+                      <p class="font-medium">{{ getBoxTrackingInfo(box.guia_number).checkpoints[getBoxTrackingInfo(box.guia_number).checkpoints.length - 1].message }}</p>
+                      <p class="text-gray-400 mt-0.5">{{ formatTrackingDate(getBoxTrackingInfo(box.guia_number).checkpoints[getBoxTrackingInfo(box.guia_number).checkpoints.length - 1].time) }}</p>
+                    </div>
+
+                    <!-- Origin/Destination mini info -->
+                    <div v-if="getBoxTrackingInfo(box.guia_number).origin?.location || getBoxTrackingInfo(box.guia_number).destination?.location" class="flex items-center gap-2 text-xs text-gray-500">
+                      <span v-if="getBoxTrackingInfo(box.guia_number).origin?.location">{{ getBoxTrackingInfo(box.guia_number).origin.location }}</span>
+                      <svg v-if="getBoxTrackingInfo(box.guia_number).origin?.location && getBoxTrackingInfo(box.guia_number).destination?.location" class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                      <span v-if="getBoxTrackingInfo(box.guia_number).destination?.location">{{ getBoxTrackingInfo(box.guia_number).destination.location }}</span>
+                    </div>
+                  </div>
+
+                  <!-- No Tracking Info Yet -->
+                  <div v-else class="text-xs text-gray-400 italic">
+                    {{ t.noTrackingInfo }}
+                  </div>
+                </div>
+
                 <!-- Guia & GIA Info -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-gray-200">
                   <!-- Guia Number -->
@@ -323,9 +389,8 @@
                     <p class="text-xs font-medium text-gray-500 mb-1">{{ t.guiaNumber }}</p>
                     <div v-if="box.guia_number" class="flex items-center gap-2">
                       <NuxtLink
-                        :to="`https://www.dhl.com/mx-es/home/rastreo.html?tracking-id=${box.guia_number}`"
+                        :to="`/track?tracking_number=${box.guia_number}`"
                         target="_blank"
-                        external
                         class="font-mono text-sm font-bold text-primary-700 hover:text-primary-900 hover:underline flex items-center gap-1"
                       >
                         {{ box.guia_number }}
@@ -419,6 +484,72 @@
                 <p v-if="order.box_price" class="text-lg font-bold text-gray-900">${{ parseFloat(order.box_price).toFixed(2) }}</p>
               </div>
 
+              <!-- Tracking Status Card (Legacy) -->
+              <div v-if="order.guia_number" class="mt-3 pt-3 border-t border-gray-200">
+                <p class="text-xs font-medium text-gray-500 mb-2">{{ t.trackingStatus }}</p>
+
+                <!-- Loading State -->
+                <div v-if="trackingLoading" class="flex items-center gap-2 text-gray-400">
+                  <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span class="text-xs">{{ t.loadingTracking }}</span>
+                </div>
+
+                <!-- Tracking Info Available -->
+                <div v-else-if="getBoxTrackingInfo(order.guia_number)" class="space-y-2">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <!-- Status Badge -->
+                      <span
+                        :class="[
+                          'inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg border',
+                          getTrackingStatusColor(getBoxTrackingInfo(order.guia_number).status.tag)
+                        ]"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="getTrackingStatusIcon(getBoxTrackingInfo(order.guia_number).status.tag)" />
+                        </svg>
+                        {{ getTrackingStatusLabel(getBoxTrackingInfo(order.guia_number).status.tag) }}
+                      </span>
+                    </div>
+
+                    <!-- Track Link -->
+                    <NuxtLink
+                      :to="`/track?tracking_number=${order.guia_number}`"
+                      target="_blank"
+                      class="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-800 transition-colors"
+                    >
+                      {{ t.viewTracking }}
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </NuxtLink>
+                  </div>
+
+                  <!-- Latest checkpoint message -->
+                  <div v-if="getBoxTrackingInfo(order.guia_number).checkpoints?.length" class="text-xs text-gray-600 bg-white rounded-lg p-2 border border-gray-100">
+                    <p class="font-medium">{{ getBoxTrackingInfo(order.guia_number).checkpoints[getBoxTrackingInfo(order.guia_number).checkpoints.length - 1].message }}</p>
+                    <p class="text-gray-400 mt-0.5">{{ formatTrackingDate(getBoxTrackingInfo(order.guia_number).checkpoints[getBoxTrackingInfo(order.guia_number).checkpoints.length - 1].time) }}</p>
+                  </div>
+
+                  <!-- Origin/Destination mini info -->
+                  <div v-if="getBoxTrackingInfo(order.guia_number).origin?.location || getBoxTrackingInfo(order.guia_number).destination?.location" class="flex items-center gap-2 text-xs text-gray-500">
+                    <span v-if="getBoxTrackingInfo(order.guia_number).origin?.location">{{ getBoxTrackingInfo(order.guia_number).origin.location }}</span>
+                    <svg v-if="getBoxTrackingInfo(order.guia_number).origin?.location && getBoxTrackingInfo(order.guia_number).destination?.location" class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                    <span v-if="getBoxTrackingInfo(order.guia_number).destination?.location">{{ getBoxTrackingInfo(order.guia_number).destination.location }}</span>
+                  </div>
+                </div>
+
+                <!-- No Tracking Info Yet -->
+                <div v-else class="text-xs text-gray-400 italic">
+                  {{ t.noTrackingInfo }}
+                </div>
+              </div>
+
               <!-- Guia & GIA Info -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-gray-200">
                 <!-- Guia Number -->
@@ -426,9 +557,8 @@
                   <p class="text-xs font-medium text-gray-500 mb-1">{{ t.guiaNumber }}</p>
                   <div v-if="order.guia_number" class="flex items-center gap-2">
                     <NuxtLink
-                      :to="`https://www.dhl.com/mx-es/home/rastreo.html?tracking-id=${order.guia_number}`"
+                      :to="`/track?tracking_number=${order.guia_number}`"
                       target="_blank"
-                      external
                       class="font-mono text-sm font-bold text-primary-700 hover:text-primary-900 hover:underline flex items-center gap-1"
                     >
                       {{ order.guia_number }}
@@ -866,6 +996,10 @@ const order = ref(null);
 const loading = ref(true);
 const showActionsMenu = ref(false);
 
+// Tracking state
+const trackingData = ref({});
+const trackingLoading = ref(false);
+
 // Modal States
 const showStartProcessingModal = ref(false);
 const showShipOrderModal = ref(false);
@@ -952,6 +1086,22 @@ const translations = {
   confirmMarkAllArrived: { es: "Sí, Marcar Todos", en: "Yes, Mark All" },
   markAllArrivedSuccess: { es: "Todos los artículos marcados como llegados", en: "All items marked as arrived" },
   markAllArrivedError: { es: "Error al marcar artículos", en: "Error marking items" },
+  // Tracking status
+  trackingStatus: { es: "Estado de Envío", en: "Shipping Status" },
+  trackOnEstafeta: { es: "Rastrear en Estafeta", en: "Track on Estafeta" },
+  viewTracking: { es: "Ver Rastreo", en: "View Tracking" },
+  statusPending: { es: "Pendiente", en: "Pending" },
+  statusInfoReceived: { es: "Info Recibida", en: "Info Received" },
+  statusInTransit: { es: "En Tránsito", en: "In Transit" },
+  statusOutForDelivery: { es: "En Reparto", en: "Out for Delivery" },
+  statusDelivered: { es: "Entregado", en: "Delivered" },
+  statusAttemptFail: { es: "Intento Fallido", en: "Attempt Failed" },
+  statusException: { es: "Excepción", en: "Exception" },
+  statusExpired: { es: "Expirado", en: "Expired" },
+  statusUnknown: { es: "Desconocido", en: "Unknown" },
+  loadingTracking: { es: "Cargando rastreo...", en: "Loading tracking..." },
+  noTrackingInfo: { es: "Sin info de rastreo", en: "No tracking info" },
+  lastUpdate: { es: "Última actualización", en: "Last update" },
 };
 
 const t = createTranslations(translations);
@@ -1080,6 +1230,8 @@ const fetchOrder = async () => {
   try {
     const response = await $customFetch(`/admin/orders/${route.params.id}`);
     order.value = response.data;
+    // Fetch tracking info after order is loaded
+    await fetchBulkTracking();
   } catch (error) {
     $toast.error("Error loading order");
     router.push("/app/admin/orders");
@@ -1184,6 +1336,107 @@ const formatAddress = (address) => {
   if (!address) return "-";
   if (address.full_address) return address.full_address;
   return [address.street, address.exterior_number, address.colonia, address.municipio, address.estado, address.postal_code].filter(Boolean).join(", ") || "-";
+};
+
+// Tracking helper functions
+const getTrackingStatusLabel = (status) => {
+  const statusMap = {
+    'Pending': t.value.statusPending,
+    'InfoReceived': t.value.statusInfoReceived,
+    'InTransit': t.value.statusInTransit,
+    'OutForDelivery': t.value.statusOutForDelivery,
+    'AttemptFail': t.value.statusAttemptFail,
+    'Delivered': t.value.statusDelivered,
+    'AvailableForPickup': t.value.statusDelivered,
+    'Exception': t.value.statusException,
+    'Expired': t.value.statusExpired
+  };
+  return statusMap[status] || t.value.statusUnknown;
+};
+
+const getTrackingStatusColor = (status) => {
+  const colors = {
+    'Pending': 'bg-gray-100 text-gray-700 border-gray-200',
+    'InfoReceived': 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    'InTransit': 'bg-blue-50 text-blue-700 border-blue-200',
+    'OutForDelivery': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    'AttemptFail': 'bg-orange-50 text-orange-700 border-orange-200',
+    'Delivered': 'bg-green-50 text-green-700 border-green-200',
+    'AvailableForPickup': 'bg-cyan-50 text-cyan-700 border-cyan-200',
+    'Exception': 'bg-red-50 text-red-700 border-red-200',
+    'Expired': 'bg-gray-100 text-gray-500 border-gray-200'
+  };
+  return colors[status] || 'bg-gray-100 text-gray-600 border-gray-200';
+};
+
+const getTrackingStatusIcon = (status) => {
+  // Returns SVG path for status icon
+  const icons = {
+    'Pending': 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', // clock
+    'InfoReceived': 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z', // info
+    'InTransit': 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4', // arrows right
+    'OutForDelivery': 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0', // truck
+    'AttemptFail': 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z', // warning
+    'Delivered': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', // check circle
+    'AvailableForPickup': 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', // building
+    'Exception': 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z', // x circle
+    'Expired': 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' // clock
+  };
+  return icons[status] || icons['Pending'];
+};
+
+const getBoxTrackingInfo = (guiaNumber) => {
+  if (!guiaNumber || !trackingData.value[guiaNumber]) return null;
+  return trackingData.value[guiaNumber];
+};
+
+const formatTrackingDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-MX', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+const fetchBulkTracking = async () => {
+  if (!order.value || isCrossing.value) return;
+
+  // Collect all guia numbers from boxes
+  const guiaNumbers = [];
+
+  if (hasBoxes.value) {
+    order.value.boxes.forEach(box => {
+      if (box.guia_number) {
+        guiaNumbers.push(box.guia_number);
+      }
+    });
+  } else if (order.value.guia_number) {
+    guiaNumbers.push(order.value.guia_number);
+  }
+
+  if (guiaNumbers.length === 0) return;
+
+  trackingLoading.value = true;
+
+  try {
+    const packages = guiaNumbers.map(num => ({ tracking_number: num }));
+    const response = await $customFetch('/shipment-tracking/track/bulk', {
+      method: 'POST',
+      body: { packages }
+    });
+
+    if (response.success && response.data) {
+      trackingData.value = response.data;
+    }
+  } catch (error) {
+    console.error('Error fetching tracking data:', error);
+    // Don't show error toast - tracking is supplementary info
+  } finally {
+    trackingLoading.value = false;
+  }
 };
 
 onMounted(() => {
