@@ -59,6 +59,19 @@
               {{ t.orders }}
             </button>
 
+            <!-- Boxes -->
+            <button
+              @click="handleNavigation('/app/admin/boxes')"
+              :class="[
+                isActiveRoute('/app/admin/boxes')
+                  ? 'border-primary-500 text-gray-900'
+                  : 'border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900',
+                'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors duration-200',
+              ]"
+            >
+              {{ t.boxes }}
+            </button>
+
             <!-- Purchase Requests (NEW) -->
             <button
               @click="handleNavigation('/app/admin/purchase-requests')"
@@ -211,6 +224,18 @@
           ]"
         >{{ t.orders }}</DisclosureButton>
 
+        <!-- Boxes (Mobile) -->
+        <DisclosureButton
+          as="button"
+          @click="handleNavigation('/app/admin/boxes')"
+          :class="[
+            isActiveRoute('/app/admin/boxes')
+              ? 'bg-primary-50 border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900',
+            'block border-l-4 py-2 pl-3 pr-4 text-base font-medium sm:pl-5 sm:pr-6 w-full text-left',
+          ]"
+        >{{ t.boxes }}</DisclosureButton>
+
         <!-- Purchase Requests (Mobile) -->
         <DisclosureButton
           as="button"
@@ -316,6 +341,7 @@ const { t: createTranslations } = useLanguage();
 const translations = {
   dashboard: { es: 'Panel de Control', en: 'Dashboard' },
   orders: { es: 'Órdenes', en: 'Orders' },
+  boxes: { es: 'Cajas', en: 'Boxes' },
   purchaseRequests: { es: 'Compra Asistida', en: 'Assisted Purchase' },
   packages: { es: 'Paquetes', en: 'Packages' },
   customers: { es: 'Clientes', en: 'Customers' },
