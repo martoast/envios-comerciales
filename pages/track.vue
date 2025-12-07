@@ -55,16 +55,6 @@
       </div>
     </div>
 
-    <!-- Compact Header -->
-    <div class="relative z-20 bg-white/80 border-b border-gray-200 backdrop-blur-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <NuxtLink to="/" class="inline-flex items-center text-gray-600 hover:text-primary-600 transition-all duration-200 group text-sm font-bold">
-          <ArrowLeftIcon class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-          {{ t.backToHome }}
-        </NuxtLink>
-      </div>
-    </div>
-
     <!-- Main Content -->
     <div class="relative z-10 flex items-center justify-center min-h-[calc(100vh-60px)] px-4 sm:px-6 lg:px-8 py-8">
       <div class="w-full max-w-2xl">
@@ -107,6 +97,7 @@
             
             <div class="relative p-6 sm:p-8">
               <form @submit.prevent="handleTrack" class="space-y-5">
+                <!-- Tracking Number Input -->
                 <div>
                   <label for="tracking_number" class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                     {{ t.trackingLabel }}
@@ -132,6 +123,106 @@
                   </p>
                 </div>
 
+                <!-- Carrier Selector (Optional) -->
+                <div>
+                  <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                    {{ t.carrierLabel }}
+                    <span class="text-gray-300 font-medium normal-case ml-1">({{ t.carrierDefault }})</span>
+                  </label>
+
+                  <!-- Selected Carrier Badge -->
+                  <div v-if="selectedCarrier" class="flex items-center gap-2">
+                    <div class="flex-1 flex items-center gap-3 px-4 py-3 bg-primary-50 border-2 border-primary-200 rounded-xl">
+                      <TruckIcon class="w-5 h-5 text-primary-600" />
+                      <span class="font-bold text-primary-700">{{ selectedCarrier.name }}</span>
+                      <span class="text-xs text-primary-500 font-medium">({{ selectedCarrier.slug }})</span>
+                    </div>
+                    <button
+                      type="button"
+                      @click="clearCarrier"
+                      class="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                    >
+                      <XMarkIcon class="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <!-- Carrier Search Input -->
+                  <div v-else class="relative">
+                    <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                      <TruckIcon class="w-5 h-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      :value="carrierSearch"
+                      @input="handleCarrierSearch"
+                      @focus="handleCarrierInputFocus"
+                      @blur="handleCarrierInputBlur"
+                      :placeholder="t.carrierPlaceholder"
+                      class="w-full pl-12 pr-10 py-3.5 text-base border-2 border-gray-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-50 focus:border-primary-500 transition-all duration-200 bg-gray-50/50 font-medium text-gray-900 placeholder-gray-400"
+                      :disabled="loading"
+                    />
+                    <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                      <ChevronDownIcon class="w-4 h-4 text-gray-400" />
+                    </div>
+
+                    <!-- Carrier Dropdown -->
+                    <Transition
+                      enter-active-class="transition ease-out duration-200"
+                      enter-from-class="opacity-0 translate-y-1"
+                      enter-to-class="opacity-100 translate-y-0"
+                      leave-active-class="transition ease-in duration-150"
+                      leave-from-class="opacity-100 translate-y-0"
+                      leave-to-class="opacity-0 translate-y-1"
+                    >
+                      <div
+                        v-if="showCarrierDropdown"
+                        class="absolute z-50 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden max-h-64 overflow-y-auto"
+                      >
+                        <!-- Loading State -->
+                        <div v-if="loadingCarriers" class="px-4 py-3 text-center">
+                          <div class="inline-flex items-center gap-2 text-gray-500">
+                            <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span class="text-sm font-medium">{{ t.searchingCarriers }}</span>
+                          </div>
+                        </div>
+
+                        <!-- Results -->
+                        <template v-else-if="carrierResults.length > 0">
+                          <p v-if="!carrierSearch" class="px-4 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider bg-gray-50">
+                            {{ t.popularCarriersLabel }}
+                          </p>
+                          <button
+                            v-for="carrier in carrierResults"
+                            :key="carrier.slug"
+                            type="button"
+                            @click="selectCarrier(carrier)"
+                            class="w-full px-4 py-3 flex items-center gap-3 hover:bg-primary-50 transition-colors text-left border-b border-gray-50 last:border-b-0"
+                          >
+                            <TruckIcon class="w-5 h-5 text-gray-400" />
+                            <div>
+                              <p class="font-bold text-gray-900">{{ carrier.name }}</p>
+                              <p class="text-xs text-gray-500">{{ carrier.slug }}</p>
+                            </div>
+                          </button>
+                        </template>
+
+                        <!-- No Results -->
+                        <div v-else-if="carrierSearch && carrierSearch.length >= 2" class="px-4 py-3 text-center text-gray-500 text-sm">
+                          {{ t.noCarriersFound }}
+                        </div>
+
+                        <!-- Type More -->
+                        <div v-else-if="carrierSearch && carrierSearch.length < 2" class="px-4 py-3 text-center text-gray-400 text-sm">
+                          {{ t.typeMoreHint }}
+                        </div>
+                      </div>
+                    </Transition>
+                  </div>
+                </div>
+
                 <button
                   type="submit"
                   :disabled="loading || !trackingNumber.trim()"
@@ -149,21 +240,43 @@
                 </button>
               </form>
 
-              <!-- Popular Carriers -->
+              <!-- Popular Carriers - Click to Select -->
               <div class="mt-6 pt-6 border-t border-gray-100">
                 <p class="text-[10px] font-bold text-gray-400 text-center mb-3 uppercase tracking-widest">
                   {{ t.supportedCarriers }}
                 </p>
                 <div class="flex flex-wrap justify-center gap-2">
-                  <span 
-                    v-for="carrier in popularCarriers" 
-                    :key="carrier" 
-                    class="px-3 py-1.5 bg-gray-50 hover:bg-white text-gray-600 hover:text-primary-700 text-xs font-bold rounded-lg border border-gray-100 hover:border-primary-200 transition-all duration-200 cursor-default shadow-sm hover:shadow-md"
+                  <button
+                    v-for="carrier in popularCarriersList"
+                    :key="carrier.slug"
+                    type="button"
+                    @click="selectCarrier(carrier)"
+                    :class="[
+                      'px-3 py-1.5 text-xs font-bold rounded-lg border transition-all duration-200 shadow-sm hover:shadow-md',
+                      selectedCarrier?.slug === carrier.slug
+                        ? 'bg-primary-100 text-primary-700 border-primary-300'
+                        : 'bg-gray-50 hover:bg-white text-gray-600 hover:text-primary-700 border-gray-100 hover:border-primary-200'
+                    ]"
                   >
-                    {{ carrier }}
-                  </span>
+                    {{ carrier.name }}
+                  </button>
                 </div>
               </div>
+
+              <!-- Direct Carrier Link -->
+              <!-- <div class="mt-5 pt-5 border-t border-gray-100 text-center">
+                <p class="text-xs text-gray-500 mb-2">{{ t.orTrackDirectly }}</p>
+                <NuxtLink
+                  to="https://www.estafeta.com/rastrear-envio?rastreo=true"
+                  target="_blank"
+                  external
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 hover:text-gray-900 text-sm font-bold rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  <img src="/estafeta-logo.svg" alt="Estafeta" class="h-4 w-auto" onerror="this.style.display='none'" />
+                  <span>{{ t.trackOnEstafeta }}</span>
+                  <ArrowTopRightOnSquareIcon class="w-4 h-4 text-gray-400" />
+                </NuxtLink>
+              </div> -->
             </div>
           </div>
         </div>
@@ -210,6 +323,8 @@
                 </div>
               </div>
 
+             
+
               <!-- Message & Details -->
               <div class="p-6 bg-white">
                 <div class="flex items-start gap-4 mb-6">
@@ -227,20 +342,20 @@
                 </div>
 
                 <!-- Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 rounded-2xl p-5 border border-gray-100">
-                  <div v-if="trackingData.origin?.location" class="space-y-1">
+                <!-- <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                  <div v-if="trackingData.origin?.country || trackingData.origin?.location" class="space-y-1">
                     <p class="text-xs font-bold text-gray-400 uppercase">{{ t.origin }}</p>
-                    <p class="font-bold text-gray-800">{{ translateLocation(trackingData.origin.location) }}</p>
+                    <p class="font-bold text-gray-800">{{ translateLocation(trackingData.origin.location || trackingData.origin.country) }}</p>
                   </div>
-                  <div v-if="trackingData.destination?.location" class="space-y-1">
+                  <div v-if="trackingData.destination?.country || trackingData.destination?.location" class="space-y-1">
                     <p class="text-xs font-bold text-gray-400 uppercase">{{ t.destination }}</p>
-                    <p class="font-bold text-gray-800">{{ translateLocation(trackingData.destination.location) }}</p>
+                    <p class="font-bold text-gray-800">{{ translateLocation(trackingData.destination.location || trackingData.destination.country) }}</p>
                   </div>
                   <div v-if="trackingData.estimated_delivery" class="space-y-1 col-span-full pt-2 border-t border-gray-200/50 mt-2">
                      <p class="text-xs font-bold text-gray-400 uppercase">{{ t.estimatedDelivery }}</p>
                      <p class="font-bold text-primary-700">{{ formatDate(trackingData.estimated_delivery) }}</p>
                   </div>
-                </div>
+                </div> -->
               </div>
 
               <!-- History Expander (Simplified for this view) -->
@@ -299,7 +414,7 @@
 </template>
 
 <script setup>
-import { 
+import {
   ArrowLeftIcon,
   MagnifyingGlassIcon,
   ExclamationCircleIcon,
@@ -307,6 +422,7 @@ import {
   ArrowPathIcon,
   UserPlusIcon,
   XCircleIcon,
+  XMarkIcon,
   ShoppingCartIcon,
   ClockIcon,
   CheckCircleIcon,
@@ -314,9 +430,10 @@ import {
   CheckBadgeIcon,
   QuestionMarkCircleIcon,
   ArrowTopRightOnSquareIcon,
-  ChatBubbleLeftRightIcon
+  ChatBubbleLeftRightIcon,
+  ChevronDownIcon
 } from '@heroicons/vue/24/outline'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { $customFetch } = useNuxtApp()
@@ -330,13 +447,36 @@ const error = ref('')
 const trackingData = ref(null)
 const notFound = ref(false)
 
-// Popular carriers for display
-const popularCarriers = ['USPS', 'FedEx', 'UPS', 'DHL', 'Estafeta']
+// Carrier selection state
+const selectedCarrier = ref(null)
+const carrierSearch = ref('')
+const carrierResults = ref([])
+const showCarrierDropdown = ref(false)
+const loadingCarriers = ref(false)
+const carrierSearchDebounce = ref(null)
+
+// Popular carriers for quick selection
+const popularCarriersList = [
+  { slug: 'estafeta', name: 'Estafeta' },
+  { slug: 'fedex', name: 'FedEx' },
+  { slug: 'ups', name: 'UPS' },
+  { slug: 'dhl', name: 'DHL Express' },
+  { slug: 'usps', name: 'USPS' }
+]
 
 // Computed property to reverse checkpoints (latest first)
 const reversedCheckpoints = computed(() => {
   if (!trackingData.value?.checkpoints) return []
   return [...trackingData.value.checkpoints].reverse()
+})
+
+// Computed property to detect possible wrong carrier scenario
+// When status is Pending and there are no checkpoints, carrier info might be unreliable
+const isPossibleWrongCarrier = computed(() => {
+  if (!trackingData.value) return false
+  const isPending = trackingData.value.status?.tag === 'Pending'
+  const noCheckpoints = !trackingData.value.checkpoints || trackingData.value.checkpoints.length === 0
+  return isPending && noCheckpoints
 })
 
 // Translations
@@ -361,6 +501,34 @@ const translations = {
     es: 'Ej: 1266888453',
     en: 'Ex: 1266888453'
   },
+  carrierLabel: {
+    es: 'Paquetería',
+    en: 'Carrier'
+  },
+  carrierPlaceholder: {
+    es: 'Buscar paquetería... (opcional)',
+    en: 'Search carrier... (optional)'
+  },
+  carrierDefault: {
+    es: 'Por defecto: Estafeta',
+    en: 'Default: Estafeta'
+  },
+  popularCarriersLabel: {
+    es: 'Paqueterías populares',
+    en: 'Popular carriers'
+  },
+  noCarriersFound: {
+    es: 'No se encontraron paqueterías',
+    en: 'No carriers found'
+  },
+  searchingCarriers: {
+    es: 'Buscando...',
+    en: 'Searching...'
+  },
+  typeMoreHint: {
+    es: 'Escribe al menos 2 caracteres...',
+    en: 'Type at least 2 characters...'
+  },
   searchButton: {
     es: 'Buscar Paquete',
     en: 'Track Package'
@@ -372,6 +540,14 @@ const translations = {
   supportedCarriers: {
     es: 'Soportamos más de 1,400 paqueterías',
     en: 'We support 1,400+ carriers'
+  },
+  orTrackDirectly: {
+    es: 'O rastrea directamente en la paquetería',
+    en: 'Or track directly on the carrier website'
+  },
+  trackOnEstafeta: {
+    es: 'Rastrear en Estafeta',
+    en: 'Track on Estafeta'
   },
   trackingNumber: {
     es: 'Número de Rastreo',
@@ -440,6 +616,14 @@ const translations = {
   tryAgain: {
     es: 'Intentar de Nuevo',
     en: 'Try Again'
+  },
+  wrongCarrierWarning: {
+    es: 'No se encontró información de rastreo. Puede que el número pertenezca a otra paquetería.',
+    en: 'No tracking info found. This number might belong to a different carrier.'
+  },
+  tryDifferentCarrier: {
+    es: 'Intenta seleccionar otra paquetería',
+    en: 'Try selecting a different carrier'
   },
   // Status labels
   statusPending: {
@@ -585,6 +769,11 @@ const translateCheckpointMessage = (message) => {
 
 const translateLocation = (location) => {
   if (!location) return ''
+  // Handle country codes
+  if (location === 'USA' || location === 'US') return t.value.countryUSA
+  if (location === 'MX' || location === 'MEX') return t.value.countryMexico
+  if (location === 'CA' || location === 'CAN') return t.value.countryCanada
+  // Handle full country names in strings
   if (location.includes('United States')) return location.replace('United States', t.value.countryUSA)
   if (location.includes('Mexico')) return location.replace('Mexico', t.value.countryMexico)
   if (location.includes('Canada')) return location.replace('Canada', t.value.countryCanada)
@@ -649,6 +838,74 @@ const resetSearch = () => {
   trackingData.value = null
   notFound.value = false
   error.value = ''
+  selectedCarrier.value = null
+  carrierSearch.value = ''
+  carrierResults.value = []
+  showCarrierDropdown.value = false
+}
+
+// Carrier search with debounce
+const searchCarriers = async (query) => {
+  if (!query || query.length < 2) {
+    carrierResults.value = []
+    return
+  }
+
+  loadingCarriers.value = true
+  try {
+    const response = await $customFetch(`/shipment-tracking/carriers/search?query=${encodeURIComponent(query)}`)
+    if (response.success && response.data) {
+      carrierResults.value = response.data.slice(0, 10) // Limit to 10 results
+    }
+  } catch (err) {
+    console.error('Carrier search error:', err)
+    carrierResults.value = []
+  } finally {
+    loadingCarriers.value = false
+  }
+}
+
+const handleCarrierSearch = (event) => {
+  const query = event.target.value
+  carrierSearch.value = query
+  showCarrierDropdown.value = true
+
+  // Clear previous debounce
+  if (carrierSearchDebounce.value) {
+    clearTimeout(carrierSearchDebounce.value)
+  }
+
+  // Debounce search
+  carrierSearchDebounce.value = setTimeout(() => {
+    searchCarriers(query)
+  }, 300)
+}
+
+const selectCarrier = (carrier) => {
+  selectedCarrier.value = carrier
+  carrierSearch.value = ''
+  carrierResults.value = []
+  showCarrierDropdown.value = false
+}
+
+const clearCarrier = () => {
+  selectedCarrier.value = null
+  carrierSearch.value = ''
+}
+
+const handleCarrierInputFocus = () => {
+  showCarrierDropdown.value = true
+  // Show popular carriers if no search query
+  if (!carrierSearch.value) {
+    carrierResults.value = popularCarriersList
+  }
+}
+
+const handleCarrierInputBlur = () => {
+  // Delay to allow click on dropdown items
+  setTimeout(() => {
+    showCarrierDropdown.value = false
+  }, 200)
 }
 
 const handleTrack = async () => {
@@ -663,11 +920,18 @@ const handleTrack = async () => {
   trackingData.value = null
 
   try {
+    const body = {
+      tracking_number: trackingNumber.value.trim()
+    }
+
+    // Add carrier if selected (otherwise API defaults to estafeta)
+    if (selectedCarrier.value?.slug) {
+      body.carrier = selectedCarrier.value.slug
+    }
+
     const response = await $customFetch('/shipment-tracking/track', {
       method: 'POST',
-      body: {
-        tracking_number: trackingNumber.value.trim()
-      }
+      body
     })
 
     if (response.success && response.data) {
@@ -693,10 +957,17 @@ useSeoMeta({
 // Handle URL param on mount
 onMounted(() => {
   const trackingParam = route.query.tracking_number || route.query.tracking
-  
+
   if (trackingParam) {
     trackingNumber.value = trackingParam
     handleTrack()
+  }
+})
+
+// Cleanup debounce on unmount
+onUnmounted(() => {
+  if (carrierSearchDebounce.value) {
+    clearTimeout(carrierSearchDebounce.value)
   }
 })
 </script>
