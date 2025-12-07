@@ -1452,9 +1452,7 @@ const refreshTracking = async (guiaNumber) => {
     const response = await $customFetch('/shipment-tracking/track', {
       method: 'POST',
       body: {
-        tracking_number: guiaNumber,
-        carrier: 'estafeta',
-        refresh: true
+        tracking_number: guiaNumber
       }
     });
 
