@@ -59,7 +59,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
                   </NuxtLink>
-                  
+
                   <a
                     href="#box-pricing"
                     class="px-8 py-4 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold rounded-full transition-all duration-300 border border-white/30"
@@ -67,6 +67,24 @@
                     {{ t.ctaCalculate }}
                   </a>
                 </div>
+
+                <!-- Trustpilot Reviews Link -->
+                <a
+                  href="https://www.trustpilot.com/review/boxly.mx"
+                  target="_blank"
+                  rel="noopener"
+                  class="mt-6 inline-flex items-center gap-2 text-white/90 hover:text-white transition-colors duration-300 group"
+                >
+                  <div class="flex items-center gap-0.5">
+                    <svg v-for="i in 5" :key="i" class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                  </div>
+                  <span class="text-sm font-medium">{{ t.reviewsOnTrustpilot }}</span>
+                  <svg class="w-4 h-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                  </svg>
+                </a>
               </div>
             </div>
           </div>
@@ -175,6 +193,10 @@ const translations = {
   ctaTrack: {
     es: "Rastrear Mi Envío",
     en: "Track My Shipment",
+  },
+  reviewsOnTrustpilot: {
+    es: "Ver reseñas en Trustpilot",
+    en: "See reviews on Trustpilot",
   }
 }
 

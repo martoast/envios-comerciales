@@ -3,25 +3,25 @@
   <div class="min-h-screen">
     <!-- Landing Pages Navbar (shown on non-auth and non-app pages) -->
     <LandingNavbar v-if="showLandingNavbar" />
-    
+
     <!-- Top Right Controls (shown on auth pages and when no navbar) -->
-    <div 
+    <div
       v-if="!showLandingNavbar"
       class="fixed top-4 right-4 sm:top-5 sm:right-5 z-[1001] flex items-center gap-3"
     >
       <!-- Login Button - Hidden on login/register pages -->
-      <NuxtLink 
+      <NuxtLink
         v-if="!isAuthPage"
-        to="/login" 
+        to="/login"
         class="px-4 py-1.5 rounded-full text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:border-primary-500 hover:text-primary-500 transition-all duration-200"
       >
         {{ t.loginButton }}
       </NuxtLink>
-      
+
       <!-- Language Toggle -->
       <LanguageToggle />
     </div>
-    
+
     <!-- Page Content -->
     <slot />
   </div>
