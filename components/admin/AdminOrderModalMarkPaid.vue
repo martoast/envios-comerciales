@@ -14,7 +14,7 @@
               </div>
               <DialogTitle class="text-lg font-semibold">{{ t.title }}</DialogTitle>
             </div>
-            
+
             <p class="text-sm text-gray-600 mb-4">
               {{ t.confirmText }} <strong>{{ order?.order_number }}</strong>
             </p>
@@ -29,25 +29,13 @@
                 </div>
                 <div class="flex justify-between">
                   <span class="text-gray-600">{{ t.paymentType }}:</span>
-                  <span class="font-medium">{{ isCrossing ? t.fullPayment : t.finalBalance }}</span>
+                  <span class="font-medium">{{ paymentTypeLabel }}</span>
                 </div>
-                
-                <!-- Show deposit already paid for shipping orders -->
-                <div v-if="!isCrossing && order?.deposit_paid_at" class="flex justify-between text-green-600">
-                  <span>{{ t.depositPaid }}:</span>
-                  <span class="font-medium">${{ formatAmount(order?.deposit_amount) }}</span>
-                </div>
-                
+
                 <!-- Amount to be marked as paid -->
                 <div v-if="paymentAmount" class="flex justify-between pt-2 border-t border-gray-200">
                   <span class="text-gray-900 font-semibold">{{ t.amount }}:</span>
                   <span class="font-bold text-green-600">${{ formatAmount(paymentAmount) }}</span>
-                </div>
-                
-                <!-- Total for shipping orders -->
-                <div v-if="!isCrossing && order?.box_price" class="flex justify-between text-xs text-gray-500">
-                  <span>{{ t.totalOrder }}:</span>
-                  <span>${{ formatAmount(order?.box_price) }}</span>
                 </div>
               </div>
             </div>
@@ -63,14 +51,14 @@
             </div>
 
             <div class="flex gap-3 justify-end">
-              <button 
-                @click="$emit('close')" 
+              <button
+                @click="$emit('close')"
                 class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 {{ t.cancel }}
               </button>
-              <button 
-                @click="confirm" 
+              <button
+                @click="confirm"
                 :disabled="processing"
                 class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2 transition-colors"
               >
@@ -101,37 +89,20 @@ const processing = ref(false)
 
 const isCrossing = computed(() => props.order?.order_type === 'crossing')
 
-// Calculate the payment amount based on order type and available data
+// All orders now use 100% full payment
+const paymentTypeLabel = computed(() => t.value.fullPayment)
+
+// Calculate the payment amount - all orders now use 100% payment
 const paymentAmount = computed(() => {
   if (!props.order) return null
-  
+
   if (isCrossing.value) {
-    // Crossing: 100% payment = deposit_amount (which is the full amount)
+    // Crossing: 100% payment = deposit_amount (which stores the full amount)
     return props.order.deposit_amount
   }
-  
-  // Shipping: Final balance (remaining 50%)
-  // Priority: quoted_amount > (box_price - deposit_amount) > deposit_amount
-  if (props.order.quoted_amount) {
-    return props.order.quoted_amount
-  }
-  
-  // Calculate remaining from box_price - deposit_amount
-  if (props.order.box_price && props.order.deposit_amount) {
-    const boxPrice = parseFloat(props.order.box_price) || 0
-    const deposit = parseFloat(props.order.deposit_amount) || 0
-    const remaining = boxPrice - deposit
-    if (remaining > 0) {
-      return remaining.toFixed(2)
-    }
-  }
-  
-  // Fallback: deposit_amount is 50%, so remaining is also ~deposit_amount
-  if (props.order.deposit_amount) {
-    return props.order.deposit_amount
-  }
-  
-  return null
+
+  // Shipping: 100% payment = box_price
+  return props.order.box_price
 })
 
 const formatAmount = (amount) => {
@@ -143,17 +114,14 @@ const formatAmount = (amount) => {
 const translations = {
   title: { es: 'Confirmar Pago', en: 'Confirm Payment' },
   confirmText: { es: '¿Marcar manualmente esta orden como PAGADA?', en: 'Manually mark this order as PAID?' },
-  paymentInfo: { es: 'Información del Pago', en: 'Payment Information' },
+  paymentInfo: { es: 'Informacion del Pago', en: 'Payment Information' },
   orderType: { es: 'Tipo de Orden', en: 'Order Type' },
   crossingOnly: { es: 'Solo Cruce', en: 'Crossing Only' },
-  shipping: { es: 'Envío', en: 'Shipping' },
+  shipping: { es: 'Envio', en: 'Shipping' },
   paymentType: { es: 'Tipo de Pago', en: 'Payment Type' },
   fullPayment: { es: 'Pago Completo (100%)', en: 'Full Payment (100%)' },
-  finalBalance: { es: 'Saldo Final (50%)', en: 'Final Balance (50%)' },
-  depositPaid: { es: 'Depósito Pagado', en: 'Deposit Paid' },
   amount: { es: 'Monto a Cobrar', en: 'Amount Due' },
-  totalOrder: { es: 'Total de la Orden', en: 'Order Total' },
-  warning: { es: 'Se le enviará un correo al usuario confirmando su pago', en: 'The user will receive an email notifying them that the payment was received.' },
+  warning: { es: 'Se le enviara un correo al usuario confirmando su pago', en: 'The user will receive an email notifying them that the payment was received.' },
   cancel: { es: 'Cancelar', en: 'Cancel' },
   confirmBtn: { es: 'Confirmar Pagado', en: 'Confirm Paid' },
   success: { es: 'Orden marcada como pagada', en: 'Order marked as paid' },

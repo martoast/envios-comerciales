@@ -19,7 +19,6 @@
             
             <p class="text-sm text-gray-600 mb-6">
               {{ isCrossing ? t.confirmPickedUp : t.confirmDelivered }}
-              <strong>{{ order?.order_number }}</strong>?
               {{ isCrossing ? t.pickupNote : t.deliveryNote }}
             </p>
 
@@ -73,7 +72,7 @@ const translations = {
   titlePickedUp: { es: 'Marcar como Recogido', en: 'Mark as Picked Up' },
   confirmDelivered: { es: '¿Confirmar que la orden ha sido entregada exitosamente al cliente?', en: 'Confirm that order has been successfully delivered to the customer?' },
   confirmPickedUp: { es: '¿Confirmar que el cliente ha recogido su orden?', en: 'Confirm that the customer has picked up their order?' },
-  deliveryNote: { es: 'Esto te permitirá generar la factura final.', en: 'This will allow you to generate the final invoice.' },
+  deliveryNote: { es: '', en: '' },
   pickupNote: { es: 'Esto completará la orden.', en: 'This will complete the order.' },
   pickupDetails: { es: 'Detalles de Recolección', en: 'Pickup Details' },
   customerPickedUp: { es: 'El cliente recogió sus paquetes en la bodega de Tijuana.', en: 'Customer picked up their packages at the Tijuana warehouse.' },

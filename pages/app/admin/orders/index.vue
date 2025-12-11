@@ -48,7 +48,88 @@
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fadeIn" style="animation-delay: 0.3s">
         <!-- Search and Filters Section -->
         <div class="px-4 sm:px-6 py-4 bg-gray-50/50 border-b border-gray-100">
-          <div class="space-y-3">
+          <!-- Mobile: Search + Filter Button -->
+          <div class="sm:hidden">
+            <div class="flex items-center gap-2 mb-3">
+              <!-- Search Input -->
+              <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  </svg>
+                </div>
+                <input
+                  v-model="searchQuery"
+                  type="text"
+                  :placeholder="t.searchPlaceholder"
+                  class="block w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                >
+                <button
+                  v-if="searchQuery"
+                  @click="searchQuery = ''"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <svg class="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Filter Button -->
+              <button
+                @click="showMobileFilters = true"
+                :class="[
+                  'relative flex items-center justify-center w-11 h-11 rounded-xl border transition-all',
+                  activeFilterCount > 0
+                    ? 'bg-primary-50 border-primary-300 text-primary-600'
+                    : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                ]"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                <!-- Badge -->
+                <span
+                  v-if="activeFilterCount > 0"
+                  class="absolute -top-1 -right-1 w-5 h-5 bg-primary-600 text-white text-xs font-bold rounded-full flex items-center justify-center"
+                >
+                  {{ activeFilterCount }}
+                </span>
+              </button>
+            </div>
+
+            <!-- Bulk Actions Bar (only show when items selected) -->
+            <div v-if="selectedOrders.length > 0" class="flex items-center justify-between p-3 bg-primary-50 border border-primary-200 rounded-xl">
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-primary-900">
+                  {{ selectedOrders.length }} {{ t.selected }}
+                </span>
+                <button
+                  @click="clearSelection"
+                  class="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  {{ t.clearSelection }}
+                </button>
+              </div>
+              <button
+                @click="confirmBulkDelete"
+                :disabled="deletingBulk"
+                class="inline-flex items-center px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              >
+                <svg v-if="!deletingBulk" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                <svg v-else class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ deletingBulk ? t.deleting : t.deleteSelected }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Desktop: Inline Search and Filters -->
+          <div class="hidden sm:block space-y-3">
             <!-- Bulk Actions Bar (only show when items selected) -->
             <div v-if="selectedOrders.length > 0" class="flex items-center justify-between p-3 bg-primary-50 border border-primary-200 rounded-xl">
               <div class="flex items-center gap-3">
@@ -89,10 +170,9 @@
                 v-model="searchQuery"
                 type="text"
                 :placeholder="t.searchPlaceholder"
-                class="block w-full pl-10 pr-10 py-3 sm:py-2.5 border border-gray-200 rounded-xl bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                class="block w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl bg-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                 style="max-width: 500px;"
               >
-              <!-- Clear button -->
               <button
                 v-if="searchQuery"
                 @click="searchQuery = ''"
@@ -103,40 +183,153 @@
                 </svg>
               </button>
             </div>
-            
-            <!-- Status Filter -->
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <select 
-                v-model="statusFilter" 
-                class="w-full sm:w-auto px-4 py-3 sm:py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+
+            <!-- Filters Row -->
+            <div class="flex items-center gap-3 flex-wrap">
+              <!-- Status Filter -->
+              <select
+                v-model="statusFilter"
+                class="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all appearance-none cursor-pointer"
               >
                 <option value="">{{ t.allStatuses }}</option>
                 <option v-for="status in orderStatuses" :key="status.value" :value="status.value">
                   {{ status.label }}
                 </option>
               </select>
-              
-              <!-- Active Filters Count (Desktop) -->
-              <div v-if="(searchQuery || statusFilter) && !loading" class="hidden sm:flex items-center gap-2 text-sm text-gray-600">
+
+              <!-- Date Range Picker -->
+              <div class="relative">
+                <button
+                  @click="showDatePicker = !showDatePicker"
+                  :class="[
+                    'px-4 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all flex items-center gap-2',
+                    (fromDate || toDate) ? 'border-primary-300 bg-primary-50' : 'border-gray-200'
+                  ]"
+                >
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span :class="(fromDate || toDate) ? 'text-primary-700 font-medium' : 'text-gray-600'">
+                    {{ dateRangeLabel || t.selectDateRange }}
+                  </span>
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <!-- Date Picker Dropdown -->
+                <Transition
+                  enter-active-class="transition ease-out duration-200"
+                  enter-from-class="opacity-0 translate-y-1"
+                  enter-to-class="opacity-100 translate-y-0"
+                  leave-active-class="transition ease-in duration-150"
+                  leave-from-class="opacity-100 translate-y-0"
+                  leave-to-class="opacity-0 translate-y-1"
+                >
+                  <div
+                    v-if="showDatePicker"
+                    class="absolute left-0 mt-2 w-[380px] bg-white rounded-2xl shadow-xl border border-gray-200 z-50 overflow-hidden"
+                  >
+                    <!-- Quick Presets -->
+                    <div class="p-3 border-b border-gray-100 bg-gray-50/50">
+                      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ t.dateRange }}</p>
+                      <div class="grid grid-cols-2 gap-2">
+                        <button
+                          v-for="preset in datePresets"
+                          :key="preset.value"
+                          @click="applyDatePreset(preset.value)"
+                          :class="[
+                            'px-3 py-2 text-sm font-medium rounded-lg transition-all text-left',
+                            datePreset === preset.value
+                              ? 'bg-primary-100 text-primary-700 border border-primary-200'
+                              : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                          ]"
+                        >
+                          {{ preset.label }}
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Custom Date Range -->
+                    <div class="p-4">
+                      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{{ t.customRange }}</p>
+                      <div class="grid grid-cols-2 gap-3">
+                        <div>
+                          <label class="block text-xs font-medium text-gray-600 mb-1.5">{{ t.from }}</label>
+                          <input
+                            v-model="fromDate"
+                            type="date"
+                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            @change="datePreset = ''"
+                          />
+                        </div>
+                        <div>
+                          <label class="block text-xs font-medium text-gray-600 mb-1.5">{{ t.toDate }}</label>
+                          <input
+                            v-model="toDate"
+                            type="date"
+                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            @change="datePreset = ''"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="px-4 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-3">
+                      <button
+                        v-if="fromDate || toDate"
+                        @click="clearDateRange"
+                        class="text-sm text-gray-600 hover:text-gray-800 font-medium"
+                      >
+                        {{ t.clearDates }}
+                      </button>
+                      <div class="flex items-center gap-2 ml-auto">
+                        <button
+                          @click="showDatePicker = false"
+                          class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
+                        >
+                          {{ t.cancel }}
+                        </button>
+                        <button
+                          @click="applyCustomDateRange"
+                          class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors"
+                        >
+                          {{ t.apply }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </Transition>
+
+                <!-- Backdrop to close picker -->
+                <div
+                  v-if="showDatePicker"
+                  class="fixed inset-0 z-40"
+                  @click="showDatePicker = false"
+                ></div>
+              </div>
+
+              <!-- Per Page Selector -->
+              <select
+                v-model="perPage"
+                class="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+              >
+                <option v-for="option in perPageOptions" :key="option" :value="option">
+                  {{ option }} {{ t.perPageLabel }}
+                </option>
+              </select>
+
+              <!-- Active Filters Count -->
+              <div v-if="hasActiveFilters && !loading" class="flex items-center gap-2 text-sm text-gray-600 ml-auto">
                 <span>{{ t.showingFiltered }}</span>
-                <button 
+                <button
                   @click="clearFilters"
                   class="text-primary-600 hover:text-primary-700 font-medium"
                 >
                   {{ t.clearFilters }}
                 </button>
               </div>
-            </div>
-
-            <!-- Active Filters Count (Mobile) -->
-            <div v-if="(searchQuery || statusFilter) && !loading" class="sm:hidden flex items-center justify-between text-sm">
-              <span class="text-gray-600">{{ t.showingFiltered }}</span>
-              <button 
-                @click="clearFilters"
-                class="text-primary-600 hover:text-primary-700 font-medium"
-              >
-                {{ t.clearFilters }}
-              </button>
             </div>
           </div>
         </div>
@@ -383,6 +576,143 @@
       </div>
     </div>
 
+    <!-- Mobile Filter Modal -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition ease-out duration-300"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition ease-in duration-200"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div v-if="showMobileFilters" class="fixed inset-0 z-50 sm:hidden">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-black/50" @click="showMobileFilters = false"></div>
+
+          <!-- Modal -->
+          <Transition
+            enter-active-class="transition ease-out duration-300"
+            enter-from-class="translate-y-full"
+            enter-to-class="translate-y-0"
+            leave-active-class="transition ease-in duration-200"
+            leave-from-class="translate-y-0"
+            leave-to-class="translate-y-full"
+          >
+            <div
+              v-if="showMobileFilters"
+              class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] overflow-hidden flex flex-col"
+            >
+              <!-- Header -->
+              <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">{{ t.filters }}</h3>
+                <button
+                  @click="showMobileFilters = false"
+                  class="p-2 -mr-2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Filter Content -->
+              <div class="flex-1 overflow-y-auto px-5 py-4 space-y-5">
+                <!-- Order Status -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.status }}</label>
+                  <select
+                    v-model="statusFilter"
+                    class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  >
+                    <option value="">{{ t.allStatuses }}</option>
+                    <option v-for="status in orderStatuses" :key="status.value" :value="status.value">
+                      {{ status.label }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Per Page -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.perPageLabel }}</label>
+                  <select
+                    v-model="perPage"
+                    class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  >
+                    <option v-for="option in perPageOptions" :key="option" :value="option">
+                      {{ option }} {{ t.results }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Date Range -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.dateRange }}</label>
+
+                  <!-- Quick Presets -->
+                  <div class="grid grid-cols-2 gap-2 mb-4">
+                    <button
+                      v-for="preset in datePresets"
+                      :key="preset.value"
+                      @click="applyDatePresetMobile(preset.value)"
+                      :class="[
+                        'px-3 py-2.5 text-sm font-medium rounded-xl transition-all text-center',
+                        datePreset === preset.value
+                          ? 'bg-primary-100 text-primary-700 border-2 border-primary-300'
+                          : 'bg-gray-50 text-gray-700 border border-gray-200'
+                      ]"
+                    >
+                      {{ preset.label }}
+                    </button>
+                  </div>
+
+                  <!-- Custom Range -->
+                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">{{ t.customRange }}</p>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1.5">{{ t.from }}</label>
+                      <input
+                        v-model="fromDate"
+                        type="date"
+                        class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        @change="datePreset = ''"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1.5">{{ t.toDate }}</label>
+                      <input
+                        v-model="toDate"
+                        type="date"
+                        class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        @change="datePreset = ''"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer Actions -->
+              <div class="px-5 py-4 border-t border-gray-100 bg-gray-50/50 flex items-center gap-3">
+                <button
+                  v-if="hasActiveFilters"
+                  @click="clearFilters(); showMobileFilters = false"
+                  class="flex-1 px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  {{ t.clearAll }}
+                </button>
+                <button
+                  @click="applyMobileFilters"
+                  class="flex-1 px-4 py-3 text-sm font-medium text-white bg-primary-600 rounded-xl hover:bg-primary-700 transition-colors"
+                >
+                  {{ t.applyFilters }} {{ activeFilterCount > 0 ? `(${activeFilterCount})` : '' }}
+                </button>
+              </div>
+            </div>
+          </Transition>
+        </div>
+      </Transition>
+    </Teleport>
+
     <!-- Confirmation Modal -->
     <Teleport to="body">
       <div v-if="showDeleteModal" class="fixed inset-0 z-50 overflow-y-auto">
@@ -461,6 +791,12 @@ const loading = ref(true)
 const statusFilter = ref('')
 const searchQuery = ref('')
 const searchDebounce = ref(null)
+const perPage = ref(25)
+const fromDate = ref('')
+const toDate = ref('')
+const datePreset = ref('')
+const showDatePicker = ref(false)
+const showMobileFilters = ref(false)
 const pagination = ref({
   currentPage: 1,
   lastPage: 1,
@@ -508,7 +844,28 @@ const translations = {
   cancel: { es: 'Cancelar', en: 'Cancel' },
   deleteSuccess: { es: 'Órdenes eliminadas exitosamente', en: 'Orders deleted successfully' },
   deleteError: { es: 'Error al eliminar órdenes', en: 'Error deleting orders' },
-  manage: { es: 'Gestionar', en: 'Manage' }
+  manage: { es: 'Gestionar', en: 'Manage' },
+  // Date range
+  dateRange: { es: 'Rango de Fechas', en: 'Date Range' },
+  selectDateRange: { es: 'Seleccionar fechas', en: 'Select dates' },
+  from: { es: 'Desde', en: 'From' },
+  toDate: { es: 'Hasta', en: 'To' },
+  apply: { es: 'Aplicar', en: 'Apply' },
+  today: { es: 'Hoy', en: 'Today' },
+  yesterday: { es: 'Ayer', en: 'Yesterday' },
+  last7Days: { es: 'Últimos 7 días', en: 'Last 7 days' },
+  last30Days: { es: 'Últimos 30 días', en: 'Last 30 days' },
+  thisMonth: { es: 'Este mes', en: 'This month' },
+  lastMonth: { es: 'Mes pasado', en: 'Last month' },
+  thisYear: { es: 'Este año', en: 'This year' },
+  customRange: { es: 'Personalizado', en: 'Custom' },
+  clearDates: { es: 'Limpiar fechas', en: 'Clear dates' },
+  // Mobile filters
+  filters: { es: 'Filtros', en: 'Filters' },
+  clearAll: { es: 'Limpiar todo', en: 'Clear all' },
+  applyFilters: { es: 'Aplicar filtros', en: 'Apply filters' },
+  // Per page
+  perPageLabel: { es: 'Por página', en: 'Per page' }
 }
 
 // Get reactive translations
@@ -516,6 +873,58 @@ const t = createTranslations(translations)
 
 // Order statuses from composable
 const orderStatuses = computed(() => getAllStatuses())
+
+// Per page options
+const perPageOptions = [10, 25, 50, 100, 200]
+
+// Check if any filters are active
+const hasActiveFilters = computed(() => {
+  return searchQuery.value || statusFilter.value || fromDate.value || toDate.value
+})
+
+// Count active filters (excluding search)
+const activeFilterCount = computed(() => {
+  let count = 0
+  if (statusFilter.value) count++
+  if (fromDate.value || toDate.value) count++
+  return count
+})
+
+// Date presets
+const datePresets = computed(() => [
+  { value: 'today', label: t.value.today },
+  { value: 'yesterday', label: t.value.yesterday },
+  { value: 'last7', label: t.value.last7Days },
+  { value: 'last30', label: t.value.last30Days },
+  { value: 'thisMonth', label: t.value.thisMonth },
+  { value: 'lastMonth', label: t.value.lastMonth },
+  { value: 'thisYear', label: t.value.thisYear },
+])
+
+// Format date for display
+const formatDateDisplay = (dateStr) => {
+  if (!dateStr) return ''
+  const date = new Date(dateStr + 'T00:00:00')
+  return date.toLocaleDateString('es-MX', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+// Get current date range label
+const dateRangeLabel = computed(() => {
+  if (datePreset.value) {
+    const preset = datePresets.value.find(p => p.value === datePreset.value)
+    return preset?.label || ''
+  }
+  if (fromDate.value && toDate.value) {
+    return `${formatDateDisplay(fromDate.value)} - ${formatDateDisplay(toDate.value)}`
+  }
+  if (fromDate.value) {
+    return `${t.value.from}: ${formatDateDisplay(fromDate.value)}`
+  }
+  if (toDate.value) {
+    return `${t.value.toDate}: ${formatDateDisplay(toDate.value)}`
+  }
+  return ''
+})
 
 // Bulk selection computed
 const allSelected = computed(() => {
@@ -529,11 +938,14 @@ const fetchOrders = async (page = 1) => {
     const response = await $customFetch('/admin/orders', {
       params: {
         page,
+        per_page: perPage.value,
         status: statusFilter.value || undefined,
-        search: searchQuery.value || undefined
+        search: searchQuery.value || undefined,
+        from_date: fromDate.value || undefined,
+        to_date: toDate.value || undefined
       }
     })
-    
+
     orders.value = response.data.data
     pagination.value = {
       currentPage: response.data.current_page,
@@ -558,6 +970,144 @@ const changePage = (page) => {
 const clearFilters = () => {
   searchQuery.value = ''
   statusFilter.value = ''
+  fromDate.value = ''
+  toDate.value = ''
+  datePreset.value = ''
+  fetchOrders(1)
+}
+
+// Date helper functions
+const formatDateForInput = (date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+// Apply date preset
+const applyDatePreset = (preset) => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  let from, to
+
+  switch (preset) {
+    case 'today':
+      from = to = formatDateForInput(today)
+      break
+    case 'yesterday':
+      const yesterday = new Date(today)
+      yesterday.setDate(yesterday.getDate() - 1)
+      from = to = formatDateForInput(yesterday)
+      break
+    case 'last7':
+      const last7 = new Date(today)
+      last7.setDate(last7.getDate() - 6)
+      from = formatDateForInput(last7)
+      to = formatDateForInput(today)
+      break
+    case 'last30':
+      const last30 = new Date(today)
+      last30.setDate(last30.getDate() - 29)
+      from = formatDateForInput(last30)
+      to = formatDateForInput(today)
+      break
+    case 'thisMonth':
+      const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+      from = formatDateForInput(firstOfMonth)
+      to = formatDateForInput(today)
+      break
+    case 'lastMonth':
+      const firstOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+      const lastOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0)
+      from = formatDateForInput(firstOfLastMonth)
+      to = formatDateForInput(lastOfLastMonth)
+      break
+    case 'thisYear':
+      const firstOfYear = new Date(today.getFullYear(), 0, 1)
+      from = formatDateForInput(firstOfYear)
+      to = formatDateForInput(today)
+      break
+    default:
+      return
+  }
+
+  datePreset.value = preset
+  fromDate.value = from
+  toDate.value = to
+  showDatePicker.value = false
+  fetchOrders(1)
+}
+
+const applyCustomDateRange = () => {
+  datePreset.value = ''
+  showDatePicker.value = false
+  fetchOrders(1)
+}
+
+const clearDateRange = () => {
+  fromDate.value = ''
+  toDate.value = ''
+  datePreset.value = ''
+  showDatePicker.value = false
+  fetchOrders(1)
+}
+
+// Mobile filter functions
+const applyDatePresetMobile = (preset) => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  let from, to
+
+  switch (preset) {
+    case 'today':
+      from = to = formatDateForInput(today)
+      break
+    case 'yesterday':
+      const yesterday = new Date(today)
+      yesterday.setDate(yesterday.getDate() - 1)
+      from = to = formatDateForInput(yesterday)
+      break
+    case 'last7':
+      const last7 = new Date(today)
+      last7.setDate(last7.getDate() - 6)
+      from = formatDateForInput(last7)
+      to = formatDateForInput(today)
+      break
+    case 'last30':
+      const last30 = new Date(today)
+      last30.setDate(last30.getDate() - 29)
+      from = formatDateForInput(last30)
+      to = formatDateForInput(today)
+      break
+    case 'thisMonth':
+      const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+      from = formatDateForInput(firstOfMonth)
+      to = formatDateForInput(today)
+      break
+    case 'lastMonth':
+      const firstOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+      const lastOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0)
+      from = formatDateForInput(firstOfLastMonth)
+      to = formatDateForInput(lastOfLastMonth)
+      break
+    case 'thisYear':
+      const firstOfYear = new Date(today.getFullYear(), 0, 1)
+      from = formatDateForInput(firstOfYear)
+      to = formatDateForInput(today)
+      break
+    default:
+      return
+  }
+
+  datePreset.value = preset
+  fromDate.value = from
+  toDate.value = to
+}
+
+const applyMobileFilters = () => {
+  showMobileFilters.value = false
   fetchOrders(1)
 }
 
@@ -635,6 +1185,12 @@ const bulkDelete = async () => {
 
 // Watch status filter
 watch(statusFilter, () => {
+  fetchOrders(1)
+  clearSelection()
+})
+
+// Watch perPage
+watch(perPage, () => {
   fetchOrders(1)
   clearSelection()
 })

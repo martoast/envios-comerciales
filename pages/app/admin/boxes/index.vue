@@ -270,6 +270,19 @@
                 ></div>
               </div>
 
+              <!-- Per Page Selector -->
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-500">{{ t.perPage }}:</span>
+                <select
+                  v-model="perPage"
+                  class="px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                >
+                  <option v-for="option in perPageOptions" :key="option" :value="option">
+                    {{ option }}
+                  </option>
+                </select>
+              </div>
+
               <!-- Active Filters Count -->
               <div v-if="hasActiveFilters && !loading" class="flex items-center gap-2 text-sm text-gray-600 ml-auto">
                 <span>{{ t.showingFiltered }}</span>
@@ -364,6 +377,19 @@
                         <option value="">{{ t.allGiaStatus }}</option>
                         <option value="true">{{ t.withGia }}</option>
                         <option value="false">{{ t.withoutGia }}</option>
+                      </select>
+                    </div>
+
+                    <!-- Per Page -->
+                    <div>
+                      <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.perPage }}</label>
+                      <select
+                        v-model="perPage"
+                        class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                      >
+                        <option v-for="option in perPageOptions" :key="option" :value="option">
+                          {{ option }}
+                        </option>
                       </select>
                     </div>
 
@@ -816,6 +842,7 @@ const datePreset = ref('')
 const showDatePicker = ref(false)
 const showMobileFilters = ref(false)
 const searchDebounce = ref(null)
+const perPage = ref(25)
 const pagination = ref({
   currentPage: 1,
   lastPage: 1,
@@ -901,6 +928,7 @@ const translations = {
   clearAll: { es: 'Limpiar todo', en: 'Clear all' },
   applyFilters: { es: 'Aplicar filtros', en: 'Apply filters' },
   searchPlaceholderShort: { es: 'Buscar...', en: 'Search...' },
+  perPage: { es: 'Por página', en: 'Per page' },
 }
 
 // Get reactive translations
@@ -917,6 +945,9 @@ const boxSizes = [
 
 // Order statuses from composable
 const orderStatuses = computed(() => getAllStatuses())
+
+// Per page options
+const perPageOptions = [10, 25, 50, 100, 200]
 
 // Check if any filters are active
 const hasActiveFilters = computed(() => {
@@ -1117,7 +1148,7 @@ const fetchBoxes = async (page = 1) => {
         has_gia: hasGiaFilter.value || undefined,
         from_date: fromDate.value || undefined,
         to_date: toDate.value || undefined,
-        per_page: 5
+        per_page: perPage.value
       }
     })
 
@@ -1263,6 +1294,11 @@ const getBoxTrackingInfo = (guiaNumber) => {
 
 // Watch filters
 watch([boxSizeFilter, orderStatusFilter, hasGiaFilter], () => {
+  fetchBoxes(1)
+})
+
+// Watch per page
+watch(perPage, () => {
   fetchBoxes(1)
 })
 

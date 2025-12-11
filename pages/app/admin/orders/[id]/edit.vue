@@ -204,7 +204,7 @@
                       >
                         {{ t.shippingTypeLabel }}
                       </p>
-                      <p class="text-xs text-gray-500 mt-0.5">50% {{ t.depositAmount }}</p>
+                      <p class="text-xs text-gray-500 mt-0.5">100% {{ t.fullPayment }}</p>
                     </div>
                   </div>
                   <div
@@ -353,11 +353,10 @@
                     <option value="collecting">{{ t.collecting }}</option>
                     <option value="awaiting_packages">{{ t.awaitingPackages }}</option>
                     <option value="packages_complete">{{ t.packagesComplete }}</option>
-                    <option value="processing">{{ t.processing }}</option>
-                    <option value="shipped">{{ isCrossing ? t.readyForPickup : t.shipped }}</option>
-                    <option value="delivered">{{ isCrossing ? t.pickedUp : t.delivered }}</option>
                     <option value="awaiting_payment">{{ t.awaitingPayment }}</option>
                     <option value="paid">{{ t.paidStatus }}</option>
+                    <option value="shipped">{{ isCrossing ? t.readyForPickup : t.shipped }}</option>
+                    <option value="delivered">{{ isCrossing ? t.pickedUp : t.delivered }}</option>
                     <option value="cancelled">{{ t.cancelled }}</option>
                   </select>
                 </div>
@@ -1024,8 +1023,37 @@
               </h2>
 
               <div class="space-y-3 sm:space-y-4">
-                <!-- Deposit/Full Payment Link -->
-                <div>
+                <!-- NEW FLOW: Consolidation Payment Link (100%) -->
+                <div v-if="isNewConsolidationFlow && !isCrossing">
+                  <label
+                    for="consolidation_payment_link"
+                    class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
+                  >
+                    {{ t.consolidationPaymentLinkLabel }}
+                  </label>
+                  <input
+                    v-model="form.consolidation_payment_link"
+                    type="url"
+                    id="consolidation_payment_link"
+                    placeholder="https://invoice.stripe.com/..."
+                    class="w-full px-3 py-2 rounded-lg border border-purple-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-50"
+                  />
+                  <a
+                    v-if="form.consolidation_payment_link"
+                    :href="form.consolidation_payment_link"
+                    target="_blank"
+                    class="text-xs text-purple-600 hover:underline mt-1 inline-flex items-center gap-1"
+                  >
+                    {{ t.openLink }}
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                  </a>
+                  <p class="text-xs text-purple-600 mt-1">{{ t.consolidationFlowNote }}</p>
+                </div>
+
+                <!-- LEGACY FLOW: Deposit/Full Payment Link -->
+                <div v-if="!isNewConsolidationFlow || isCrossing">
                   <label
                     for="deposit_payment_link"
                     class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
@@ -1052,8 +1080,8 @@
                   </a>
                 </div>
 
-                <!-- Final Payment Link - Only for shipping -->
-                <div v-if="!isCrossing">
+                <!-- LEGACY FLOW: Final Payment Link - Only for old shipping flow -->
+                <div v-if="!isCrossing && !isNewConsolidationFlow">
                   <label
                     for="payment_link"
                     class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
@@ -1092,8 +1120,24 @@
               </h2>
 
               <div class="space-y-3 sm:space-y-4">
-                <!-- Deposit Paid At (Shipping) / Full Payment At (Crossing) -->
-                <div v-if="!isCrossing">
+                <!-- NEW FLOW: Consolidation Paid At -->
+                <div v-if="isNewConsolidationFlow && !isCrossing">
+                  <label
+                    for="consolidation_paid_at"
+                    class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
+                  >
+                    {{ t.consolidationPaidAtLabel }}
+                  </label>
+                  <input
+                    v-model="form.consolidation_paid_at"
+                    type="datetime-local"
+                    id="consolidation_paid_at"
+                    class="w-full px-3 py-2 rounded-lg border border-purple-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-purple-50"
+                  />
+                </div>
+
+                <!-- LEGACY: Deposit Paid At (Shipping only, old flow) -->
+                <div v-if="!isCrossing && !isNewConsolidationFlow">
                   <label
                     for="deposit_paid_at"
                     class="block text-sm font-semibold text-gray-900 mb-1.5 sm:mb-2"
@@ -1387,6 +1431,8 @@ const form = ref({
   deposit_payment_link: "",
   stripe_invoice_id: "",
   payment_link: "",
+  consolidation_payment_link: "",
+  consolidation_paid_at: null,
 });
 
 // Mexican states
@@ -1463,6 +1509,9 @@ const translations = {
   depositPaymentLinkLabel: { es: "Link Depósito", en: "Deposit Link" },
   fullPaymentLinkLabel: { es: "Link de Pago", en: "Payment Link" },
   paymentLinkLabel: { es: "Link Pago Final", en: "Final Payment Link" },
+  consolidationPaymentLinkLabel: { es: "Link de Pago (100%)", en: "Payment Link (100%)" },
+  consolidationFlowNote: { es: "Nuevo flujo: pago completo antes del envío", en: "New flow: full payment before shipping" },
+  consolidationPaidAtLabel: { es: "Fecha de Pago (Consolidación)", en: "Payment Date (Consolidation)" },
   openLink: { es: "Abrir enlace", en: "Open link" },
   paidAtLabel: { es: "Fecha Pago Final", en: "Final Paid At" },
   fullPaymentPaidAtLabel: { es: "Fecha de Pago", en: "Payment Date" },
@@ -1527,6 +1576,7 @@ const t = createTranslations(translations);
 
 // Computed
 const isCrossing = computed(() => form.value.order_type === 'crossing');
+const isNewConsolidationFlow = computed(() => !!order.value?.consolidation_payment_link);
 
 const calculatedTotalBoxPrice = computed(() => {
   if (!form.value.boxes || form.value.boxes.length === 0) return 0;
@@ -1877,6 +1927,8 @@ const fetchOrder = async () => {
       deposit_payment_link: order.value.deposit_payment_link || "",
       stripe_invoice_id: order.value.stripe_invoice_id || "",
       payment_link: order.value.payment_link || "",
+      consolidation_payment_link: order.value.consolidation_payment_link || "",
+      consolidation_paid_at: formatDateTimeForInput(order.value.consolidation_paid_at),
     };
 
     originalData.value = JSON.parse(JSON.stringify(form.value, (key, value) => {
@@ -1943,6 +1995,12 @@ const handleSubmit = async () => {
     }
     if (form.value.payment_link !== originalData.value.payment_link) {
       formData.append('payment_link', form.value.payment_link ?? '');
+    }
+    if (form.value.consolidation_payment_link !== originalData.value.consolidation_payment_link) {
+      formData.append('consolidation_payment_link', form.value.consolidation_payment_link ?? '');
+    }
+    if (form.value.consolidation_paid_at !== originalData.value.consolidation_paid_at) {
+      formData.append('consolidation_paid_at', form.value.consolidation_paid_at ?? '');
     }
     if (form.value.paid_at !== originalData.value.paid_at) {
       formData.append('paid_at', form.value.paid_at ?? '');

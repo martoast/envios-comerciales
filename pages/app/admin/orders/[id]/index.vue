@@ -48,9 +48,21 @@
             {{ t.markAllArrived }}
           </button>
 
-          <!-- 2. Start Processing -->
+          <!-- 2a. Consolidate Order - SHIPPING orders at packages_complete -->
           <button
-            v-if="order.status === 'packages_complete'"
+            v-if="order.status === 'packages_complete' && !isCrossing"
+            @click="showConsolidateModal = true"
+            class="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors shadow-sm"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            {{ t.consolidateOrder }}
+          </button>
+
+          <!-- 2b. Start Processing - CROSSING orders at packages_complete -->
+          <button
+            v-if="order.status === 'packages_complete' && isCrossing"
             @click="showStartProcessingModal = true"
             class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
           >
@@ -61,9 +73,35 @@
             {{ t.startProcessing }}
           </button>
 
-          <!-- 3a. Ship Order - SHIPPING orders only -->
+          <!-- 2c. Awaiting Payment - SHIPPING orders waiting for consolidation payment -->
+          <div
+            v-if="order.status === 'awaiting_payment' && !isCrossing"
+            class="flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 text-sm rounded-lg"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ t.awaitingConsolidationPayment }}
+            <NuxtLink
+              v-if="order.payment_link"
+              :to="order.payment_link"
+              target="_blank"
+              external
+              class="ml-2 px-2 py-1 bg-purple-600 text-white text-xs font-medium rounded hover:bg-purple-700 transition-colors"
+            >
+              {{ t.viewInvoice }}
+            </NuxtLink>
+            <button
+              @click="showMarkPaidModal = true"
+              class="ml-1 px-2 py-1 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition-colors"
+            >
+              {{ t.markPaidManual }}
+            </button>
+          </div>
+
+          <!-- 3a. Ship Order - SHIPPING orders only (processing = new flow, paid = legacy) -->
           <button
-            v-if="order.status === 'processing' && !isCrossing"
+            v-if="['processing', 'paid'].includes(order.status) && !isCrossing"
             @click="showShipOrderModal = true"
             class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
           >
@@ -73,9 +111,9 @@
             {{ t.shipOrder }}
           </button>
 
-          <!-- 3b. Mark Ready for Pickup - CROSSING orders only -->
+          <!-- 3b. Mark Ready for Pickup - CROSSING orders only (processing = new flow, paid = legacy) -->
           <button
-            v-if="order.status === 'processing' && isCrossing"
+            v-if="['processing', 'paid'].includes(order.status) && isCrossing"
             @click="showReadyForPickupModal = true"
             class="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition-colors shadow-sm"
           >
@@ -131,33 +169,10 @@
             </button>
           </div>
 
-          <!-- 5a. SHIPPING: Send Final Invoice (after delivered) -->
-          <button
-            v-if="order.status === 'delivered' && !isCrossing"
-            @click="showFinalInvoiceModal = true"
-            class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-            {{ t.sendFinalInvoice }}
-          </button>
 
-          <!-- 6. SHIPPING: Mark as Paid (after awaiting_payment) -->
-          <button
-            v-if="order.status === 'awaiting_payment' && !isCrossing"
-            @click="showMarkPaidModal = true"
-            class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {{ t.markAsPaid }}
-          </button>
-
-          <!-- Order Complete indicator -->
+          <!-- Order Complete indicator - DELIVERED is final status for all order types -->
           <div
-            v-if="(order.status === 'paid' && !isCrossing) || (order.status === 'delivered' && isCrossing)"
+            v-if="order.status === 'delivered'"
             class="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 text-sm rounded-lg"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -766,12 +781,45 @@
 
               <!-- FINANCIALS SECTION -->
               <div
-                v-if="order.deposit_amount || order.quoted_amount || order.amount_paid"
+                v-if="order.deposit_amount || order.quoted_amount || order.amount_paid || order.box_price"
                 class="mt-6 pt-4 border-t-2 border-gray-100"
               >
                 <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{{ t.financials }}</h3>
 
-                <!-- SHIPPING: Deposit (50%) -->
+                <!-- NEW FLOW: Full Payment (100%) for SHIPPING orders (no deposit_amount = new flow) -->
+                <div v-if="!isCrossing && !order.deposit_amount && order.box_price" class="mb-3 p-3 bg-primary-50 rounded-lg border border-primary-100">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-semibold text-primary-700">{{ t.consolidationPayment }} (100%)</span>
+                    <span class="text-sm font-bold text-gray-900">${{ totalBoxPrice.toFixed(2) }}</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span
+                      class="text-[10px] px-1.5 py-0.5 rounded font-medium"
+                      :class="order.paid_at ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'"
+                    >
+                      {{ order.paid_at ? t.paid : t.pending }}
+                    </span>
+                    <div class="flex items-center gap-2">
+                      <span v-if="order.paid_at" class="text-xs text-gray-500">
+                        {{ formatDate(order.paid_at) }}
+                      </span>
+                      <NuxtLink
+                        v-if="order.payment_link"
+                        :to="order.payment_link"
+                        target="_blank"
+                        external
+                        class="text-xs text-purple-600 hover:text-purple-800 hover:underline flex items-center gap-1"
+                      >
+                        {{ t.invoice }}
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                      </NuxtLink>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- LEGACY: SHIPPING: Deposit (50%) - for old orders with deposit_amount -->
                 <div v-if="order.deposit_amount && !isCrossing" class="mb-3 p-3 bg-gray-50 rounded-lg">
                   <div class="flex justify-between items-center mb-2">
                     <span class="text-xs font-semibold text-gray-600">{{ t.deposit }} (50%)</span>
@@ -907,6 +955,13 @@
       @success="handleModalSuccess"
     />
 
+    <AdminOrderModalConsolidate
+      :show="showConsolidateModal"
+      :order="order"
+      @close="showConsolidateModal = false"
+      @success="handleModalSuccess"
+    />
+
     <AdminOrderModalShipOrder
       :show="showShipOrderModal"
       :order="order"
@@ -1014,6 +1069,7 @@ import AdminOrderHeader from "~/components/admin/AdminOrderHeader.vue";
 import AdminOrderItemsList from "~/components/admin/AdminOrderItemsList.vue";
 import AdminOrderTimeline from "~/components/admin/AdminOrderTimeline.vue";
 import AdminOrderModalStartProcessing from "~/components/admin/AdminOrderModalStartProcessing.vue";
+import AdminOrderModalConsolidate from "~/components/admin/AdminOrderModalConsolidate.vue";
 import AdminOrderModalShipOrder from "~/components/admin/AdminOrderModalShipOrder.vue";
 import AdminOrderModalReadyForPickup from "~/components/admin/AdminOrderModalReadyForPickup.vue";
 import AdminOrderModalMarkDelivered from "~/components/admin/AdminOrderModalMarkDelivered.vue";
@@ -1042,6 +1098,7 @@ const trackingLoadingMap = ref({});
 
 // Modal States
 const showStartProcessingModal = ref(false);
+const showConsolidateModal = ref(false);
 const showShipOrderModal = ref(false);
 const showReadyForPickupModal = ref(false);
 const showMarkDeliveredModal = ref(false);
@@ -1064,11 +1121,14 @@ const translations = {
   waitingForPackages: { es: "Esperando Paquetes", en: "Waiting for Packages" },
   markAllArrived: { es: "Marcar Todos Llegados", en: "Mark All Arrived" },
   startProcessing: { es: "Iniciar Procesamiento", en: "Start Processing" },
-  shipOrder: { es: "Enviar (50% Depósito)", en: "Ship (50% Deposit)" },
+  consolidateOrder: { es: "Consolidar Orden", en: "Consolidate Order" },
+  awaitingConsolidationPayment: { es: "Esperando Pago", en: "Awaiting Payment" },
+  viewInvoice: { es: "Ver Factura", en: "View Invoice" },
+  consolidationPayment: { es: "Pago de Cajas", en: "Box Payment" },
+  shipOrder: { es: "Enviar Orden", en: "Ship Order" },
   markReadyForPickup: { es: "Listo para Recoger", en: "Ready for Pickup" },
   markAsDelivered: { es: "Marcar Entregado", en: "Mark Delivered" },
   markAsPickedUp: { es: "Marcar Recogido", en: "Mark Picked Up" },
-  sendFinalInvoice: { es: "Enviar Factura Final", en: "Send Final Invoice" },
   markAsPaid: { es: "Marcar Pagado", en: "Mark Paid" },
   markPaidManual: { es: "Marcar Pagado", en: "Mark Paid" },
   awaitingPayment: { es: "Listo para recoger! Esperando Pago", en: "Ready for pickup! Awaiting Payment" },
@@ -1283,6 +1343,7 @@ const fetchOrder = async () => {
 
 const handleModalSuccess = async () => {
   showStartProcessingModal.value = false;
+  showConsolidateModal.value = false;
   showShipOrderModal.value = false;
   showReadyForPickupModal.value = false;
   showMarkDeliveredModal.value = false;

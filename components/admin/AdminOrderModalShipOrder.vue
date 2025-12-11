@@ -6,7 +6,7 @@
       <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-center justify-center p-4">
           <DialogPanel class="w-full max-w-lg rounded-2xl bg-white shadow-xl">
-            
+
             <!-- Header -->
             <div class="px-6 py-4 border-b border-gray-200">
               <div class="flex items-center gap-3">
@@ -23,82 +23,63 @@
             </div>
 
             <div class="p-6 space-y-5">
-              <!-- Box Selection Section -->
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <label class="block text-sm font-medium text-gray-700">{{ t.boxes }}</label>
-                  <button 
-                    @click="addBox" 
-                    type="button"
-                    class="text-xs text-primary-600 hover:text-primary-800 font-medium flex items-center gap-1"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    {{ t.addBox }}
-                  </button>
-                </div>
-
-                <!-- Loading Products -->
-                <div v-if="loadingProducts" class="py-4 text-center">
-                  <svg class="animate-spin h-6 w-6 text-primary-500 mx-auto" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              <!-- Info Banner -->
+              <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+                <div class="flex items-start gap-3">
+                  <svg class="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <p class="text-sm text-gray-500 mt-2">{{ t.loadingProducts }}</p>
+                  <div>
+                    <p class="text-sm font-medium text-indigo-800">{{ t.infoTitle }}</p>
+                    <p class="text-sm text-indigo-600 mt-1">{{ t.infoDesc }}</p>
+                  </div>
                 </div>
+              </div>
 
-                <!-- No Shipping Products Available -->
-                <div v-else-if="shippingProducts.length === 0" class="py-4 text-center border-2 border-dashed border-gray-200 rounded-xl">
+              <!-- Boxes Section - Add Guias to Existing Boxes -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.boxes }}</label>
+
+                <!-- No boxes -->
+                <div v-if="!orderBoxes.length" class="py-4 text-center border-2 border-dashed border-gray-200 rounded-xl">
                   <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                   </svg>
-                  <p class="text-sm text-gray-500">{{ t.noShippingProducts }}</p>
+                  <p class="text-sm text-gray-500">{{ t.noBoxes }}</p>
                 </div>
 
                 <!-- Box Entries -->
                 <div v-else class="space-y-4">
-                  <div 
-                    v-for="(box, index) in form.boxes" 
-                    :key="index"
+                  <div
+                    v-for="(box, index) in form.boxes"
+                    :key="box.box_id"
                     class="p-4 bg-gray-50 rounded-xl border border-gray-200"
                   >
                     <!-- Box Header -->
                     <div class="flex items-center justify-between mb-3">
-                      <span class="text-sm font-medium text-gray-700">{{ t.box }} {{ index + 1 }}</span>
-                      <button 
-                        v-if="form.boxes.length > 1"
-                        @click="removeBox(index)" 
-                        type="button"
-                        class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                      </button>
-                    </div>
-
-                    <!-- Box Size -->
-                    <div class="mb-3">
-                      <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.boxSize }}</label>
-                      <select 
-                        v-model="box.stripe_price_id" 
-                        class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
-                      >
-                        <option value="" disabled>{{ t.selectBoxSize }}</option>
-                        <option v-for="prod in shippingProducts" :key="prod.id" :value="prod.price_id">
-                          {{ prod.name }} - ${{ prod.price }} {{ prod.currency }}
-                        </option>
-                      </select>
+                      <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                          <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                          </svg>
+                        </div>
+                        <div>
+                          <span class="text-sm font-medium text-gray-900">{{ box.box_name }}</span>
+                          <span class="text-xs text-gray-500 ml-2">${{ parseFloat(box.box_price).toFixed(2) }} MXN</span>
+                        </div>
+                      </div>
+                      <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full font-medium">
+                        {{ t.box }} {{ index + 1 }}
+                      </span>
                     </div>
 
                     <!-- Guia Number -->
                     <div class="mb-3">
                       <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.guiaNumber }}</label>
-                      <input 
-                        v-model="box.guia_number" 
-                        type="text" 
-                        class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm" 
+                      <input
+                        v-model="box.guia_number"
+                        type="text"
+                        class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
                         placeholder="e.g. 1234567890"
                       >
                     </div>
@@ -106,10 +87,10 @@
                     <!-- GIA File -->
                     <div>
                       <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.giaDocument }}</label>
-                      <input 
-                        type="file" 
-                        @change="(e) => handleFileChange(e, index)" 
-                        accept=".pdf" 
+                      <input
+                        type="file"
+                        @change="(e) => handleFileChange(e, index)"
+                        accept=".pdf"
                         class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
                       >
                       <p v-if="box.gia_file" class="text-xs text-green-600 mt-1 flex items-center gap-1">
@@ -121,27 +102,14 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- Price Summary -->
-                <div v-if="totalBoxPrice > 0" class="mt-3 p-3 bg-indigo-50 rounded-lg border border-indigo-100">
-                  <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">{{ t.totalBoxPrice }} ({{ form.boxes.length }} {{ form.boxes.length === 1 ? t.boxSingular : t.boxPlural }}):</span>
-                    <span class="font-semibold text-gray-900">${{ totalBoxPrice.toFixed(2) }} MXN</span>
-                  </div>
-                  <div class="flex justify-between text-sm mt-1">
-                    <span class="text-indigo-700 font-medium">{{ t.deposit }} (50%):</span>
-                    <span class="font-bold text-indigo-700">${{ depositAmount.toFixed(2) }} MXN</span>
-                  </div>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">{{ t.depositNote }}</p>
               </div>
 
               <!-- Estimated Delivery -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.estimatedDelivery }}</label>
-                <input 
-                  v-model="form.estimated_delivery_date" 
-                  type="date" 
+                <input
+                  v-model="form.estimated_delivery_date"
+                  type="date"
                   class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                 >
               </div>
@@ -149,9 +117,9 @@
               <!-- Notes -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.notes }}</label>
-                <textarea 
-                  v-model="form.notes" 
-                  rows="2" 
+                <textarea
+                  v-model="form.notes"
+                  rows="2"
                   class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                   :placeholder="t.notesPlaceholder"
                 ></textarea>
@@ -160,14 +128,14 @@
 
             <!-- Footer -->
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex gap-3 justify-end">
-              <button 
-                @click="$emit('close')" 
+              <button
+                @click="$emit('close')"
                 class="px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
               >
                 {{ t.cancel }}
               </button>
-              <button 
-                @click="submit" 
+              <button
+                @click="submit"
                 :disabled="processing || !isValid"
                 class="px-5 py-2.5 text-sm font-medium bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
               >
@@ -187,7 +155,7 @@
 
 <script setup>
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot } from '@headlessui/vue'
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps(['show', 'order'])
 const emit = defineEmits(['close', 'success'])
@@ -195,99 +163,63 @@ const { $customFetch, $toast } = useNuxtApp()
 const { t: createTranslations } = useLanguage()
 
 const processing = ref(false)
-const loadingProducts = ref(false)
-const products = ref([])
 
 const form = ref({
-  boxes: [{ stripe_price_id: '', guia_number: '', gia_file: null }],
+  boxes: [],
   estimated_delivery_date: '',
   notes: ''
 })
 
 const translations = {
-  title: { es: 'Enviar Orden y Solicitar Depósito', en: 'Ship Order & Request Deposit' },
+  title: { es: 'Enviar Orden', en: 'Ship Order' },
+  infoTitle: { es: 'Agregar Guías de Envío', en: 'Add Shipping Tracking' },
+  infoDesc: { es: 'Ingresa el número de guía y documento GIA para cada caja.', en: 'Enter the tracking number and GIA document for each box.' },
   boxes: { es: 'Cajas', en: 'Boxes' },
   box: { es: 'Caja', en: 'Box' },
-  boxSingular: { es: 'caja', en: 'box' },
-  boxPlural: { es: 'cajas', en: 'boxes' },
-  boxSize: { es: 'Tamaño de Caja', en: 'Box Size' },
-  addBox: { es: 'Agregar Caja', en: 'Add Box' },
-  selectBoxSize: { es: 'Seleccionar tamaño...', en: 'Select box size...' },
-  loadingProducts: { es: 'Cargando productos...', en: 'Loading products...' },
-  noShippingProducts: { es: 'No hay productos de envío disponibles', en: 'No shipping products available' },
-  totalBoxPrice: { es: 'Precio Total', en: 'Total Price' },
-  deposit: { es: 'Depósito', en: 'Deposit' },
-  depositNote: { es: 'El cliente recibirá una factura por el 50% de depósito inmediatamente.', en: 'Customer will receive an invoice for the 50% deposit immediately.' },
+  noBoxes: { es: 'No hay cajas en esta orden', en: 'No boxes in this order' },
   guiaNumber: { es: 'Número de Guía (Rastreo)', en: 'Guia Number (Tracking)' },
   estimatedDelivery: { es: 'Fecha Estimada de Entrega', en: 'Estimated Delivery Date' },
   giaDocument: { es: 'Documento GIA (PDF)', en: 'GIA Document (PDF)' },
   notes: { es: 'Notas (Opcional)', en: 'Notes (Optional)' },
   notesPlaceholder: { es: 'Notas adicionales...', en: 'Additional notes...' },
   cancel: { es: 'Cancelar', en: 'Cancel' },
-  confirm: { es: 'Confirmar Envío y Facturar', en: 'Confirm Ship & Invoice' },
+  confirm: { es: 'Confirmar Envío', en: 'Confirm Shipment' },
   processing: { es: 'Procesando...', en: 'Processing...' },
-  success: { es: '¡Orden enviada y factura de depósito enviada!', en: 'Order shipped & deposit invoice sent!' },
+  success: { es: 'Orden enviada correctamente', en: 'Order shipped successfully' },
   error: { es: 'Error al enviar la orden', en: 'Error shipping order' },
 }
 
 const t = createTranslations(translations)
 
-const shippingProducts = computed(() => {
-  return products.value.filter(p => p.shipping === 'true' || p.shipping === true)
-})
+// Get boxes from order
+const orderBoxes = computed(() => props.order?.boxes || [])
 
-// Reset form when modal opens
+// Initialize form with order boxes when modal opens
 watch(() => props.show, (newVal) => {
-  if (newVal) {
+  if (newVal && props.order?.boxes) {
     form.value = {
-      boxes: [{ stripe_price_id: '', guia_number: '', gia_file: null }],
+      boxes: props.order.boxes.map(box => ({
+        box_id: box.id,
+        box_name: box.box_name || box.product?.name || 'Box',
+        box_price: box.box_price || 0,
+        guia_number: box.guia_number || '',
+        gia_file: null
+      })),
       estimated_delivery_date: '',
       notes: ''
     }
   }
 })
 
-const totalBoxPrice = computed(() => {
-  return form.value.boxes.reduce((total, box) => {
-    const product = shippingProducts.value.find(p => p.price_id === box.stripe_price_id)
-    return product ? total + product.price : total
-  }, 0)
-})
-
-const depositAmount = computed(() => totalBoxPrice.value * 0.5)
-
 const isValid = computed(() => {
-  const hasValidBoxes = form.value.boxes.every(box => 
-    box.stripe_price_id && 
+  if (!form.value.boxes.length) return false
+
+  const hasValidBoxes = form.value.boxes.every(box =>
     box.guia_number.length >= 10 &&
     box.gia_file
   )
-  return hasValidBoxes && 
-         form.value.boxes.length > 0 &&
-         form.value.estimated_delivery_date
+  return hasValidBoxes && form.value.estimated_delivery_date
 })
-
-const addBox = () => {
-  form.value.boxes.push({ stripe_price_id: '', guia_number: '', gia_file: null })
-}
-
-const removeBox = (index) => {
-  if (form.value.boxes.length > 1) {
-    form.value.boxes.splice(index, 1)
-  }
-}
-
-const fetchProducts = async () => {
-  loadingProducts.value = true
-  try {
-    const res = await $customFetch('/products')
-    products.value = res.data
-  } catch (e) {
-    console.error(e)
-  } finally {
-    loadingProducts.value = false
-  }
-}
 
 const handleFileChange = (e, index) => {
   form.value.boxes[index].gia_file = e.target.files[0] || null
@@ -298,13 +230,13 @@ const submit = async () => {
   processing.value = true
 
   const formData = new FormData()
-  
+
   form.value.boxes.forEach((box, index) => {
-    formData.append(`boxes[${index}][stripe_price_id]`, box.stripe_price_id)
+    formData.append(`boxes[${index}][box_id]`, box.box_id)
     formData.append(`boxes[${index}][guia_number]`, box.guia_number)
     formData.append(`boxes[${index}][gia_file]`, box.gia_file)
   })
-  
+
   formData.append('estimated_delivery_date', form.value.estimated_delivery_date)
   if (form.value.notes) formData.append('notes', form.value.notes)
 
@@ -321,8 +253,4 @@ const submit = async () => {
     processing.value = false
   }
 }
-
-onMounted(() => {
-  fetchProducts()
-})
 </script>
