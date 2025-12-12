@@ -308,7 +308,7 @@ const boxes = [
   },
   {
     size: "M",
-    price: 3500,
+    price: 4000,
     dimensions: {
       es: "42×52×40 cm",
       en: "42×52×40 cm",
@@ -318,7 +318,7 @@ const boxes = [
   },
   {
     size: "L",
-    price: 4500,
+    price: 5100,
     dimensions: {
       es: "52×42×40 cm",
       en: "52×42×40 cm",
@@ -328,7 +328,7 @@ const boxes = [
   },
   {
     size: "XL",
-    price: 5500,
+    price: 6250,
     dimensions: {
       es: "52×62×53 cm",
       en: "52×62×53 cm",
