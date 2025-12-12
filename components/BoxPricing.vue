@@ -288,7 +288,7 @@ const { t: createTranslations, language } = useLanguage();
 const boxes = [
   {
     size: "XS",
-    price: 980,
+    price: 1200,
     dimensions: {
       es: "32×24×13 cm",
       en: "32×24×13 cm",
@@ -298,7 +298,7 @@ const boxes = [
   },
   {
     size: "S",
-    price: 1900,
+    price: 2200,
     dimensions: {
       es: "42×27×32 cm",
       en: "42×27×32 cm",
