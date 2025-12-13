@@ -10,7 +10,7 @@
     <LogoCarousel :animation-speed="30" />
     
     <!-- How It Works Section -->
-    <MainHowItWorksSection />
+    <MainStepsSection />
 
     <BoxPricing/>
     
@@ -35,7 +35,7 @@
 import WhatsAppButton from '~/components/Landing/WhatsAppButton.vue'
 import MainHeroSection from '~/components/Landing/Main/HeroSection.vue'
 import LogoCarousel from '~/components/Landing/LogoCarousel.vue'
-import MainHowItWorksSection from '~/components/Landing/Main/HowItWorksSection.vue'
+import MainStepsSection from '~/components/Landing/Main/StepsSection.vue'
 import MainTestimonialsSection from '~/components/Landing/Main/TestimonialsSection.vue'
 import CTACarouselBanner from '~/components/Landing/Main/CTACarouselBanner.vue'
 import FooterSection from '~/components/Landing/FooterSection.vue'
