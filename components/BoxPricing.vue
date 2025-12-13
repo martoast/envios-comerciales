@@ -266,6 +266,8 @@
           </div>
         </div>
       </div>
+
+      
     </div>
   </section>
 </template>
@@ -341,20 +343,20 @@ const boxes = [
 // Translations
 const translations = {
   pricingTag: {
-    es: "PRECIOS TRANSPARENTES",
-    en: "TRANSPARENT PRICING",
+    es: "PRECIOS DE ENVÍO",
+    en: "SHIPPING PRICES",
   },
   pricingTitle: {
-    es: "Consolida tus compras en una sola caja",
-    en: "Consolidate your purchases into one box",
+    es: "Tarifas de envío USA → México",
+    en: "USA → Mexico shipping rates",
   },
   pricingSubtitle: {
-    es: "Compra en múltiples tiendas de EE.UU. Nosotros lo empacamos todo en una caja y lo enviamos a México. Precio fijo, sin sorpresas.",
-    en: "Shop from multiple US stores. We pack everything into one box and ship it to Mexico. Fixed price, no surprises.",
+    es: "Precio fijo según el tamaño de tu caja. Incluye consolidación de paquetes y envío aéreo completo a toda la República Mexicana.",
+    en: "Fixed price based on your box size. Includes package consolidation and complete air shipping throughout Mexico.",
   },
   depositNotice: {
-    es: "*Se requiere un depósito del 50% del costo total para procesar su envío. El 50% restante se paga al recibir su paquete en México.",
-    en: "*A 50% deposit of the total cost is required to process your shipment. The remaining 50% is paid upon receiving your package in Mexico.",
+    es: "*Pago 100% por adelantado antes de enviar.",
+    en: "*100% payment upfront before shipping.",
   },
   consolidationTitle: {
     es: "💡 Ahorra consolidando tus compras",
@@ -381,8 +383,8 @@ const translations = {
     en: "Max Weight",
   },
   tablePrice: {
-    es: "Precio",
-    en: "Price",
+    es: "Precio Total",
+    en: "Total Price",
   },
   feature1: {
     es: "Envío directo a México",
@@ -397,8 +399,8 @@ const translations = {
     en: "Free consolidation",
   },
   feature2Desc: {
-    es: "Juntamos todos tus paquetes sin costo",
-    en: "We combine all your packages at no cost",
+    es: "Juntamos todos tus paquetes en una sola caja sin costo extra",
+    en: "We combine all your packages into one box at no extra cost",
   },
   feature3: {
     es: "Seguro incluido",
@@ -413,12 +415,12 @@ const translations = {
     en: "Start now",
   },
   infoTitle: {
-    es: "¿No sabes qué tamaño elegir?",
-    en: "Not sure which size to choose?",
+    es: "¿Qué incluye el precio?",
+    en: "What's included in the price?",
   },
   infoDescription: {
-    es: "¡No te preocupes! Nosotros optimizamos automáticamente el tamaño de caja para tus compras. Siempre te asignaremos la caja que te permita ahorrar más en tu envío a México.",
-    en: "Don't worry! We automatically optimize the box size for your purchases. We'll always assign you the box that saves you the most on your shipment to Mexico.",
+    es: "El precio incluye TODO: consolidación de paquetes en nuestro almacén de San Diego y envío aéreo completo vía Estafeta/DHL a cualquier parte de México. Sin costos ocultos.",
+    en: "The price includes EVERYTHING: package consolidation at our San Diego warehouse and complete air shipping via Estafeta/DHL anywhere in Mexico. No hidden costs.",
   },
 };
 
