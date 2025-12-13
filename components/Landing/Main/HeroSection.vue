@@ -61,10 +61,10 @@
                   </NuxtLink>
 
                   <a
-                    href="#box-pricing"
+                    href="/how-it-works"
                     class="px-8 py-4 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold rounded-full transition-all duration-300 border border-white/30"
                   >
-                    {{ t.ctaCalculate }}
+                    {{ t.ctaHowItWorks }}
                   </a>
                 </div>
 
@@ -182,9 +182,9 @@ const translations = {
     es: "Regístrate Gratis",
     en: "Register Free",
   },
-  ctaCalculate: {
-    es: "Calcular Envío",
-    en: "Calculate Shipping",
+  ctaHowItWorks: {
+    es: "Como Funciona",
+    en: "How it works",
   },
   alreadyHavePackage: {
     es: "¿Ya tienes una orden?",
