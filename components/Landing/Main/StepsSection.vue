@@ -300,8 +300,8 @@ const translations = {
     en: "This allows us to identify your packages when they arrive at our warehouse, verify everything is correct, and prepare your consolidation faster.",
   },
   step3Tip: {
-    es: "Registra tus compras apenas recibas el tracking number - ¡toma solo 2 minutos!",
-    en: "Register your purchases as soon as you get the tracking number - it only takes 2 minutes!",
+    es: "Registra tus compras al terminar con tu shopping - ¡toma solo 2 minutos!",
+    en: "Register your purchases when youre done shopping - it only takes 2 minutes!",
   },
   step3Badge: {
     es: "Solo toma",
