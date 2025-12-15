@@ -779,6 +779,7 @@ definePageMeta({
 // Nuxt imports
 const { $customFetch } = useNuxtApp()
 const router = useRouter()
+const route = useRoute()
 const user = useUser().value
 
 // Use the language composable
@@ -963,7 +964,7 @@ const fetchOrders = async (page = 1) => {
 
 const changePage = (page) => {
   if (page >= 1 && page <= pagination.value.lastPage) {
-    fetchOrders(page)
+    fetchOrders(page).then(() => updateQueryParams())
   }
 }
 
@@ -973,7 +974,7 @@ const clearFilters = () => {
   fromDate.value = ''
   toDate.value = ''
   datePreset.value = ''
-  fetchOrders(1)
+  fetchOrders(1).then(() => updateQueryParams())
 }
 
 // Date helper functions
@@ -1036,13 +1037,13 @@ const applyDatePreset = (preset) => {
   fromDate.value = from
   toDate.value = to
   showDatePicker.value = false
-  fetchOrders(1)
+  fetchOrders(1).then(() => updateQueryParams())
 }
 
 const applyCustomDateRange = () => {
   datePreset.value = ''
   showDatePicker.value = false
-  fetchOrders(1)
+  fetchOrders(1).then(() => updateQueryParams())
 }
 
 const clearDateRange = () => {
@@ -1050,7 +1051,7 @@ const clearDateRange = () => {
   toDate.value = ''
   datePreset.value = ''
   showDatePicker.value = false
-  fetchOrders(1)
+  fetchOrders(1).then(() => updateQueryParams())
 }
 
 // Mobile filter functions
@@ -1108,7 +1109,7 @@ const applyDatePresetMobile = (preset) => {
 
 const applyMobileFilters = () => {
   showMobileFilters.value = false
-  fetchOrders(1)
+  fetchOrders(1).then(() => updateQueryParams())
 }
 
 const navigateTo = (path) => {
@@ -1187,26 +1188,54 @@ const bulkDelete = async () => {
 watch(statusFilter, () => {
   fetchOrders(1)
   clearSelection()
+  updateQueryParams()
 })
 
 // Watch perPage
 watch(perPage, () => {
   fetchOrders(1)
   clearSelection()
+  updateQueryParams()
 })
 
 // Watch search query with debounce
-watch(searchQuery, (newValue) => {
+watch(searchQuery, () => {
   clearTimeout(searchDebounce.value)
   searchDebounce.value = setTimeout(() => {
     fetchOrders(1)
     clearSelection()
+    updateQueryParams()
   }, 300)
 })
 
+// Sync filters to URL query params
+const updateQueryParams = () => {
+  const query = {}
+  if (statusFilter.value) query.status = statusFilter.value
+  if (searchQuery.value) query.search = searchQuery.value
+  if (fromDate.value) query.from_date = fromDate.value
+  if (toDate.value) query.to_date = toDate.value
+  if (perPage.value !== 25) query.per_page = perPage.value
+  if (pagination.value.currentPage > 1) query.page = pagination.value.currentPage
+
+  router.replace({ query })
+}
+
+// Initialize filters from URL query params
+const initFiltersFromQuery = () => {
+  const q = route.query
+  if (q.status) statusFilter.value = q.status
+  if (q.search) searchQuery.value = q.search
+  if (q.from_date) fromDate.value = q.from_date
+  if (q.to_date) toDate.value = q.to_date
+  if (q.per_page) perPage.value = parseInt(q.per_page) || 25
+}
+
 // Fetch orders on mount
 onMounted(() => {
-  fetchOrders()
+  initFiltersFromQuery()
+  const initialPage = parseInt(route.query.page) || 1
+  fetchOrders(initialPage)
 })
 
 // Cleanup

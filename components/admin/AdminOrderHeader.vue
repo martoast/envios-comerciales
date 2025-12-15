@@ -5,15 +5,15 @@
     <div class="px-4 py-3 sm:hidden">
       <!-- Top Row: Back + Actions -->
       <div class="flex items-center justify-between mb-2">
-        <NuxtLink
-          to="/app/admin/orders"
+        <button
+          @click="goBack"
           class="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors -ml-1"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
           <span>{{ t.orders }}</span>
-        </NuxtLink>
+        </button>
 
         <button
           @click="$emit('toggle-menu')"
@@ -62,15 +62,15 @@
       <div class="flex items-center justify-between h-16">
         <!-- Left: Back + Order Info -->
         <div class="flex items-center gap-4 min-w-0">
-          <NuxtLink
-            to="/app/admin/orders"
+          <button
+            @click="goBack"
             class="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
             :title="t.backToOrders"
           >
             <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
-          </NuxtLink>
+          </button>
 
           <div class="min-w-0">
             <div class="flex items-center gap-3">
@@ -181,6 +181,12 @@ const props = defineProps({
 });
 
 defineEmits(['toggle-menu', 'close-menu', 'delete']);
+
+const router = useRouter();
+
+const goBack = () => {
+  router.back();
+};
 
 const { t: createTranslations, currentLanguage } = useLanguage();
 

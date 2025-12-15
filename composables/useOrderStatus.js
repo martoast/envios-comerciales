@@ -24,7 +24,6 @@ export const useOrderStatus = () => {
       'packages_complete',
       'awaiting_payment',
       'paid',
-      'processing',  // Legacy status - keep for backwards compatibility
       'shipped',
       'delivered',
       'cancelled',

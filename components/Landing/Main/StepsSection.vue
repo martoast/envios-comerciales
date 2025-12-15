@@ -271,8 +271,8 @@ const translations = {
     en: "BOXLY John Smith",
   },
   step2AddressExample: {
-    es: "2220 Otay Lakes Road, Unit 123",
-    en: "2220 Otay Lakes Road, Unit 123",
+    es: "123 main street, Unit 123",
+    en: "123 main street, Unit 123",
   },
   storesAvailable: {
     es: "tiendas",
@@ -330,9 +330,10 @@ const translations = {
     en: "We ship to Mexico",
   },
   step5Desc: {
-    es: "Pagas 100% del envío de forma segura vía Stripe. Cruzamos la frontera por Tijuana y enviamos tu paquete por avión con Estafeta o DHL a toda la República Mexicana. Recibes tu número de guía cuando se envía desde México. Tiempo de entrega: 3 días hábiles. Importante: No realizamos envíos los viernes.",
-    en: "You pay 100% of shipping securely via Stripe. We cross the border through Tijuana and ship your package by air with Estafeta or DHL throughout Mexico. You receive your tracking number when it ships from Mexico. Delivery time: 3 business days. Important: We don't ship on Fridays.",
+    es: "Pagas tu envío de forma segura. Nos encargamos de la logística y el proceso aduanal, y enviamos tu paquete en México por paquetería aérea con Estafeta o DHL. Recibes tu guía cuando se envía.",
+    en: "Pay securely. We handle logistics and customs, then ship your package within Mexico by air with Estafeta or DHL. You receive tracking once it ships.",
   },
+
   step5Tip: {
     es: "Rastreo en tiempo real desde que pagas hasta que recibes",
     en: "Real-time tracking from payment to delivery",
