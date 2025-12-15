@@ -423,16 +423,16 @@ const translations = {
     en: "Prices are fixed and transparent, with no hidden charges",
   },
   pricingItem4: {
-    es: "Se requiere un depósito del 50% del costo total cuando se genera su guía de envío",
-    en: "A 50% deposit of the total cost is required when your shipping label is generated",
+    es: "Se requiere el pago completo (100%) del costo total antes de que su paquete sea procesado y enviado",
+    en: "Full payment (100%) of the total cost is required before your package is processed and shipped",
   },
   pricingItem5: {
-    es: "El depósito cubre los costos de consolidación y envío internacional",
-    en: "The deposit covers consolidation and international shipping costs",
+    es: "El pago cubre los costos de consolidación, documentación aduanal y envío nacional vía Estafeta o DHL",
+    en: "Payment covers consolidation, customs documentation, and domestic shipping via Estafeta or DHL",
   },
   pricingItem6: {
-    es: "El saldo restante (50%) se paga después de recibir su paquete en México",
-    en: "The remaining balance (50%) is paid after receiving your package in Mexico",
+    es: "Una vez realizado el pago y generada la guía de envío, no se aceptan reembolsos",
+    en: "Once payment is made and the shipping label is generated, no refunds are accepted",
   },
   pricingItem7: {
     es: "Todos los pagos se procesan de manera segura a través de Stripe",
@@ -443,8 +443,8 @@ const translations = {
     en: "Important Note:",
   },
   depositNote: {
-    es: "El depósito del 50% es obligatorio para procesar y enviar su paquete. Este depósito no es reembolsable una vez que el envío ha sido procesado y despachado desde nuestro almacén. El depósito cubre consolidación, documentación aduanal, y costos de envío internacional.",
-    en: "The 50% deposit is mandatory to process and ship your package. This deposit is non-refundable once the shipment has been processed and dispatched from our warehouse. The deposit covers consolidation, customs documentation, and international shipping costs.",
+    es: "El pago completo del 100% es obligatorio antes de procesar y enviar su paquete. Este pago no es reembolsable una vez que el envío ha sido procesado y se ha generado la guía de Estafeta o DHL. El pago cubre consolidación, documentación aduanal, cruce de frontera por Tijuana, y envío nacional.",
+    en: "Full 100% payment is mandatory before processing and shipping your package. This payment is non-refundable once the shipment has been processed and the Estafeta or DHL tracking number has been generated. Payment covers consolidation, customs documentation, border crossing through Tijuana, and domestic shipping.",
   },
   ivaNote: {
     es: "Todos los precios están sujetos a IVA (Impuesto al Valor Agregado) del 16% según lo establecido por las leyes fiscales mexicanas. El IVA se agregará al costo total del servicio y se reflejará en su factura final.",
@@ -459,72 +459,72 @@ const translations = {
     en: "Shipping and delivery terms:",
   },
   shippingItem1: {
-    es: "Los tiempos de entrega estimados son de 3-7 días hábiles desde que se procesa su envío a través de Estafeta",
-    en: "Estimated delivery times are 3-7 business days from when your shipment is processed via Estafeta",
+    es: "Los tiempos de entrega estimados son de 3-5 días hábiles desde que se procesa su envío a través de Estafeta o DHL",
+    en: "Estimated delivery times are 3-5 business days from when your shipment is processed via Estafeta or DHL",
   },
   shippingItem2: {
-    es: "Boxly actúa como intermediario de envío y utiliza Estafeta como transportista. Una vez que su paquete es entregado a Estafeta, cualquier retraso, pérdida, daño o problema de entrega es responsabilidad exclusiva de Estafeta",
-    en: "Boxly acts as a shipping intermediary and uses Estafeta as the carrier. Once your package is handed to Estafeta, any delays, loss, damage, or delivery issues are the sole responsibility of Estafeta",
+    es: "Boxly actúa como intermediario de envío y utiliza Estafeta o DHL como transportistas. Una vez que Boxly genera y proporciona el número de guía (tracking), y el paquete es entregado al transportista, cualquier retraso, pérdida, daño o problema de entrega es responsabilidad exclusiva del transportista (Estafeta o DHL). Boxly NO es responsable por paquetes perdidos, dañados o retrasados una vez entregados al transportista.",
+    en: "Boxly acts as a shipping intermediary and uses Estafeta or DHL as carriers. Once Boxly generates and provides the tracking number (guía), and the package is handed to the carrier, any delays, loss, damage, or delivery issues are the sole responsibility of the carrier (Estafeta or DHL). Boxly is NOT responsible for packages lost, damaged, or delayed once handed to the carrier.",
   },
   shippingItem3: {
-    es: "Usted es responsable de proporcionar una dirección de entrega completa, precisa y válida en México. Boxly y Estafeta no son responsables de entregas fallidas debido a direcciones incorrectas, incompletas o inválidas proporcionadas por el cliente",
-    en: "You are responsible for providing a complete, accurate, and valid delivery address in Mexico. Boxly and Estafeta are not responsible for failed deliveries due to incorrect, incomplete, or invalid addresses provided by the customer",
+    es: "Usted es responsable de proporcionar una dirección de entrega completa, precisa y válida en México. Boxly y el transportista (Estafeta/DHL) no son responsables de entregas fallidas debido a direcciones incorrectas, incompletas o inválidas proporcionadas por el cliente",
+    en: "You are responsible for providing a complete, accurate, and valid delivery address in Mexico. Boxly and the carrier (Estafeta/DHL) are not responsible for failed deliveries due to incorrect, incomplete, or invalid addresses provided by the customer",
   },
   shippingItem4: {
     es: "Boxly no es responsable de retrasos causados por aduanas, condiciones climáticas, desastres naturales, huelgas, pandemias, restricciones gubernamentales, o cualquier otra circunstancia de fuerza mayor fuera de nuestro control",
     en: "Boxly is not responsible for delays caused by customs, weather conditions, natural disasters, strikes, pandemics, government restrictions, or any other force majeure circumstances beyond our control",
   },
   shippingItem5: {
-    es: "Una vez que Estafeta marca su paquete como 'entregado', Boxly no tiene responsabilidad sobre reclamos de no recepción. Cualquier disputa de entrega debe manejarse directamente con Estafeta",
-    en: "Once Estafeta marks your package as 'delivered', Boxly has no liability for claims of non-receipt. Any delivery disputes must be handled directly with Estafeta",
+    es: "Una vez que el transportista (Estafeta/DHL) marca su paquete como 'entregado', Boxly no tiene responsabilidad sobre reclamos de no recepción. Cualquier disputa de entrega debe manejarse directamente con el transportista",
+    en: "Once the carrier (Estafeta/DHL) marks your package as 'delivered', Boxly has no liability for claims of non-receipt. Any delivery disputes must be handled directly with the carrier",
   },
   shippingItem6: {
-    es: "Boxly proporcionará el número de rastreo de Estafeta una vez que el paquete sea enviado. Es su responsabilidad rastrear su paquete y estar disponible para recibirlo",
-    en: "Boxly will provide the Estafeta tracking number once the package is shipped. It is your responsibility to track your package and be available to receive it",
+    es: "Boxly proporcionará el número de guía (tracking) de Estafeta o DHL una vez que el paquete sea enviado. Es su responsabilidad rastrear su paquete y estar disponible para recibirlo",
+    en: "Boxly will provide the Estafeta or DHL tracking number (guía) once the package is shipped. It is your responsibility to track your package and be available to receive it",
   },
   shippingItem7: {
-    es: "Si Estafeta no puede entregar su paquete debido a dirección incorrecta, ausencia del destinatario, o rechazo de entrega, usted será responsable de cualquier cargo adicional de reenvío o almacenamiento",
-    en: "If Estafeta cannot deliver your package due to incorrect address, recipient absence, or delivery refusal, you will be responsible for any additional reshipment or storage charges",
+    es: "Si el transportista no puede entregar su paquete debido a dirección incorrecta, ausencia del destinatario, o rechazo de entrega, usted será responsable de cualquier cargo adicional de reenvío o almacenamiento",
+    en: "If the carrier cannot deliver your package due to incorrect address, recipient absence, or delivery refusal, you will be responsible for any additional reshipment or storage charges",
   },
   shippingItem8: {
-    es: "Boxly no ofrece garantías sobre tiempos de entrega específicos. Las estimaciones de 3-7 días son aproximadas y pueden variar según la ubicación, temporada y circunstancias del transportista",
-    en: "Boxly does not provide guarantees on specific delivery times. The 3-7 day estimate is approximate and may vary based on location, season, and carrier circumstances",
+    es: "Boxly no ofrece garantías sobre tiempos de entrega específicos. Las estimaciones de 3-5 días hábiles son aproximadas y pueden variar según la ubicación, temporada y circunstancias del transportista. Importante: No realizamos envíos los viernes.",
+    en: "Boxly does not provide guarantees on specific delivery times. The 3-5 business day estimate is approximate and may vary based on location, season, and carrier circumstances. Important: We do not ship on Fridays.",
   },
   carrierClaimsTitle: {
     es: "Reclamos al Transportista y Disputas de Entrega",
     en: "Carrier Claims and Delivery Disputes",
   },
   carrierClaimsText: {
-    es: "Política de reclamos con el transportista:",
-    en: "Carrier claims policy:",
+    es: "Política de reclamos con el transportista - LEA CUIDADOSAMENTE:",
+    en: "Carrier claims policy - READ CAREFULLY:",
   },
   carrierClaimsItem1: {
-    es: "Boxly proporcionará asistencia razonable para presentar reclamos con Estafeta en caso de paquetes perdidos, dañados o no entregados",
-    en: "Boxly will provide reasonable assistance in filing claims with Estafeta for lost, damaged, or undelivered packages",
+    es: "Una vez que Boxly genera el número de guía (tracking) y entrega el paquete al transportista (Estafeta o DHL), la responsabilidad de Boxly TERMINA. A partir de ese momento, el transportista es el único responsable del paquete",
+    en: "Once Boxly generates the tracking number (guía) and hands the package to the carrier (Estafeta or DHL), Boxly's responsibility ENDS. From that point, the carrier is solely responsible for the package",
   },
   carrierClaimsItem2: {
-    es: "La responsabilidad final de cualquier paquete perdido o dañado recae en Estafeta según sus términos y condiciones de servicio",
-    en: "Final liability for any lost or damaged packages lies with Estafeta according to their terms and conditions of service",
+    es: "La responsabilidad final de cualquier paquete perdido o dañado durante el tránsito nacional recae en el transportista (Estafeta o DHL) según sus términos y condiciones de servicio",
+    en: "Final liability for any package lost or damaged during domestic transit lies with the carrier (Estafeta or DHL) according to their terms and conditions of service",
   },
   carrierClaimsItem3: {
-    es: "Los reclamos de seguro, si están disponibles, deben presentarse directamente con Estafeta o su proveedor de seguros de envío",
-    en: "Insurance claims, if available, must be filed directly with Estafeta or your shipping insurance provider",
+    es: "Los reclamos de seguro, si están disponibles, deben presentarse directamente con el transportista (Estafeta o DHL) o su proveedor de seguros",
+    en: "Insurance claims, if available, must be filed directly with the carrier (Estafeta or DHL) or your insurance provider",
   },
   carrierClaimsItem4: {
-    es: "Boxly no es responsable de compensar a los clientes por paquetes perdidos, dañados o retrasados por el transportista. La responsabilidad máxima de Boxly se limita al costo del servicio de consolidación y envío pagado a Boxly, excluyendo el valor del contenido del paquete",
-    en: "Boxly is not responsible for compensating customers for packages lost, damaged, or delayed by the carrier. Boxly's maximum liability is limited to the cost of the consolidation and shipping service paid to Boxly, excluding the value of package contents",
+    es: "Boxly NO es responsable de compensar a los clientes por paquetes perdidos, dañados o retrasados una vez que han sido entregados al transportista. La responsabilidad máxima de Boxly se limita exclusivamente al reembolso del costo del servicio de envío pagado a Boxly, excluyendo completamente el valor del contenido del paquete",
+    en: "Boxly is NOT responsible for compensating customers for packages lost, damaged, or delayed once they have been handed to the carrier. Boxly's maximum liability is limited exclusively to a refund of the shipping service cost paid to Boxly, completely excluding the value of package contents",
   },
   carrierClaimsItem5: {
-    es: "El cliente acepta que al usar los servicios de Boxly, entiende y acepta que Boxly actúa únicamente como intermediario de envío y que el transportista (Estafeta) es el responsable final de la entrega segura y oportuna",
-    en: "The customer agrees that by using Boxly services, they understand and accept that Boxly acts solely as a shipping intermediary and that the carrier (Estafeta) is ultimately responsible for safe and timely delivery",
+    es: "El cliente acepta que al usar los servicios de Boxly y recibir el número de guía, entiende y acepta que Boxly actúa únicamente como intermediario de envío y que el transportista (Estafeta o DHL) es el responsable final de la entrega segura y oportuna del paquete",
+    en: "The customer agrees that by using Boxly services and receiving the tracking number, they understand and accept that Boxly acts solely as a shipping intermediary and that the carrier (Estafeta or DHL) is ultimately responsible for safe and timely package delivery",
   },
   carrierWarningTitle: {
     es: "ADVERTENCIA IMPORTANTE:",
     en: "IMPORTANT WARNING:",
   },
   carrierWarningText: {
-    es: "Boxly NO es una compañía de seguros y NO asegura el contenido de sus paquetes. Si está enviando artículos de alto valor, se recomienda encarecidamente contratar seguro adicional a través de su tienda de compras o un proveedor de seguros de terceros ANTES de enviar a nuestra dirección en San Diego. Una vez que el paquete ha sido entregado a Estafeta, Boxly no tiene control ni responsabilidad sobre el mismo.",
-    en: "Boxly is NOT an insurance company and does NOT insure the contents of your packages. If you are shipping high-value items, it is strongly recommended to purchase additional insurance through your shopping store or a third-party insurance provider BEFORE shipping to our San Diego address. Once the package has been handed to Estafeta, Boxly has no control or liability over it.",
+    es: "Boxly NO es una compañía de seguros y NO asegura el contenido de sus paquetes. Si está enviando artículos de alto valor, se recomienda encarecidamente contratar seguro adicional a través de su tienda de compras o un proveedor de seguros de terceros ANTES de enviar a nuestra dirección en San Diego. UNA VEZ QUE BOXLY GENERA LA GUÍA (TRACKING) Y ENTREGA EL PAQUETE A ESTAFETA O DHL, BOXLY NO TIENE CONTROL NI RESPONSABILIDAD ALGUNA SOBRE EL MISMO. Cualquier reclamo por pérdida o daño debe dirigirse directamente al transportista.",
+    en: "Boxly is NOT an insurance company and does NOT insure the contents of your packages. If you are shipping high-value items, it is strongly recommended to purchase additional insurance through your shopping store or a third-party insurance provider BEFORE shipping to our San Diego address. ONCE BOXLY GENERATES THE TRACKING NUMBER (GUÍA) AND HANDS THE PACKAGE TO ESTAFETA OR DHL, BOXLY HAS NO CONTROL OR LIABILITY WHATSOEVER OVER IT. Any claims for loss or damage must be directed to the carrier.",
   },
   prohibitedTitle: {
     es: "Artículos Prohibidos",
@@ -631,16 +631,16 @@ const translations = {
     en: "Cancellation policy:",
   },
   cancellationItem1: {
-    es: "Puede cancelar una orden de envío antes de que sea procesada para envío",
-    en: "You may cancel a shipping order before it is processed for shipment",
+    es: "Puede cancelar una orden de envío ÚNICAMENTE antes de que se procese el pago y se genere la guía de envío",
+    en: "You may cancel a shipping order ONLY before payment is processed and the shipping label is generated",
   },
   cancellationItem2: {
-    es: "Una vez que el paquete ha sido enviado, no se pueden realizar reembolsos del depósito",
-    en: "Once the package has been shipped, refunds of the deposit cannot be made",
+    es: "Una vez que se ha realizado el pago y se ha generado la guía (tracking) de Estafeta o DHL, NO se pueden realizar reembolsos bajo ninguna circunstancia",
+    en: "Once payment has been made and the Estafeta or DHL tracking number (guía) has been generated, NO refunds can be made under any circumstances",
   },
   cancellationItem3: {
-    es: "Los reembolsos, cuando apliquen, se procesarán dentro de 7-10 días hábiles",
-    en: "Refunds, when applicable, will be processed within 7-10 business days",
+    es: "Los reembolsos solo aplican para órdenes canceladas antes del procesamiento del pago y se procesarán dentro de 7-10 días hábiles",
+    en: "Refunds only apply to orders cancelled before payment processing and will be processed within 7-10 business days",
   },
   conductTitle: {
     es: "Conducta del Usuario",
