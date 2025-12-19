@@ -123,6 +123,19 @@
             >
               {{ t.expenses }}
             </button>
+
+            <!-- Affiliates -->
+            <button
+              @click="handleNavigation('/app/admin/affiliates')"
+              :class="[
+                isActiveRoute('/app/admin/affiliates')
+                  ? 'border-primary-500 text-gray-900'
+                  : 'border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900',
+                'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors duration-200',
+              ]"
+            >
+              {{ t.affiliates }}
+            </button>
           </div>
         </div>
         
@@ -283,6 +296,18 @@
             'block border-l-4 py-2 pl-3 pr-4 text-base font-medium sm:pl-5 sm:pr-6 w-full text-left',
           ]"
         >{{ t.expenses }}</DisclosureButton>
+
+        <!-- Affiliates (Mobile) -->
+        <DisclosureButton
+          as="button"
+          @click="handleNavigation('/app/admin/affiliates')"
+          :class="[
+            isActiveRoute('/app/admin/affiliates')
+              ? 'bg-primary-50 border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900',
+            'block border-l-4 py-2 pl-3 pr-4 text-base font-medium sm:pl-5 sm:pr-6 w-full text-left',
+          ]"
+        >{{ t.affiliates }}</DisclosureButton>
       </div>
 
       <!-- Profile info -->
@@ -346,6 +371,7 @@ const translations = {
   packages: { es: 'Paquetes', en: 'Packages' },
   customers: { es: 'Clientes', en: 'Customers' },
   expenses: { es: 'Gastos', en: 'Expenses' },
+  affiliates: { es: 'Afiliados', en: 'Affiliates' },
   adminRole: { es: 'Administrador', en: 'Administrator' },
   signedInAs: { es: 'Sesión iniciada como', en: 'Signed in as' },
   account: { es: 'Cuenta', en: 'Account' },

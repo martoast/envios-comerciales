@@ -137,6 +137,23 @@
               {{ t.purchaseRequests }}
             </button>
 
+            <!-- Affiliate Portal (shown only for affiliates) -->
+            <button
+              v-if="user?.affiliate"
+              @click="handleNavigation('/app/affiliate')"
+              :class="[
+                isActiveRoute('/app/affiliate')
+                  ? 'border-primary-500 text-gray-900'
+                  : 'border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900',
+                'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors duration-200',
+              ]"
+            >
+              <svg class="w-4 h-4 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {{ t.affiliatePortal }}
+            </button>
+
           </div>
         </div>
         <div class="flex items-center">
@@ -197,7 +214,24 @@
                       {{ t.myAccount }}
                     </a>
                   </MenuItem>
-                  <MenuItem v-slot="{ active }" v-if="user?.is_admin">
+                  <MenuItem v-if="user?.affiliate" v-slot="{ active }">
+                    <a
+                      href="/app/affiliate"
+                      @click.prevent="handleNavigation('/app/affiliate')"
+                      :class="[
+                        active ? 'bg-gray-100' : '',
+                        'block px-4 py-2 text-sm text-gray-700',
+                      ]"
+                    >
+                      <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ t.affiliatePortal }}
+                      </div>
+                    </a>
+                  </MenuItem>
+                  <MenuItem v-if="user?.is_admin" v-slot="{ active }">
                     <a
                       href="/app/admin/dashboard"
                       @click.prevent="handleNavigation('/app/admin/dashboard')"
@@ -304,6 +338,26 @@
             </DisclosureButton>
         </div>
 
+        <!-- Mobile Affiliate Portal (shown only for affiliates) -->
+        <DisclosureButton
+          v-if="user?.affiliate"
+          as="button"
+          @click="handleNavigation('/app/affiliate')"
+          :class="[
+            isActiveRoute('/app/affiliate')
+              ? 'bg-primary-50 border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900',
+            'block border-l-4 py-2 pl-3 pr-4 text-base font-medium sm:pl-5 sm:pr-6 w-full text-left',
+          ]"
+        >
+          <div class="flex items-center">
+            <svg class="w-5 h-5 mr-3 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ t.affiliatePortal }}
+          </div>
+        </DisclosureButton>
+
       </div>
       
       <div class="border-t border-gray-200 pb-3 pt-4">
@@ -330,6 +384,19 @@
             @click="handleNavigation('/app/account')"
             class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 sm:px-6 w-full text-left"
           >{{ t.myAccount }}</DisclosureButton>
+          <DisclosureButton
+            v-if="user?.affiliate"
+            as="button"
+            @click="handleNavigation('/app/affiliate')"
+            class="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 sm:px-6 w-full text-left"
+          >
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {{ t.affiliatePortal }}
+            </div>
+          </DisclosureButton>
           <DisclosureButton
             v-if="user?.is_admin"
             as="button"
@@ -380,6 +447,7 @@ const translations = {
   purchaseRequests: { es: 'Compra Asistida', en: 'Assisted Purchase' },
   signedInAs: { es: 'Sesión iniciada como', en: 'Signed in as' },
   myAccount: { es: 'Mi Cuenta', en: 'My Account' },
+  affiliatePortal: { es: 'Portal de Afiliado', en: 'Affiliate Portal' },
   adminPanel: { es: 'Panel de Admin', en: 'Admin Panel' },
   logout: { es: 'Cerrar Sesión', en: 'Sign out' },
   language: { es: 'Idioma', en: 'Language' }

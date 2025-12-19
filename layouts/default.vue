@@ -33,6 +33,11 @@ import LandingNavbar from '~/components/LandingNavbar.vue'
 
 const route = useRoute()
 const { t: createTranslations, initializeLanguage } = useLanguage()
+const { captureRefFromUrl, captureAndValidateRef } = useAffiliateRef()
+
+// IMMEDIATELY capture ref from URL on setup (SSR-safe, runs before any navigation)
+// This stores the cookie synchronously - no waiting for API validation
+captureRefFromUrl()
 
 // Check if we're on login or register page
 const isAuthPage = computed(() => {
@@ -68,8 +73,10 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
-// Initialize language on layout mount
+// Initialize language and validate affiliate ref on client mount
 onMounted(() => {
   initializeLanguage()
+  // Validate the ref code in background (cookie already set in setup)
+  captureAndValidateRef()
 })
 </script>

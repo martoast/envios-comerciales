@@ -2,29 +2,31 @@
   <div>
     <!-- WhatsApp Button -->
     <WhatsAppButton />
-    
+
     <!-- Hero Section -->
     <MainHeroSection />
-    
+
     <!-- Logo Carousel -->
     <LogoCarousel :animation-speed="30" />
-    
+
     <!-- How It Works Section -->
     <MainStepsSection />
 
-    <BoxPricing/>
-    
+    <CTAFooter />
 
-    <CTACarouselBanner/>
-    
+    <BoxPricing/>
+
+    <!-- <CTACarouselBanner/> -->
+
+    <!-- Affiliate Program Promo -->
+    <AffiliatePromoSection />
+
     <!-- Testimonials Section -->
     <!-- <MainTestimonialsSection /> -->
+
+    <!-- CTA Footer -->
     
 
-    
-    <!-- CTA Footer -->
-    <CTAFooter />
-    
     <!-- Footer -->
     <FooterSection />
   </div>
@@ -38,6 +40,7 @@ import LogoCarousel from '~/components/Landing/LogoCarousel.vue'
 import MainStepsSection from '~/components/Landing/Main/StepsSection.vue'
 import MainTestimonialsSection from '~/components/Landing/Main/TestimonialsSection.vue'
 import CTACarouselBanner from '~/components/Landing/Main/CTACarouselBanner.vue'
+import AffiliatePromoSection from '~/components/Landing/Main/AffiliatePromoSection.vue'
 import FooterSection from '~/components/Landing/FooterSection.vue'
 import CTAFooter from '~/components/Landing/CTAFooter.vue'
 

@@ -234,38 +234,175 @@
               </p>
             </div>
 
-            <!-- Terms of Service Checkbox -->
-            <div class="pt-2">
-              <label class="flex items-start cursor-pointer group">
-                <div class="flex items-center h-5 mt-0.5">
-                  <input
-                    v-model="form.agree_to_terms"
-                    type="checkbox"
-                    id="agree_to_terms"
-                    :class="[
-                      'w-4 h-4 rounded border-2 transition-all duration-200 cursor-pointer',
-                      errors.agree_to_terms 
-                        ? 'border-red-300 text-red-500 focus:ring-red-500' 
-                        : 'border-gray-300 text-primary-500 focus:ring-primary-500'
-                    ]"
-                    @change="clearFieldError('agree_to_terms')"
+            <!-- Become Affiliate Checkbox - Card Style -->
+            <div class="pt-4 mt-4 border-t border-gray-100">
+              <label
+                :class="[
+                  'flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200',
+                  form.become_affiliate
+                    ? 'border-primary-500 bg-primary-50/50 shadow-sm'
+                    : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                ]"
+              >
+                <!-- Custom Checkbox -->
+                <div
+                  :class="[
+                    'w-6 h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200',
+                    form.become_affiliate
+                      ? 'bg-primary-500 border-primary-500'
+                      : 'bg-white border-gray-300'
+                  ]"
+                >
+                  <svg
+                    v-if="form.become_affiliate"
+                    class="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
                 </div>
-                <div class="ml-3 text-sm">
-                  <span class="text-gray-700">
-                    {{ t.agreeToTermsPrefix }}
-                    <NuxtLink 
-                      to="/terms-of-service" 
-                      target="_blank"
-                      class="text-primary-500 font-semibold hover:text-primary-600 underline transition-colors"
-                    >
-                      {{ t.termsOfService }}
-                    </NuxtLink>
-                    <span class="text-red-500 ml-1">*</span>
-                  </span>
+                <input
+                  v-model="form.become_affiliate"
+                  type="checkbox"
+                  id="become_affiliate"
+                  class="sr-only"
+                >
+                <!-- Icon & Text -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="text-sm font-semibold text-gray-900">{{ t.becomeAffiliateLabel }}</span>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1 leading-relaxed">{{ t.becomeAffiliateDescription }}</p>
                 </div>
               </label>
-              <p v-if="errors.agree_to_terms" class="mt-1 text-xs text-red-600 ml-7">
+            </div>
+
+            <!-- Bank Details (shown when become_affiliate is checked) -->
+            <Transition
+              enter-active-class="transition ease-out duration-200"
+              enter-from-class="opacity-0 -translate-y-2"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition ease-in duration-150"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 -translate-y-2"
+            >
+              <div v-if="form.become_affiliate" class="space-y-3 mt-3 p-3 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="text-xs font-medium text-gray-700">{{ t.bankDetailsTitle }}</p>
+                  <p class="text-xs text-gray-500">{{ t.bankDetailsDescription }}</p>
+                </div>
+
+                <!-- Beneficiary Name -->
+                <div>
+                  <label for="bank_beneficiary_name" class="block text-xs font-medium text-gray-700 mb-1">
+                    {{ t.beneficiaryNameLabel }}
+                  </label>
+                  <input
+                    v-model="form.bank_beneficiary_name"
+                    type="text"
+                    id="bank_beneficiary_name"
+                    :placeholder="t.beneficiaryNamePlaceholder"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
+                  >
+                </div>
+
+                <!-- Bank Name -->
+                <div>
+                  <label for="bank_name" class="block text-xs font-medium text-gray-700 mb-1">
+                    {{ t.bankNameLabel }}
+                  </label>
+                  <input
+                    v-model="form.bank_name"
+                    type="text"
+                    id="bank_name"
+                    :placeholder="t.bankNamePlaceholder"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
+                  >
+                </div>
+
+                <!-- Account Number -->
+                <div>
+                  <label for="bank_account_number" class="block text-xs font-medium text-gray-700 mb-1">
+                    {{ t.accountNumberLabel }}
+                  </label>
+                  <input
+                    v-model="form.bank_account_number"
+                    type="text"
+                    id="bank_account_number"
+                    :placeholder="t.accountNumberPlaceholder"
+                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:border-primary-500 focus:ring-primary-500 transition-all duration-200"
+                  >
+                </div>
+              </div>
+            </Transition>
+
+            <!-- Terms of Service Checkbox - Card Style -->
+            <div class="pt-2">
+              <label
+                :class="[
+                  'flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200',
+                  errors.agree_to_terms
+                    ? 'border-red-300 bg-red-50/50'
+                    : form.agree_to_terms
+                      ? 'border-primary-500 bg-primary-50/50 shadow-sm'
+                      : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                ]"
+              >
+                <!-- Custom Checkbox -->
+                <div
+                  :class="[
+                    'w-6 h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200',
+                    errors.agree_to_terms
+                      ? 'bg-white border-red-300'
+                      : form.agree_to_terms
+                        ? 'bg-primary-500 border-primary-500'
+                        : 'bg-white border-gray-300'
+                  ]"
+                >
+                  <svg
+                    v-if="form.agree_to_terms"
+                    class="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <input
+                  v-model="form.agree_to_terms"
+                  type="checkbox"
+                  id="agree_to_terms"
+                  class="sr-only"
+                  @change="clearFieldError('agree_to_terms')"
+                >
+                <!-- Icon & Text -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="text-sm font-semibold text-gray-900">
+                      {{ t.agreeToTermsPrefix }}
+                      <NuxtLink
+                        to="/terms-of-service"
+                        target="_blank"
+                        class="text-primary-500 hover:text-primary-600 underline transition-colors"
+                        @click.stop
+                      >
+                        {{ t.termsOfService }}
+                      </NuxtLink>
+                      <span class="text-red-500 ml-1">*</span>
+                    </span>
+                  </div>
+                </div>
+              </label>
+              <p v-if="errors.agree_to_terms" class="mt-2 text-xs text-red-600">
                 {{ errors.agree_to_terms[0] }}
               </p>
             </div>
@@ -366,7 +503,8 @@ import { ref, computed, onMounted, nextTick } from 'vue'
 
 // Define page meta
 definePageMeta({
-  layout: 'default'
+  layout: 'default',
+  middleware: 'loggedin'
 })
 
 // Nuxt imports
@@ -381,6 +519,9 @@ const { t: createTranslations, language } = useLanguage()
 const currentStep = ref(1)
 const totalSteps = ref(2)
 
+// Affiliate ref composable - getAffiliateCode reads from cookie
+const { getAffiliateCode } = useAffiliateRef()
+
 // Form state
 const form = ref({
   name: '',
@@ -389,7 +530,11 @@ const form = ref({
   password: '',
   password_confirmation: '',
   registration_source: '',
-  agree_to_terms: false
+  agree_to_terms: false,
+  become_affiliate: false,
+  bank_beneficiary_name: '',
+  bank_name: '',
+  bank_account_number: ''
 })
 
 // Phone validation state from component
@@ -568,6 +713,48 @@ const translations = {
   termsRequired: {
     es: 'Debes aceptar los términos de servicio',
     en: 'You must accept the terms of service'
+  },
+
+  // Affiliate fields
+  becomeAffiliateLabel: {
+    es: 'Quiero ser afiliado y ganar comisiones',
+    en: 'I want to be an affiliate and earn commissions'
+  },
+  becomeAffiliateDescription: {
+    es: 'Gana dinero refiriendo amigos a Boxly',
+    en: 'Earn money by referring friends to Boxly'
+  },
+  bankDetailsTitle: {
+    es: 'Datos bancarios (opcional)',
+    en: 'Bank details (optional)'
+  },
+  bankDetailsDescription: {
+    es: 'Puedes agregarlos después en tu portal de afiliado',
+    en: 'You can add these later in your affiliate portal'
+  },
+  beneficiaryNameLabel: {
+    es: 'Nombre del beneficiario',
+    en: 'Beneficiary name'
+  },
+  beneficiaryNamePlaceholder: {
+    es: 'Nombre como aparece en tu cuenta',
+    en: 'Name as it appears on your account'
+  },
+  bankNameLabel: {
+    es: 'Nombre del banco',
+    en: 'Bank name'
+  },
+  bankNamePlaceholder: {
+    es: 'Ej: BBVA, Santander, etc.',
+    en: 'E.g: Chase, Bank of America, etc.'
+  },
+  accountNumberLabel: {
+    es: 'Número de cuenta / CLABE',
+    en: 'Account number'
+  },
+  accountNumberPlaceholder: {
+    es: 'Tu número de cuenta o CLABE',
+    en: 'Your account number'
   }
 }
 
@@ -719,18 +906,32 @@ const handleRegister = async () => {
 
   loading.value = true
   clearErrors()
-  
+
   try {
+    // Get affiliate code from cookie
+    const affiliateCode = getAffiliateCode()
+    console.log('[Register] Affiliate code from cookie:', affiliateCode)
+
+    // Build registration payload
+    const payload = {
+      name: form.value.name,
+      email: form.value.email,
+      phone: phoneValidation.value.e164Phone,
+      password: form.value.password,
+      password_confirmation: form.value.password_confirmation,
+      registration_source: form.value.registration_source || undefined,
+      referred_by: affiliateCode || undefined,
+      become_affiliate: form.value.become_affiliate || undefined,
+      bank_beneficiary_name: form.value.become_affiliate ? form.value.bank_beneficiary_name || undefined : undefined,
+      bank_name: form.value.become_affiliate ? form.value.bank_name || undefined : undefined,
+      bank_account_number: form.value.become_affiliate ? form.value.bank_account_number || undefined : undefined
+    }
+
+    console.log('[Register] Sending registration payload:', payload)
+
     await $customFetch('/auth/register', {
       method: 'POST',
-      body: {
-        name: form.value.name,
-        email: form.value.email,
-        phone: phoneValidation.value.e164Phone,
-        password: form.value.password,
-        password_confirmation: form.value.password_confirmation,
-        registration_source: form.value.registration_source || undefined
-      }
+      body: payload
     })
 
     if ($fbq) {
@@ -802,9 +1003,14 @@ onMounted(() => {
   if (route.query.error === 'no_account') {
     errorMessage.value = t.value.noAccountError
   }
-  
+
+  // Pre-check affiliate checkbox if coming from affiliate CTA
+  if (route.query.become_affiliate === 'true') {
+    form.value.become_affiliate = true
+  }
+
   getRegistrationSource()
-  
+
   // Focus on name input
   nextTick(() => {
     const nameInput = document.querySelector('#name')
