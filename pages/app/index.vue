@@ -429,11 +429,11 @@
           <!-- Quick Actions -->
           <div class="space-y-4">
             <!-- Become Affiliate Banner (shown only for non-affiliates) -->
-            <div
+            <NuxtLink
               v-if="!user?.is_affiliate"
-              class="relative overflow-hidden bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 rounded-2xl p-5 shadow-lg animate-fadeIn group cursor-pointer hover:shadow-xl transition-all duration-300"
+              to="/app/affiliate/join"
+              class="block relative overflow-hidden bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 rounded-2xl p-5 shadow-lg animate-fadeIn group hover:shadow-xl transition-all duration-300"
               style="animation-delay: 1s"
-              @click="showAffiliateModal = true"
             >
               <!-- Decorative background elements -->
               <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
@@ -463,16 +463,16 @@
                 </div>
 
                 <!-- CTA Button -->
-                <button
-                  class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-green-600 font-semibold rounded-xl hover:bg-green-50 transition-all duration-300 group-hover:scale-[1.02]"
+                <div
+                  class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-green-600 font-semibold rounded-xl group-hover:bg-green-50 transition-all duration-300 group-hover:scale-[1.02]"
                 >
                   {{ t.startEarning }}
                   <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
-                </button>
+                </div>
               </div>
-            </div>
+            </NuxtLink>
 
             <!-- Affiliate Stats (shown only for affiliates) -->
             <NuxtLink
@@ -617,83 +617,6 @@
       </div>
     </div>
 
-    <!-- Become Affiliate Modal -->
-    <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showAffiliateModal" class="fixed inset-0 z-50 overflow-y-auto">
-          <div class="flex min-h-full items-center justify-center p-4">
-            <!-- Backdrop -->
-            <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="showAffiliateModal = false"></div>
-
-            <!-- Modal -->
-            <div class="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
-              <!-- Header -->
-              <div class="flex items-center gap-3 mb-4">
-                <div class="p-2 bg-green-100 rounded-lg">
-                  <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 class="text-lg font-bold text-gray-900">{{ t.affiliateModalTitle }}</h3>
-                  <p class="text-sm text-gray-500">{{ t.affiliateModalDesc }}</p>
-                </div>
-              </div>
-
-              <!-- Form -->
-              <form @submit.prevent="becomeAffiliate" class="space-y-4">
-                <p class="text-sm text-gray-600 font-medium">{{ t.bankDetailsOptional }}</p>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.beneficiaryName }}</label>
-                  <input
-                    v-model="affiliateForm.bank_beneficiary_name"
-                    type="text"
-                    class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.bankName }}</label>
-                  <input
-                    v-model="affiliateForm.bank_name"
-                    type="text"
-                    class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">{{ t.accountNumber }}</label>
-                  <input
-                    v-model="affiliateForm.bank_account_number"
-                    type="text"
-                    class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-
-                <!-- Actions -->
-                <div class="flex gap-3 pt-2">
-                  <button
-                    type="button"
-                    @click="showAffiliateModal = false"
-                    class="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all"
-                  >
-                    {{ t.cancel }}
-                  </button>
-                  <button
-                    type="submit"
-                    :disabled="affiliateSubmitting"
-                    class="flex-1 px-4 py-2.5 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 disabled:opacity-50 transition-all"
-                  >
-                    {{ affiliateSubmitting ? t.submitting : t.becomeAffiliate }}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </Transition>
-    </Teleport>
   </section>
 </template>
 
@@ -720,13 +643,6 @@ const loadingOrders = ref(false);
 const isInitialLoading = ref(true);
 const copied = ref(false);
 const showAddressBanner = ref(true);
-const showAffiliateModal = ref(false);
-const affiliateSubmitting = ref(false);
-const affiliateForm = ref({
-  bank_beneficiary_name: '',
-  bank_name: '',
-  bank_account_number: ''
-});
 
 // Computed properties
 const hasCompleteAddress = computed(() => {
@@ -977,38 +893,6 @@ const translations = {
     es: "Ver estadísticas y ganancias",
     en: "View stats & earnings",
   },
-  affiliateModalTitle: {
-    es: "Únete al Programa de Afiliados",
-    en: "Join the Affiliate Program",
-  },
-  affiliateModalDesc: {
-    es: "Gana 10% de comisión por cada envío de tus referidos.",
-    en: "Earn 10% commission on every shipment from your referrals.",
-  },
-  bankDetailsOptional: {
-    es: "Datos bancarios (opcional)",
-    en: "Bank details (optional)",
-  },
-  beneficiaryName: {
-    es: "Nombre del beneficiario",
-    en: "Beneficiary name",
-  },
-  bankName: {
-    es: "Nombre del banco",
-    en: "Bank name",
-  },
-  accountNumber: {
-    es: "Número de cuenta / CLABE",
-    en: "Account number",
-  },
-  cancel: {
-    es: "Cancelar",
-    en: "Cancel",
-  },
-  submitting: {
-    es: "Procesando...",
-    en: "Processing...",
-  },
 };
 
 // Get reactive translations
@@ -1067,26 +951,6 @@ const formatDate = (date) => {
   });
 };
 
-// Become affiliate
-const becomeAffiliate = async () => {
-  affiliateSubmitting.value = true;
-  try {
-    await $customFetch('/affiliate/become', {
-      method: 'POST',
-      body: affiliateForm.value
-    });
-    // Update user data to reflect new affiliate status
-    user.value.is_affiliate = true;
-    showAffiliateModal.value = false;
-    // Redirect to affiliate portal
-    await navigateTo('/app/affiliate');
-  } catch (error) {
-    console.error('Error becoming affiliate:', error);
-  } finally {
-    affiliateSubmitting.value = false;
-  }
-};
-
 // Initialize data
 const initializeDashboard = async () => {
   try {
@@ -1116,17 +980,6 @@ onMounted(() => {
 
 .animate-fadeIn {
   animation: fadeIn 0.6s ease-out forwards;
-  opacity: 0;
-}
-
-/* Modal transitions */
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
   opacity: 0;
 }
 </style>

@@ -51,22 +51,22 @@
     </div>
 
     <!-- Affiliate Dashboard -->
-    <div v-else class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+    <div v-else class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-4 sm:space-y-6">
       <!-- Affiliate Code & Link Section -->
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <div class="grid md:grid-cols-2 gap-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <!-- Affiliate Code -->
-          <div class="bg-primary-50 rounded-xl p-4">
-            <p class="text-sm text-primary-700 font-medium mb-2">{{ t.yourCode }}</p>
+          <div class="bg-primary-50 rounded-xl p-3 sm:p-4">
+            <p class="text-xs sm:text-sm text-primary-700 font-medium mb-2">{{ t.yourCode }}</p>
             <div class="flex items-center gap-2">
-              <code class="flex-1 bg-white px-4 py-3 rounded-lg border border-primary-200 font-mono text-2xl text-primary-600 text-center font-bold">
+              <code class="flex-1 bg-white px-3 sm:px-4 py-2 sm:py-3 rounded-lg border border-primary-200 font-mono text-lg sm:text-2xl text-primary-600 text-center font-bold truncate">
                 {{ affiliate.affiliate_code }}
               </code>
               <button
                 @click="copyToClipboard(affiliate.affiliate_code)"
-                class="p-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                class="p-2.5 sm:p-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex-shrink-0"
               >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
               </button>
@@ -74,20 +74,20 @@
           </div>
 
           <!-- Referral Link -->
-          <div class="bg-gray-50 rounded-xl p-4">
-            <p class="text-sm text-gray-700 font-medium mb-2">{{ t.yourLink }}</p>
+          <div class="bg-gray-50 rounded-xl p-3 sm:p-4">
+            <p class="text-xs sm:text-sm text-gray-700 font-medium mb-2">{{ t.yourLink }}</p>
             <div class="flex items-center gap-2">
               <input
                 type="text"
                 readonly
                 :value="referralLink"
-                class="flex-1 bg-white px-4 py-3 rounded-lg border border-gray-200 text-sm text-gray-600 truncate"
+                class="flex-1 min-w-0 bg-white px-3 sm:px-4 py-2 sm:py-3 rounded-lg border border-gray-200 text-xs sm:text-sm text-gray-600 truncate"
               />
               <button
                 @click="copyToClipboard(referralLink)"
-                class="p-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                class="p-2.5 sm:p-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex-shrink-0"
               >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
               </button>
@@ -97,38 +97,38 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <p class="text-sm text-gray-500 mb-1">{{ t.totalReferrals }}</p>
-          <p class="text-2xl font-bold text-gray-900">{{ affiliate.stats?.total_referrals || 0 }}</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+          <p class="text-xs sm:text-sm text-gray-500 mb-1">{{ t.totalReferrals }}</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ affiliate.stats?.total_referrals || 0 }}</p>
         </div>
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <p class="text-sm text-gray-500 mb-1">{{ t.totalConversions }}</p>
-          <p class="text-2xl font-bold text-gray-900">{{ affiliate.stats?.total_conversions || 0 }}</p>
+        <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+          <p class="text-xs sm:text-sm text-gray-500 mb-1">{{ t.totalConversions }}</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ affiliate.stats?.total_conversions || 0 }}</p>
         </div>
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <p class="text-sm text-gray-500 mb-1">{{ t.totalEarnings }}</p>
-          <p class="text-2xl font-bold text-gray-900">${{ formatMoney(affiliate.stats?.total_earnings || 0) }}</p>
+        <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+          <p class="text-xs sm:text-sm text-gray-500 mb-1">{{ t.totalEarnings }}</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">${{ formatMoney(affiliate.stats?.total_earnings || 0) }}</p>
         </div>
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <p class="text-sm text-gray-500 mb-1">{{ t.paidOut }}</p>
-          <p class="text-2xl font-bold text-gray-900">${{ formatMoney(affiliate.stats?.paid_earnings || 0) }}</p>
+        <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100">
+          <p class="text-xs sm:text-sm text-gray-500 mb-1">{{ t.paidOut }}</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">${{ formatMoney(affiliate.stats?.paid_earnings || 0) }}</p>
         </div>
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 col-span-2 lg:col-span-1">
-          <p class="text-sm text-gray-500 mb-1">{{ t.pendingPayout }}</p>
-          <p class="text-2xl font-bold text-green-600">${{ formatMoney(affiliate.stats?.pending_earnings || 0) }}</p>
+        <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 col-span-2 sm:col-span-3 lg:col-span-1">
+          <p class="text-xs sm:text-sm text-gray-500 mb-1">{{ t.pendingPayout }}</p>
+          <p class="text-xl sm:text-2xl font-bold text-green-600">${{ formatMoney(affiliate.stats?.pending_earnings || 0) }}</p>
         </div>
       </div>
 
       <!-- Tabs -->
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <!-- Tab Navigation -->
-        <div class="border-b border-gray-100">
-          <nav class="flex">
+        <div class="border-b border-gray-100 overflow-x-auto">
+          <nav class="flex min-w-max">
             <button
               @click="activeTab = 'referrals'"
               :class="[
-                'px-6 py-4 text-sm font-medium border-b-2 transition-colors',
+                'px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                 activeTab === 'referrals' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               ]"
             >
@@ -137,7 +137,7 @@
             <button
               @click="activeTab = 'conversions'"
               :class="[
-                'px-6 py-4 text-sm font-medium border-b-2 transition-colors',
+                'px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                 activeTab === 'conversions' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               ]"
             >
@@ -146,7 +146,7 @@
             <button
               @click="activeTab = 'payouts'"
               :class="[
-                'px-6 py-4 text-sm font-medium border-b-2 transition-colors',
+                'px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                 activeTab === 'payouts' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               ]"
             >
@@ -155,7 +155,7 @@
             <button
               @click="activeTab = 'bank'"
               :class="[
-                'px-6 py-4 text-sm font-medium border-b-2 transition-colors',
+                'px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                 activeTab === 'bank' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700'
               ]"
             >
@@ -165,7 +165,7 @@
         </div>
 
         <!-- Tab Content -->
-        <div class="p-6">
+        <div class="p-4 sm:p-6">
           <!-- Referrals Tab -->
           <div v-if="activeTab === 'referrals'">
             <div v-if="referralsLoading" class="text-center py-8">
@@ -177,42 +177,68 @@
             <div v-else-if="referrals.length === 0" class="text-center py-8 text-gray-500">
               {{ t.noReferrals }}
             </div>
-            <div v-else class="overflow-x-auto">
-              <table class="w-full">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.name }}</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">{{ t.signupDate }}</th>
-                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{{ t.paidOrders }}</th>
-                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">{{ t.earned }}</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                  <tr v-for="referral in referrals" :key="referral.id" class="hover:bg-gray-50">
-                    <td class="px-4 py-3">
-                      <div class="text-sm font-medium text-gray-900">{{ referral.user?.name || referral.name }}</div>
-                      <div class="text-xs text-gray-500 sm:hidden">{{ formatDate(referral.referred_at || referral.user?.signed_up_at) }}</div>
-                    </td>
-                    <td class="px-4 py-3 text-sm text-gray-500 hidden sm:table-cell">{{ formatDate(referral.referred_at || referral.user?.signed_up_at) }}</td>
-                    <td class="px-4 py-3 text-center">
-                      <span :class="[
-                        'inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded-full text-sm font-semibold',
-                        referral.has_converted ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-                      ]">
-                        {{ referral.paid_orders || 0 }}
-                      </span>
-                    </td>
-                    <td class="px-4 py-3 text-right">
-                      <span :class="[
-                        'text-sm font-semibold',
-                        (referral.total_commission || 0) > 0 ? 'text-green-600' : 'text-gray-400'
-                      ]">
-                        ${{ formatMoney(referral.total_commission || 0) }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div v-else>
+              <!-- Mobile Card View -->
+              <div class="sm:hidden space-y-3">
+                <div v-for="referral in referrals" :key="referral.id" class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                  <div class="flex items-start justify-between mb-3">
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-semibold text-gray-900 truncate">{{ referral.user?.name || referral.name }}</p>
+                      <p class="text-xs text-gray-500">{{ formatDate(referral.referred_at || referral.user?.signed_up_at) }}</p>
+                    </div>
+                    <span :class="[
+                      'inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded-full text-xs font-semibold ml-2',
+                      referral.has_converted ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                    ]">
+                      {{ referral.paid_orders || 0 }} {{ t.orders }}
+                    </span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs text-gray-500">{{ t.earned }}</span>
+                    <span :class="[
+                      'text-sm font-bold',
+                      (referral.total_commission || 0) > 0 ? 'text-green-600' : 'text-gray-400'
+                    ]">
+                      ${{ formatMoney(referral.total_commission || 0) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <!-- Desktop Table View -->
+              <div class="hidden sm:block overflow-x-auto">
+                <table class="w-full">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.name }}</th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.signupDate }}</th>
+                      <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{{ t.paidOrders }}</th>
+                      <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">{{ t.earned }}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100">
+                    <tr v-for="referral in referrals" :key="referral.id" class="hover:bg-gray-50">
+                      <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ referral.user?.name || referral.name }}</td>
+                      <td class="px-4 py-3 text-sm text-gray-500">{{ formatDate(referral.referred_at || referral.user?.signed_up_at) }}</td>
+                      <td class="px-4 py-3 text-center">
+                        <span :class="[
+                          'inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded-full text-sm font-semibold',
+                          referral.has_converted ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                        ]">
+                          {{ referral.paid_orders || 0 }}
+                        </span>
+                      </td>
+                      <td class="px-4 py-3 text-right">
+                        <span :class="[
+                          'text-sm font-semibold',
+                          (referral.total_commission || 0) > 0 ? 'text-green-600' : 'text-gray-400'
+                        ]">
+                          ${{ formatMoney(referral.total_commission || 0) }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
@@ -227,31 +253,58 @@
             <div v-else-if="conversions.length === 0" class="text-center py-8 text-gray-500">
               {{ t.noConversions }}
             </div>
-            <div v-else class="overflow-x-auto">
-              <table class="w-full">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.order }}</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.date }}</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.orderAmount }}</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.commission }}</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.status }}</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                  <tr v-for="conversion in conversions" :key="conversion.id" class="hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm text-gray-900">#{{ conversion.order_id }}</td>
-                    <td class="px-4 py-3 text-sm text-gray-500">{{ formatDate(conversion.created_at) }}</td>
-                    <td class="px-4 py-3 text-sm text-gray-900">${{ formatMoney(conversion.order_amount) }}</td>
-                    <td class="px-4 py-3 text-sm font-semibold text-green-600">${{ formatMoney(conversion.commission_amount) }}</td>
-                    <td class="px-4 py-3">
-                      <span :class="getStatusClass(conversion.status)" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium">
-                        {{ conversion.status }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div v-else>
+              <!-- Mobile Card View -->
+              <div class="sm:hidden space-y-3">
+                <div v-for="conversion in conversions" :key="conversion.id" class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                  <div class="flex items-start justify-between mb-3">
+                    <div>
+                      <p class="text-sm font-semibold text-gray-900">#{{ conversion.order_id }}</p>
+                      <p class="text-xs text-gray-500">{{ formatDate(conversion.created_at) }}</p>
+                    </div>
+                    <span :class="getStatusClass(conversion.status)" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium">
+                      {{ conversion.status }}
+                    </span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p class="text-xs text-gray-500">{{ t.orderAmount }}</p>
+                      <p class="font-medium text-gray-900">${{ formatMoney(conversion.order_amount) }}</p>
+                    </div>
+                    <div>
+                      <p class="text-xs text-gray-500">{{ t.commission }}</p>
+                      <p class="font-bold text-green-600">${{ formatMoney(conversion.commission_amount) }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Desktop Table View -->
+              <div class="hidden sm:block overflow-x-auto">
+                <table class="w-full">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.order }}</th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.date }}</th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.orderAmount }}</th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.commission }}</th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.status }}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100">
+                    <tr v-for="conversion in conversions" :key="conversion.id" class="hover:bg-gray-50">
+                      <td class="px-4 py-3 text-sm text-gray-900">#{{ conversion.order_id }}</td>
+                      <td class="px-4 py-3 text-sm text-gray-500">{{ formatDate(conversion.created_at) }}</td>
+                      <td class="px-4 py-3 text-sm text-gray-900">${{ formatMoney(conversion.order_amount) }}</td>
+                      <td class="px-4 py-3 text-sm font-semibold text-green-600">${{ formatMoney(conversion.commission_amount) }}</td>
+                      <td class="px-4 py-3">
+                        <span :class="getStatusClass(conversion.status)" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium">
+                          {{ conversion.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
@@ -266,23 +319,36 @@
             <div v-else-if="payouts.length === 0" class="text-center py-8 text-gray-500">
               {{ t.noPayouts }}
             </div>
-            <div v-else class="overflow-x-auto">
-              <table class="w-full">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.amount }}</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.date }}</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.notes }}</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                  <tr v-for="payout in payouts" :key="payout.id" class="hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm font-semibold text-green-600">${{ formatMoney(payout.amount) }}</td>
-                    <td class="px-4 py-3 text-sm text-gray-500">{{ formatDate(payout.created_at) }}</td>
-                    <td class="px-4 py-3 text-sm text-gray-600">{{ payout.notes || '-' }}</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div v-else>
+              <!-- Mobile Card View -->
+              <div class="sm:hidden space-y-3">
+                <div v-for="payout in payouts" :key="payout.id" class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                  <div class="flex items-start justify-between mb-2">
+                    <p class="text-lg font-bold text-green-600">${{ formatMoney(payout.amount) }}</p>
+                    <p class="text-xs text-gray-400">{{ formatDate(payout.paid_at || payout.created_at) }}</p>
+                  </div>
+                  <p v-if="payout.notes" class="text-sm text-gray-600">{{ payout.notes }}</p>
+                </div>
+              </div>
+              <!-- Desktop Table View -->
+              <div class="hidden sm:block overflow-x-auto">
+                <table class="w-full">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.amount }}</th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.date }}</th>
+                      <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ t.notes }}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100">
+                    <tr v-for="payout in payouts" :key="payout.id" class="hover:bg-gray-50">
+                      <td class="px-4 py-3 text-sm font-semibold text-green-600">${{ formatMoney(payout.amount) }}</td>
+                      <td class="px-4 py-3 text-sm text-gray-500">{{ formatDate(payout.paid_at || payout.created_at) }}</td>
+                      <td class="px-4 py-3 text-sm text-gray-600">{{ payout.notes || '-' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
@@ -402,7 +468,7 @@ definePageMeta({
   middleware: ['auth']
 })
 
-const { $customFetch } = useNuxtApp()
+const { $customFetch, $toast } = useNuxtApp()
 const { t: createTranslations } = useLanguage()
 
 // State
@@ -477,7 +543,10 @@ const translations = {
   optional: { es: 'opcional', en: 'optional' },
   cancel: { es: 'Cancelar', en: 'Cancel' },
   submit: { es: 'Enviar', en: 'Submit' },
-  processing: { es: 'Procesando...', en: 'Processing...' }
+  processing: { es: 'Procesando...', en: 'Processing...' },
+  bankDetailsSaved: { es: 'Datos bancarios guardados correctamente', en: 'Bank details saved successfully' },
+  bankDetailsError: { es: 'Error al guardar los datos bancarios', en: 'Error saving bank details' },
+  copiedToClipboard: { es: 'Copiado al portapapeles', en: 'Copied to clipboard' }
 }
 
 const t = createTranslations(translations)
@@ -561,8 +630,10 @@ const saveBankDetails = async () => {
       body: bankForm.value
     })
     await fetchDashboard()
+    $toast.success(t.value.bankDetailsSaved)
   } catch (error) {
     console.error('Error saving bank details:', error)
+    $toast.error(t.value.bankDetailsError)
   } finally {
     savingBank.value = false
   }
@@ -587,6 +658,7 @@ const submitBecomeAffiliate = async () => {
 const copyToClipboard = async (text) => {
   try {
     await navigator.clipboard.writeText(text)
+    $toast.success(t.value.copiedToClipboard)
   } catch (error) {
     console.error('Failed to copy:', error)
   }
