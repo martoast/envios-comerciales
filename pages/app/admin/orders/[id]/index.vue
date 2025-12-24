@@ -7,6 +7,7 @@
       @toggle-menu="showActionsMenu = !showActionsMenu"
       @close-menu="showActionsMenu = false"
       @delete="openDeleteModal"
+      @print-label="showShippingLabelModal = true"
     />
 
     <!-- Loading State -->
@@ -1060,6 +1061,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Shipping Label Print Modal -->
+    <AdminOrderShippingLabel
+      v-if="order"
+      :show="showShippingLabelModal"
+      :order="order"
+      @close="showShippingLabelModal = false"
+    />
   </section>
 </template>
 
@@ -1077,6 +1086,7 @@ import AdminOrderModalFinalInvoice from "~/components/admin/AdminOrderModalFinal
 import AdminOrderModalMarkPaid from "~/components/admin/AdminOrderModalMarkPaid.vue";
 import AdminOrderModalMarkArrived from "~/components/admin/AdminOrderModalMarkArrived.vue";
 import AdminOrderModalDelete from "~/components/admin/AdminOrderModalDelete.vue";
+import AdminOrderShippingLabel from "~/components/admin/AdminOrderShippingLabel.vue";
 
 definePageMeta({
   layout: "admin",
@@ -1107,6 +1117,7 @@ const showMarkPaidModal = ref(false);
 const showMarkArrivedModal = ref(false);
 const showDeleteModal = ref(false);
 const showMarkAllArrivedModal = ref(false);
+const showShippingLabelModal = ref(false);
 const selectedItem = ref(null);
 const markingAllArrived = ref(false);
 
