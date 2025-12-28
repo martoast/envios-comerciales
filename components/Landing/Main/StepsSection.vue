@@ -102,6 +102,93 @@
           </div>
         </div>
 
+        <!-- Optional: Assisted Purchase -->
+        <div class="relative">
+          <!-- Decorative connector -->
+          <div class="absolute left-1/2 -translate-x-1/2 -top-10 w-px h-10 bg-gradient-to-b from-transparent to-amber-300 hidden lg:block"></div>
+
+          <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 md:p-10 border-2 border-amber-200/50 relative overflow-hidden">
+            <!-- Background decoration -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-amber-200/20 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+
+            <!-- Optional Badge -->
+            <div class="flex items-center gap-2 mb-6">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full uppercase tracking-wide">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                {{ t.optionalBadge }}
+              </span>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              <!-- Content -->
+              <div class="order-2 lg:order-1">
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                  {{ t.assistedTitle }}
+                </h3>
+                <p class="text-base md:text-lg text-gray-700 mb-6">
+                  {{ t.assistedDesc }}
+                </p>
+
+                <!-- Why you might need this -->
+                <div class="space-y-3 mb-6">
+                  <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <p class="text-gray-600 text-sm md:text-base">{{ t.assistedReason1 }}</p>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <p class="text-gray-600 text-sm md:text-base">{{ t.assistedReason2 }}</p>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <p class="text-gray-600 text-sm md:text-base">{{ t.assistedReason3 }}</p>
+                  </div>
+                </div>
+
+                <!-- Fee info -->
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-amber-200 shadow-sm">
+                  <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span class="text-sm font-medium text-gray-700">{{ t.assistedFee }}</span>
+                </div>
+              </div>
+
+              <!-- Image -->
+              <div class="order-1 lg:order-2">
+                <div class="relative">
+                  <div class="rounded-2xl overflow-hidden shadow-2xl">
+                    <img
+                      src="/digitalpersonalshopping.jpg"
+                      alt="Personal shopping assistant"
+                      class="w-full h-auto object-cover"
+                    />
+                  </div>
+                  <!-- Floating 8% badge -->
+                  <div class="absolute -bottom-3 -right-3 md:-bottom-4 md:-right-4 bg-amber-500 text-white rounded-full px-4 py-2 md:px-5 md:py-3 shadow-xl">
+                    <p class="text-xs font-bold uppercase">{{ t.feeBadgeLabel }}</p>
+                    <p class="text-xl md:text-2xl font-bold">8%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Step 3: Register Your Purchases -->
         <div class="grid lg:grid-cols-2 items-center gap-8 lg:gap-12 xl:gap-16">
           <!-- Content -->
@@ -337,6 +424,39 @@ const translations = {
   step5Tip: {
     es: "Rastreo en tiempo real desde que pagas hasta que recibes",
     en: "Real-time tracking from payment to delivery",
+  },
+  // Assisted Purchase Section
+  optionalBadge: {
+    es: "Servicio Opcional",
+    en: "Optional Service",
+  },
+  assistedTitle: {
+    es: "¿No puedes comprar tú mismo? Nosotros lo hacemos por ti",
+    en: "Can't buy yourself? We do it for you",
+  },
+  assistedDesc: {
+    es: "Muchas tiendas de EE.UU. no aceptan tarjetas mexicanas o requieren dirección de facturación en EE.UU. Con nuestra Compra Asistida, solo registras los productos con sus enlaces en tu cuenta y nosotros hacemos la compra por ti.",
+    en: "Many US stores don't accept Mexican cards or require a US billing address. With our Assisted Purchase, just register the products with their links in your account and we make the purchase for you.",
+  },
+  assistedReason1: {
+    es: "La tienda no acepta tu tarjeta mexicana",
+    en: "The store doesn't accept your Mexican card",
+  },
+  assistedReason2: {
+    es: "Requieren dirección de facturación en EE.UU.",
+    en: "They require a US billing address",
+  },
+  assistedReason3: {
+    es: "Pagas en pesos a cuenta mexicana, sin comisiones internacionales",
+    en: "Pay in pesos to a Mexican account, no international fees",
+  },
+  assistedFee: {
+    es: "Solo 8% de tarifa de servicio sobre el valor del producto",
+    en: "Only 8% service fee on product value",
+  },
+  feeBadgeLabel: {
+    es: "Solo",
+    en: "Only",
   },
 };
 

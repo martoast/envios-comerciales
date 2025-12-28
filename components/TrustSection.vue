@@ -70,8 +70,8 @@ const trustItems = computed(() => {
       description: 'Nuestra ubicación estratégica nos permite recibir y procesar tus paquetes de forma eficiente.'
     },
     {
-      title: '1,000+ Clientes Satisfechos',
-      description: 'Miles de clientes confían en nosotros para sus envíos gracias a nuestro seguimiento personalizado.'
+      title: '300+ Clientes Satisfechos',
+      description: 'Cientos de clientes confían en nosotros para sus envíos gracias a nuestro seguimiento personalizado y gran servicio.'
     },
     {
       title: 'Seguimiento Personalizado',
@@ -95,8 +95,8 @@ const trustItems = computed(() => {
       description: 'Our strategic location allows us to receive and process your packages efficiently.'
     },
     {
-      title: '1,000+ Satisfied Clients',
-      description: 'Thousands of clients trust us for their shipments thanks to our personalized tracking.'
+      title: '300+ Satisfied Clients',
+      description: 'hundreds of clients trust us for their shipments thanks to our personalized tracking and great service.'
     },
     {
       title: 'Personalized Tracking',

@@ -1,6 +1,9 @@
 <!-- pages/app/purchase-requests/index.vue -->
 <template>
     <section class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
+      <!-- Onboarding Modal -->
+      <AssistedPurchaseOnboarding v-model="showOnboarding" @close="onOnboardingClose" />
+
       <!-- Header -->
       <div class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
@@ -8,7 +11,7 @@
             <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 animate-fadeIn">
               {{ t.purchaseRequests }}
             </h1>
-            
+
             <NuxtLink
               to="/app/purchase-requests/create"
               class="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary-500 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-600 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 animate-fadeIn"
@@ -39,13 +42,27 @@
             </svg>
           </div>
           <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.noRequests }}</h3>
-          <p class="text-gray-500 mb-8 max-w-md mx-auto">{{ t.noRequestsDesc }}</p>
-          <NuxtLink
-            to="/app/purchase-requests/create"
-            class="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 text-white font-medium rounded-xl hover:bg-primary-600 transition-colors"
+          <p class="text-gray-500 mb-6 max-w-md mx-auto px-4">{{ t.noRequestsDesc }}</p>
+
+          <!-- Learn More Button -->
+          <button
+            @click="showOnboarding = true"
+            class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium mb-6 text-sm transition-colors"
           >
-            {{ t.startShopping }}
-          </NuxtLink>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ t.learnMore }}
+          </button>
+
+          <div class="block">
+            <NuxtLink
+              to="/app/purchase-requests/create"
+              class="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 text-white font-medium rounded-xl hover:bg-primary-600 transition-colors shadow-lg shadow-primary-500/25"
+            >
+              {{ t.startShopping }}
+            </NuxtLink>
+          </div>
         </div>
   
         <!-- List -->
@@ -129,6 +146,7 @@
     noRequests: { es: 'Sin solicitudes recientes', en: 'No recent requests' },
     noRequestsDesc: { es: 'Déjanos comprar por ti. Envíanos los enlaces y nosotros nos encargamos del resto.', en: 'Let us shop for you. Send us the links and we handle the rest.' },
     startShopping: { es: 'Comenzar Compra Asistida', en: 'Start Assisted Purchase' },
+    learnMore: { es: '¿Cómo funciona?', en: 'How does it work?' },
     items: { es: 'Artículos', en: 'Items' },
     previous: { es: 'Anterior', en: 'Previous' },
     next: { es: 'Siguiente', en: 'Next' },
@@ -145,7 +163,24 @@
   const requests = ref([]);
   const loading = ref(true);
   const pagination = ref({ currentPage: 1, lastPage: 1 });
-  
+  const showOnboarding = ref(false);
+
+  // Use Nuxt's useCookie for SSR-friendly persistent storage
+  const onboardingDismissed = useCookie('boxly_assisted_purchase_onboarding_dismissed', {
+    default: () => false
+  });
+
+  const checkOnboarding = () => {
+    // Show onboarding only if: no requests AND hasn't been dismissed before
+    if (!onboardingDismissed.value && requests.value.length === 0) {
+      showOnboarding.value = true;
+    }
+  };
+
+  const onOnboardingClose = () => {
+    showOnboarding.value = false;
+  };
+
   const fetchRequests = async (page = 1) => {
     loading.value = true;
     try {
@@ -155,6 +190,10 @@
         currentPage: data.current_page,
         lastPage: data.last_page
       };
+      // Check if we should show onboarding after fetching
+      if (page === 1) {
+        checkOnboarding();
+      }
     } catch (e) {
       console.error(e);
     } finally {
