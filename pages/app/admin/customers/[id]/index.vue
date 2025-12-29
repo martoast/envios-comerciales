@@ -243,38 +243,30 @@
             class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-fadeIn"
             style="animation-delay: 0.5s"
           >
-            <div class="flex items-center justify-between mb-4">
-              <h2
-                class="text-lg font-semibold text-gray-900 flex items-center gap-2"
+            <h2
+              class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"
+            >
+              <svg
+                class="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  class="w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                {{ t.customerAddress }}
-              </h2>
-              <span v-if="displayAddress.isSaved" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
-                {{ t.savedAddress }}
-              </span>
-              <span v-else-if="displayAddress.isFromOrder" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
-                {{ t.fromLastOrder }}
-              </span>
-            </div>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              {{ t.customerAddress }}
+            </h2>
             <!-- Individual address fields -->
             <div
               v-if="displayAddress.address"
@@ -690,14 +682,6 @@ const translations = {
     es: "Dirección del Cliente",
     en: "Customer Address",
   },
-  savedAddress: {
-    es: "Guardada",
-    en: "Saved",
-  },
-  fromLastOrder: {
-    es: "De última orden",
-    en: "From last order",
-  },
   deliveryAddress: {
     es: "Dirección de Entrega",
     en: "Delivery Address",
@@ -858,25 +842,31 @@ const translations = {
 
 const t = createTranslations(translations);
 
-// Computed - Display address prioritizing saved address
+// Computed - Display address from user's account only (not from orders)
 const displayAddress = computed(() => {
   if (!customerData.value?.customer) {
-    return { address: null, fullAddress: null, isSaved: false, isFromOrder: false };
+    return { address: null, fullAddress: null };
   }
 
   const customer = customerData.value.customer;
 
-  // Check if customer has a saved address (individual fields)
+  // Check if customer has a full_address string
+  if (customer.full_address) {
+    return {
+      address: null,
+      fullAddress: customer.full_address,
+    };
+  }
+
+  // Check if customer has saved address (individual fields)
   const hasSavedAddress =
     customer.street &&
-    customer.exterior_number &&
     customer.colonia &&
     customer.municipio &&
     customer.estado &&
     customer.postal_code;
 
   if (hasSavedAddress) {
-    // Return saved address from customer profile
     return {
       address: {
         street: customer.street,
@@ -886,41 +876,13 @@ const displayAddress = computed(() => {
         municipio: customer.municipio,
         estado: customer.estado,
         postal_code: customer.postal_code,
-        referencias: null, // Saved addresses don't have referencias
       },
       fullAddress: null,
-      isSaved: true,
-      isFromOrder: false,
     };
   }
 
-  // Check if customer has a full_address string
-  if (customer.full_address) {
-    return {
-      address: null,
-      fullAddress: customer.full_address,
-      isSaved: true,
-      isFromOrder: false,
-    };
-  }
-
-  // Fallback to most recent order address if no saved address
-  if (customer.orders && customer.orders.length > 0) {
-    const orderWithAddress = customer.orders.find(
-      (order) => order.delivery_address
-    );
-    if (orderWithAddress?.delivery_address) {
-      return {
-        address: orderWithAddress.delivery_address,
-        fullAddress: null,
-        isSaved: false,
-        isFromOrder: true,
-      };
-    }
-  }
-
-  // No address available
-  return { address: null, fullAddress: null, isSaved: false, isFromOrder: false };
+  // No saved address on user's account
+  return { address: null, fullAddress: null };
 });
 
 const statsCards = computed(() => {
