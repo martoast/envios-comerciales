@@ -48,9 +48,11 @@
           <div class="boxes-label">Boxes:</div>
           <div class="boxes-list">
             <div v-for="(box, index) in order.boxes" :key="box.id || index" class="box-item">
-              <span class="box-name">{{ box.box_name || box.box_size }}</span>
-              <span v-if="box.length || box.width || box.height" class="box-dims">{{ box.length || '-' }}×{{ box.width || '-' }}×{{ box.height || '-' }} cm</span>
-              <span v-if="box.weight" class="box-weight">{{ box.weight }} kg</span>
+              <div class="box-name">{{ box.box_name || box.box_size }}</div>
+              <div v-if="box.length || box.width || box.height || box.weight" class="box-specs">
+                <span v-if="box.length || box.width || box.height" class="box-dims">{{ box.length || '-' }} × {{ box.width || '-' }} × {{ box.height || '-' }} cm</span>
+                <span v-if="box.weight" class="box-weight">{{ box.weight }} kg</span>
+              </div>
             </div>
           </div>
         </div>
@@ -120,11 +122,14 @@ const formatBoxDetails = () => {
   return props.order.boxes.map((box, index) => {
     const name = box.box_name || box.box_size
     const dims = (box.length || box.width || box.height)
-      ? `${box.length || '-'}×${box.width || '-'}×${box.height || '-'} cm`
+      ? `${box.length || '-'} × ${box.width || '-'} × ${box.height || '-'} cm`
       : ''
     const weight = box.weight ? `${box.weight} kg` : ''
-    const details = [dims, weight].filter(Boolean).join(', ')
-    return `<div class="box-item"><span class="box-name">${name}</span>${details ? `<span class="box-details">${details}</span>` : ''}</div>`
+    const hasSpecs = dims || weight
+    const specsHtml = hasSpecs
+      ? `<div class="box-specs">${dims ? `<span class="box-dims">${dims}</span>` : ''}${weight ? `<span class="box-weight">${weight}</span>` : ''}</div>`
+      : ''
+    return `<div class="box-item"><div class="box-name">${name}</div>${specsHtml}</div>`
   }).join('')
 }
 
@@ -263,9 +268,10 @@ const printLabel = () => {
         }
         .boxes-label { font-weight: 600; margin-bottom: 6px; font-size: 14px; letter-spacing: 0.3px; }
         .boxes-list { }
-        .box-item { display: flex; gap: 12px; margin-bottom: 4px; align-items: center; }
-        .box-name { font-weight: 500; font-size: 15px; letter-spacing: 0.3px; }
-        .box-details { color: #222; font-weight: 500; font-size: 15px; letter-spacing: 0.3px; }
+        .box-item { margin-bottom: 8px; }
+        .box-name { font-weight: 600; font-size: 15px; letter-spacing: 0.3px; margin-bottom: 2px; }
+        .box-specs { display: flex; flex-direction: column; gap: 2px; }
+        .box-dims, .box-weight { color: #222; font-weight: 500; font-size: 14px; letter-spacing: 0.3px; }
 
         .barcode-section {
           margin-top: auto;
@@ -482,26 +488,32 @@ const printLabel = () => {
 .boxes-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .box-item {
   display: flex;
-  gap: 12px;
-  align-items: center;
+  flex-direction: column;
 }
 
 .box-name {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 15px;
   letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+
+.box-specs {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .box-dims,
 .box-weight {
   color: #222;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   letter-spacing: 0.3px;
 }
 
