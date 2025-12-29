@@ -332,6 +332,22 @@
                   <p class="text-lg font-bold text-gray-900">${{ parseFloat(box.box_price).toFixed(2) }}</p>
                 </div>
 
+                <!-- Box Dimensions & Weight -->
+                <div v-if="box.length || box.width || box.height || box.weight" class="flex flex-wrap gap-3 text-xs text-gray-600 mb-3 pb-3 border-b border-gray-100">
+                  <span v-if="box.length || box.width || box.height" class="inline-flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
+                    <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                    {{ box.length || '-' }} × {{ box.width || '-' }} × {{ box.height || '-' }} cm
+                  </span>
+                  <span v-if="box.weight" class="inline-flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
+                    <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                    </svg>
+                    {{ box.weight }} kg
+                  </span>
+                </div>
+
                 <!-- Tracking Status Card -->
                 <div v-if="box.guia_number" class="mt-3 pt-3 border-t border-gray-200">
                   <div class="flex items-center justify-between mb-2">
@@ -693,6 +709,10 @@
                 >
                   {{ isCrossing ? t.crossingOnly : t.shipping }}
                 </span>
+              </div>
+              <div class="flex justify-between">
+                <p class="text-sm text-gray-500">{{ t.totalBoxWeight }}</p>
+                <p class="font-medium">{{ order.total_box_weight || 0 }} kg</p>
               </div>
               <div class="flex justify-between">
                 <p class="text-sm text-gray-500">{{ t.totalWeight }}</p>
@@ -1158,6 +1178,7 @@ const translations = {
   trackingNumber: { es: "Rastreo #", en: "Tracking #" },
   orderType: { es: "Tipo", en: "Type" },
   totalWeight: { es: "Peso Total", en: "Total Weight" },
+  totalBoxWeight: { es: "Peso Cajas", en: "Box Weight" },
   itemsArrived: { es: "Artículos Llegados", en: "Items Arrived" },
   shippingBoxes: { es: "Cajas de Envío", en: "Shipping Boxes" },
   shippingInfo: { es: "Información de Envío", en: "Shipping Info" },

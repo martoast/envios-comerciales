@@ -92,11 +92,11 @@
               <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h2 class="text-lg font-bold text-gray-900">{{ t.shippingAddress }}</h2>
                 <div class="flex items-center gap-2">
-                  <span v-if="!profileData?.has_complete_address" class="text-sm text-amber-600 font-medium">
+                  <span v-if="!profileData?.has_complete_address && !profileData?.full_address" class="text-sm text-amber-600 font-medium">
                     {{ t.incomplete }}
                   </span>
                   <NuxtLink
-                    v-if="profileData?.has_complete_address"
+                    v-if="profileData?.has_complete_address || profileData?.full_address"
                     to="/app/account/shipping-address"
                     class="text-sm text-primary-600 hover:text-primary-700 font-medium inline-flex items-center gap-1"
                   >
@@ -108,6 +108,7 @@
                 </div>
               </div>
               <div class="p-6">
+                <!-- Individual address fields -->
                 <div v-if="profileData?.has_complete_address" class="space-y-2">
                   <p class="text-gray-900">
                     {{ profileData.address.street }} {{ profileData.address.exterior_number }}
@@ -116,6 +117,10 @@
                   <p class="text-gray-900">{{ profileData.address.colonia }}</p>
                   <p class="text-gray-900">{{ profileData.address.municipio }}, {{ profileData.address.estado }}</p>
                   <p class="text-gray-900">C.P. {{ profileData.address.postal_code }}</p>
+                </div>
+                <!-- Full address string -->
+                <div v-else-if="profileData?.full_address" class="space-y-2">
+                  <p class="text-gray-900 whitespace-pre-line">{{ profileData.full_address }}</p>
                 </div>
                 <div v-else class="text-center py-8">
                   <div class="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-3">

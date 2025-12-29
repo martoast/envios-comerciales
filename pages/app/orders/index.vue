@@ -266,6 +266,18 @@
                 </span>
               </div>
 
+              <!-- Address -->
+              <div class="text-sm mb-2">
+                <span
+                  :class="[
+                    formatAddress(order).isCrossing ? 'text-amber-600' : 'text-gray-600',
+                    formatAddress(order).isEmpty ? 'text-gray-400' : ''
+                  ]"
+                >
+                  {{ formatAddress(order).text }}
+                </span>
+              </div>
+
               <div class="flex items-center justify-between text-sm">
                 <div class="flex items-center gap-4">
                   <span class="text-gray-500">
@@ -333,6 +345,11 @@
                   <th
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
+                    {{ t.address }}
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     {{ t.created }}
                   </th>
                   <th class="relative px-6 py-3">
@@ -385,6 +402,17 @@
                         >
                       </div>
                     </div>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-900 max-w-[200px]">
+                    <span
+                      :class="[
+                        formatAddress(order).isCrossing ? 'text-amber-600' : '',
+                        formatAddress(order).isEmpty ? 'text-gray-400' : ''
+                      ]"
+                      :title="order.delivery_address?.full_address || ''"
+                    >
+                      {{ formatAddress(order).text }}
+                    </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ formatDate(order.created_at) }}
@@ -511,6 +539,10 @@ const translations = {
   activeOrders: { es: "Activas", en: "Active" },
   inTransit: { es: "En Tránsito", en: "In Transit" },
   delivered: { es: "Entregadas", en: "Delivered" },
+  // Address
+  address: { es: "Dirección", en: "Address" },
+  noAddress: { es: "Sin dirección", en: "No address" },
+  crossingPickup: { es: "Recoger en Tijuana", en: "Pickup in Tijuana" },
 };
 
 const t = createTranslations(translations);
@@ -619,6 +651,34 @@ const formatDate = (date) => {
     month: "short",
     day: "numeric",
   });
+};
+
+const formatAddress = (order) => {
+  // Crossing orders have no delivery address
+  if (order.order_type === "crossing") {
+    return { text: t.value.crossingPickup, isCrossing: true };
+  }
+
+  const addr = order.delivery_address;
+  if (!addr) {
+    return { text: t.value.noAddress, isEmpty: true };
+  }
+
+  // Full address mode
+  if (addr.full_address) {
+    // Truncate if too long for display
+    const text = addr.full_address.length > 50
+      ? addr.full_address.substring(0, 50) + "..."
+      : addr.full_address;
+    return { text, isFullAddress: true };
+  }
+
+  // Individual fields mode - show municipio and estado
+  if (addr.municipio && addr.estado) {
+    return { text: `${addr.municipio}, ${addr.estado}`, isIndividual: true };
+  }
+
+  return { text: t.value.noAddress, isEmpty: true };
 };
 
 watch(searchQuery, (newValue) => {

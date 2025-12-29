@@ -94,9 +94,51 @@
 
         <!-- Delivery Address Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 animate-fadeIn" :class="{ 'opacity-60': !canEdit }" style="animation-delay: 0.1s">
-          <h2 class="text-xl font-bold text-gray-900 mb-6">{{ t.deliveryAddressTitle }}</h2>
-          
-          <div class="space-y-4">
+          <!-- Header with Toggle -->
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-gray-900">{{ t.deliveryAddressTitle }}</h2>
+            <!-- Toggle Switch -->
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-gray-500">{{ useFullAddress ? t.useFullAddress : t.useIndividualFields }}</span>
+              <button
+                type="button"
+                @click="useFullAddress = !useFullAddress"
+                :disabled="!canEdit"
+                :class="[
+                  'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
+                  useFullAddress ? 'bg-primary-500' : 'bg-gray-200'
+                ]"
+              >
+                <span
+                  :class="[
+                    'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                    useFullAddress ? 'translate-x-5' : 'translate-x-0'
+                  ]"
+                />
+              </button>
+            </div>
+          </div>
+
+          <!-- Full Address Mode -->
+          <div v-if="useFullAddress" class="space-y-4">
+            <div>
+              <label for="full_address" class="block text-sm font-semibold text-gray-900 mb-2">
+                {{ t.fullAddressLabel }} <span class="text-red-500">*</span>
+              </label>
+              <textarea
+                v-model="form.delivery_address.full_address"
+                id="full_address"
+                rows="3"
+                :placeholder="t.fullAddressPlaceholder"
+                :disabled="!canEdit"
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                required
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Individual Fields Mode -->
+          <div v-else class="space-y-4">
             <!-- Street -->
             <div>
               <label for="street" class="block text-sm font-semibold text-gray-900 mb-2">
@@ -300,6 +342,7 @@ const loading = ref(true)
 const saving = ref(false)
 const errorMessage = ref('')
 const originalData = ref(null)
+const useFullAddress = ref(false)
 
 // Form data
 const form = ref({
@@ -311,7 +354,8 @@ const form = ref({
     municipio: '',
     estado: '',
     postal_code: '',
-    referencias: ''
+    referencias: '',
+    full_address: ''
   },
   is_rural: false
 })
@@ -474,6 +518,27 @@ const translations = {
   delivered: {
     es: 'Entregado',
     en: 'Delivered'
+  },
+  // Full address mode
+  useFullAddress: {
+    es: 'Dirección completa',
+    en: 'Full address'
+  },
+  useIndividualFields: {
+    es: 'Campos individuales',
+    en: 'Individual fields'
+  },
+  fullAddressLabel: {
+    es: 'Dirección Completa',
+    en: 'Full Address'
+  },
+  fullAddressPlaceholder: {
+    es: 'Ej: Calle Principal 123, Col. Centro, Tijuana, BC 22000',
+    en: 'E.g.: Main Street 123, Downtown, Tijuana, BC 22000'
+  },
+  fullAddressDescription: {
+    es: 'Ingresa tu dirección completa en un solo campo',
+    en: 'Enter your complete address in a single field'
   }
 }
 
@@ -517,14 +582,27 @@ const fetchOrder = async () => {
     }
     
     // Populate form...
+    const addr = order.value.delivery_address || {}
     form.value = {
-      delivery_address: { 
-        ...order.value.delivery_address,
-        interior_number: order.value.delivery_address.interior_number || ''
+      delivery_address: {
+        street: addr.street || '',
+        exterior_number: addr.exterior_number || '',
+        interior_number: addr.interior_number || '',
+        colonia: addr.colonia || '',
+        municipio: addr.municipio || '',
+        estado: addr.estado || '',
+        postal_code: addr.postal_code || '',
+        referencias: addr.referencias || '',
+        full_address: addr.full_address || ''
       },
       is_rural: order.value.is_rural
     }
-    
+
+    // Auto-detect address mode
+    if (addr.full_address && !addr.street) {
+      useFullAddress.value = true
+    }
+
     originalData.value = JSON.parse(JSON.stringify(form.value))
     
   } catch (error) {
@@ -543,9 +621,33 @@ const handleSubmit = async () => {
   errorMessage.value = ''
 
   try {
+    // Build payload based on address mode
+    const payload = {
+      is_rural: form.value.is_rural
+    }
+
+    if (useFullAddress.value) {
+      // Full address mode
+      payload.delivery_address = {
+        full_address: form.value.delivery_address.full_address
+      }
+    } else {
+      // Individual fields mode
+      payload.delivery_address = {
+        street: form.value.delivery_address.street,
+        exterior_number: form.value.delivery_address.exterior_number,
+        interior_number: form.value.delivery_address.interior_number,
+        colonia: form.value.delivery_address.colonia,
+        municipio: form.value.delivery_address.municipio,
+        estado: form.value.delivery_address.estado,
+        postal_code: form.value.delivery_address.postal_code,
+        referencias: form.value.delivery_address.referencias
+      }
+    }
+
     const response = await $customFetch(`/orders/${orderId}`, {
       method: 'PUT',
-      body: form.value
+      body: payload
     })
 
     if (response.success) {

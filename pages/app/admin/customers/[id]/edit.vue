@@ -171,11 +171,49 @@
               <!-- Address Section -->
               <div class="px-6 py-6 border-b border-gray-100">
                 <div class="flex items-center justify-between mb-4">
-                  <h2 class="text-lg font-semibold text-gray-900">{{ t.addressInformation }}</h2>
-                  <span class="text-sm text-gray-500">{{ t.optional }}</span>
+                  <div class="flex items-center gap-3">
+                    <h2 class="text-lg font-semibold text-gray-900">{{ t.addressInformation }}</h2>
+                    <span class="text-sm text-gray-500">({{ t.optional }})</span>
+                  </div>
+                  <!-- Toggle Switch -->
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-500">{{ useFullAddress ? t.useFullAddress : t.useIndividualFields }}</span>
+                    <button
+                      type="button"
+                      @click="useFullAddress = !useFullAddress"
+                      :class="[
+                        'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                        useFullAddress ? 'bg-primary-500' : 'bg-gray-200'
+                      ]"
+                    >
+                      <span
+                        :class="[
+                          'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                          useFullAddress ? 'translate-x-5' : 'translate-x-0'
+                        ]"
+                      />
+                    </button>
+                  </div>
                 </div>
-                
-                <div class="space-y-4">
+
+                <!-- Full Address Mode -->
+                <div v-if="useFullAddress" class="space-y-4">
+                  <div>
+                    <label for="full_address" class="block text-sm font-medium text-gray-700 mb-2">
+                      {{ t.fullAddress }}
+                    </label>
+                    <textarea
+                      id="full_address"
+                      v-model="form.full_address"
+                      rows="3"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                      :placeholder="t.fullAddressPlaceholder"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <!-- Individual Fields Mode -->
+                <div v-else class="space-y-4">
                   <!-- Street -->
                   <div>
                     <label for="street" class="block text-sm font-medium text-gray-700 mb-2">
@@ -328,7 +366,8 @@
   const errorMessage = ref('')
   const errors = ref({})
   const customer = ref(null)
-  
+  const useFullAddress = ref(false)
+
   const form = reactive({
     name: '',
     phone: '',
@@ -340,7 +379,8 @@
     colonia: '',
     municipio: '',
     estado: '',
-    postal_code: ''
+    postal_code: '',
+    full_address: ''
   })
   
   // Mexican states
@@ -505,6 +545,22 @@
     loading: {
       es: 'Cargando...',
       en: 'Loading...'
+    },
+    useFullAddress: {
+      es: 'Dirección completa',
+      en: 'Full address'
+    },
+    useIndividualFields: {
+      es: 'Campos individuales',
+      en: 'Individual fields'
+    },
+    fullAddress: {
+      es: 'Dirección Completa',
+      en: 'Full Address'
+    },
+    fullAddressPlaceholder: {
+      es: 'Ej: Calle Principal 123, Col. Centro, Tijuana, BC 22000',
+      en: 'E.g.: Main Street 123, Downtown, Tijuana, BC 22000'
     }
   }
   
@@ -529,6 +585,12 @@
       form.municipio = customer.value.municipio || ''
       form.estado = customer.value.estado || ''
       form.postal_code = customer.value.postal_code || ''
+      form.full_address = customer.value.full_address || ''
+
+      // If full_address exists but no individual fields, default to full address mode
+      if (customer.value.full_address && !customer.value.street) {
+        useFullAddress.value = true
+      }
     } catch (error) {
       console.error('Error fetching customer:', error)
       $toast.error('Error loading customer')
@@ -540,16 +602,38 @@
   
   const handleSubmit = async () => {
     if (submitting.value) return
-  
+
     // Reset errors
     errors.value = {}
     errorMessage.value = ''
     submitting.value = true
-  
+
+    // Build payload based on address mode
+    const payload = {
+      name: form.name,
+      phone: form.phone,
+      user_type: form.user_type,
+      preferred_language: form.preferred_language
+    }
+
+    if (useFullAddress.value) {
+      // Full address mode - send only full_address
+      payload.full_address = form.full_address
+    } else {
+      // Individual fields mode
+      payload.street = form.street
+      payload.exterior_number = form.exterior_number
+      payload.interior_number = form.interior_number
+      payload.colonia = form.colonia
+      payload.municipio = form.municipio
+      payload.estado = form.estado
+      payload.postal_code = form.postal_code
+    }
+
     try {
       const response = await $customFetch(`/admin/customers/${route.params.id}`, {
         method: 'PUT',
-        body: form
+        body: payload
       })
   
       $toast.success(t.value.customerUpdatedSuccess)

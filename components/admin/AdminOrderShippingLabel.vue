@@ -43,10 +43,16 @@
           </div>
         </div>
 
-        <!-- Box Sizes -->
-        <div v-if="boxSizes" class="boxes-section">
-          <span class="boxes-label">Boxes:</span>
-          <span class="boxes-value">{{ boxSizes }}</span>
+        <!-- Box Details -->
+        <div v-if="hasBoxes" class="boxes-section">
+          <div class="boxes-label">Boxes:</div>
+          <div class="boxes-list">
+            <div v-for="(box, index) in order.boxes" :key="box.id || index" class="box-item">
+              <span class="box-name">{{ box.box_name || box.box_size }}</span>
+              <span v-if="box.length || box.width || box.height" class="box-dims">{{ box.length || '-' }}×{{ box.width || '-' }}×{{ box.height || '-' }} cm</span>
+              <span v-if="box.weight" class="box-weight">{{ box.weight }} kg</span>
+            </div>
+          </div>
         </div>
 
         <!-- Barcode Section -->
@@ -103,29 +109,24 @@ const fullAddress = computed(() => {
   return parts.join(', ')
 })
 
-// Get box sizes summary
-const boxSizes = computed(() => {
-  const boxes = props.order?.boxes
-  if (!boxes || boxes.length === 0) {
-    // Fallback to legacy box_size
-    if (props.order?.box_size) {
-      return props.order.box_size.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())
-    }
-    return null
-  }
-
-  // Count boxes by size
-  const sizeCounts = {}
-  boxes.forEach(box => {
-    const name = box.box_name || box.box_size
-    sizeCounts[name] = (sizeCounts[name] || 0) + 1
-  })
-
-  // Format: "1x Medium Box, 1x Small Box"
-  return Object.entries(sizeCounts)
-    .map(([name, count]) => `${count}x ${name}`)
-    .join(', ')
+// Check if order has boxes
+const hasBoxes = computed(() => {
+  return props.order?.boxes && props.order.boxes.length > 0
 })
+
+// Format box details for print
+const formatBoxDetails = () => {
+  if (!hasBoxes.value) return ''
+  return props.order.boxes.map((box, index) => {
+    const name = box.box_name || box.box_size
+    const dims = (box.length || box.width || box.height)
+      ? `${box.length || '-'}×${box.width || '-'}×${box.height || '-'} cm`
+      : ''
+    const weight = box.weight ? `${box.weight} kg` : ''
+    const details = [dims, weight].filter(Boolean).join(', ')
+    return `<div class="box-item"><span class="box-name">${name}</span>${details ? `<span class="box-details">${details}</span>` : ''}</div>`
+  }).join('')
+}
 
 // Generate Code128 barcode as SVG
 const generateBarcode = (text) => {
@@ -258,10 +259,13 @@ const printLabel = () => {
         .boxes-section {
           padding: 0.1in 0;
           border-top: 1px solid #ccc;
-          font-size: 12px;
+          font-size: 11px;
         }
-        .boxes-label { font-weight: bold; margin-right: 4px; }
-        .boxes-value { }
+        .boxes-label { font-weight: bold; margin-bottom: 4px; }
+        .boxes-list { }
+        .box-item { display: flex; gap: 8px; margin-bottom: 2px; }
+        .box-name { font-weight: 500; }
+        .box-details { color: #666; }
 
         .barcode-section {
           margin-top: auto;
@@ -300,10 +304,10 @@ const printLabel = () => {
           ${props.order.user?.email ? `<div class="contact-item"><span class="contact-label">Email:</span><span class="email-text">${props.order.user.email}</span></div>` : ''}
         </div>
 
-        ${boxSizes.value ? `
+        ${hasBoxes.value ? `
         <div class="boxes-section">
-          <span class="boxes-label">Boxes:</span>
-          <span class="boxes-value">${boxSizes.value}</span>
+          <div class="boxes-label">Boxes:</div>
+          <div class="boxes-list">${formatBoxDetails()}</div>
         </div>
         ` : ''}
 
@@ -463,12 +467,33 @@ const printLabel = () => {
 .boxes-section {
   padding: 0.1in 0;
   border-top: 1px solid #ccc;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .boxes-label {
   font-weight: bold;
-  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+.boxes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.box-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.box-name {
+  font-weight: 500;
+}
+
+.box-dims,
+.box-weight {
+  color: #666;
 }
 
 .barcode-section {

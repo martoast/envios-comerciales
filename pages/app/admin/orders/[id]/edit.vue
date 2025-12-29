@@ -361,27 +361,49 @@
                   </select>
                 </div>
 
-                <!-- Total Weight -->
-                <div>
-                  <label
-                    for="total_weight"
-                    class="block text-sm font-semibold text-gray-900 mb-2"
-                  >
-                    {{ t.totalWeightLabel }}
+                <!-- Weight Fields -->
+                <div class="sm:col-span-2 space-y-3">
+                  <label class="block text-sm font-semibold text-gray-900">
+                    {{ t.weightSectionLabel }}
                   </label>
-                  <div class="relative">
-                    <input
-                      v-model.number="form.total_weight"
-                      type="number"
-                      step="0.01"
-                      id="total_weight"
-                      placeholder="0.00"
-                      class="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 rounded-lg sm:rounded-xl border border-gray-200 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    />
-                    <div
-                      class="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center pointer-events-none"
-                    >
-                      <span class="text-gray-500 text-sm">kg</span>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Total Box Weight (calculated, read-only) -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-500 mb-1">
+                        {{ t.totalBoxWeightLabel }}
+                      </label>
+                      <div class="relative">
+                        <input
+                          :value="order?.total_box_weight || calculatedBoxWeight"
+                          type="text"
+                          disabled
+                          class="w-full px-3 py-2.5 pr-12 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-600 cursor-not-allowed"
+                        />
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                          <span class="text-gray-400 text-xs">kg</span>
+                        </div>
+                      </div>
+                      <p class="text-xs text-gray-400 mt-1">{{ t.autoCalculated }}</p>
+                    </div>
+
+                    <!-- Total Weight (manual override) -->
+                    <div>
+                      <label for="total_weight" class="block text-xs font-medium text-gray-500 mb-1">
+                        {{ t.totalWeightLabel }}
+                      </label>
+                      <div class="relative">
+                        <input
+                          v-model.number="form.total_weight"
+                          type="number"
+                          step="0.01"
+                          id="total_weight"
+                          placeholder="0.00"
+                          class="w-full px-3 py-2.5 pr-12 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                        />
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                          <span class="text-gray-500 text-xs">kg</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -521,6 +543,54 @@
                     </button>
                   </div>
 
+                  <!-- Box Dimensions & Weight -->
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-gray-200">
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.lengthLabel }}</label>
+                      <input
+                        v-model.number="box.length"
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        placeholder="cm"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.widthLabel }}</label>
+                      <input
+                        v-model.number="box.width"
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        placeholder="cm"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.heightLabel }}</label>
+                      <input
+                        v-model.number="box.height"
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        placeholder="cm"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-gray-600 mb-1">{{ t.weightLabel }}</label>
+                      <input
+                        v-model.number="box.weight"
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        placeholder="kg"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+                  </div>
+
                   <!-- Shipping Details (Guia & GIA) - Only for shipping orders -->
                   <div v-if="!isCrossing" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-gray-200">
                     <!-- Guia Number -->
@@ -541,7 +611,7 @@
                       <label class="block text-xs font-medium text-gray-600 mb-1">
                         {{ t.giaDocument }}
                       </label>
-                      
+
                       <!-- Show existing GIA file -->
                       <div v-if="box.gia_url" class="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
                         <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -571,7 +641,7 @@
                           class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
                         />
                       </div>
-                      
+
                       <!-- Show pending upload -->
                       <p v-if="box.new_gia_file" class="text-xs text-blue-600 mt-1 flex items-center gap-1">
                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -1295,7 +1365,56 @@
                 </option>
               </select>
             </div>
-            
+
+            <!-- Dimensions & Weight -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                {{ t.dimensionsLabel }}
+                <span class="text-gray-400 font-normal">({{ t.optional }})</span>
+              </label>
+              <div class="grid grid-cols-4 gap-2">
+                <div>
+                  <input
+                    v-model.number="newBox.length"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    :placeholder="t.lengthLabel"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <input
+                    v-model.number="newBox.width"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    :placeholder="t.widthLabel"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <input
+                    v-model.number="newBox.height"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    :placeholder="t.heightLabel"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <input
+                    v-model.number="newBox.weight"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    placeholder="kg"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 text-sm"
+                  />
+                </div>
+              </div>
+            </div>
 
             <!-- Guia Number (only for shipping orders) -->
             <div v-if="!isCrossing">
@@ -1387,7 +1506,7 @@ const errorMessage = ref("");
 const originalData = ref(null);
 const products = ref([]);
 const showAddBoxModal = ref(false);
-const newBox = ref({ stripe_price_id: "", guia_number: "", gia_file: null });
+const newBox = ref({ stripe_price_id: "", guia_number: "", gia_file: null, length: null, width: null, height: null, weight: null });
 const useSimpleAddress = ref(false);
 const isInitialLoad = ref(true);
 
@@ -1503,6 +1622,14 @@ const translations = {
   updatedViaStripe: { es: "Actualizado automáticamente vía Stripe", en: "Automatically updated via Stripe" },
   guiaNumberLabel: { es: "Número de Guía", en: "Waybill Number" },
   giaDocument: { es: "Documento GIA", en: "GIA Document" },
+  dimensionsLabel: { es: "Dimensiones (cm)", en: "Dimensions (cm)" },
+  lengthLabel: { es: "Largo", en: "Length" },
+  widthLabel: { es: "Ancho", en: "Width" },
+  heightLabel: { es: "Alto", en: "Height" },
+  weightLabel: { es: "Peso (kg)", en: "Weight (kg)" },
+  weightSectionLabel: { es: "Peso del Envío", en: "Shipment Weight" },
+  totalBoxWeightLabel: { es: "Peso Cajas", en: "Box Weight" },
+  autoCalculated: { es: "Auto-calculado", en: "Auto-calculated" },
   downloadGia: { es: "Descargar GIA", en: "Download GIA" },
   pendingUpload: { es: "Pendiente de subir", en: "Pending upload" },
   optional: { es: "Opcional", en: "Optional" },
@@ -1584,6 +1711,15 @@ const calculatedTotalBoxPrice = computed(() => {
     const price = parseFloat(box.box_price) || 0;
     return sum + price;
   }, 0);
+});
+
+const calculatedBoxWeight = computed(() => {
+  if (!form.value.boxes || form.value.boxes.length === 0) return null;
+  const total = form.value.boxes.reduce((sum, box) => {
+    const weight = parseFloat(box.weight) || 0;
+    return sum + weight;
+  }, 0);
+  return total > 0 ? total.toFixed(2) : null;
 });
 
 const hasChanges = computed(() => {
@@ -1787,7 +1923,7 @@ const removeBox = (index) => {
 
 const closeAddBoxModal = () => {
   showAddBoxModal.value = false;
-  newBox.value = { stripe_price_id: "", guia_number: "", gia_file: null };
+  newBox.value = { stripe_price_id: "", guia_number: "", gia_file: null, length: null, width: null, height: null, weight: null };
 };
 
 const handleNewBoxGiaFile = (e) => {
@@ -1819,6 +1955,10 @@ const addNewBox = () => {
     gia_filename: null,
     gia_path: null,
     new_gia_file: newBox.value.gia_file || null,
+    length: newBox.value.length || null,
+    width: newBox.value.width || null,
+    height: newBox.value.height || null,
+    weight: newBox.value.weight || null,
   });
 
   form.value.box_price = calculatedTotalBoxPrice.value;
@@ -1867,6 +2007,10 @@ const fetchOrder = async () => {
         gia_filename: box.gia_filename || null,
         gia_path: box.gia_path || null,
         new_gia_file: null,
+        length: box.length || null,
+        width: box.width || null,
+        height: box.height || null,
+        weight: box.weight || null,
       }));
     } else if (order.value.box_size && order.value.stripe_price_id) {
       const matchingProduct = findProductByPriceId(order.value.stripe_price_id) 
@@ -2036,22 +2180,30 @@ const handleSubmit = async () => {
       }
     }
 
-    // Check if boxes changed
+    // Check if boxes changed (including dimensions)
     const originalBoxesCompare = originalData.value.boxes.map(b => ({
       id: b.id,
       stripe_price_id: b.stripe_price_id,
       guia_number: b.guia_number,
+      length: b.length,
+      width: b.width,
+      height: b.height,
+      weight: b.weight,
     }));
     const currentBoxesCompare = form.value.boxes.map(b => ({
       id: b.id,
       stripe_price_id: b.stripe_price_id,
       guia_number: b.guia_number,
+      length: b.length,
+      width: b.width,
+      height: b.height,
+      weight: b.weight,
     }));
     
     const boxesChanged = JSON.stringify(originalBoxesCompare) !== JSON.stringify(currentBoxesCompare) || hasGiaFiles;
 
     if (boxesChanged) {
-      // Add all boxes with their GIA data
+      // Add all boxes with their GIA data and dimensions
       form.value.boxes.forEach((box, index) => {
         if (box.id) {
           formData.append(`boxes[${index}][id]`, box.id);
@@ -2061,6 +2213,11 @@ const handleSubmit = async () => {
         if (box.new_gia_file) {
           formData.append(`boxes[${index}][gia_file]`, box.new_gia_file);
         }
+        // Add dimensions
+        if (box.length != null) formData.append(`boxes[${index}][length]`, box.length);
+        if (box.width != null) formData.append(`boxes[${index}][width]`, box.width);
+        if (box.height != null) formData.append(`boxes[${index}][height]`, box.height);
+        if (box.weight != null) formData.append(`boxes[${index}][weight]`, box.weight);
       });
     }
 

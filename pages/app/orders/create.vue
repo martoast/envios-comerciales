@@ -448,17 +448,83 @@
             leave-to-class="opacity-0 -translate-y-4"
           >
             <div v-if="form.order_type === 'shipping'">
-              <DeliveryAddressStep
-                :delivery-address="form.delivery_address"
-                :is-rural="form.is_rural"
-                :save-address="form.save_address"
-                :rural-surcharge="null"
-                :mexican-states="mexicanStates"
-                :t="t"
-                @update:delivery-address="form.delivery_address = $event"
-                @update:is-rural="form.is_rural = $event"
-                @update:save-address="form.save_address = $event"
-              />
+              <!-- Address Mode Toggle -->
+              <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6 animate-fadeIn">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h2 class="text-lg font-bold text-gray-900">{{ t.deliveryAddressTitle }}</h2>
+                    <p class="text-sm text-gray-500 mt-1">{{ useFullAddress ? t.fullAddressDescription : t.quickAddressSearchDescription }}</p>
+                  </div>
+                  <!-- Toggle Switch -->
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-500">{{ useFullAddress ? t.useFullAddress : t.useIndividualFields }}</span>
+                    <button
+                      type="button"
+                      @click="useFullAddress = !useFullAddress"
+                      :class="[
+                        'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                        useFullAddress ? 'bg-primary-500' : 'bg-gray-200'
+                      ]"
+                    >
+                      <span
+                        :class="[
+                          'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                          useFullAddress ? 'translate-x-5' : 'translate-x-0'
+                        ]"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Full Address Mode -->
+              <div v-if="useFullAddress" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6 animate-fadeIn">
+                <div class="space-y-4">
+                  <div>
+                    <label for="full_address" class="block text-sm font-semibold text-gray-900 mb-2">
+                      {{ t.fullAddressLabel }}
+                    </label>
+                    <textarea
+                      id="full_address"
+                      v-model="form.delivery_address.full_address"
+                      rows="3"
+                      class="w-full px-4 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none"
+                      :placeholder="t.fullAddressPlaceholder"
+                      required
+                    ></textarea>
+                  </div>
+
+                  <!-- Save Address Checkbox -->
+                  <div class="bg-green-50 rounded-xl p-4 border border-green-200">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                      <input
+                        v-model="form.save_address"
+                        type="checkbox"
+                        class="mt-1 h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
+                      />
+                      <div class="flex-1">
+                        <span class="text-sm font-semibold text-gray-900">{{ t.saveAddressLabel }}</span>
+                        <p class="text-sm text-gray-600 mt-1">{{ t.saveAddressDescription }}</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Individual Fields Mode -->
+              <div v-else>
+                <DeliveryAddressStep
+                  :delivery-address="form.delivery_address"
+                  :is-rural="form.is_rural"
+                  :save-address="form.save_address"
+                  :rural-surcharge="null"
+                  :mexican-states="mexicanStates"
+                  :t="t"
+                  @update:delivery-address="form.delivery_address = $event"
+                  @update:is-rural="form.is_rural = $event"
+                  @update:save-address="form.save_address = $event"
+                />
+              </div>
             </div>
           </Transition>
 
@@ -538,6 +604,7 @@ const loading = ref(false);
 const loadingProfile = ref(true);
 const errorMessage = ref("");
 const hasLoadedSavedAddress = ref(false);
+const useFullAddress = ref(false);
 
 // WhatsApp number and pre-filled message
 const whatsappNumber = "16195591910"; // Your WhatsApp number
@@ -561,6 +628,7 @@ const form = ref({
     estado: "",
     postal_code: "",
     referencias: "",
+    full_address: "",
   },
   is_rural: false,
   save_address: false,
@@ -610,6 +678,13 @@ const isFormValid = computed(() => {
 
   // For shipping orders, validate address
   const addr = form.value.delivery_address;
+
+  // Full address mode - just need the full_address string
+  if (useFullAddress.value) {
+    return addr.full_address && addr.full_address.trim().length > 0;
+  }
+
+  // Individual fields mode
   return (
     addr.street &&
     addr.exterior_number &&
@@ -721,6 +796,31 @@ const translations = {
     es: "Guarda tu dirección de entrega para no tener que ingresarla nuevamente",
     en: "Save your delivery address so you don't have to enter it again",
   },
+  // Full address mode
+  useFullAddress: {
+    es: "Dirección completa",
+    en: "Full address",
+  },
+  useIndividualFields: {
+    es: "Campos individuales",
+    en: "Individual fields",
+  },
+  fullAddressLabel: {
+    es: "Dirección Completa",
+    en: "Full Address",
+  },
+  fullAddressPlaceholder: {
+    es: "Ej: Calle Principal 123, Col. Centro, Tijuana, BC 22000",
+    en: "E.g.: Main Street 123, Downtown, Tijuana, BC 22000",
+  },
+  fullAddressDescription: {
+    es: "Ingresa tu dirección completa en un solo campo",
+    en: "Enter your complete address in a single field",
+  },
+  deliveryAddressTitle: {
+    es: "Dirección de Entrega",
+    en: "Delivery Address",
+  },
 };
 
 const t = createTranslations(translations);
@@ -733,6 +833,7 @@ const fetchUserProfile = async () => {
     if (response.success && response.data) {
       const profileData = response.data;
 
+      // Check if user has individual address fields
       if (profileData.has_complete_address && profileData.address) {
         form.value.delivery_address = {
           street: profileData.address.street || "",
@@ -743,9 +844,28 @@ const fetchUserProfile = async () => {
           estado: profileData.address.estado || "",
           postal_code: profileData.address.postal_code || "",
           referencias: "",
+          full_address: "",
         };
         hasLoadedSavedAddress.value = true;
         form.value.save_address = false;
+        useFullAddress.value = false;
+      }
+      // Check if user has full_address
+      else if (profileData.full_address) {
+        form.value.delivery_address = {
+          street: "",
+          exterior_number: "",
+          interior_number: "",
+          colonia: "",
+          municipio: "",
+          estado: "",
+          postal_code: "",
+          referencias: "",
+          full_address: profileData.full_address,
+        };
+        hasLoadedSavedAddress.value = true;
+        form.value.save_address = false;
+        useFullAddress.value = true;
       } else {
         if (user) {
           form.value.delivery_address = {
@@ -757,7 +877,12 @@ const fetchUserProfile = async () => {
             estado: user.estado || "",
             postal_code: user.postal_code || "",
             referencias: "",
+            full_address: user.full_address || "",
           };
+          // Auto-select mode based on what data exists
+          if (user.full_address && !user.street) {
+            useFullAddress.value = true;
+          }
         }
         form.value.save_address = true;
       }
@@ -774,7 +899,11 @@ const fetchUserProfile = async () => {
         estado: user.estado || "",
         postal_code: user.postal_code || "",
         referencias: "",
+        full_address: user.full_address || "",
       };
+      if (user.full_address && !user.street) {
+        useFullAddress.value = true;
+      }
     }
   } finally {
     loadingProfile.value = false;
@@ -790,17 +919,20 @@ const handleCreateOrder = async () => {
   // Save address if requested (only for shipping orders)
   if (form.value.order_type === "shipping" && form.value.save_address) {
     try {
+      const profileBody = useFullAddress.value
+        ? { full_address: form.value.delivery_address.full_address }
+        : {
+            street: form.value.delivery_address.street,
+            exterior_number: form.value.delivery_address.exterior_number,
+            interior_number: form.value.delivery_address.interior_number,
+            colonia: form.value.delivery_address.colonia,
+            municipio: form.value.delivery_address.municipio,
+            estado: form.value.delivery_address.estado,
+            postal_code: form.value.delivery_address.postal_code,
+          };
       await $customFetch("/profile", {
         method: "PUT",
-        body: {
-          street: form.value.delivery_address.street,
-          exterior_number: form.value.delivery_address.exterior_number,
-          interior_number: form.value.delivery_address.interior_number,
-          colonia: form.value.delivery_address.colonia,
-          municipio: form.value.delivery_address.municipio,
-          estado: form.value.delivery_address.estado,
-          postal_code: form.value.delivery_address.postal_code,
-        },
+        body: profileBody,
       });
     } catch (error) {
       console.error("Error saving address:", error);
@@ -815,8 +947,24 @@ const handleCreateOrder = async () => {
 
     // Only include delivery address for shipping orders
     if (form.value.order_type === "shipping") {
-      body.delivery_address = form.value.delivery_address;
-      body.is_rural = form.value.is_rural;
+      // Build delivery address based on mode
+      if (useFullAddress.value) {
+        body.delivery_address = {
+          full_address: form.value.delivery_address.full_address,
+        };
+      } else {
+        body.delivery_address = {
+          street: form.value.delivery_address.street,
+          exterior_number: form.value.delivery_address.exterior_number,
+          interior_number: form.value.delivery_address.interior_number,
+          colonia: form.value.delivery_address.colonia,
+          municipio: form.value.delivery_address.municipio,
+          estado: form.value.delivery_address.estado,
+          postal_code: form.value.delivery_address.postal_code,
+          referencias: form.value.delivery_address.referencias,
+        };
+        body.is_rural = form.value.is_rural;
+      }
     }
 
     const response = await $customFetch("/orders", {

@@ -8,11 +8,18 @@
         </NuxtLink>
       </div>
       <div class="p-4 sm:p-6 text-sm text-gray-700">
-        <p class="font-medium text-gray-900">{{ address.street }} {{ address.exterior_number }} <span v-if="address.interior_number">Int. {{ address.interior_number }}</span></p>
-        <p>{{ address.colonia }}</p>
-        <p>{{ address.municipio }}, {{ address.estado }}</p>
-        <p>C.P. {{ address.postal_code }}</p>
-        <p v-if="address.referencias" class="mt-2 text-gray-500 italic">"{{ address.referencias }}"</p>
+        <!-- Full address mode -->
+        <div v-if="address.full_address">
+          <p class="font-medium text-gray-900 whitespace-pre-line">{{ address.full_address }}</p>
+        </div>
+        <!-- Individual fields mode -->
+        <div v-else>
+          <p class="font-medium text-gray-900">{{ address.street }} {{ address.exterior_number }} <span v-if="address.interior_number">Int. {{ address.interior_number }}</span></p>
+          <p>{{ address.colonia }}</p>
+          <p>{{ address.municipio }}, {{ address.estado }}</p>
+          <p>C.P. {{ address.postal_code }}</p>
+          <p v-if="address.referencias" class="mt-2 text-gray-500 italic">"{{ address.referencias }}"</p>
+        </div>
       </div>
     </div>
   </template>

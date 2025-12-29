@@ -275,6 +275,7 @@
                 {{ t.fromLastOrder }}
               </span>
             </div>
+            <!-- Individual address fields -->
             <div
               v-if="displayAddress.address"
               class="space-y-1 text-sm text-gray-900"
@@ -299,6 +300,13 @@
                 <span class="font-medium">{{ t.references }}:</span>
                 {{ displayAddress.address.referencias }}
               </p>
+            </div>
+            <!-- Full address string -->
+            <div
+              v-else-if="displayAddress.fullAddress"
+              class="text-sm text-gray-900"
+            >
+              <p class="whitespace-pre-line">{{ displayAddress.fullAddress }}</p>
             </div>
             <div v-else class="text-center py-4">
               <div class="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-3">
@@ -853,12 +861,12 @@ const t = createTranslations(translations);
 // Computed - Display address prioritizing saved address
 const displayAddress = computed(() => {
   if (!customerData.value?.customer) {
-    return { address: null, isSaved: false, isFromOrder: false };
+    return { address: null, fullAddress: null, isSaved: false, isFromOrder: false };
   }
 
   const customer = customerData.value.customer;
 
-  // Check if customer has a saved address
+  // Check if customer has a saved address (individual fields)
   const hasSavedAddress =
     customer.street &&
     customer.exterior_number &&
@@ -880,6 +888,17 @@ const displayAddress = computed(() => {
         postal_code: customer.postal_code,
         referencias: null, // Saved addresses don't have referencias
       },
+      fullAddress: null,
+      isSaved: true,
+      isFromOrder: false,
+    };
+  }
+
+  // Check if customer has a full_address string
+  if (customer.full_address) {
+    return {
+      address: null,
+      fullAddress: customer.full_address,
       isSaved: true,
       isFromOrder: false,
     };
@@ -893,6 +912,7 @@ const displayAddress = computed(() => {
     if (orderWithAddress?.delivery_address) {
       return {
         address: orderWithAddress.delivery_address,
+        fullAddress: null,
         isSaved: false,
         isFromOrder: true,
       };
@@ -900,7 +920,7 @@ const displayAddress = computed(() => {
   }
 
   // No address available
-  return { address: null, isSaved: false, isFromOrder: false };
+  return { address: null, fullAddress: null, isSaved: false, isFromOrder: false };
 });
 
 const statsCards = computed(() => {
