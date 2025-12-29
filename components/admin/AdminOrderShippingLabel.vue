@@ -244,9 +244,9 @@ const printLabel = () => {
         .order-number { font-size: 14px; font-weight: bold; }
 
         .ship-to-section { flex: 1; margin-bottom: 0.1in; }
-        .section-title { font-size: 11px; font-weight: bold; color: #666; margin-bottom: 4px; }
-        .recipient-name { font-size: 20px; font-weight: bold; margin-bottom: 8px; }
-        .address-text { font-size: 13px; line-height: 1.4; }
+        .section-title { font-size: 12px; font-weight: bold; color: #666; margin-bottom: 4px; }
+        .recipient-name { font-size: 28px; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .address-text { font-size: 18px; line-height: 1.5; letter-spacing: 0.3px; }
 
         .contact-section {
           padding: 0.1in 0;
@@ -259,13 +259,13 @@ const printLabel = () => {
         .boxes-section {
           padding: 0.1in 0;
           border-top: 1px solid #ccc;
-          font-size: 11px;
+          font-size: 15px;
         }
-        .boxes-label { font-weight: bold; margin-bottom: 4px; }
+        .boxes-label { font-weight: 600; margin-bottom: 6px; font-size: 14px; letter-spacing: 0.3px; }
         .boxes-list { }
-        .box-item { display: flex; gap: 8px; margin-bottom: 2px; }
-        .box-name { font-weight: 500; }
-        .box-details { color: #666; }
+        .box-item { display: flex; gap: 12px; margin-bottom: 4px; align-items: center; }
+        .box-name { font-weight: 500; font-size: 15px; letter-spacing: 0.3px; }
+        .box-details { color: #222; font-weight: 500; font-size: 15px; letter-spacing: 0.3px; }
 
         .barcode-section {
           margin-top: auto;
@@ -428,21 +428,23 @@ const printLabel = () => {
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: bold;
   color: #666;
   margin-bottom: 4px;
 }
 
 .recipient-name {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 28px;
+  font-weight: 600;
   margin-bottom: 8px;
+  letter-spacing: 0.5px;
 }
 
 .address-text {
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: 18px;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
 }
 
 .contact-section {
@@ -467,33 +469,40 @@ const printLabel = () => {
 .boxes-section {
   padding: 0.1in 0;
   border-top: 1px solid #ccc;
-  font-size: 11px;
+  font-size: 15px;
 }
 
 .boxes-label {
-  font-weight: bold;
-  margin-bottom: 4px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 14px;
+  letter-spacing: 0.3px;
 }
 
 .boxes-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .box-item {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
 }
 
 .box-name {
   font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0.3px;
 }
 
 .box-dims,
 .box-weight {
-  color: #666;
+  color: #222;
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0.3px;
 }
 
 .barcode-section {
