@@ -8,6 +8,7 @@
       @close-menu="showActionsMenu = false"
       @delete="openDeleteModal"
       @print-label="showShippingLabelModal = true"
+      @view-message="showJesusMessageModal = true"
     />
 
     <!-- Loading State -->
@@ -1089,6 +1090,14 @@
       :order="order"
       @close="showShippingLabelModal = false"
     />
+
+    <!-- Jesus Message Modal -->
+    <AdminOrderJesusMessage
+      v-if="order"
+      :show="showJesusMessageModal"
+      :order="order"
+      @close="showJesusMessageModal = false"
+    />
   </section>
 </template>
 
@@ -1107,6 +1116,7 @@ import AdminOrderModalMarkPaid from "~/components/admin/AdminOrderModalMarkPaid.
 import AdminOrderModalMarkArrived from "~/components/admin/AdminOrderModalMarkArrived.vue";
 import AdminOrderModalDelete from "~/components/admin/AdminOrderModalDelete.vue";
 import AdminOrderShippingLabel from "~/components/admin/AdminOrderShippingLabel.vue";
+import AdminOrderJesusMessage from "~/components/admin/AdminOrderJesusMessage.vue";
 
 definePageMeta({
   layout: "admin",
@@ -1138,6 +1148,7 @@ const showMarkArrivedModal = ref(false);
 const showDeleteModal = ref(false);
 const showMarkAllArrivedModal = ref(false);
 const showShippingLabelModal = ref(false);
+const showJesusMessageModal = ref(false);
 const selectedItem = ref(null);
 const markingAllArrived = ref(false);
 

@@ -155,6 +155,17 @@
           </svg>
           {{ t.printLabel }}
         </button>
+        <!-- View Jesus Message - Only for shipping orders with delivery address -->
+        <button
+          v-if="canPrintLabel"
+          @click="handleViewMessage"
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+        >
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          {{ t.viewMessage }}
+        </button>
         <hr class="my-1 border-gray-100" />
         <button
           @click="$emit('delete')"
@@ -191,7 +202,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['toggle-menu', 'close-menu', 'delete', 'print-label']);
+const emit = defineEmits(['toggle-menu', 'close-menu', 'delete', 'print-label', 'view-message']);
 
 const router = useRouter();
 
@@ -208,6 +219,7 @@ const translations = {
   actions: { es: 'Acciones', en: 'Actions' },
   editOrder: { es: 'Editar Orden', en: 'Edit Order' },
   printLabel: { es: 'Imprimir Etiqueta', en: 'Print Label' },
+  viewMessage: { es: 'Ver Mensaje', en: 'View Message' },
   deleteOrder: { es: 'Eliminar Orden', en: 'Delete Order' },
   crossing: { es: 'Cruce', en: 'Cross' },
   ship: { es: 'Envío', en: 'Ship' },
@@ -227,6 +239,11 @@ const canPrintLabel = computed(() => {
 const handlePrintLabel = () => {
   emit('close-menu');
   emit('print-label');
+};
+
+const handleViewMessage = () => {
+  emit('close-menu');
+  emit('view-message');
 };
 
 const getStatusColor = (status) => {
