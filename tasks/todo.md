@@ -138,3 +138,66 @@ Admins can now:
 - Shipping labels now show complete box info (name, dimensions, weight) instead of just box type
 - Removed unused `actual_weight` field throughout admin order pages
 - Weight section simplified to show only Box Weight (auto-calculated) and Total Weight (manual)
+
+---
+
+# Current Task: Simplify Purchase Request Edit Form
+
+## Goal
+The API now auto-calculates `processing_fee` as `total_amount - items_total`. Update the edit form and display page to match.
+
+## Tasks
+- [x] Edit page: Remove shipping_cost, sales_tax, processing_fee input fields
+- [x] Edit page: Keep only items_total and total_amount as editable
+- [x] Edit page: Show processing_fee as computed display-only value
+- [x] Edit page: Update form data and submission
+- [x] Index page: Simplify financials to show items_total, fee, total
+
+## Technical Notes
+- `processing_fee = total_amount - items_total` (auto-calculated by backend)
+- Only send `items_total` and `total_amount` in PUT request
+
+---
+
+## Review
+
+### Changes Made
+
+**1. `pages/app/admin/purchase-requests/[id]/edit.vue`**
+- Removed `shipping_cost`, `sales_tax`, `processing_fee` from form object
+- Removed those input fields from the template
+- Added `calculatedFee` computed property (total - items)
+- Added display-only fee section showing auto-calculated value
+- Added translations: `autoCalculated`, `feeHint`
+- Removed unused translations: `shippingCost`, `salesTax`
+
+**2. `pages/app/admin/purchase-requests/[id]/index.vue`**
+- Simplified financials breakdown to show only: Merchandise, Fee, Total
+- Removed shipping_cost, sales_tax, subtotal line items
+- Removed unused translations: `shippingToWarehouse`, `salesTax`
+
+### Summary
+The edit form now only has two editable financial fields (items_total, total_amount), and the fee is shown as auto-calculated (total - items). The display page shows a cleaner breakdown with just merchandise, fee, and total.
+
+---
+
+## UX Improvements (Follow-up)
+
+### Changes Made
+
+**1. `pages/app/admin/purchase-requests/[id]/edit.vue`**
+- Renamed labels for clarity:
+  - "Items Total" → "Your Cost" (with hint: includes items + shipping + taxes)
+  - "Total" → "Customer Pays"
+  - "Fee" → "Your Margin"
+- Added `+ 8%` button to quickly apply standard margin
+- Added `marginPercent` computed to show percentage
+- Added color-coded margin display (red <5%, yellow <8%, green ≥8%)
+
+**2. `pages/app/admin/purchase-requests/[id]/index.vue`**
+- Updated financials display with same terminology
+- Added margin percentage display
+- Color changed to green for profit line
+
+### Summary
+The UI now clearly communicates: "Your Cost" (what you pay) vs "Customer Pays" (what they pay) with "Your Margin" showing both $ and % profit. Quick +8% button makes applying standard markup instant.

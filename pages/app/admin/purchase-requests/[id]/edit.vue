@@ -121,9 +121,9 @@
              <span class="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded border border-gray-200">Manual Override</span>
           </div>
           
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="space-y-6">
             <!-- Currency Select -->
-            <div class="sm:col-span-2">
+            <div>
               <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.currency }}</label>
               <select
                 v-model="form.currency"
@@ -134,43 +134,42 @@
               </select>
             </div>
 
+            <!-- Your Cost -->
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.itemsTotal }}</label>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">{{ t.yourCost }}</label>
+              <p class="text-xs text-gray-500 mb-2">{{ t.yourCostHint }}</p>
               <div class="relative">
                  <span class="absolute left-3 top-3 text-gray-400">{{ currencySymbol }}</span>
                  <input v-model.number="form.items_total" type="number" step="0.01" class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 transition-all">
               </div>
             </div>
 
+            <!-- Customer Pays -->
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.shippingCost }}</label>
-              <div class="relative">
-                 <span class="absolute left-3 top-3 text-gray-400">{{ currencySymbol }}</span>
-                 <input v-model.number="form.shipping_cost" type="number" step="0.01" class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 transition-all">
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-sm font-bold text-gray-900">{{ t.customerPays }}</label>
+                <button
+                  type="button"
+                  @click="applyMargin"
+                  class="text-xs px-2 py-1 bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition-colors font-medium"
+                >
+                  {{ t.apply8Percent }}
+                </button>
               </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.salesTax }}</label>
-              <div class="relative">
-                 <span class="absolute left-3 top-3 text-gray-400">{{ currencySymbol }}</span>
-                 <input v-model.number="form.sales_tax" type="number" step="0.01" class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 transition-all">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.fee }}</label>
-              <div class="relative">
-                 <span class="absolute left-3 top-3 text-gray-400">{{ currencySymbol }}</span>
-                 <input v-model.number="form.processing_fee" type="number" step="0.01" class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 transition-all">
-              </div>
-            </div>
-
-            <div class="sm:col-span-2 pt-4 border-t border-gray-50">
-              <label class="block text-sm font-bold text-gray-900 mb-2">{{ t.total }}</label>
               <div class="relative">
                  <span class="absolute left-3 top-3 text-gray-900 font-bold">{{ currencySymbol }}</span>
                  <input v-model.number="form.total_amount" type="number" step="0.01" class="w-full pl-7 pr-4 py-3 rounded-xl border border-gray-300 bg-gray-50 font-bold text-gray-900 focus:ring-2 focus:ring-primary-500 transition-all">
+              </div>
+            </div>
+
+            <!-- Margin Display -->
+            <div class="pt-4 border-t border-gray-100">
+              <div class="flex justify-between items-center rounded-xl px-4 py-3 border" :class="marginDisplayClass">
+                <span class="text-sm font-medium">{{ t.yourMargin }}</span>
+                <div class="text-right">
+                  <span class="text-lg font-bold">{{ currencySymbol }}{{ calculatedFee }}</span>
+                  <span class="text-sm ml-1">({{ marginPercent }}%)</span>
+                </div>
               </div>
             </div>
           </div>
@@ -234,13 +233,38 @@ const form = ref({
   payment_method: "stripe",
   admin_notes: "",
   items_total: 0,
-  shipping_cost: 0,
-  sales_tax: 0,
-  processing_fee: 0,
   total_amount: 0,
   currency: "usd",
   payment_link: "",
 });
+
+// Auto-calculated fee (total - items)
+const calculatedFee = computed(() => {
+  const fee = (form.value.total_amount || 0) - (form.value.items_total || 0);
+  return Math.max(0, fee).toFixed(2);
+});
+
+// Margin percentage
+const marginPercent = computed(() => {
+  const cost = form.value.items_total || 0;
+  if (cost <= 0) return '0';
+  const fee = (form.value.total_amount || 0) - cost;
+  return ((fee / cost) * 100).toFixed(1);
+});
+
+// Color coding for margin display
+const marginDisplayClass = computed(() => {
+  const percent = parseFloat(marginPercent.value);
+  if (percent < 5) return 'bg-red-50 border-red-200 text-red-700';
+  if (percent < 8) return 'bg-yellow-50 border-yellow-200 text-yellow-700';
+  return 'bg-green-50 border-green-200 text-green-700';
+});
+
+// Quick apply 8% margin
+const applyMargin = () => {
+  const cost = form.value.items_total || 0;
+  form.value.total_amount = Math.round(cost * 1.08 * 100) / 100;
+};
 
 const translations = {
   editRequest: { es: "Editar Solicitud", en: "Edit Request" },
@@ -256,11 +280,11 @@ const translations = {
   adminNotes: { es: "Notas de Admin", en: "Admin Notes" },
   financials: { es: "Finanzas", en: "Financials" },
   currency: { es: "Moneda", en: "Currency" },
-  itemsTotal: { es: "Total Artículos", en: "Items Total" },
-  shippingCost: { es: "Costo Envío", en: "Shipping Cost" },
-  salesTax: { es: "Impuestos", en: "Sales Tax" },
-  fee: { es: "Tarifa", en: "Fee" },
-  total: { es: "Total", en: "Total" },
+  yourCost: { es: "Tu Costo", en: "Your Cost" },
+  yourCostHint: { es: "Incluye artículos + envío + impuestos", en: "Includes items + shipping + taxes" },
+  customerPays: { es: "Cliente Paga", en: "Customer Pays" },
+  apply8Percent: { es: "+ 8%", en: "+ 8%" },
+  yourMargin: { es: "Tu Ganancia", en: "Your Margin" },
   links: { es: "Enlaces", en: "Links" },
   paymentLink: { es: "Enlace de Pago", en: "Payment Link" },
   paymentLinkHint: { es: "Solo aplica para pagos con Stripe.", en: "Only applies to Stripe payments." },
@@ -306,9 +330,6 @@ const fetchRequest = async () => {
       payment_method: data.payment_method || "stripe",
       admin_notes: data.admin_notes || "",
       items_total: data.items_total || calculatedTotal.toFixed(2),
-      shipping_cost: data.shipping_cost,
-      sales_tax: data.sales_tax,
-      processing_fee: data.processing_fee,
       total_amount: data.total_amount,
       currency: data.currency || "usd",
       payment_link: data.payment_link || "",

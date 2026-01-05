@@ -262,27 +262,15 @@
             <!-- If quoted/paid/purchased, show breakdown -->
             <div v-else class="space-y-3 text-sm">
               <div class="flex justify-between">
-                <span class="text-gray-600">{{ t.merchandise }}</span>
+                <span class="text-gray-600">{{ t.yourCost }}</span>
                 <span class="font-medium">{{ formatCurrency(request.items_total) }}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">{{ t.shippingToWarehouse }}</span>
-                <span class="font-medium">{{ formatCurrency(request.shipping_cost) }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">{{ t.salesTax }}</span>
-                <span class="font-medium">{{ formatCurrency(request.sales_tax) }}</span>
-              </div>
-              <div class="flex justify-between pt-2 border-t border-dashed">
-                <span class="text-gray-600">{{ t.subtotal }}</span>
-                <span class="font-medium">{{ formatCurrency(Number(request.items_total) + Number(request.shipping_cost) + Number(request.sales_tax)) }}</span>
-              </div>
-              <div class="flex justify-between text-blue-600">
-                <span>{{ t.fee }}</span>
-                <span class="font-medium">{{ formatCurrency(request.processing_fee) }}</span>
+              <div class="flex justify-between text-green-600">
+                <span>{{ t.yourMargin }}</span>
+                <span class="font-medium">{{ formatCurrency(request.processing_fee) }} ({{ marginPercent }}%)</span>
               </div>
               <div class="flex justify-between pt-3 border-t border-gray-200 text-lg font-bold text-gray-900">
-                <span>{{ t.total }}</span>
+                <span>{{ t.customerPays }}</span>
                 <span>{{ formatCurrency(request.total_amount) }}</span>
               </div>
               
@@ -544,11 +532,9 @@ const translations = {
   customerNotes: { es: 'Notas del Cliente', en: 'Customer Notes' },
   financials: { es: 'Finanzas', en: 'Financials' },
   calculateQuote: { es: 'Calcular Cotización', en: 'Calculate Quote' },
-  merchandise: { es: 'Mercancía', en: 'Merchandise' },
-  shippingToWarehouse: { es: 'Envío a Almacén', en: 'Shipping to Warehouse' },
-  salesTax: { es: 'Impuestos (Sales Tax)', en: 'Sales Tax' },
-  fee: { es: 'Tarifa (8%)', en: 'Fee (8%)' },
-  total: { es: 'Total', en: 'Total' },
+  yourCost: { es: 'Costo', en: 'Cost' },
+  yourMargin: { es: 'Ganancia', en: 'Margin' },
+  customerPays: { es: 'Cliente Paga', en: 'Customer Pays' },
   paymentMethod: { es: 'Método de Pago', en: 'Payment Method' },
   stripeLink: { es: 'Enlace de Pago Stripe', en: 'Stripe Payment Link' },
   customerInfo: { es: 'Cliente', en: 'Customer Info' },
@@ -608,6 +594,14 @@ const formatCurrency = (amount) => {
   const currency = request.value?.currency || 'usd';
   return `$${value} ${currency.toUpperCase()}`;
 };
+
+// Margin percentage for display
+const marginPercent = computed(() => {
+  const cost = request.value?.items_total || 0;
+  if (cost <= 0) return '0';
+  const fee = request.value?.processing_fee || 0;
+  return ((fee / cost) * 100).toFixed(1);
+});
 
 const fetchRequest = async () => {
   loading.value = true;
