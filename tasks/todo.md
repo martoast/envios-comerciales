@@ -1,79 +1,40 @@
-# Current Task: Add Jesus Message Generator for Orders
+# Task: Add "No Orders" Filter + CSV Export to Admin Customers Page
 
 ## Goal
-Add a feature to automatically generate a message in Spanish for Jesus with order details (box size, dimensions, weight, directions, shipping type). The message should be accessible from the same dropdown menu as "Print Label" and open in a modal with easy copy-to-clipboard functionality.
+1. Add a checkbox filter to show only customers who have **zero orders** (never placed any order)
+2. Add CSV export functionality with current filters applied
 
-## Example Message Format
-```
-Nombre: Antonio Bautista
-    •    Destino: Zapopan, Jalisco
-    •    Dirección: Bosque Zapopan 170, Las Cañadas, Zapopan, Jalisco, 45133, Interior 28
-    •    Dimensiones: 50 × 40 × 20 cm
-    •    Peso: 2.6 kg
-    •    Contenido: articulos de baseball
-    •    Envío: Avión Estafeta
-```
+## Plan
 
-## Requirements (from user clarification)
-- Contenido: Admin manually inputs the box contents
-- Shipping: Default to "Avión Estafeta", toggleable to "Terrestre Estafeta"
-- Text must be FULLY EDITABLE in the modal so admin can change anything
-- Copy to clipboard functionality
+### Backend Changes
+- [x] Add `no_orders` filter parameter to `AdminCustomerController.php` index method
+- [x] Add `/admin/customers/export` endpoint for CSV export
 
-## Tasks
-- [x] Create new component `AdminOrderJesusMessage.vue`
-- [x] Add "View Message" option in AdminOrderHeader.vue dropdown menu
-- [x] Add state and event handlers in order detail page
-- [x] Connect the component with order data
+### Frontend Changes
+- [x] Add `noOrders` state variable in `index.vue`
+- [x] Add checkbox UI element for the "no orders" filter
+- [x] Pass `no_orders` parameter in API call
+- [x] Update `clearFilters()` to reset `noOrders`
+- [x] Add watcher for `noOrders` to trigger fetch
+- [x] Add export button (mobile + desktop)
+- [x] Add `exportCustomers()` function
+- [x] Add translations for new features (Spanish/English)
 
----
+## Files Modified
+1. `/Users/alex/Documents/erick/boxly/boxly-api/app/Http/Controllers/AdminCustomerController.php`
+   - Added `no_orders` filter using `doesntHave('orders')`
+   - Added `export()` method for CSV download
+2. `/Users/alex/Documents/erick/boxly/boxly-api/routes/api.php`
+   - Added route for `/admin/customers/export`
+3. `/Users/alex/Documents/erick/boxly/app/pages/app/admin/customers/index.vue`
+   - Added `noOrders` state + checkbox filter
+   - Added export button in header (mobile + desktop)
+   - Added `exportCustomers()` function
+   - Added translations: `showNoOrders`, `exportCsv`
 
 ## Review
-
-### Changes Made
-
-**1. `components/admin/AdminOrderJesusMessage.vue` (NEW FILE)**
-- Created modal component with:
-  - Header showing "Mensaje para Jesus" and order number
-  - Controls section with:
-    - Air/Ground toggle (defaults to Avión)
-    - Contents input field
-    - Regenerate button to reset the message
-  - Fully editable textarea with pre-filled message
-  - Copy to clipboard button
-  - Close button
-- Auto-generates message from order data:
-  - Name from `order.user.name`
-  - Destination from `delivery_address.municipio, estado`
-  - Full address formatted
-  - Box dimensions (L × W × H cm) - handles single or multiple boxes
-  - Box weight (kg) - shows total for multiple boxes
-  - Contenido (admin inputs)
-  - Envío type (Avión/Terrestre Estafeta)
-
-**2. `components/admin/AdminOrderHeader.vue`**
-- Added "View Message" button in dropdown menu (appears for shipping orders with delivery address)
-- Added translation: `viewMessage: { es: 'Ver Mensaje', en: 'View Message' }`
-- Added emit for `view-message` event
-- Added `handleViewMessage()` handler function
-
-**3. `pages/app/admin/orders/[id]/index.vue`**
-- Added import for `AdminOrderJesusMessage` component
-- Added `showJesusMessageModal` ref state
-- Added `@view-message` event handler on AdminOrderHeader
-- Added `AdminOrderJesusMessage` component to template
-
-### Summary
-Admins can now:
-1. Click the actions menu (three dots) on any shipping order
-2. Select "View Message" (Ver Mensaje)
-3. See a pre-filled message in Spanish with all order details
-4. Toggle between Air/Ground shipping
-5. Enter the box contents
-6. Edit any part of the message directly in the textarea
-7. Click "Regenerate" to reset to original message
-8. Copy the final message to clipboard with one click
-
-The message can then be easily pasted into WhatsApp to send to Jesus.
-
----
+All changes are minimal and focused:
+- Backend: ~25 lines added for filter + export endpoint
+- Frontend: ~50 lines added for checkbox, button, function, translations
+- Export uses same filters as the list view (search, active_only, no_orders)
+- CSV includes: Name, Email, Phone, Orders count, Active Orders count, Join date

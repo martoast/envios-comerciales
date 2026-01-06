@@ -15,6 +15,24 @@
               {{ t.customers }}
             </h1>
             <div class="flex items-center gap-2">
+              <button
+                @click="exportCustomers"
+                class="p-2 bg-white text-gray-700 rounded-xl border border-gray-300 hover:bg-gray-50 transition-all duration-300 shadow-sm"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </button>
               <NuxtLink
                 to="/app/admin/customers/create"
                 class="p-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-all duration-300 shadow-sm"
@@ -64,6 +82,25 @@
           </div>
 
           <div class="flex items-center gap-3">
+            <button
+              @click="exportCustomers"
+              class="inline-flex items-center px-4 py-2.5 bg-white text-gray-700 font-medium rounded-xl border border-gray-300 hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-300"
+            >
+              <svg
+                class="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              {{ t.exportCsv }}
+            </button>
             <NuxtLink
               to="/app/admin/customers/create"
               class="inline-flex items-center px-4 py-2.5 bg-primary-500 text-white font-medium rounded-xl hover:bg-primary-600 shadow-sm hover:shadow-md transition-all duration-300"
@@ -146,24 +183,36 @@
               </button>
             </div>
 
-            <!-- Active Filter - Full Width on Mobile, Inline on Desktop -->
+            <!-- Filters - Full Width on Mobile, Inline on Desktop -->
             <div
               class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
             >
-              <label class="flex items-center gap-3 cursor-pointer">
-                <input
-                  v-model="activeOnly"
-                  type="checkbox"
-                  class="w-4 h-4 text-primary-600 bg-white border-gray-300 rounded focus:ring-primary-500 focus:ring-2 cursor-pointer"
-                />
-                <span class="text-sm text-gray-700">{{
-                  t.showActiveOnly
-                }}</span>
-              </label>
+              <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input
+                    v-model="activeOnly"
+                    type="checkbox"
+                    class="w-4 h-4 text-primary-600 bg-white border-gray-300 rounded focus:ring-primary-500 focus:ring-2 cursor-pointer"
+                  />
+                  <span class="text-sm text-gray-700">{{
+                    t.showActiveOnly
+                  }}</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input
+                    v-model="noOrders"
+                    type="checkbox"
+                    class="w-4 h-4 text-primary-600 bg-white border-gray-300 rounded focus:ring-primary-500 focus:ring-2 cursor-pointer"
+                  />
+                  <span class="text-sm text-gray-700">{{
+                    t.showNoOrders
+                  }}</span>
+                </label>
+              </div>
 
               <!-- Active Filters Count (Desktop) -->
               <div
-                v-if="(searchQuery || activeOnly) && !loading"
+                v-if="(searchQuery || activeOnly || noOrders) && !loading"
                 class="hidden sm:flex items-center gap-2 text-sm text-gray-600"
               >
                 <span>{{ t.showingFiltered }}</span>
@@ -178,7 +227,7 @@
 
             <!-- Active Filters Count (Mobile) -->
             <div
-              v-if="(searchQuery || activeOnly) && !loading"
+              v-if="(searchQuery || activeOnly || noOrders) && !loading"
               class="sm:hidden flex items-center justify-between text-sm"
             >
               <span class="text-gray-600">{{ t.showingFiltered }}</span>
@@ -490,6 +539,7 @@ const allCustomers = ref([]); // Store all customers for stats
 const loading = ref(true);
 const searchQuery = ref("");
 const activeOnly = ref(false);
+const noOrders = ref(false);
 const searchDebounce = ref(null);
 const pagination = ref({
   currentPage: 1,
@@ -516,6 +566,14 @@ const translations = {
   showActiveOnly: {
     es: "Mostrar solo clientes con órdenes activas",
     en: "Show only customers with active orders",
+  },
+  showNoOrders: {
+    es: "Mostrar solo clientes sin órdenes",
+    en: "Show only customers without orders",
+  },
+  exportCsv: {
+    es: "Exportar CSV",
+    en: "Export CSV",
   },
   showingFiltered: {
     es: "Mostrando resultados filtrados",
@@ -683,6 +741,7 @@ const fetchCustomers = async (page = 1) => {
       page,
       search: searchQuery.value || undefined,
       active_only: activeOnly.value || undefined,
+      no_orders: noOrders.value || undefined,
     };
 
     const response = await $customFetch("/admin/customers", { params });
@@ -726,7 +785,37 @@ const changePage = (page) => {
 const clearFilters = () => {
   searchQuery.value = "";
   activeOnly.value = false;
+  noOrders.value = false;
   fetchCustomers(1);
+};
+
+const exportCustomers = async () => {
+  try {
+    const params = new URLSearchParams();
+    if (searchQuery.value) params.append('search', searchQuery.value);
+    if (activeOnly.value) params.append('active_only', 'true');
+    if (noOrders.value) params.append('no_orders', 'true');
+
+    const queryString = params.toString();
+    const url = `/admin/customers/export${queryString ? '?' + queryString : ''}`;
+
+    const response = await $customFetch(url, {
+      responseType: 'blob'
+    });
+
+    // Create download link
+    const blob = new Blob([response], { type: 'text/csv' });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `customers-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    console.error("Error exporting customers:", error);
+  }
 };
 
 const formatDate = (date) => {
@@ -747,6 +836,11 @@ watch(searchQuery, () => {
 
 // Watch active only filter
 watch(activeOnly, () => {
+  fetchCustomers(1);
+});
+
+// Watch no orders filter
+watch(noOrders, () => {
   fetchCustomers(1);
 });
 
