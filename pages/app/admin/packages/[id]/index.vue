@@ -39,78 +39,104 @@
     <!-- Content -->
     <div v-else-if="packageItem" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-      <!-- Product Hero -->
+      <!-- Product Hero - Mobile First -->
       <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-        <div class="flex flex-col md:flex-row">
+        <!-- Mobile: Stacked Layout / Desktop: Side by Side -->
+        <div class="grid grid-cols-1 lg:grid-cols-12">
+
           <!-- Product Image -->
-          <div class="md:w-80 flex-shrink-0 bg-gray-100 relative">
-            <div class="aspect-square md:aspect-auto md:h-full">
+          <div class="lg:col-span-4 relative">
+            <div class="aspect-[4/3] sm:aspect-square lg:aspect-auto lg:h-full bg-gray-50">
               <img
                 v-if="packageItem.product_image_url"
                 :src="packageItem.product_image_url"
                 alt=""
                 class="w-full h-full object-cover"
               >
-              <div v-else class="w-full h-full flex items-center justify-center text-gray-300 min-h-[240px]">
-                <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div v-else class="w-full h-full flex items-center justify-center min-h-[200px] lg:min-h-[280px]">
+                <svg class="w-16 h-16 sm:w-20 sm:h-20 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                 </svg>
               </div>
             </div>
-            <!-- Status Badge -->
-            <div class="absolute top-4 left-4">
-              <span :class="[
-                'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold shadow-sm',
-                packageItem.arrived
-                  ? 'bg-green-500 text-white'
-                  : 'bg-amber-500 text-white'
-              ]">
-                <span :class="['w-2 h-2 rounded-full', packageItem.arrived ? 'bg-green-200' : 'bg-amber-200']"></span>
-                {{ packageItem.arrived ? t.arrived : t.pending }}
-              </span>
-            </div>
           </div>
 
           <!-- Product Info -->
-          <div class="flex-1 p-6 md:p-8">
-            <h1 class="text-2xl font-bold text-gray-900 mb-2">
-              {{ packageItem.product_name || t.noName }}
-            </h1>
+          <div class="lg:col-span-8 p-5 sm:p-6 lg:p-8 flex flex-col">
+            <!-- Status + Name Row -->
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+              <div class="flex-1 min-w-0">
+                <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 truncate">
+                  {{ packageItem.product_name || t.noName }}
+                </h1>
+                <p v-if="packageItem.product_url" class="mt-1">
+                  <a
+                    :href="packageItem.product_url"
+                    target="_blank"
+                    class="text-sm text-primary-600 hover:text-primary-700 hover:underline"
+                  >
+                    {{ t.viewProduct }} →
+                  </a>
+                </p>
+              </div>
+              <span :class="[
+                'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap self-start',
+                packageItem.arrived
+                  ? 'bg-green-50 text-green-700 ring-1 ring-green-600/20'
+                  : 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20'
+              ]">
+                <span :class="['w-1.5 h-1.5 rounded-full', packageItem.arrived ? 'bg-green-500' : 'bg-amber-500']"></span>
+                {{ packageItem.arrived ? t.arrived : t.pending }}
+              </span>
+            </div>
 
-            <!-- Quick Stats -->
-            <div class="flex flex-wrap gap-4 mt-4 mb-6">
-              <div class="flex items-center gap-2 text-gray-600">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
-                </svg>
-                <span class="font-medium">{{ t.qty }}: {{ packageItem.quantity }}</span>
+            <!-- Divider -->
+            <div class="border-t border-gray-100 my-4"></div>
+
+            <!-- Stats Grid - Responsive -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+              <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">{{ t.quantity }}</p>
+                <p class="text-lg font-semibold text-gray-900">{{ packageItem.quantity }}</p>
               </div>
-              <div class="flex items-center gap-2 text-gray-600">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span class="font-medium">${{ packageItem.declared_value || '0' }}</span>
+              <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">{{ t.declaredValue }}</p>
+                <p class="text-lg font-semibold text-gray-900">${{ packageItem.declared_value || '0' }}</p>
               </div>
-              <div v-if="packageItem.weight" class="flex items-center gap-2 text-gray-600">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
-                </svg>
-                <span class="font-medium">{{ packageItem.weight }} kg</span>
+              <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">{{ t.weight }}</p>
+                <p class="text-lg font-semibold text-gray-900">{{ packageItem.weight ? `${packageItem.weight} kg` : '—' }}</p>
+              </div>
+              <div v-if="packageItem.arrived_at">
+                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">{{ t.arrivedAt }}</p>
+                <p class="text-lg font-semibold text-gray-900">{{ formatDateShort(packageItem.arrived_at) }}</p>
+              </div>
+              <div v-else-if="packageItem.estimated_delivery_date">
+                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">{{ t.estimatedDelivery }}</p>
+                <p class="text-lg font-semibold text-gray-900">{{ formatDateShort(packageItem.estimated_delivery_date) }}</p>
+              </div>
+              <div v-else>
+                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">{{ t.carrier }}</p>
+                <p class="text-lg font-semibold text-gray-900">{{ packageItem.carrier || '—' }}</p>
               </div>
             </div>
 
-            <!-- Product Link -->
-            <a
-              v-if="packageItem.product_url"
-              :href="packageItem.product_url"
-              target="_blank"
-              class="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-              </svg>
-              {{ t.viewProduct }}
-            </a>
+            <!-- Tracking Number - if exists -->
+            <div v-if="packageItem.tracking_number" class="mt-4 pt-4 border-t border-gray-100">
+              <div class="flex items-center justify-between gap-4 bg-gray-50 rounded-lg px-4 py-3">
+                <div class="min-w-0">
+                  <p class="text-xs text-gray-500 uppercase tracking-wide">{{ t.tracking }}</p>
+                  <p class="font-mono text-sm sm:text-base font-medium text-gray-900 truncate">{{ packageItem.tracking_number }}</p>
+                </div>
+                <a
+                  :href="getCarrierUrl"
+                  target="_blank"
+                  class="flex-shrink-0 text-sm text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  {{ t.track }} →
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -384,6 +410,7 @@ const translations = {
   estimatedDelivery: { es: 'Entrega estimada', en: 'Est. delivery' },
   tracking: { es: 'Rastreo', en: 'Tracking' },
   carrier: { es: 'Transportista', en: 'Carrier' },
+  track: { es: 'Rastrear', en: 'Track' },
   trackOnCarrier: { es: 'Rastrear en sitio del carrier', en: 'Track on carrier site' },
   noTracking: { es: 'Sin número de rastreo', en: 'No tracking number' },
   proofOfPurchase: { es: 'Comprobante de Compra', en: 'Proof of Purchase' },
@@ -458,6 +485,14 @@ const formatDate = (date) => {
     month: 'short',
     day: 'numeric',
     year: 'numeric'
+  })
+}
+
+const formatDateShort = (date) => {
+  if (!date) return '—'
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
   })
 }
 
