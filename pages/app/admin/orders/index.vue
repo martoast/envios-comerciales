@@ -781,6 +781,7 @@ const { $customFetch } = useNuxtApp()
 const router = useRouter()
 const route = useRoute()
 const user = useUser().value
+const { storeReturnUrl } = useOrdersReturnUrl()
 
 // Use the language composable
 const { t: createTranslations } = useLanguage()
@@ -1230,6 +1231,11 @@ const initFiltersFromQuery = () => {
   if (q.to_date) toDate.value = q.to_date
   if (q.per_page) perPage.value = parseInt(q.per_page) || 25
 }
+
+// Store URL for back navigation whenever route changes
+watch(() => route.fullPath, (newPath) => {
+  storeReturnUrl(newPath)
+}, { immediate: true })
 
 // Fetch orders on mount
 onMounted(() => {

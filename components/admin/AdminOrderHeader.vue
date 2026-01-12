@@ -205,9 +205,10 @@ const props = defineProps({
 const emit = defineEmits(['toggle-menu', 'close-menu', 'delete', 'print-label', 'view-message']);
 
 const router = useRouter();
+const { getReturnUrl } = useOrdersReturnUrl();
 
 const goBack = () => {
-  router.back();
+  router.push(getReturnUrl());
 };
 
 const { t: createTranslations, currentLanguage } = useLanguage();
