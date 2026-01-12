@@ -421,7 +421,7 @@
         </div>
 
         <!-- Financial Overview Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Revenue Card -->
           <div
             :class="[
@@ -637,6 +637,39 @@
               ]"
             >
               {{ formatPercentage(profitMargin) }}% {{ t.margin }}
+            </p>
+          </div>
+
+          <!-- Accounts Receivable Card -->
+          <div
+            class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl shadow-sm border border-orange-200 p-6 animate-fadeIn relative overflow-hidden"
+            style="animation-delay: 0.7s"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <div class="p-3 rounded-xl bg-orange-500 text-white">
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <p class="text-sm font-medium text-orange-900 uppercase tracking-wider">
+              {{ t.accountsReceivable }}
+            </p>
+            <p class="mt-2 text-3xl font-bold text-orange-900">
+              ${{ formatMoney(dashboardData?.financial?.accounts_receivable?.total || 0) }}
+            </p>
+            <p class="text-xs text-orange-700 mt-1">
+              {{ dashboardData?.financial?.accounts_receivable?.count || 0 }} {{ t.unpaidOrders }}
             </p>
           </div>
         </div>
@@ -1293,6 +1326,8 @@ const translations = {
   packages: { es: "paquetes", en: "packages" },
   edit: { es: "Editar", en: "Edit" },
   expenses: { es: "Gastos", en: "Expenses" },
+  accountsReceivable: { es: "Cuentas por Cobrar", en: "Accounts Receivable" },
+  unpaidOrders: { es: "órdenes pendientes", en: "unpaid orders" },
 };
 
 const t = createTranslations(translations);
