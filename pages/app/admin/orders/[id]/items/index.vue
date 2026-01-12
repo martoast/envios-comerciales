@@ -21,12 +21,12 @@
           </div>
           <button
             @click="openAddModal"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
+            class="inline-flex items-center gap-2 px-3 py-2 sm:px-4 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
-            {{ t.addItem }}
+            <span class="hidden sm:inline">{{ t.addItem }}</span>
           </button>
         </div>
       </div>
@@ -85,26 +85,40 @@
         <div
           v-for="item in order.items"
           :key="item.id"
-          class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all"
+          class="bg-white rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
         >
-          <div class="flex flex-col sm:flex-row">
-            <!-- Image -->
-            <div class="sm:w-40 h-40 sm:h-auto flex-shrink-0 bg-gray-100 relative">
+          <div class="flex flex-col md:flex-row">
+            <!-- Image Container - Larger and clickable -->
+            <div
+              class="relative w-full md:w-48 lg:w-56 h-48 md:h-auto flex-shrink-0 bg-gray-100 cursor-pointer group overflow-hidden rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
+              @click="item.product_image_url && openImageModal(item)"
+            >
               <img
                 v-if="item.product_image_url"
                 :src="item.product_image_url"
-                class="w-full h-full object-cover"
+                class="w-full h-full object-cover transition-transform group-hover:scale-105"
                 alt=""
               >
               <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
-                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                 </svg>
               </div>
+              <!-- Zoom indicator on hover -->
+              <div
+                v-if="item.product_image_url"
+                class="absolute inset-0 bg-black/0 group-hover:bg-black/20 flex items-center justify-center transition-all"
+              >
+                <div class="opacity-0 group-hover:opacity-100 bg-white/90 rounded-full p-2 shadow-lg transition-opacity">
+                  <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                  </svg>
+                </div>
+              </div>
               <!-- Status Badge -->
-              <div class="absolute top-2 left-2">
+              <div class="absolute top-3 left-3">
                 <span :class="[
-                  'inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold shadow-sm',
+                  'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold shadow-sm',
                   item.arrived ? 'bg-green-500 text-white' : 'bg-amber-500 text-white'
                 ]">
                   <span :class="['w-1.5 h-1.5 rounded-full', item.arrived ? 'bg-green-200' : 'bg-amber-200']"></span>
@@ -114,82 +128,147 @@
             </div>
 
             <!-- Content -->
-            <div class="flex-1 p-5">
-              <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                <!-- Info -->
-                <div class="flex-1 min-w-0">
-                  <h3 class="font-semibold text-gray-900 mb-1 line-clamp-1">
-                    {{ item.product_name || t.noName }}
-                  </h3>
-
-                  <!-- Details Grid -->
-                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-2 mt-3 text-sm">
-                    <div>
-                      <span class="text-gray-400">{{ t.qty }}</span>
-                      <p class="font-medium text-gray-900">{{ item.quantity }}</p>
-                    </div>
-                    <div>
-                      <span class="text-gray-400">{{ t.value }}</span>
-                      <p class="font-medium text-gray-900">${{ item.declared_value || '0' }}</p>
-                    </div>
-                    <div>
-                      <span class="text-gray-400">{{ t.weight }}</span>
-                      <p class="font-medium text-gray-900">{{ item.weight ? `${item.weight} kg` : '-' }}</p>
-                    </div>
-                    <div v-if="item.tracking_number">
-                      <span class="text-gray-400">{{ t.tracking }}</span>
-                      <p class="font-medium text-gray-900 font-mono text-xs truncate" :title="item.tracking_number">
-                        {{ item.tracking_number }}
-                      </p>
-                    </div>
+            <div class="flex-1 p-4 md:p-5">
+              <div class="flex flex-col h-full">
+                <!-- Header with name and actions -->
+                <div class="flex items-start justify-between gap-3 mb-3">
+                  <div class="min-w-0 flex-1">
+                    <NuxtLink
+                      :to="`/app/admin/packages/${item.id}`"
+                      class="font-semibold text-gray-900 hover:text-primary-600 line-clamp-2 transition-colors"
+                    >
+                      {{ item.product_name || t.noName }}
+                    </NuxtLink>
+                    <!-- Product Link -->
+                    <a
+                      v-if="item.product_url"
+                      :href="item.product_url"
+                      target="_blank"
+                      class="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 mt-1"
+                    >
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                      </svg>
+                      {{ t.viewProduct }}
+                    </a>
                   </div>
 
-                  <!-- Product Link -->
-                  <a
-                    v-if="item.product_url"
-                    :href="item.product_url"
-                    target="_blank"
-                    class="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 mt-3"
-                  >
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                    </svg>
-                    {{ t.viewProduct }}
-                  </a>
+                  <!-- Desktop Actions Menu -->
+                  <Menu as="div" class="relative hidden md:block" v-slot="{ open }">
+                    <MenuButton ref="menuButtonRef" class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                      </svg>
+                    </MenuButton>
+                    <transition
+                      enter-active-class="transition ease-out duration-100"
+                      enter-from-class="transform opacity-0 scale-95"
+                      enter-to-class="transform opacity-100 scale-100"
+                      leave-active-class="transition ease-in duration-75"
+                      leave-from-class="transform opacity-100 scale-100"
+                      leave-to-class="transform opacity-0 scale-95"
+                    >
+                      <MenuItems class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50">
+                        <MenuItem v-slot="{ active }">
+                          <NuxtLink
+                            :to="`/app/admin/packages/${item.id}`"
+                            :class="[active ? 'bg-gray-50' : '', 'w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 text-gray-700']"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            {{ t.viewDetails }}
+                          </NuxtLink>
+                        </MenuItem>
+                        <MenuItem v-if="!item.arrived" v-slot="{ active }">
+                          <button
+                            @click="openMarkArrivedModal(item)"
+                            :class="[active ? 'bg-gray-50' : '', 'w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 text-green-700']"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            {{ t.markArrived }}
+                          </button>
+                        </MenuItem>
+                        <MenuItem v-slot="{ active }">
+                          <button
+                            @click="openEditModal(item)"
+                            :class="[active ? 'bg-gray-50' : '', 'w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 text-gray-700']"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                            {{ t.edit }}
+                          </button>
+                        </MenuItem>
+                        <MenuItem v-slot="{ active }">
+                          <button
+                            @click="openDeleteModal(item)"
+                            :class="[active ? 'bg-red-50' : '', 'w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 text-red-600']"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            {{ t.delete }}
+                          </button>
+                        </MenuItem>
+                      </MenuItems>
+                    </transition>
+                  </Menu>
                 </div>
 
-                <!-- Actions -->
-                <div class="flex flex-wrap items-center gap-2 lg:flex-col lg:items-end">
-                  <!-- Mark Arrived Button - Only show if not arrived -->
+                <!-- Details Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm flex-1">
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <span class="text-gray-500 text-xs uppercase tracking-wide">{{ t.qty }}</span>
+                    <p class="font-semibold text-gray-900 mt-0.5">{{ item.quantity }}</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <span class="text-gray-500 text-xs uppercase tracking-wide">{{ t.value }}</span>
+                    <p class="font-semibold text-gray-900 mt-0.5">${{ item.declared_value || '0' }}</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-lg p-3">
+                    <span class="text-gray-500 text-xs uppercase tracking-wide">{{ t.weight }}</span>
+                    <p class="font-semibold text-gray-900 mt-0.5">{{ item.weight ? `${item.weight} kg` : '-' }}</p>
+                  </div>
+                  <div v-if="item.tracking_number" class="bg-gray-50 rounded-lg p-3">
+                    <span class="text-gray-500 text-xs uppercase tracking-wide">{{ t.tracking }}</span>
+                    <p class="font-semibold text-gray-900 font-mono text-xs mt-0.5 truncate" :title="item.tracking_number">
+                      {{ item.tracking_number }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Mobile Actions -->
+                <div class="flex flex-wrap gap-2 mt-4 md:hidden">
                   <button
                     v-if="!item.arrived"
                     @click="openMarkArrivedModal(item)"
-                    class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg transition-colors"
+                    class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                     {{ t.markArrived }}
                   </button>
-
                   <button
                     @click="openEditModal(item)"
-                    class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+                    class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
                     {{ t.edit }}
                   </button>
-
                   <button
                     @click="openDeleteModal(item)"
-                    class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors"
+                    class="px-3 py-2.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
-                    {{ t.delete }}
                   </button>
                 </div>
               </div>
@@ -437,12 +516,45 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- Image Lightbox Modal -->
+    <TransitionRoot :show="showImageModal" as="template">
+      <Dialog class="relative z-50" @close="showImageModal = false">
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" @click="showImageModal = false" />
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <DialogPanel class="relative max-w-4xl w-full">
+              <!-- Close button -->
+              <button
+                @click="showImageModal = false"
+                class="absolute -top-12 right-0 p-2 text-white/80 hover:text-white transition-colors"
+              >
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+              <!-- Image -->
+              <img
+                v-if="imageModalItem"
+                :src="imageModalItem.product_image_url"
+                class="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+                :alt="imageModalItem.product_name"
+              >
+              <!-- Product name -->
+              <p v-if="imageModalItem" class="text-white text-center mt-4 text-lg font-medium">
+                {{ imageModalItem.product_name }}
+              </p>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </section>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Dialog, DialogPanel, DialogTitle, TransitionRoot } from '@headlessui/vue'
+import { Dialog, DialogPanel, DialogTitle, TransitionRoot, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import AdminOrderModalMarkArrived from '~/components/admin/AdminOrderModalMarkArrived.vue'
 
 definePageMeta({
@@ -463,9 +575,11 @@ const deleting = ref(false)
 const showItemModal = ref(false)
 const showDeleteModal = ref(false)
 const showMarkArrivedModal = ref(false)
+const showImageModal = ref(false)
 const editingItem = ref(null)
 const deletingItem = ref(null)
 const selectedItem = ref(null)
+const imageModalItem = ref(null)
 
 const itemForm = ref({
   product_name: '',
@@ -500,6 +614,7 @@ const translations = {
   weight: { es: 'Peso', en: 'Weight' },
   tracking: { es: 'Tracking', en: 'Tracking' },
   viewProduct: { es: 'Ver producto', en: 'View product' },
+  viewDetails: { es: 'Ver Detalles', en: 'View Details' },
   markArrived: { es: 'Marcar Llegado', en: 'Mark Arrived' },
   edit: { es: 'Editar', en: 'Edit' },
   delete: { es: 'Eliminar', en: 'Delete' },
@@ -599,6 +714,11 @@ const openDeleteModal = (item) => {
 const openMarkArrivedModal = (item) => {
   selectedItem.value = item
   showMarkArrivedModal.value = true
+}
+
+const openImageModal = (item) => {
+  imageModalItem.value = item
+  showImageModal.value = true
 }
 
 const handleMarkArrivedSuccess = async () => {
