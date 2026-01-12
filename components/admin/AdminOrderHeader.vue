@@ -205,7 +205,7 @@ const props = defineProps({
 const emit = defineEmits(['toggle-menu', 'close-menu', 'delete', 'print-label', 'view-message']);
 
 const router = useRouter();
-const { getReturnUrl } = useOrdersReturnUrl();
+const { getReturnUrl } = useListReturnUrl('orders');
 
 const goBack = () => {
   router.push(getReturnUrl());

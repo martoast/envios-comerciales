@@ -529,6 +529,9 @@ definePageMeta({
 
 // Nuxt imports
 const { $customFetch } = useNuxtApp();
+const router = useRouter();
+const route = useRoute();
+const { storeReturnUrl } = useListReturnUrl('customers');
 
 // Use language composable
 const { t: createTranslations } = useLanguage();
@@ -778,7 +781,7 @@ const fetchAllCustomersForStats = async () => {
 
 const changePage = (page) => {
   if (page >= 1 && page <= pagination.value.lastPage) {
-    fetchCustomers(page);
+    fetchCustomers(page).then(() => updateQueryParams());
   }
 };
 
@@ -786,7 +789,25 @@ const clearFilters = () => {
   searchQuery.value = "";
   activeOnly.value = false;
   noOrders.value = false;
-  fetchCustomers(1);
+  fetchCustomers(1).then(() => updateQueryParams());
+};
+
+// Sync filters to URL query params
+const updateQueryParams = () => {
+  const query = {};
+  if (searchQuery.value) query.search = searchQuery.value;
+  if (activeOnly.value) query.active_only = 'true';
+  if (noOrders.value) query.no_orders = 'true';
+  if (pagination.value.currentPage > 1) query.page = pagination.value.currentPage;
+  router.replace({ query });
+};
+
+// Initialize filters from URL query params
+const initFiltersFromQuery = () => {
+  const q = route.query;
+  if (q.search) searchQuery.value = q.search;
+  if (q.active_only === 'true') activeOnly.value = true;
+  if (q.no_orders === 'true') noOrders.value = true;
 };
 
 const exportCustomers = async () => {
@@ -830,23 +851,30 @@ const formatDate = (date) => {
 watch(searchQuery, () => {
   clearTimeout(searchDebounce.value);
   searchDebounce.value = setTimeout(() => {
-    fetchCustomers(1);
+    fetchCustomers(1).then(() => updateQueryParams());
   }, 300);
 });
 
 // Watch active only filter
 watch(activeOnly, () => {
-  fetchCustomers(1);
+  fetchCustomers(1).then(() => updateQueryParams());
 });
 
 // Watch no orders filter
 watch(noOrders, () => {
-  fetchCustomers(1);
+  fetchCustomers(1).then(() => updateQueryParams());
 });
+
+// Store URL for back navigation whenever route changes
+watch(() => route.fullPath, (newPath) => {
+  storeReturnUrl(newPath);
+}, { immediate: true });
 
 // Fetch data on mount
 onMounted(() => {
-  fetchCustomers();
+  initFiltersFromQuery();
+  const initialPage = parseInt(route.query.page) || 1;
+  fetchCustomers(initialPage);
   fetchAllCustomersForStats();
 });
 

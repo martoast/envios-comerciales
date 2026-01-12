@@ -11,8 +11,8 @@
           class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         >
           <div class="flex items-center gap-4">
-            <NuxtLink
-              to="/app/admin/customers"
+            <button
+              @click="goBack"
               class="p-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-300"
             >
               <svg
@@ -28,7 +28,7 @@
                   d="M15 19l-7-7 7-7"
                 />
               </svg>
-            </NuxtLink>
+            </button>
             <div v-if="customerData">
               <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">
                 {{ customerData.customer.name }}
@@ -632,6 +632,12 @@ definePageMeta({
 const { $customFetch, $toast } = useNuxtApp();
 const route = useRoute();
 const router = useRouter();
+const { getReturnUrl } = useListReturnUrl('customers');
+
+// Navigation
+const goBack = () => {
+  router.push(getReturnUrl());
+};
 
 // Use language composable
 const { t: createTranslations } = useLanguage();

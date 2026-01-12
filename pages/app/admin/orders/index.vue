@@ -781,7 +781,7 @@ const { $customFetch } = useNuxtApp()
 const router = useRouter()
 const route = useRoute()
 const user = useUser().value
-const { storeReturnUrl } = useOrdersReturnUrl()
+const { storeReturnUrl } = useListReturnUrl('orders')
 
 // Use the language composable
 const { t: createTranslations } = useLanguage()

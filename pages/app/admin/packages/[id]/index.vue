@@ -6,14 +6,14 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div class="flex items-center gap-4">
-            <NuxtLink 
-              to="/app/admin/packages" 
+            <button
+              @click="goBack"
               class="p-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-300"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
               </svg>
-            </NuxtLink>
+            </button>
             <div>
               <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">{{ t.packageDetails }}</h1>
               <p class="text-sm text-gray-500 mt-1 font-mono">ID: {{ packageItem?.id }}</p>
@@ -281,6 +281,12 @@ definePageMeta({
 const { $customFetch, $toast } = useNuxtApp()
 const route = useRoute()
 const router = useRouter()
+const { getReturnUrl } = useListReturnUrl('packages')
+
+// Navigation
+const goBack = () => {
+  router.push(getReturnUrl())
+}
 
 // Use language composable
 const { t: createTranslations } = useLanguage()

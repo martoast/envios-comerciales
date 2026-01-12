@@ -475,6 +475,9 @@ definePageMeta({
 })
 
 const { $customFetch, $toast } = useNuxtApp()
+const router = useRouter()
+const route = useRoute()
+const { storeReturnUrl } = useListReturnUrl('packages')
 const { t: createTranslations } = useLanguage()
 const user = useUser().value
 
@@ -716,14 +719,30 @@ const fetchPackages = async (page = 1) => {
 
 const changePage = (page) => {
   if (page >= 1 && page <= pagination.value.lastPage) {
-    fetchPackages(page)
+    fetchPackages(page).then(() => updateQueryParams())
   }
 }
 
 const clearFilters = () => {
   searchQuery.value = ''
   statusFilter.value = ''
-  fetchPackages(1)
+  fetchPackages(1).then(() => updateQueryParams())
+}
+
+// Sync filters to URL query params
+const updateQueryParams = () => {
+  const query = {}
+  if (searchQuery.value) query.search = searchQuery.value
+  if (statusFilter.value) query.status = statusFilter.value
+  if (pagination.value.currentPage > 1) query.page = pagination.value.currentPage
+  router.replace({ query })
+}
+
+// Initialize filters from URL query params
+const initFiltersFromQuery = () => {
+  const q = route.query
+  if (q.search) searchQuery.value = q.search
+  if (q.status) statusFilter.value = q.status
 }
 
 const getPackageStatusColor = (pkg) => {
@@ -808,18 +827,25 @@ const openAddWeightModal = (pkg) => {
 watch(searchQuery, () => {
   clearTimeout(searchDebounce.value)
   searchDebounce.value = setTimeout(() => {
-    fetchPackages(1)
+    fetchPackages(1).then(() => updateQueryParams())
   }, 300)
 })
 
 // Watch status filter
 watch(statusFilter, () => {
-  fetchPackages(1)
+  fetchPackages(1).then(() => updateQueryParams())
 })
+
+// Store URL for back navigation whenever route changes
+watch(() => route.fullPath, (newPath) => {
+  storeReturnUrl(newPath)
+}, { immediate: true })
 
 // Fetch data on mount
 onMounted(() => {
-  fetchPackages()
+  initFiltersFromQuery()
+  const initialPage = parseInt(route.query.page) || 1
+  fetchPackages(initialPage)
 })
 
 // Cleanup
