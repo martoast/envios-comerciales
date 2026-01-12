@@ -16,12 +16,12 @@
             <div class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                  {{ t.weight }} <span class="text-red-500">*</span>
+                  {{ t.weight }} <span class="text-gray-400 text-xs font-normal">({{ t.optional }})</span>
                 </label>
-                <input 
-                  v-model.number="form.weight" 
-                  type="number" 
-                  step="0.01" 
+                <input
+                  v-model.number="form.weight"
+                  type="number"
+                  step="0.01"
                   class="w-full border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                   :placeholder="t.weightPlaceholder"
                 >
@@ -59,9 +59,9 @@
               >
                 {{ t.cancel }}
               </button>
-              <button 
-                @click="submit" 
-                :disabled="processing || !form.weight"
+              <button
+                @click="submit"
+                :disabled="processing"
                 class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 flex items-center gap-2 transition-colors"
               >
                 <svg v-if="processing" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
@@ -98,6 +98,7 @@ const translations = {
   qty: { es: 'Cant', en: 'Qty' },
   weight: { es: 'Peso (kg)', en: 'Weight (kg)' },
   weightPlaceholder: { es: 'Ej: 2.5', en: 'E.g. 2.5' },
+  optional: { es: 'opcional', en: 'optional' },
   dimensions: { es: 'Dimensiones (L x A x Al) cm', en: 'Dimensions (L x W x H) cm' },
   length: { es: 'L', en: 'L' },
   width: { es: 'A', en: 'W' },
@@ -120,10 +121,18 @@ const submit = async () => {
   processing.value = true
   try {
     const payload = {
-      arrived: true,
-      weight: parseFloat(form.value.weight),
+      arrived: true
     }
-    if (form.value.dimensions.length) payload.dimensions = form.value.dimensions
+
+    // Only include weight if provided
+    if (form.value.weight) {
+      payload.weight = parseFloat(form.value.weight)
+    }
+
+    // Only include dimensions if provided
+    if (form.value.dimensions.length) {
+      payload.dimensions = form.value.dimensions
+    }
 
     await $customFetch(`/admin/orders/${props.orderId}/items/${props.item.id}/arrived`, {
       method: 'PUT',

@@ -71,19 +71,67 @@
                 <option value="">{{ t.allStatuses }}</option>
                 <option value="pending">{{ t.pending }}</option>
                 <option value="arrived">{{ t.arrived }}</option>
-                <option value="missing_weight">{{ t.missingWeight }}</option>
               </select>
             </div>
             
             <!-- Active Filters Display -->
             <div v-if="(searchQuery || statusFilter) && !loading" class="flex items-center justify-between text-sm">
               <span class="text-gray-600">{{ t.showingFiltered }}</span>
-              <button 
+              <button
                 @click="clearFilters"
                 class="text-primary-600 hover:text-primary-700 font-medium"
               >
                 {{ t.clearFilters }}
               </button>
+            </div>
+
+            <!-- Bulk Actions Bar -->
+            <div v-if="selectedPackages.length > 0" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-primary-50 border border-primary-200 rounded-xl mt-3">
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-primary-900">
+                  {{ selectedPackages.length }} {{ t.selected }}
+                </span>
+                <button
+                  @click="clearSelection"
+                  class="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  {{ t.clearSelection }}
+                </button>
+              </div>
+              <div class="flex items-center gap-2">
+                <!-- Mark as Arrived button (for pending packages) -->
+                <button
+                  v-if="selectedPendingCount > 0"
+                  @click="bulkMarkArrived"
+                  :disabled="bulkProcessing"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <svg v-if="!bulkProcessing" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  <svg v-else class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                  {{ t.markArrived }} ({{ selectedPendingCount }})
+                </button>
+                <!-- Mark as Pending button (for arrived packages) -->
+                <button
+                  v-if="selectedArrivedCount > 0"
+                  @click="bulkMarkPending"
+                  :disabled="bulkProcessing"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <svg v-if="!bulkProcessing" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                  </svg>
+                  <svg v-else class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                  {{ t.markPending }} ({{ selectedArrivedCount }})
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -117,6 +165,15 @@
 <table class="min-w-full">
   <thead>
     <tr class="border-b border-gray-200">
+      <th class="px-4 py-3 text-left w-12">
+        <input
+          type="checkbox"
+          :checked="allSelected"
+          @change="toggleSelectAll"
+          class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
+          :title="t.selectAll"
+        >
+      </th>
       <th class="px-6 py-3 text-left">
         <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.product }}</span>
       </th>
@@ -135,16 +192,27 @@
       <th class="px-6 py-3 text-left">
         <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.weight }}</span>
       </th>
-      <th class="px-6 py-3"></th>
+      <th class="px-6 py-3 text-right">
+        <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t.actions }}</span>
+      </th>
     </tr>
   </thead>
   <tbody class="bg-white">
-    <tr 
-      v-for="pkg in packages" 
+    <tr
+      v-for="pkg in packages"
       :key="pkg.id"
       @click="navigateToPackage(pkg.id)"
       class="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
+      :class="{ 'bg-primary-50/50': isSelected(pkg.id) }"
     >
+      <td class="px-4 py-4" @click.stop>
+        <input
+          type="checkbox"
+          :checked="isSelected(pkg.id)"
+          @change="toggleSelection(pkg.id)"
+          class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
+        >
+      </td>
       <td class="px-6 py-4">
         <div class="text-sm font-medium text-gray-900">
           {{ pkg.product_name || t.noName }}
@@ -191,23 +259,26 @@
         </div>
       </td>
       <td class="px-6 py-4 text-right" @click.stop>
-        <button 
+        <button
           v-if="!pkg.arrived"
           @click="openMarkArrivedModal(pkg)"
-          class="text-sm text-primary-600 hover:text-primary-700 font-medium"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
         >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
           {{ t.markArrived }}
         </button>
-        <button 
-          v-else-if="!pkg.weight"
-          @click="openAddWeightModal(pkg)"
-          class="text-sm text-orange-600 hover:text-orange-700 font-medium"
+        <button
+          v-else
+          @click="markAsPending(pkg)"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
         >
-          {{ t.addWeight }}
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+          </svg>
+          {{ t.markPending }}
         </button>
-        <span v-else class="text-sm text-gray-400">
-          {{ t.complete }}
-        </span>
       </td>
     </tr>
   </tbody>
@@ -216,16 +287,26 @@
 
 <!-- Mobile Cards -->
 <div class="sm:hidden space-y-4 p-4">
-<div 
-  v-for="pkg in packages" 
-  :key="pkg.id" 
+<div
+  v-for="pkg in packages"
+  :key="pkg.id"
   @click="navigateToPackage(pkg.id)"
   class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-all cursor-pointer"
+  :class="{ 'border-primary-300 bg-primary-50/30': isSelected(pkg.id) }"
 >
   <div class="flex justify-between items-start mb-3">
-    <div class="flex-1">
-      <h3 class="font-medium text-gray-900">{{ pkg.product_name || t.noName }}</h3>
-      <p class="text-sm text-gray-500 mt-1">{{ t.qty }}: {{ pkg.quantity }}</p>
+    <div class="flex items-start gap-3">
+      <input
+        type="checkbox"
+        :checked="isSelected(pkg.id)"
+        @change="toggleSelection(pkg.id)"
+        @click.stop
+        class="mt-1 h-5 w-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
+      >
+      <div class="flex-1">
+        <h3 class="font-medium text-gray-900">{{ pkg.product_name || t.noName }}</h3>
+        <p class="text-sm text-gray-500 mt-1">{{ t.qty }}: {{ pkg.quantity }}</p>
+      </div>
     </div>
     <span :class="[
       'inline-flex px-2 py-1 text-xs font-medium rounded-full',
@@ -272,23 +353,26 @@
   </div>
 
   <div @click.stop>
-    <button 
+    <button
       v-if="!pkg.arrived"
       @click="openMarkArrivedModal(pkg)"
-      class="w-full py-2 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition-all"
+      class="w-full py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-all flex items-center justify-center gap-2"
     >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
       {{ t.markArrived }}
     </button>
-    <button 
-      v-else-if="!pkg.weight"
-      @click="openAddWeightModal(pkg)"
-      class="w-full py-2 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-all"
+    <button
+      v-else
+      @click="markAsPending(pkg)"
+      class="w-full py-2.5 bg-gray-100 text-gray-600 font-medium rounded-lg hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
     >
-      {{ t.addWeight }}
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+      </svg>
+      {{ t.markPending }}
     </button>
-    <div v-else class="text-center text-sm text-gray-500">
-      {{ t.packageComplete }}
-    </div>
   </div>
 </div>
 </div>
@@ -367,10 +451,10 @@
                       <p class="text-xs text-gray-500">{{ t.customer }}: {{ selectedPackage.order.user.name }}</p>
                     </div>
 
-                    <!-- Weight Input -->
+                    <!-- Weight Input (Optional) -->
                     <div>
                       <label class="block text-sm font-medium text-gray-700 mb-1">
-                        {{ t.packageWeight }} <span class="text-red-500">*</span>
+                        {{ t.packageWeight }} <span class="text-gray-400">({{ t.optional }})</span>
                       </label>
                       <div class="relative">
                         <input
@@ -436,7 +520,7 @@
                   <div class="mt-6 flex gap-3">
                     <button
                       @click="confirmMarkArrived"
-                      :disabled="!arrivedForm.weight || markingArrived"
+                      :disabled="markingArrived"
                       class="flex-1 px-4 py-2 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <span v-if="!markingArrived">{{ t.confirmArrived }}</span>
@@ -499,6 +583,10 @@ const pagination = ref({
   total: 0
 })
 
+// Multi-select state
+const selectedPackages = ref([])
+const bulkProcessing = ref(false)
+
 const arrivedForm = ref({
   weight: null,
   dimensions: {
@@ -516,7 +604,6 @@ const translations = {
   allStatuses: { es: 'Todos los Estados', en: 'All Statuses' },
   pending: { es: 'Pendiente', en: 'Pending' },
   arrived: { es: 'Llegó', en: 'Arrived' },
-  missingWeight: { es: 'Sin Peso', en: 'Missing Weight' },
   showingFiltered: { es: 'Mostrando resultados filtrados', en: 'Showing filtered results' },
   clearFilters: { es: 'Limpiar filtros', en: 'Clear filters' },
   loadingPackages: { es: 'Cargando paquetes...', en: 'Loading packages...' },
@@ -528,9 +615,10 @@ const translations = {
   customer: { es: 'Cliente', en: 'Customer' },
   status: { es: 'Estado', en: 'Status' },
   weight: { es: 'Peso', en: 'Weight' },
+  actions: { es: 'Acciones', en: 'Actions' },
   expectedDelivery: { es: 'Entrega Estimada', en: 'Expected Delivery' },
-  markArrived: { es: 'Marcar como Llegado', en: 'Mark as Arrived' },
-  addWeight: { es: 'Agregar Peso', en: 'Add Weight' },
+  markArrived: { es: 'Marcar Llegado', en: 'Mark Arrived' },
+  markPending: { es: 'Marcar Pendiente', en: 'Mark Pending' },
   noName: { es: 'Sin nombre', en: 'No name' },
   qty: { es: 'Cant', en: 'Qty' },
   showing: { es: 'Mostrando', en: 'Showing' },
@@ -541,8 +629,8 @@ const translations = {
   next: { es: 'Siguiente', en: 'Next' },
   totalPackages: { es: 'Total de Paquetes', en: 'Total Packages' },
   pendingPackages: { es: 'Paquetes Pendientes', en: 'Pending Packages' },
+  arrivedPackages: { es: 'Paquetes Llegados', en: 'Arrived Packages' },
   arrivedToday: { es: 'Llegaron Hoy', en: 'Arrived Today' },
-  packagesNeedWeight: { es: 'Necesitan Peso', en: 'Need Weight' },
   markPackageArrived: { es: 'Marcar Paquete como Llegado', en: 'Mark Package as Arrived' },
   packageWeight: { es: 'Peso del Paquete', en: 'Package Weight' },
   weightPlaceholder: { es: 'Ej: 1.5', en: 'Ex: 1.5' },
@@ -553,8 +641,6 @@ const translations = {
   confirmArrived: { es: 'Confirmar Llegada', en: 'Confirm Arrival' },
   marking: { es: 'Marcando...', en: 'Marking...' },
   cancel: { es: 'Cancelar', en: 'Cancel' },
-  complete: { es: 'Completo', en: 'Complete' },
-  packageComplete: { es: 'Paquete completo', en: 'Package complete' },
   arrivedOn: { es: 'Llegó el', en: 'Arrived on' },
   today: { es: 'Hoy', en: 'Today' },
   tomorrow: { es: 'Mañana', en: 'Tomorrow' },
@@ -562,6 +648,11 @@ const translations = {
   dayAway: { es: 'día', en: 'day away' },
   daysOverdue: { es: 'días de retraso', en: 'days overdue' },
   dayOverdue: { es: 'día de retraso', en: 'day overdue' },
+  selected: { es: 'seleccionados', en: 'selected' },
+  clearSelection: { es: 'Limpiar selección', en: 'Clear selection' },
+  markSelectedArrived: { es: 'Marcar como Llegados', en: 'Mark as Arrived' },
+  processing: { es: 'Procesando...', en: 'Processing...' },
+  selectAll: { es: 'Seleccionar todos pendientes', en: 'Select all pending' },
 }
 
 const t = createTranslations(translations)
@@ -570,12 +661,12 @@ const t = createTranslations(translations)
 const stats = computed(() => {
   const totalPackages = pagination.value.total || 0
   const pendingCount = packages.value.filter(p => !p.arrived).length
+  const arrivedCount = packages.value.filter(p => p.arrived).length
   const todayCount = packages.value.filter(p => {
     if (!p.arrived_at) return false
     const arrivedDate = new Date(p.arrived_at).toDateString()
     return arrivedDate === new Date().toDateString()
   }).length
-  const missingWeightCount = packages.value.filter(p => p.arrived && !p.weight).length
 
   return [
     {
@@ -593,18 +684,18 @@ const stats = computed(() => {
       iconColor: 'text-yellow-600'
     },
     {
-      label: t.value.arrivedToday,
-      value: todayCount,
+      label: t.value.arrivedPackages,
+      value: arrivedCount,
       icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
       bgColor: 'bg-green-50',
       iconColor: 'text-green-600'
     },
     {
-      label: t.value.packagesNeedWeight,
-      value: missingWeightCount,
-      icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3',
-      bgColor: 'bg-orange-50',
-      iconColor: 'text-orange-600'
+      label: t.value.arrivedToday,
+      value: todayCount,
+      icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+      bgColor: 'bg-blue-50',
+      iconColor: 'text-blue-600'
     }
   ]
 })
@@ -746,15 +837,97 @@ const initFiltersFromQuery = () => {
 }
 
 const getPackageStatusColor = (pkg) => {
-  if (!pkg.arrived) return 'bg-yellow-100 text-yellow-700'
-  if (pkg.arrived && !pkg.weight) return 'bg-orange-100 text-orange-700'
-  return 'bg-green-100 text-green-700'
+  return pkg.arrived ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
 }
 
 const getPackageStatusLabel = (pkg) => {
-  if (!pkg.arrived) return t.value.pending
-  if (pkg.arrived && !pkg.weight) return t.value.missingWeight
-  return t.value.arrived
+  return pkg.arrived ? t.value.arrived : t.value.pending
+}
+
+// Multi-select helpers
+const allSelected = computed(() => {
+  return packages.value.length > 0 && packages.value.every(p => selectedPackages.value.includes(p.id))
+})
+
+const selectedPendingCount = computed(() => {
+  return packages.value.filter(p => selectedPackages.value.includes(p.id) && !p.arrived).length
+})
+
+const selectedArrivedCount = computed(() => {
+  return packages.value.filter(p => selectedPackages.value.includes(p.id) && p.arrived).length
+})
+
+const isSelected = (packageId) => {
+  return selectedPackages.value.includes(packageId)
+}
+
+const toggleSelection = (packageId) => {
+  const index = selectedPackages.value.indexOf(packageId)
+  if (index > -1) {
+    selectedPackages.value.splice(index, 1)
+  } else {
+    selectedPackages.value.push(packageId)
+  }
+}
+
+const toggleSelectAll = () => {
+  if (allSelected.value) {
+    selectedPackages.value = []
+  } else {
+    selectedPackages.value = packages.value.map(p => p.id)
+  }
+}
+
+const clearSelection = () => {
+  selectedPackages.value = []
+}
+
+const bulkMarkArrived = async () => {
+  const packagesToMark = packages.value.filter(p => selectedPackages.value.includes(p.id) && !p.arrived)
+  if (packagesToMark.length === 0) return
+
+  bulkProcessing.value = true
+  try {
+    await Promise.all(packagesToMark.map(pkg =>
+      $customFetch(`/admin/orders/${pkg.order.id}/items/${pkg.id}/arrived`, {
+        method: 'PUT',
+        body: { arrived: true }
+      })
+    ))
+
+    $toast.success(`${packagesToMark.length} packages marked as arrived`)
+    selectedPackages.value = []
+    await fetchPackages(pagination.value.currentPage)
+  } catch (error) {
+    console.error('Error marking packages arrived:', error)
+    $toast.error('Error updating packages')
+  } finally {
+    bulkProcessing.value = false
+  }
+}
+
+const bulkMarkPending = async () => {
+  const packagesToMark = packages.value.filter(p => selectedPackages.value.includes(p.id) && p.arrived)
+  if (packagesToMark.length === 0) return
+
+  bulkProcessing.value = true
+  try {
+    await Promise.all(packagesToMark.map(pkg =>
+      $customFetch(`/admin/orders/${pkg.order.id}/items/${pkg.id}/arrived`, {
+        method: 'PUT',
+        body: { arrived: false }
+      })
+    ))
+
+    $toast.success(`${packagesToMark.length} packages marked as pending`)
+    selectedPackages.value = []
+    await fetchPackages(pagination.value.currentPage)
+  } catch (error) {
+    console.error('Error marking packages pending:', error)
+    $toast.error('Error updating packages')
+  } finally {
+    bulkProcessing.value = false
+  }
 }
 
 const openMarkArrivedModal = (pkg) => {
@@ -784,17 +957,22 @@ const closeMarkArrivedModal = () => {
 }
 
 const confirmMarkArrived = async () => {
-  if (!selectedPackage.value || !arrivedForm.value.weight) return
+  if (!selectedPackage.value) return
 
   markingArrived.value = true
   try {
     const body = {
-      arrived: true,
-      weight: parseFloat(arrivedForm.value.weight)
+      arrived: true
     }
 
-    if (arrivedForm.value.dimensions.length && 
-        arrivedForm.value.dimensions.width && 
+    // Only include weight if provided
+    if (arrivedForm.value.weight) {
+      body.weight = parseFloat(arrivedForm.value.weight)
+    }
+
+    // Only include dimensions if all values provided
+    if (arrivedForm.value.dimensions.length &&
+        arrivedForm.value.dimensions.width &&
         arrivedForm.value.dimensions.height) {
       body.dimensions = arrivedForm.value.dimensions
     }
@@ -819,8 +997,18 @@ const navigateToPackage = (packageId) => {
   navigateTo(`/app/admin/packages/${packageId}`)
 }
 
-const openAddWeightModal = (pkg) => {
-  openMarkArrivedModal(pkg)
+const markAsPending = async (pkg) => {
+  try {
+    await $customFetch(`/admin/orders/${pkg.order.id}/items/${pkg.id}/arrived`, {
+      method: 'PUT',
+      body: { arrived: false }
+    })
+    $toast.success('Package marked as pending')
+    await fetchPackages(pagination.value.currentPage)
+  } catch (error) {
+    console.error('Error marking package pending:', error)
+    $toast.error('Error updating package')
+  }
 }
 
 // Watch search query with debounce
