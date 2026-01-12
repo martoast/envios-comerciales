@@ -1,56 +1,52 @@
-# Add Filter Preservation & Back Navigation to Admin Pages
+# Feature: Admin Order Items Management Page
 
-## Problem
-When admins search/filter on list pages and click into a detail page, clicking back loses their filters. We need consistent UX across all main admin pages.
+## Overview
+Create a dedicated page for admins to manage packages/items within an order. Currently, items are displayed in the order detail page but there's no way to add, edit, or delete items from within the order context.
 
-## Solution
-1. Make the return URL composable generic (accept a key parameter)
-2. Add URL query param persistence to index pages (so filters are in URL)
-3. Store the current URL when on index pages
-4. Use stored URL for back navigation in detail pages
+## Current State
+- Order detail page shows items via `AdminOrderItemsList.vue` (read-only display)
+- Standalone packages page exists at `/app/admin/packages/[id]`
+- API endpoints already exist:
+  - `POST /admin/management/orders/{order}/items` - Add item
+  - `PUT /admin/management/orders/{order}/items/{item}` - Update item
+  - `DELETE /admin/management/orders/{order}/items/{item}` - Delete item
 
-## Pages Updated
-- [x] Orders
-- [x] Customers
-- [x] Packages
+## Goal
+Create `/app/admin/orders/[id]/items` page with full CRUD for order items (packages)
 
 ## Tasks
-- [x] 1. Update `useOrdersReturnUrl` composable to be generic `useListReturnUrl(key)`
-- [x] 2. Update orders page to use new composable pattern
-- [x] 3. Add URL param persistence to customers index page
-- [x] 4. Update customers detail page back button to use composable
-- [x] 5. Add URL param persistence to packages index page
-- [x] 6. Update packages detail page back button to use composable
-- [x] 7. Commit and push changes
+- [x] 1. Create `pages/app/admin/orders/[id]/items/index.vue` - Main items list page
+- [x] 2. Create add item functionality (modal)
+- [x] 3. Create edit item functionality (modal)
+- [x] 4. Add delete functionality with confirmation modal
+- [x] 5. Add navigation from order detail page
+- [x] 6. Test and polish
+- [x] 7. Commit and push
 
-## Files Modified
-1. `composables/useListReturnUrl.ts` (new, replaces useOrdersReturnUrl.ts)
-   - Generic composable that accepts a key ('orders', 'customers', 'packages')
-   - Uses sessionStorage with key-specific storage keys
-2. `composables/useOrdersReturnUrl.ts` (deleted)
-3. `components/admin/AdminOrderHeader.vue`
-   - Updated to use `useListReturnUrl('orders')`
-4. `pages/app/admin/orders/index.vue`
-   - Updated to use `useListReturnUrl('orders')`
-5. `pages/app/admin/customers/index.vue`
-   - Added router, route, and composable imports
-   - Added `updateQueryParams()` and `initFiltersFromQuery()` functions
-   - Updated watchers to persist filters to URL
-   - Added route watcher to store return URL
-6. `pages/app/admin/customers/[id]/index.vue`
-   - Added composable and `goBack()` function
-   - Changed NuxtLink to button with @click="goBack"
-7. `pages/app/admin/packages/index.vue`
-   - Added router, route, and composable imports
-   - Added `updateQueryParams()` and `initFiltersFromQuery()` functions
-   - Updated watchers to persist filters to URL
-   - Added route watcher to store return URL
-8. `pages/app/admin/packages/[id]/index.vue`
-   - Added composable and `goBack()` function
-   - Changed NuxtLink to button with @click="goBack"
+## Files Created/Modified
+1. `pages/app/admin/orders/[id]/items/index.vue` (new)
+   - Full items management page with header, list, and summary stats
+   - Add item modal with fields: product_name, product_url, quantity, declared_value, tracking_number, carrier, estimated_delivery_date
+   - Edit item modal with all fields including weight, dimensions, arrived status
+   - Delete confirmation modal
+   - Bilingual support (Spanish/English)
+
+2. `components/admin/AdminOrderItemsList.vue` (modified)
+   - Added `header-actions` slot to allow custom actions in header
+
+3. `pages/app/admin/orders/[id]/index.vue` (modified)
+   - Added "Manage" button in items section header using the new slot
+   - Links to `/app/admin/orders/{id}/items`
+
+## API Endpoints Used
+- `GET /admin/orders/{id}` - Fetch order with items
+- `POST /admin/management/orders/{order}/items` - Create item
+- `PUT /admin/management/orders/{order}/items/{item}` - Update item
+- `DELETE /admin/management/orders/{order}/items/{item}` - Delete item
 
 ## Review
-All changes follow the same pattern:
-- Index pages: Store filters in URL query params + store full URL in sessionStorage
-- Detail pages: Use stored URL for back button navigation
-- Consistent UX across orders, customers, and packages admin sections
+- Simple, focused implementation using existing API endpoints
+- All CRUD operations in one page with modals for better UX
+- Consistent styling with existing admin pages
+- Bilingual translations included
+- Summary stats show total items, arrived/pending counts, total value

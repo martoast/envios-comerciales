@@ -2,8 +2,11 @@
 <template>
   <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-      <h2 class="text-lg font-semibold text-gray-900">{{ t.items }}</h2>
-      <span class="text-sm text-gray-500">{{ items.length }} {{ t.itemsCount }}</span>
+      <div>
+        <h2 class="text-lg font-semibold text-gray-900">{{ t.items }}</h2>
+        <p class="text-sm text-gray-500">{{ items.length }} {{ t.itemsCount }}</p>
+      </div>
+      <slot name="header-actions"></slot>
     </div>
     <div class="divide-y divide-gray-100">
       <div

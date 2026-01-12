@@ -683,7 +683,19 @@
             :items="order.items"
             :order-status="order.status"
             @mark-arrived="openMarkArrivedModal"
-          />
+          >
+            <template #header-actions>
+              <NuxtLink
+                :to="`/app/admin/orders/${order.id}/items`"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                {{ t.manageItems }}
+              </NuxtLink>
+            </template>
+          </AdminOrderItemsList>
         </div>
 
         <!-- Right Column -->
@@ -1191,6 +1203,7 @@ const translations = {
   totalWeight: { es: "Peso Total", en: "Total Weight" },
   totalBoxWeight: { es: "Peso Cajas", en: "Box Weight" },
   itemsArrived: { es: "Artículos Llegados", en: "Items Arrived" },
+  manageItems: { es: "Gestionar", en: "Manage" },
   shippingBoxes: { es: "Cajas de Envío", en: "Shipping Boxes" },
   shippingInfo: { es: "Información de Envío", en: "Shipping Info" },
   boxesWithTracking: { es: "Con guías y documentos GIA", en: "With tracking & GIA documents" },
