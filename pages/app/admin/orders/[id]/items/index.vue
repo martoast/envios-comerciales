@@ -80,12 +80,42 @@
         </button>
       </div>
 
+      <!-- Bulk Action Bar -->
+      <div
+        v-if="selectedItems.length > 0"
+        class="bg-white border border-gray-200 rounded-xl p-3 mb-4 flex items-center justify-between shadow-sm"
+      >
+        <div class="flex items-center gap-3">
+          <span class="text-sm font-medium text-gray-700">
+            {{ selectedItems.length }} {{ selectedItems.length === 1 ? 'item' : 'items' }} selected
+          </span>
+          <button
+            @click="selectedItems = []"
+            class="text-sm text-gray-500 hover:text-gray-700"
+          >
+            Clear
+          </button>
+        </div>
+        <button
+          @click="openBulkLabelModal"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+          </svg>
+          {{ t.printLabels }} ({{ selectedItems.length }})
+        </button>
+      </div>
+
       <!-- Items Grid -->
-      <div v-else class="space-y-4">
+      <div v-if="order.items && order.items.length > 0" class="space-y-4">
         <div
           v-for="item in order.items"
           :key="item.id"
-          class="bg-white rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
+          :class="[
+            'bg-white rounded-xl border hover:shadow-sm transition-all',
+            selectedItems.includes(item.id) ? 'border-primary-400 ring-1 ring-primary-200' : 'border-gray-200 hover:border-gray-300'
+          ]"
         >
           <div class="flex flex-col md:flex-row">
             <!-- Image Container - Larger and clickable -->
@@ -124,6 +154,15 @@
                   <span :class="['w-1.5 h-1.5 rounded-full', item.arrived ? 'bg-green-200' : 'bg-amber-200']"></span>
                   {{ item.arrived ? t.arrived : t.pending }}
                 </span>
+              </div>
+              <!-- Selection Checkbox -->
+              <div class="absolute top-3 right-3" @click.stop>
+                <input
+                  type="checkbox"
+                  :checked="selectedItems.includes(item.id)"
+                  @change="toggleSelectItem(item.id)"
+                  class="w-5 h-5 rounded border-2 border-white bg-white/80 text-primary-600 focus:ring-primary-500 cursor-pointer shadow-sm"
+                >
               </div>
             </div>
 
@@ -180,6 +219,17 @@
                             </svg>
                             {{ t.viewDetails }}
                           </NuxtLink>
+                        </MenuItem>
+                        <MenuItem v-slot="{ active }">
+                          <button
+                            @click="openLabelModal(item)"
+                            :class="[active ? 'bg-gray-50' : '', 'w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 text-gray-700']"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                            </svg>
+                            {{ t.printLabel }}
+                          </button>
                         </MenuItem>
                         <MenuItem v-if="!item.arrived" v-slot="{ active }">
                           <button
@@ -517,6 +567,13 @@
       </Dialog>
     </TransitionRoot>
 
+    <!-- Package Label Modal -->
+    <AdminPackageLabel
+      :show="showLabelModal"
+      :packages="labelPackages"
+      @close="showLabelModal = false"
+    />
+
     <!-- Image Lightbox Modal -->
     <TransitionRoot :show="showImageModal" as="template">
       <Dialog class="relative z-50" @close="showImageModal = false">
@@ -556,6 +613,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import AdminOrderModalMarkArrived from '~/components/admin/AdminOrderModalMarkArrived.vue'
+import AdminPackageLabel from '~/components/admin/AdminPackageLabel.vue'
 
 definePageMeta({
   layout: 'admin',
@@ -576,10 +634,13 @@ const showItemModal = ref(false)
 const showDeleteModal = ref(false)
 const showMarkArrivedModal = ref(false)
 const showImageModal = ref(false)
+const showLabelModal = ref(false)
 const editingItem = ref(null)
 const deletingItem = ref(null)
 const selectedItem = ref(null)
 const imageModalItem = ref(null)
+const labelPackages = ref([])
+const selectedItems = ref([])
 
 const itemForm = ref({
   product_name: '',
@@ -615,6 +676,8 @@ const translations = {
   tracking: { es: 'Tracking', en: 'Tracking' },
   viewProduct: { es: 'Ver producto', en: 'View product' },
   viewDetails: { es: 'Ver Detalles', en: 'View Details' },
+  printLabel: { es: 'Imprimir Etiqueta', en: 'Print Label' },
+  printLabels: { es: 'Imprimir Etiquetas', en: 'Print Labels' },
   markArrived: { es: 'Marcar Llegado', en: 'Mark Arrived' },
   edit: { es: 'Editar', en: 'Edit' },
   delete: { es: 'Eliminar', en: 'Delete' },
@@ -719,6 +782,36 @@ const openMarkArrivedModal = (item) => {
 const openImageModal = (item) => {
   imageModalItem.value = item
   showImageModal.value = true
+}
+
+const openLabelModal = (item) => {
+  labelPackages.value = [item]
+  showLabelModal.value = true
+}
+
+const openBulkLabelModal = () => {
+  if (selectedItems.value.length === 0) return
+  const items = order.value.items.filter(i => selectedItems.value.includes(i.id))
+  labelPackages.value = items
+  showLabelModal.value = true
+}
+
+// Multi-select helpers
+const toggleSelectAll = () => {
+  if (selectedItems.value.length === order.value.items.length) {
+    selectedItems.value = []
+  } else {
+    selectedItems.value = order.value.items.map(i => i.id)
+  }
+}
+
+const toggleSelectItem = (id) => {
+  const index = selectedItems.value.indexOf(id)
+  if (index === -1) {
+    selectedItems.value.push(id)
+  } else {
+    selectedItems.value.splice(index, 1)
+  }
 }
 
 const handleMarkArrivedSuccess = async () => {

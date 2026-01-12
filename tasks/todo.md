@@ -1,53 +1,47 @@
-# Feature: Redesign Order Items Management Page
+# Feature: Package Label Printing + Bulk Order Label Printing
 
 ## Overview
-Improve the `/app/admin/orders/[id]/items/index.vue` page to be more professional with better image handling, cleaner actions layout, and full responsiveness.
-
-## Issues to Fix
-- Product images look cramped with no zoom capability
-- Action buttons are cramped and don't look professional
-- Layout needs to work better on mobile/tablet
+Add print label functionality for packages and bulk order label printing. Package labels are simple (barcode + ID + name). Order labels are full shipping labels.
 
 ## Tasks
-- [x] 1. Add image lightbox/zoom modal functionality
-- [x] 2. Improve image container styling (better aspect ratio, click to zoom)
-- [x] 3. Redesign action buttons to be cleaner and more professional
-- [x] 4. Improve mobile layout for item cards
-- [ ] 5. Test responsiveness across devices
+- [x] 1. Create `AdminPackageLabel.vue` component (simple: barcode + ID + name)
+- [x] 2. Add "Print Label" to order items page dropdown menu
+- [x] 3. Add "Print Labels" bulk action to order items page (for selected)
+- [x] 4. Add "Print Label" to packages page actions
+- [x] 5. Add "Print Labels" bulk action to packages page (for selected)
+- [x] 6. Add bulk "Print Labels" to orders list page
 
 ## Review
 
-### Changes Made
+### Files Created
+- `components/admin/AdminPackageLabel.vue` - Package label preview and print component (2.25" x 1.25")
 
-1. **Image Lightbox Modal**
-   - Click any product image to view full-size in a dark overlay modal
-   - Shows product name below the image
-   - Easy close with X button or clicking outside
+### Files Modified
 
-2. **Image Container Improvements**
-   - Larger image area (w-48 on md, w-56 on lg)
-   - Full-width on mobile (h-48)
-   - Hover effect with zoom icon indicator
-   - Subtle scale animation on hover
-   - Cursor pointer to indicate clickability
+**Order Items Page** (`pages/app/admin/orders/[id]/items/index.vue`):
+- Added multi-select checkboxes on each item
+- Added bulk action bar with "Print Labels" button
+- Added "Print Label" option in dropdown menu
+- Added AdminPackageLabel component
 
-3. **Desktop Actions Menu**
-   - Replaced cramped button row with clean dropdown menu (3-dot icon)
-   - Menu appears on click with smooth animation
-   - Options: Mark Arrived, Edit, Delete
-   - Green highlight for arrived action, red for delete
+**Packages Page** (`pages/app/admin/packages/index.vue`):
+- Added print button to individual row actions
+- Added "Print Labels" button to bulk action bar
+- Added AdminPackageLabel component
 
-4. **Mobile Actions**
-   - Full-width stacked buttons on mobile
-   - Mark Arrived button prominent with green fill
-   - Edit button with gray background
-   - Delete button icon-only to save space
+**Orders List Page** (`pages/app/admin/orders/index.vue`):
+- Added "Print Labels" button to both mobile and desktop bulk action bars
+- Added printBulkLabels function with barcode generation
+- Added helper functions for address and box formatting
+- Generates 4x6 inch shipping labels with page breaks
 
-5. **Details Grid**
-   - Redesigned with background cards (bg-gray-50)
-   - Uppercase labels with tracking
-   - Better visual hierarchy
+### Features
+1. **Package Labels** (2.25" x 1.25" - Rollo thermal printer ready)
+   - Single or bulk print from packages page
+   - Single or bulk print from order items page
+   - Shows: barcode, PKG-{id}, product name
 
-6. **Header Button**
-   - Icon-only on mobile, full text on desktop
-   - Better touch target sizing
+2. **Order Shipping Labels** (4x6 inch)
+   - Bulk print from orders list page
+   - Shows: logo, order number, ship to address, contact info, boxes, barcode
+   - Each label on separate page for thermal printing

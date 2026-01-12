@@ -99,6 +99,16 @@
                 </button>
               </div>
               <div class="flex items-center gap-2">
+                <!-- Print Labels button -->
+                <button
+                  @click="openBulkLabelModal"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                  </svg>
+                  {{ t.printLabels }} ({{ selectedPackages.length }})
+                </button>
                 <!-- Mark as Arrived button (for pending packages) -->
                 <button
                   v-if="selectedPendingCount > 0"
@@ -259,26 +269,37 @@
         </div>
       </td>
       <td class="px-6 py-4 text-right" @click.stop>
-        <button
-          v-if="!pkg.arrived"
-          @click="openMarkArrivedModal(pkg)"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-          </svg>
-          {{ t.markArrived }}
-        </button>
-        <button
-          v-else
-          @click="markAsPending(pkg)"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
-          </svg>
-          {{ t.markPending }}
-        </button>
+        <div class="flex items-center justify-end gap-2">
+          <button
+            @click="openLabelModal(pkg)"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            :title="t.printLabel"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+            </svg>
+          </button>
+          <button
+            v-if="!pkg.arrived"
+            @click="openMarkArrivedModal(pkg)"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            {{ t.markArrived }}
+          </button>
+          <button
+            v-else
+            @click="markAsPending(pkg)"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+            </svg>
+            {{ t.markPending }}
+          </button>
+        </div>
       </td>
     </tr>
   </tbody>
@@ -409,6 +430,13 @@
         </div>
       </div>
     </div>
+
+    <!-- Package Label Modal -->
+    <AdminPackageLabel
+      :show="showLabelModal"
+      :packages="labelPackages"
+      @close="showLabelModal = false"
+    />
 
     <!-- Mark Arrived Modal (keeping existing modal code) -->
     <TransitionRoot :show="showMarkArrivedModal" as="template">
@@ -552,6 +580,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import AdminPackageLabel from '~/components/admin/AdminPackageLabel.vue'
 
 definePageMeta({
   layout: 'admin',
@@ -586,6 +615,8 @@ const pagination = ref({
 // Multi-select state
 const selectedPackages = ref([])
 const bulkProcessing = ref(false)
+const showLabelModal = ref(false)
+const labelPackages = ref([])
 
 const arrivedForm = ref({
   weight: null,
@@ -619,6 +650,8 @@ const translations = {
   expectedDelivery: { es: 'Entrega Estimada', en: 'Expected Delivery' },
   markArrived: { es: 'Marcar Llegado', en: 'Mark Arrived' },
   markPending: { es: 'Marcar Pendiente', en: 'Mark Pending' },
+  printLabel: { es: 'Imprimir Etiqueta', en: 'Print Label' },
+  printLabels: { es: 'Imprimir Etiquetas', en: 'Print Labels' },
   noName: { es: 'Sin nombre', en: 'No name' },
   qty: { es: 'Cant', en: 'Qty' },
   showing: { es: 'Mostrando', en: 'Showing' },
@@ -880,6 +913,18 @@ const toggleSelectAll = () => {
 
 const clearSelection = () => {
   selectedPackages.value = []
+}
+
+const openLabelModal = (pkg) => {
+  labelPackages.value = [pkg]
+  showLabelModal.value = true
+}
+
+const openBulkLabelModal = () => {
+  if (selectedPackages.value.length === 0) return
+  const pkgs = packages.value.filter(p => selectedPackages.value.includes(p.id))
+  labelPackages.value = pkgs
+  showLabelModal.value = true
 }
 
 const bulkMarkArrived = async () => {

@@ -111,20 +111,31 @@
                   {{ t.clearSelection }}
                 </button>
               </div>
-              <button
-                @click="confirmBulkDelete"
-                :disabled="deletingBulk"
-                class="inline-flex items-center px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-              >
-                <svg v-if="!deletingBulk" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-                <svg v-else class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {{ deletingBulk ? t.deleting : t.deleteSelected }}
-              </button>
+              <div class="flex items-center gap-2">
+                <button
+                  @click="printBulkLabels"
+                  class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-all duration-300"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                  </svg>
+                  {{ t.printLabels }}
+                </button>
+                <button
+                  @click="confirmBulkDelete"
+                  :disabled="deletingBulk"
+                  class="inline-flex items-center px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                >
+                  <svg v-if="!deletingBulk" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                  <svg v-else class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {{ deletingBulk ? t.deleting : t.deleteSelected }}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -143,20 +154,31 @@
                   {{ t.clearSelection }}
                 </button>
               </div>
-              <button
-                @click="confirmBulkDelete"
-                :disabled="deletingBulk"
-                class="inline-flex items-center px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-              >
-                <svg v-if="!deletingBulk" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-                <svg v-else class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {{ deletingBulk ? t.deleting : t.deleteSelected }}
-              </button>
+              <div class="flex items-center gap-2">
+                <button
+                  @click="printBulkLabels"
+                  class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-all duration-300"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                  </svg>
+                  {{ t.printLabels }} ({{ selectedOrders.length }})
+                </button>
+                <button
+                  @click="confirmBulkDelete"
+                  :disabled="deletingBulk"
+                  class="inline-flex items-center px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                >
+                  <svg v-if="!deletingBulk" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                  <svg v-else class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {{ deletingBulk ? t.deleting : t.deleteSelected }}
+                </button>
+              </div>
             </div>
 
             <!-- Search Input -->
@@ -847,6 +869,7 @@ const translations = {
   deleteSuccess: { es: 'Órdenes eliminadas exitosamente', en: 'Orders deleted successfully' },
   deleteError: { es: 'Error al eliminar órdenes', en: 'Error deleting orders' },
   manage: { es: 'Gestionar', en: 'Manage' },
+  printLabels: { es: 'Imprimir Etiquetas', en: 'Print Labels' },
   // Date range
   dateRange: { es: 'Rango de Fechas', en: 'Date Range' },
   selectDateRange: { es: 'Seleccionar fechas', en: 'Select dates' },
@@ -1149,6 +1172,255 @@ const toggleSelectAll = () => {
 
 const clearSelection = () => {
   selectedOrders.value = []
+}
+
+// Generate Code128 barcode as SVG (same as AdminOrderShippingLabel)
+const generateBarcode = (text) => {
+  const code128B = {
+    ' ': '11011001100', '!': '11001101100', '"': '11001100110', '#': '10010011000',
+    '$': '10010001100', '%': '10001001100', '&': '10011001000', "'": '10011000100',
+    '(': '10001100100', ')': '11001001000', '*': '11001000100', '+': '11000100100',
+    ',': '10110011100', '-': '10011011100', '.': '10011001110', '/': '10111001100',
+    '0': '10011101100', '1': '10011100110', '2': '11001110010', '3': '11001011100',
+    '4': '11001001110', '5': '11011100100', '6': '11001110100', '7': '11101101110',
+    '8': '11101001100', '9': '11100101100', ':': '11100100110', ';': '11101100100',
+    '<': '11100110100', '=': '11100110010', '>': '11011011000', '?': '11011000110',
+    '@': '11000110110', 'A': '10100011000', 'B': '10001011000', 'C': '10001000110',
+    'D': '10110001000', 'E': '10001101000', 'F': '10001100010', 'G': '11010001000',
+    'H': '11000101000', 'I': '11000100010', 'J': '10110111000', 'K': '10110001110',
+    'L': '10001101110', 'M': '10111011000', 'N': '10111000110', 'O': '10001110110',
+    'P': '11101110110', 'Q': '11010001110', 'R': '11000101110', 'S': '11011101000',
+    'T': '11011100010', 'U': '11011101110', 'V': '11101011000', 'W': '11101000110',
+    'X': '11100010110', 'Y': '11101101000', 'Z': '11101100010', '[': '11100011010',
+    '\\': '11101111010', ']': '11001000010', '^': '11110001010', '_': '10100110000',
+    '`': '10100001100', 'a': '10010110000', 'b': '10010000110', 'c': '10000101100',
+    'd': '10000100110', 'e': '10110010000', 'f': '10110000100', 'g': '10011010000',
+    'h': '10011000010', 'i': '10000110100', 'j': '10000110010', 'k': '11000010010',
+    'l': '11001010000', 'm': '11110111010', 'n': '11000010100', 'o': '10001111010',
+    'p': '10100111100', 'q': '10010111100', 'r': '10010011110', 's': '10111100100',
+    't': '10011110100', 'u': '10011110010', 'v': '11110100100', 'w': '11110010100',
+    'x': '11110010010', 'y': '11011011110', 'z': '11011110110', '{': '11110110110',
+    '|': '10101111000', '}': '10100011110', '~': '10001011110'
+  }
+
+  const startB = '11010010000'
+  const stop = '1100011101011'
+
+  let checksum = 104
+  let encoded = startB
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i]
+    const pattern = code128B[char]
+    if (pattern) {
+      encoded += pattern
+      const value = char.charCodeAt(0) - 32
+      checksum += value * (i + 1)
+    }
+  }
+
+  checksum = checksum % 103
+  const checksumChar = String.fromCharCode(checksum + 32)
+  if (code128B[checksumChar]) {
+    encoded += code128B[checksumChar]
+  }
+
+  encoded += stop
+
+  const barWidth = 2
+  const height = 50
+  let x = 0
+  let bars = ''
+
+  for (let i = 0; i < encoded.length; i++) {
+    if (encoded[i] === '1') {
+      bars += `<rect x="${x}" y="0" width="${barWidth}" height="${height}" fill="black"/>`
+    }
+    x += barWidth
+  }
+
+  return `<svg width="${x}" height="${height}" xmlns="http://www.w3.org/2000/svg">${bars}</svg>`
+}
+
+// Get full address for an order
+const getFullAddress = (order) => {
+  const addr = order?.delivery_address
+  if (!addr) return ''
+  if (addr.full_address) return addr.full_address
+
+  const parts = []
+  if (addr.street) {
+    let line = addr.street
+    if (addr.exterior_number) line += ` #${addr.exterior_number}`
+    if (addr.interior_number) line += `, Int. ${addr.interior_number}`
+    parts.push(line)
+  }
+  if (addr.colonia) parts.push(addr.colonia)
+  if (addr.municipio) parts.push(addr.municipio)
+  if (addr.estado) parts.push(addr.estado)
+  if (addr.postal_code) parts.push(`C.P. ${addr.postal_code}`)
+  return parts.join(', ')
+}
+
+// Format box details for an order
+const formatBoxDetails = (order) => {
+  if (!order?.boxes || order.boxes.length === 0) return ''
+  return order.boxes.map(box => {
+    const name = box.box_name || box.box_size
+    const dims = (box.length || box.width || box.height)
+      ? `${box.length || '-'} × ${box.width || '-'} × ${box.height || '-'} cm`
+      : ''
+    const weight = box.weight ? `${box.weight} kg` : ''
+    const hasSpecs = dims || weight
+    const specsHtml = hasSpecs
+      ? `<div class="box-specs">${dims ? `<span class="box-dims">${dims}</span>` : ''}${weight ? `<span class="box-weight">${weight}</span>` : ''}</div>`
+      : ''
+    return `<div class="box-item"><div class="box-name">${name}</div>${specsHtml}</div>`
+  }).join('')
+}
+
+// Print bulk order labels
+const printBulkLabels = () => {
+  if (selectedOrders.value.length === 0) return
+
+  const selectedOrderData = orders.value.filter(o => selectedOrders.value.includes(o.id))
+
+  const printWindow = window.open('', '_blank', 'width=450,height=650')
+
+  const labelsHtml = selectedOrderData.map(order => {
+    const barcodeSvg = generateBarcode(order.order_number)
+    const fullAddress = getFullAddress(order)
+    const hasBoxes = order.boxes && order.boxes.length > 0
+    const boxesHtml = hasBoxes ? `
+      <div class="boxes-section">
+        <div class="boxes-label">Boxes:</div>
+        <div class="boxes-list">${formatBoxDetails(order)}</div>
+      </div>
+    ` : ''
+
+    return `
+      <div class="shipping-label">
+        <div class="label-header">
+          <img src="/box.svg" alt="Boxly" class="logo" />
+          <div class="order-info">
+            <span class="order-number">Order #${order.order_number}</span>
+          </div>
+        </div>
+
+        <div class="ship-to-section">
+          <div class="section-title">SHIP TO:</div>
+          <div class="recipient-name">${order.user?.name || ''}</div>
+          <div class="address-text">${fullAddress}</div>
+        </div>
+
+        <div class="contact-section">
+          ${order.user?.phone ? `<div class="contact-item"><span class="contact-label">Tel:</span><span>${order.user.phone}</span></div>` : ''}
+          ${order.user?.email ? `<div class="contact-item"><span class="contact-label">Email:</span><span class="email-text">${order.user.email}</span></div>` : ''}
+        </div>
+
+        ${boxesHtml}
+
+        <div class="barcode-section">
+          <div class="barcode">${barcodeSvg}</div>
+          <div class="barcode-text">${order.order_number}</div>
+        </div>
+      </div>
+    `
+  }).join('')
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Shipping Labels</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; }
+
+        .shipping-label {
+          width: 4in;
+          height: 6in;
+          padding: 0.25in;
+          border: 2px solid #000;
+          background: white;
+          display: flex;
+          flex-direction: column;
+          page-break-after: always;
+          margin-bottom: 0.25in;
+        }
+
+        .shipping-label:last-child {
+          page-break-after: auto;
+        }
+
+        .label-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-bottom: 0.12in;
+          border-bottom: 2px solid #000;
+          margin-bottom: 0.15in;
+        }
+
+        .logo { height: 0.5in; width: auto; }
+        .order-number { font-size: 14px; font-weight: bold; }
+
+        .ship-to-section { flex: 1; margin-bottom: 0.1in; }
+        .section-title { font-size: 12px; font-weight: bold; color: #666; margin-bottom: 4px; }
+        .recipient-name { font-size: 28px; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .address-text { font-size: 18px; line-height: 1.5; letter-spacing: 0.3px; }
+
+        .contact-section {
+          padding: 0.1in 0;
+          border-top: 1px solid #ccc;
+        }
+        .contact-item { font-size: 12px; margin-bottom: 3px; }
+        .contact-label { font-weight: bold; margin-right: 4px; }
+        .email-text { word-break: break-all; }
+
+        .boxes-section {
+          padding: 0.1in 0;
+          border-top: 1px solid #ccc;
+          font-size: 15px;
+        }
+        .boxes-label { font-weight: 600; margin-bottom: 6px; font-size: 14px; letter-spacing: 0.3px; }
+        .box-item { margin-bottom: 8px; }
+        .box-name { font-weight: 600; font-size: 15px; letter-spacing: 0.3px; margin-bottom: 2px; }
+        .box-specs { display: flex; flex-direction: column; gap: 2px; }
+        .box-dims, .box-weight { color: #222; font-weight: 500; font-size: 14px; letter-spacing: 0.3px; }
+
+        .barcode-section {
+          margin-top: auto;
+          padding-top: 0.15in;
+          border-top: 1px solid #ccc;
+          text-align: center;
+        }
+        .barcode { display: flex; justify-content: center; margin-bottom: 4px; }
+        .barcode svg { max-width: 100%; height: 45px; }
+        .barcode-text { font-size: 14px; font-weight: bold; font-family: monospace; letter-spacing: 2px; }
+
+        @media print {
+          @page { size: 4in 6in; margin: 0; }
+          body { margin: 0; }
+          .shipping-label { border: 2px solid #000; margin: 0; }
+        }
+      </style>
+    </head>
+    <body>
+      ${labelsHtml}
+      <script>
+        window.onload = function() {
+          setTimeout(function() {
+            window.print();
+          }, 250);
+        }
+      <\/script>
+    </body>
+    </html>
+  `
+
+  printWindow.document.write(html)
+  printWindow.document.close()
 }
 
 const confirmBulkDelete = () => {
