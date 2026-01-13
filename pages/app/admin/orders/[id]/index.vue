@@ -111,6 +111,25 @@
           </div>
           <!-- Actions -->
           <div class="flex items-center gap-2">
+            <!-- Replace Image -->
+            <input
+              type="file"
+              ref="replaceImageInput"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              class="hidden"
+              @change="handleArrivalImageSelect"
+            />
+            <button
+              @click="$refs.replaceImageInput.click()"
+              class="p-2 sm:px-3 sm:py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
+              :title="t.replaceImage"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span class="hidden sm:inline text-sm font-medium">{{ t.replaceImage }}</span>
+            </button>
+            <!-- Download -->
             <button
               @click="downloadArrivalImage"
               class="p-2 sm:px-3 sm:py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
@@ -147,6 +166,44 @@
             <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
             </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subtle Add Arrival Photo (for orders past awaiting_packages without image) -->
+      <div
+        v-if="!order.arrival_image_url && !['collecting', 'awaiting_packages'].includes(order.status)"
+        class="mb-6 bg-white rounded-xl border border-gray-200 p-4 shadow-sm"
+      >
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-700">{{ t.noArrivalImage }}</p>
+              <p class="text-xs text-gray-500">{{ t.addArrivalImageHint }}</p>
+            </div>
+          </div>
+          <div>
+            <input
+              type="file"
+              ref="addImageInput"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              class="hidden"
+              @change="handleArrivalImageSelect"
+            />
+            <button
+              @click="$refs.addImageInput.click()"
+              class="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              {{ t.addPhoto }}
+            </button>
           </div>
         </div>
       </div>
@@ -1266,6 +1323,10 @@ const translations = {
   download: { es: "Descargar", en: "Download" },
   viewFullscreen: { es: "Ver en pantalla completa", en: "View fullscreen" },
   close: { es: "Cerrar", en: "Close" },
+  replaceImage: { es: "Reemplazar", en: "Replace" },
+  noArrivalImage: { es: "Sin foto de llegada", en: "No arrival photo" },
+  addArrivalImageHint: { es: "Agrega una foto de los paquetes", en: "Add a photo of the packages" },
+  addPhoto: { es: "Agregar Foto", en: "Add Photo" },
   uploadSuccess: { es: "Imagen subida. Cliente notificado.", en: "Image uploaded. Customer notified." },
   uploadError: { es: "Error al subir imagen", en: "Error uploading image" },
   markAllArrivedDesc: { es: "Esta acción marcará todos los artículos pendientes de esta orden como llegados al almacén.", en: "This action will mark all pending items in this order as arrived at the warehouse." },
