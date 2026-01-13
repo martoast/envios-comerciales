@@ -4,11 +4,13 @@
     <AdminOrderHeader
       :order="order"
       :show-menu="showActionsMenu"
+      :next-action="nextAction"
       @toggle-menu="showActionsMenu = !showActionsMenu"
       @close-menu="showActionsMenu = false"
       @delete="openDeleteModal"
       @print-label="showShippingLabelModal = true"
       @view-message="showJesusMessageModal = true"
+      @next-action="handleNextAction"
     />
 
     <!-- Loading State -->
@@ -21,166 +23,130 @@
 
     <!-- Main Content -->
     <div v-else-if="order" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      
-      <!-- Quick Actions Bar -->
-      <div class="mb-6 bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-        <div class="flex flex-wrap gap-3 items-center">
-          <span class="text-sm font-medium text-gray-500 mr-2">{{ t.currentStage }}:</span>
 
-          <!-- 1. Waiting for Packages -->
-          <div
-            v-if="['collecting', 'awaiting_packages'].includes(order.status)"
-            class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 text-sm rounded-lg"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {{ t.waitingForPackages }}
+      <!-- Arrival Image Upload Section -->
+      <div
+        v-if="order.status === 'awaiting_packages' && allItemsArrived && !order.arrival_image_url"
+        class="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 p-5 shadow-sm"
+      >
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-green-800">{{ t.allItemsArrivedTitle }}</h3>
+                <p class="text-sm text-green-600">{{ t.uploadArrivalImageDesc }}</p>
+              </div>
+            </div>
           </div>
-
-          <!-- Mark All Items Arrived Button (show when awaiting_packages and has pending items) -->
-          <button
-            v-if="order.status === 'awaiting_packages' && hasPendingItems"
-            @click="showMarkAllArrivedModal = true"
-            class="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors shadow-sm"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {{ t.markAllArrived }}
-          </button>
-
-          <!-- 2a. Consolidate Order - SHIPPING orders at packages_complete -->
-          <button
-            v-if="order.status === 'packages_complete' && !isCrossing"
-            @click="showConsolidateModal = true"
-            class="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors shadow-sm"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            {{ t.consolidateOrder }}
-          </button>
-
-          <!-- 2b. Start Processing - CROSSING orders at packages_complete -->
-          <button
-            v-if="order.status === 'packages_complete' && isCrossing"
-            @click="showStartProcessingModal = true"
-            class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {{ t.startProcessing }}
-          </button>
-
-          <!-- 2c. Awaiting Payment - SHIPPING orders waiting for consolidation payment -->
-          <div
-            v-if="order.status === 'awaiting_payment' && !isCrossing"
-            class="flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 text-sm rounded-lg"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {{ t.awaitingConsolidationPayment }}
-            <NuxtLink
-              v-if="order.payment_link"
-              :to="order.payment_link"
-              target="_blank"
-              external
-              class="ml-2 px-2 py-1 bg-purple-600 text-white text-xs font-medium rounded hover:bg-purple-700 transition-colors"
+          <div class="flex items-center gap-3">
+            <input
+              ref="arrivalImageInput"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="handleArrivalImageSelect"
             >
-              {{ t.viewInvoice }}
-            </NuxtLink>
             <button
-              @click="showMarkPaidModal = true"
-              class="ml-1 px-2 py-1 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition-colors"
+              v-if="!selectedArrivalImage"
+              @click="$refs.arrivalImageInput.click()"
+              class="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm"
             >
-              {{ t.markPaidManual }}
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              {{ t.selectImage }}
+            </button>
+            <div v-else class="flex items-center gap-2">
+              <span class="text-sm text-green-700 truncate max-w-[150px]">{{ selectedArrivalImage.name }}</span>
+              <button
+                @click="selectedArrivalImage = null"
+                class="p-1 text-green-600 hover:text-green-800"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+              <button
+                @click="uploadArrivalImage"
+                :disabled="uploadingArrivalImage"
+                class="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm"
+              >
+                <svg v-if="uploadingArrivalImage" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                </svg>
+                {{ t.uploadAndConfirm }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arrival Image Display (when already uploaded) -->
+      <div
+        v-if="order.arrival_image_url"
+        class="mb-6 bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm"
+      >
+        <!-- Header -->
+        <div class="px-4 py-3 sm:px-5 sm:py-4 border-b border-gray-100 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-sm">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ t.arrivalProofImage }}</h3>
+              <p class="text-xs text-gray-500 hidden sm:block">{{ t.arrivalImageUploaded }}</p>
+            </div>
+          </div>
+          <!-- Actions -->
+          <div class="flex items-center gap-2">
+            <button
+              @click="downloadArrivalImage"
+              class="p-2 sm:px-3 sm:py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
+              :title="t.download"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              <span class="hidden sm:inline text-sm font-medium">{{ t.download }}</span>
             </button>
           </div>
-
-          <!-- 3a. Ship Order - SHIPPING orders only (processing = new flow, paid = legacy) -->
-          <button
-            v-if="['processing', 'paid'].includes(order.status) && !isCrossing"
-            @click="showShipOrderModal = true"
-            class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+        </div>
+        <!-- Image -->
+        <div
+          class="relative group cursor-pointer"
+          @click="showArrivalImageModal = true"
+        >
+          <img
+            :src="order.arrival_image_url"
+            alt="Arrival proof"
+            class="w-full h-48 sm:h-56 md:h-64 object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
-            </svg>
-            {{ t.shipOrder }}
-          </button>
-
-          <!-- 3b. Mark Ready for Pickup - CROSSING orders only (processing = new flow, paid = legacy) -->
-          <button
-            v-if="['processing', 'paid'].includes(order.status) && isCrossing"
-            @click="showReadyForPickupModal = true"
-            class="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition-colors shadow-sm"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
-            </svg>
-            {{ t.markReadyForPickup }}
-          </button>
-
-          <!-- 4a. SHIPPING: Mark as Delivered (after shipped) -->
-          <button
-            v-if="order.status === 'shipped' && !isCrossing"
-            @click="showMarkDeliveredModal = true"
-            class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            {{ t.markAsDelivered }}
-          </button>
-
-          <!-- 4b. CROSSING: Awaiting Payment (shipped but not paid) -->
-          <div
-            v-if="order.status === 'shipped' && isCrossing && !order.paid_at"
-            class="flex items-center gap-2 px-4 py-2 bg-orange-50 text-orange-700 text-sm rounded-lg"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {{ t.awaitingPayment }}
-            <button
-              @click="showMarkPaidModal = true"
-              class="ml-2 px-2 py-1 bg-orange-600 text-white text-xs font-medium rounded hover:bg-orange-700 transition-colors"
-            >
-              {{ t.markPaidManual }}
-            </button>
+          <!-- Overlay on hover -->
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
+            <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2 px-4 py-2 bg-white/95 rounded-full shadow-lg">
+              <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+              </svg>
+              <span class="text-sm font-medium text-gray-700">{{ t.viewFullscreen }}</span>
+            </div>
           </div>
-
-          <!-- 4c. CROSSING: Payment Received - Ready to Mark Picked Up -->
-          <div
-            v-if="order.status === 'shipped' && isCrossing && order.paid_at"
-            class="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 text-sm rounded-lg"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <!-- Mobile tap indicator -->
+          <div class="absolute bottom-3 right-3 sm:hidden bg-white/90 rounded-full p-2 shadow-md">
+            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
             </svg>
-            {{ t.paymentReceived }}
-            <button
-              @click="showMarkDeliveredModal = true"
-              class="ml-2 px-2 py-1 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition-colors"
-            >
-              {{ t.markAsPickedUp }}
-            </button>
-          </div>
-
-
-          <!-- Order Complete indicator - DELIVERED is final status for all order types -->
-          <div
-            v-if="order.status === 'delivered'"
-            class="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 text-sm rounded-lg"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {{ t.orderComplete }}
           </div>
         </div>
       </div>
@@ -1110,6 +1076,60 @@
       :order="order"
       @close="showJesusMessageModal = false"
     />
+
+    <!-- Fullscreen Arrival Image Modal -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="showArrivalImageModal && order?.arrival_image_url"
+          class="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center"
+          @click.self="showArrivalImageModal = false; imageZoomed = false"
+        >
+          <!-- Close button -->
+          <button
+            @click="showArrivalImageModal = false; imageZoomed = false"
+            class="absolute top-4 right-4 z-10 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+
+          <!-- Download button -->
+          <button
+            @click="downloadArrivalImage"
+            class="absolute top-4 left-4 z-10 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+          </button>
+
+          <!-- Image container with zoom -->
+          <div class="w-full h-full p-4 sm:p-8 flex items-center justify-center overflow-auto">
+            <img
+              :src="order.arrival_image_url"
+              alt="Arrival proof"
+              class="max-w-full max-h-full object-contain cursor-zoom-in sm:cursor-default"
+              :class="{ 'sm:max-w-none sm:max-h-none sm:w-auto sm:h-auto': imageZoomed }"
+              @click="imageZoomed = !imageZoomed"
+            >
+          </div>
+
+          <!-- Zoom hint (mobile) -->
+          <div class="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/10 rounded-full text-white/80 text-sm sm:hidden">
+            {{ imageZoomed ? t.close : 'Tap to zoom' }}
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </section>
 </template>
 
@@ -1161,8 +1181,12 @@ const showDeleteModal = ref(false);
 const showMarkAllArrivedModal = ref(false);
 const showShippingLabelModal = ref(false);
 const showJesusMessageModal = ref(false);
+const showArrivalImageModal = ref(false);
+const imageZoomed = ref(false);
 const selectedItem = ref(null);
 const markingAllArrived = ref(false);
+const selectedArrivalImage = ref(null);
+const uploadingArrivalImage = ref(false);
 
 const translations = {
   orderDetails: { es: "Detalles de la Orden", en: "Order Details" },
@@ -1237,6 +1261,17 @@ const translations = {
   // Mark All Arrived Modal
   markAllArrivedTitle: { es: "Marcar Todos como Llegados", en: "Mark All as Arrived" },
   markAllArrivedSubtitle: { es: "¿Confirmar llegada de todos los artículos?", en: "Confirm arrival of all items?" },
+  allItemsArrivedTitle: { es: "¡Todos los artículos llegaron!", en: "All items have arrived!" },
+  uploadArrivalImageDesc: { es: "Sube una foto de los paquetes para confirmar y notificar al cliente.", en: "Upload a photo of the packages to confirm and notify the customer." },
+  selectImage: { es: "Seleccionar Imagen", en: "Select Image" },
+  uploadAndConfirm: { es: "Subir y Confirmar", en: "Upload & Confirm" },
+  arrivalProofImage: { es: "Foto de Llegada", en: "Arrival Proof Photo" },
+  arrivalImageUploaded: { es: "Foto enviada al cliente", en: "Photo sent to customer" },
+  download: { es: "Descargar", en: "Download" },
+  viewFullscreen: { es: "Ver en pantalla completa", en: "View fullscreen" },
+  close: { es: "Cerrar", en: "Close" },
+  uploadSuccess: { es: "Imagen subida. Cliente notificado.", en: "Image uploaded. Customer notified." },
+  uploadError: { es: "Error al subir imagen", en: "Error uploading image" },
   markAllArrivedDesc: { es: "Esta acción marcará todos los artículos pendientes de esta orden como llegados al almacén.", en: "This action will mark all pending items in this order as arrived at the warehouse." },
   itemsWillBeMarked: { es: "artículos serán marcados como llegados", en: "items will be marked as arrived" },
   confirmMarkAllArrived: { es: "Sí, Marcar Todos", en: "Yes, Mark All" },
@@ -1282,10 +1317,123 @@ const totalItemsCount = computed(() => order.value?.items?.length || 0);
 const arrivedItemsCount = computed(() => order.value?.items?.filter(item => item.arrived)?.length || 0);
 const pendingItemsCount = computed(() => totalItemsCount.value - arrivedItemsCount.value);
 const hasPendingItems = computed(() => pendingItemsCount.value > 0);
+const allItemsArrived = computed(() => totalItemsCount.value > 0 && pendingItemsCount.value === 0);
 const arrivalProgress = computed(() => {
   if (totalItemsCount.value === 0) return 0;
   return Math.round((arrivedItemsCount.value / totalItemsCount.value) * 100);
 });
+
+// SVG icons for next action buttons
+const icons = {
+  checkAll: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+  consolidate: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>',
+  play: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+  ship: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>',
+  warehouse: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>',
+  check: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+};
+
+// Compute next action button for header
+const nextAction = computed(() => {
+  if (!order.value) return null;
+  const status = order.value.status;
+  const crossing = isCrossing.value;
+
+  // awaiting_packages + has pending items → Mark All Arrived
+  if (status === 'awaiting_packages' && hasPendingItems.value) {
+    return {
+      label: t.value.markAllArrived,
+      color: 'bg-teal-600 hover:bg-teal-700',
+      iconSvg: icons.checkAll,
+      action: 'markAllArrived',
+    };
+  }
+
+  // packages_complete → Consolidate (shipping) or Start Processing (crossing)
+  if (status === 'packages_complete') {
+    if (crossing) {
+      return {
+        label: t.value.startProcessing,
+        color: 'bg-primary-600 hover:bg-primary-700',
+        iconSvg: icons.play,
+        action: 'startProcessing',
+      };
+    } else {
+      return {
+        label: t.value.consolidateOrder,
+        color: 'bg-purple-600 hover:bg-purple-700',
+        iconSvg: icons.consolidate,
+        action: 'consolidate',
+      };
+    }
+  }
+
+  // processing/paid → Ship Order (shipping) or Mark Ready for Pickup (crossing)
+  if (['processing', 'paid'].includes(status)) {
+    if (crossing) {
+      return {
+        label: t.value.markReadyForPickup,
+        color: 'bg-amber-600 hover:bg-amber-700',
+        iconSvg: icons.warehouse,
+        action: 'readyForPickup',
+      };
+    } else {
+      return {
+        label: t.value.shipOrder,
+        color: 'bg-indigo-600 hover:bg-indigo-700',
+        iconSvg: icons.ship,
+        action: 'shipOrder',
+      };
+    }
+  }
+
+  // shipped → Mark as Delivered (shipping) or Mark as Picked Up (crossing + paid)
+  if (status === 'shipped') {
+    if (!crossing) {
+      return {
+        label: t.value.markAsDelivered,
+        color: 'bg-green-600 hover:bg-green-700',
+        iconSvg: icons.check,
+        action: 'markDelivered',
+      };
+    } else if (order.value.paid_at) {
+      return {
+        label: t.value.markAsPickedUp,
+        color: 'bg-green-600 hover:bg-green-700',
+        iconSvg: icons.check,
+        action: 'markDelivered',
+      };
+    }
+  }
+
+  return null;
+});
+
+// Handle next action button click
+const handleNextAction = () => {
+  if (!nextAction.value) return;
+
+  switch (nextAction.value.action) {
+    case 'markAllArrived':
+      showMarkAllArrivedModal.value = true;
+      break;
+    case 'startProcessing':
+      showStartProcessingModal.value = true;
+      break;
+    case 'consolidate':
+      showConsolidateModal.value = true;
+      break;
+    case 'shipOrder':
+      showShipOrderModal.value = true;
+      break;
+    case 'readyForPickup':
+      showReadyForPickupModal.value = true;
+      break;
+    case 'markDelivered':
+      showMarkDeliveredModal.value = true;
+      break;
+  }
+};
 
 const totalBoxPrice = computed(() => {
   if (!order.value) return 0;
@@ -1394,6 +1542,56 @@ const fetchOrder = async () => {
     router.push("/app/admin/orders");
   } finally {
     loading.value = false;
+  }
+};
+
+const handleArrivalImageSelect = (event) => {
+  const file = event.target.files?.[0];
+  if (file) {
+    selectedArrivalImage.value = file;
+  }
+};
+
+const uploadArrivalImage = async () => {
+  if (!selectedArrivalImage.value) return;
+  uploadingArrivalImage.value = true;
+  try {
+    const formData = new FormData();
+    formData.append('arrival_image', selectedArrivalImage.value);
+
+    await $customFetch(`/admin/orders/${route.params.id}/arrival-image`, {
+      method: 'POST',
+      body: formData
+    });
+
+    $toast.success(t.value.uploadSuccess);
+    selectedArrivalImage.value = null;
+    await fetchOrder();
+  } catch (error) {
+    $toast.error(error.data?.message || t.value.uploadError);
+  } finally {
+    uploadingArrivalImage.value = false;
+  }
+};
+
+const downloadArrivalImage = async () => {
+  if (!order.value?.arrival_image_url) return;
+
+  try {
+    const response = await fetch(order.value.arrival_image_url);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `order-${order.value.id}-arrival-proof.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Download error:', error);
+    // Fallback: open in new tab
+    window.open(order.value.arrival_image_url, '_blank');
   }
 };
 

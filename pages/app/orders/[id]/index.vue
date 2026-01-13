@@ -38,6 +38,35 @@
         @complete="showCompleteOrderModal = true"
       />
 
+      <!-- Arrival Proof Image - Show when all packages arrived -->
+      <div
+        v-if="order.arrival_image_url"
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+      >
+        <div class="px-5 py-4 border-b border-gray-100">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-bold text-gray-900">{{ t.packagesArrived }}</h2>
+              <p class="text-sm text-gray-500">{{ t.packagesArrivedDesc }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <div class="rounded-xl overflow-hidden border border-gray-200">
+            <img
+              :src="order.arrival_image_url"
+              :alt="t.packagesArrived"
+              class="w-full max-h-80 object-cover"
+            >
+          </div>
+        </div>
+      </div>
+
       <!-- Shipping Details (Guia, GIA, Dates) - Only for shipping orders -->
       <UserOrderShippingDetails
         v-if="order.order_type !== 'crossing'"
@@ -237,6 +266,9 @@ const bannerTrigger = ref("auto");
 
 const translations = {
   loadingOrder: { es: "Cargando orden...", en: "Loading order..." },
+  // Arrival Proof
+  packagesArrived: { es: "Tus Paquetes Han Llegado", en: "Your Packages Have Arrived" },
+  packagesArrivedDesc: { es: "Foto de tus artículos en nuestra bodega", en: "Photo of your items at our warehouse" },
   // Order Type
   crossingOnly: { es: "Solo Cruce", en: "Crossing Only" },
   homeDelivery: { es: "Envío a Domicilio", en: "Home Delivery" },

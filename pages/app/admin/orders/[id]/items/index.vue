@@ -113,16 +113,6 @@
             </svg>
             {{ t.markArrived }} ({{ selectedPendingCount }})
           </button>
-          <!-- Print Labels button -->
-          <button
-            @click="openBulkLabelModal"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-            </svg>
-            {{ t.printLabels }} ({{ selectedItems.length }})
-          </button>
         </div>
       </div>
 
@@ -238,17 +228,6 @@
                             </svg>
                             {{ t.viewDetails }}
                           </NuxtLink>
-                        </MenuItem>
-                        <MenuItem v-slot="{ active }">
-                          <button
-                            @click="openLabelModal(item)"
-                            :class="[active ? 'bg-gray-50' : '', 'w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 text-gray-700']"
-                          >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                            </svg>
-                            {{ t.printLabel }}
-                          </button>
                         </MenuItem>
                         <MenuItem v-if="!item.arrived" v-slot="{ active }">
                           <button
@@ -586,13 +565,6 @@
       </Dialog>
     </TransitionRoot>
 
-    <!-- Package Label Modal -->
-    <AdminPackageLabel
-      :show="showLabelModal"
-      :packages="labelPackages"
-      @close="showLabelModal = false"
-    />
-
     <!-- Image Lightbox Modal -->
     <TransitionRoot :show="showImageModal" as="template">
       <Dialog class="relative z-50" @close="showImageModal = false">
@@ -632,7 +604,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import AdminOrderModalMarkArrived from '~/components/admin/AdminOrderModalMarkArrived.vue'
-import AdminPackageLabel from '~/components/admin/AdminPackageLabel.vue'
 
 definePageMeta({
   layout: 'admin',
@@ -653,12 +624,10 @@ const showItemModal = ref(false)
 const showDeleteModal = ref(false)
 const showMarkArrivedModal = ref(false)
 const showImageModal = ref(false)
-const showLabelModal = ref(false)
 const editingItem = ref(null)
 const deletingItem = ref(null)
 const selectedItem = ref(null)
 const imageModalItem = ref(null)
-const labelPackages = ref([])
 const selectedItems = ref([])
 const bulkProcessing = ref(false)
 
@@ -696,8 +665,6 @@ const translations = {
   tracking: { es: 'Tracking', en: 'Tracking' },
   viewProduct: { es: 'Ver producto', en: 'View product' },
   viewDetails: { es: 'Ver Detalles', en: 'View Details' },
-  printLabel: { es: 'Imprimir Etiqueta', en: 'Print Label' },
-  printLabels: { es: 'Imprimir Etiquetas', en: 'Print Labels' },
   markArrived: { es: 'Marcar Llegado', en: 'Mark Arrived' },
   edit: { es: 'Editar', en: 'Edit' },
   delete: { es: 'Eliminar', en: 'Delete' },
@@ -807,18 +774,6 @@ const openMarkArrivedModal = (item) => {
 const openImageModal = (item) => {
   imageModalItem.value = item
   showImageModal.value = true
-}
-
-const openLabelModal = (item) => {
-  labelPackages.value = [item]
-  showLabelModal.value = true
-}
-
-const openBulkLabelModal = () => {
-  if (selectedItems.value.length === 0) return
-  const items = order.value.items.filter(i => selectedItems.value.includes(i.id))
-  labelPackages.value = items
-  showLabelModal.value = true
 }
 
 const bulkMarkArrived = async () => {

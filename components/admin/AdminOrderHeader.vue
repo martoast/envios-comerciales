@@ -25,7 +25,7 @@
         </button>
       </div>
 
-      <!-- Bottom Row: Order Info -->
+      <!-- Bottom Row: Order Info + Status -->
       <div class="flex items-center justify-between gap-3">
         <div class="min-w-0 flex-1">
           <h1 class="text-base font-bold text-gray-900 truncate">
@@ -55,6 +55,19 @@
           </span>
         </div>
       </div>
+
+      <!-- Mobile Action Button -->
+      <button
+        v-if="nextAction"
+        @click="$emit('next-action')"
+        :class="[
+          'mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm',
+          nextAction.color || 'bg-primary-600 hover:bg-primary-700'
+        ]"
+      >
+        <span v-html="nextAction.iconSvg" v-if="nextAction.iconSvg"></span>
+        {{ nextAction.label }}
+      </button>
     </div>
 
     <!-- Desktop Layout (sm and up) -->
@@ -93,7 +106,7 @@
           </div>
         </div>
 
-        <!-- Right: Status + Actions -->
+        <!-- Right: Status + Action + Menu -->
         <div class="flex items-center gap-3 flex-shrink-0">
           <!-- Status Badge -->
           <div v-if="order" class="flex items-center gap-2">
@@ -106,6 +119,20 @@
               {{ getStatusLabel(order.status) }}
             </span>
           </div>
+
+          <!-- Next Action Button -->
+          <button
+            v-if="nextAction"
+            @click="$emit('next-action')"
+            :class="[
+              'flex items-center gap-2 px-3 py-1.5 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm',
+              nextAction.color || 'bg-primary-600 hover:bg-primary-700'
+            ]"
+          >
+            <component :is="nextAction.icon" v-if="nextAction.icon" class="w-4 h-4" />
+            <span v-html="nextAction.iconSvg" v-else-if="nextAction.iconSvg"></span>
+            {{ nextAction.label }}
+          </button>
 
           <!-- Actions Button -->
           <button
@@ -200,9 +227,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  nextAction: {
+    type: Object,
+    default: null,
+    // { label: string, color: string, iconSvg: string }
+  },
 });
 
-const emit = defineEmits(['toggle-menu', 'close-menu', 'delete', 'print-label', 'view-message']);
+const emit = defineEmits(['toggle-menu', 'close-menu', 'delete', 'print-label', 'view-message', 'next-action']);
 
 const router = useRouter();
 const { getReturnUrl } = useListReturnUrl('orders');
