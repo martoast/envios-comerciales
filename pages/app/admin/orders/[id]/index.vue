@@ -690,10 +690,6 @@
                 </span>
               </div>
               <div class="flex justify-between">
-                <p class="text-sm text-gray-500">{{ t.totalBoxWeight }}</p>
-                <p class="font-medium">{{ order.total_box_weight || 0 }} kg</p>
-              </div>
-              <div class="flex justify-between">
                 <p class="text-sm text-gray-500">{{ t.totalWeight }}</p>
                 <p class="font-medium">{{ order.total_weight || 0 }} kg</p>
               </div>
