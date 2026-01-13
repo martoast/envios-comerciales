@@ -117,10 +117,10 @@
             selectedItems.includes(item.id) ? 'border-primary-400 ring-1 ring-primary-200' : 'border-gray-200 hover:border-gray-300'
           ]"
         >
-          <div class="flex flex-col md:flex-row">
-            <!-- Image Container - Larger and clickable -->
+          <div class="flex flex-col md:flex-row md:items-start">
+            <!-- Image Container - Fixed size -->
             <div
-              class="relative w-full md:w-48 lg:w-56 h-48 md:h-auto flex-shrink-0 bg-gray-100 cursor-pointer group overflow-hidden rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
+              class="relative w-full md:w-40 lg:w-48 h-40 flex-shrink-0 bg-gray-100 cursor-pointer group overflow-hidden rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
               @click="item.product_image_url && openImageModal(item)"
             >
               <img
@@ -168,7 +168,7 @@
 
             <!-- Content -->
             <div class="flex-1 p-4 md:p-5">
-              <div class="flex flex-col h-full">
+              <div class="flex flex-col">
                 <!-- Header with name and actions -->
                 <div class="flex items-start justify-between gap-3 mb-3">
                   <div class="min-w-0 flex-1">
@@ -270,7 +270,7 @@
                 </div>
 
                 <!-- Details Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm flex-1">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                   <div class="bg-gray-50 rounded-lg p-3">
                     <span class="text-gray-500 text-xs uppercase tracking-wide">{{ t.qty }}</span>
                     <p class="font-semibold text-gray-900 mt-0.5">{{ item.quantity }}</p>
