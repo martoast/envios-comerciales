@@ -83,7 +83,7 @@
       <!-- Bulk Action Bar -->
       <div
         v-if="selectedItems.length > 0"
-        class="bg-white border border-gray-200 rounded-xl p-3 mb-4 flex items-center justify-between shadow-sm"
+        class="bg-white border border-gray-200 rounded-xl p-3 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm"
       >
         <div class="flex items-center gap-3">
           <span class="text-sm font-medium text-gray-700">
@@ -96,15 +96,34 @@
             Clear
           </button>
         </div>
-        <button
-          @click="openBulkLabelModal"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-          </svg>
-          {{ t.printLabels }} ({{ selectedItems.length }})
-        </button>
+        <div class="flex items-center gap-2">
+          <!-- Mark Arrived button -->
+          <button
+            v-if="selectedPendingCount > 0"
+            @click="bulkMarkArrived"
+            :disabled="bulkProcessing"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+          >
+            <svg v-if="!bulkProcessing" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <svg v-else class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            {{ t.markArrived }} ({{ selectedPendingCount }})
+          </button>
+          <!-- Print Labels button -->
+          <button
+            @click="openBulkLabelModal"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+            </svg>
+            {{ t.printLabels }} ({{ selectedItems.length }})
+          </button>
+        </div>
       </div>
 
       <!-- Items Grid -->
@@ -641,6 +660,7 @@ const selectedItem = ref(null)
 const imageModalItem = ref(null)
 const labelPackages = ref([])
 const selectedItems = ref([])
+const bulkProcessing = ref(false)
 
 const itemForm = ref({
   product_name: '',
@@ -703,6 +723,8 @@ const translations = {
   errorLoading: { es: 'Error al cargar', en: 'Error loading' },
   errorSaving: { es: 'Error al guardar', en: 'Error saving' },
   errorDeleting: { es: 'Error al eliminar', en: 'Error deleting' },
+  bulkArrivedSuccess: { es: '{count} artículos marcados como llegados', en: '{count} items marked as arrived' },
+  errorBulkArrived: { es: 'Error al marcar artículos', en: 'Error marking items' },
 }
 
 const t = createTranslations(translations)
@@ -712,6 +734,9 @@ const arrivedCount = computed(() => order.value?.items?.filter(i => i.arrived).l
 const pendingCount = computed(() => order.value?.items?.filter(i => !i.arrived).length || 0)
 const totalValue = computed(() => {
   return order.value?.items?.reduce((sum, item) => sum + ((item.declared_value || 0) * (item.quantity || 1)), 0) || 0
+})
+const selectedPendingCount = computed(() => {
+  return order.value?.items?.filter(i => selectedItems.value.includes(i.id) && !i.arrived).length || 0
 })
 
 // Methods
@@ -794,6 +819,29 @@ const openBulkLabelModal = () => {
   const items = order.value.items.filter(i => selectedItems.value.includes(i.id))
   labelPackages.value = items
   showLabelModal.value = true
+}
+
+const bulkMarkArrived = async () => {
+  if (selectedPendingCount.value === 0) return
+  bulkProcessing.value = true
+  try {
+    const pendingItems = order.value.items.filter(i => selectedItems.value.includes(i.id) && !i.arrived)
+
+    for (const item of pendingItems) {
+      await $customFetch(`/admin/management/orders/${route.params.id}/items/${item.id}`, {
+        method: 'PUT',
+        body: { arrived: true }
+      })
+    }
+
+    $toast.success(t.value.bulkArrivedSuccess.replace('{count}', pendingItems.length))
+    selectedItems.value = []
+    await fetchOrder()
+  } catch (error) {
+    $toast.error(t.value.errorBulkArrived)
+  } finally {
+    bulkProcessing.value = false
+  }
 }
 
 // Multi-select helpers
