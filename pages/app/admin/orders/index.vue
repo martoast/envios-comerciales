@@ -122,6 +122,17 @@
                   {{ t.printLabels }}
                 </button>
                 <button
+                  v-if="canMergeOrders"
+                  @click="showMergeModal = true"
+                  :disabled="mergingOrders"
+                  class="inline-flex items-center px-4 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                  </svg>
+                  {{ t.mergeOrders }}
+                </button>
+                <button
                   @click="confirmBulkDelete"
                   :disabled="deletingBulk"
                   class="inline-flex items-center px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
@@ -163,6 +174,17 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                   </svg>
                   {{ t.printLabels }} ({{ selectedOrders.length }})
+                </button>
+                <button
+                  v-if="canMergeOrders"
+                  @click="showMergeModal = true"
+                  :disabled="mergingOrders"
+                  class="inline-flex items-center px-4 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                  </svg>
+                  {{ t.mergeOrders }} ({{ selectedOrders.length }})
                 </button>
                 <button
                   @click="confirmBulkDelete"
@@ -783,6 +805,84 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Merge Orders Modal -->
+    <Teleport to="body">
+      <div v-if="showMergeModal" class="fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+          <!-- Background overlay -->
+          <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="showMergeModal = false"></div>
+
+          <!-- Modal panel -->
+          <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="px-6 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-amber-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+                  <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
+                  <h3 class="text-lg font-medium leading-6 text-gray-900">
+                    {{ t.confirmMerge }}
+                  </h3>
+                  <div class="mt-2">
+                    <p class="text-sm text-gray-500">
+                      {{ t.mergeDescription }}
+                    </p>
+                    <p class="text-sm text-amber-600 font-medium mt-2">
+                      {{ t.mergeWarning }}
+                    </p>
+                  </div>
+
+                  <!-- Selected orders list -->
+                  <div class="mt-4 max-h-48 overflow-y-auto">
+                    <div class="space-y-2">
+                      <div
+                        v-for="order in selectedOrdersData"
+                        :key="order.id"
+                        class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      >
+                        <div>
+                          <p class="text-sm font-medium text-gray-900">{{ order.tracking_number }}</p>
+                          <p class="text-xs text-gray-500">{{ order.items?.length || 0 }} artículos</p>
+                        </div>
+                        <span :class="[
+                          'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
+                          getStatusColor(order.status)
+                        ]">
+                          {{ getStatusLabel(order.status) }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+              <button
+                @click="mergeOrders"
+                :disabled="mergingOrders"
+                class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-amber-600 border border-transparent rounded-lg shadow-sm hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg v-if="mergingOrders" class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ mergingOrders ? t.merging : t.yesMerge }}
+              </button>
+              <button
+                @click="showMergeModal = false"
+                :disabled="mergingOrders"
+                class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {{ t.cancel }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </section>
 </template>
 
@@ -834,6 +934,10 @@ const selectedOrders = ref([])
 const showDeleteModal = ref(false)
 const deletingBulk = ref(false)
 
+// Merge orders state
+const showMergeModal = ref(false)
+const mergingOrders = ref(false)
+
 // Define translations
 const translations = {
   allOrders: { es: 'Órdenes', en: 'All Orders' },
@@ -870,6 +974,16 @@ const translations = {
   deleteError: { es: 'Error al eliminar órdenes', en: 'Error deleting orders' },
   manage: { es: 'Gestionar', en: 'Manage' },
   printLabels: { es: 'Imprimir Etiquetas', en: 'Print Labels' },
+  // Merge orders
+  mergeOrders: { es: 'Unir Órdenes', en: 'Merge Orders' },
+  merging: { es: 'Uniendo...', en: 'Merging...' },
+  confirmMerge: { es: '¿Unir estas órdenes?', en: 'Merge these orders?' },
+  mergeDescription: { es: 'Todos los artículos de las órdenes seleccionadas se moverán a una sola orden. Las otras órdenes serán eliminadas.', en: 'All items from selected orders will be moved to a single order. Other orders will be deleted.' },
+  mergeWarning: { es: 'La orden con el estado más avanzado será la que se mantenga.', en: 'The order with the furthest status will be kept.' },
+  yesMerge: { es: 'Sí, unir', en: 'Yes, merge' },
+  mergeSuccess: { es: 'Órdenes unidas exitosamente', en: 'Orders merged successfully' },
+  mergeError: { es: 'Error al unir órdenes', en: 'Error merging orders' },
+  differentUsers: { es: 'Las órdenes seleccionadas deben pertenecer al mismo usuario', en: 'Selected orders must belong to the same user' },
   // Date range
   dateRange: { es: 'Rango de Fechas', en: 'Date Range' },
   selectDateRange: { es: 'Seleccionar fechas', en: 'Select dates' },
@@ -954,6 +1068,19 @@ const dateRangeLabel = computed(() => {
 // Bulk selection computed
 const allSelected = computed(() => {
   return orders.value.length > 0 && selectedOrders.value.length === orders.value.length
+})
+
+// Check if selected orders can be merged (same user, 2+ orders)
+const canMergeOrders = computed(() => {
+  if (selectedOrders.value.length < 2) return false
+  const selectedOrderData = orders.value.filter(o => selectedOrders.value.includes(o.id))
+  const userIds = [...new Set(selectedOrderData.map(o => o.user_id))]
+  return userIds.length === 1
+})
+
+// Get selected orders data for the modal
+const selectedOrdersData = computed(() => {
+  return orders.value.filter(o => selectedOrders.value.includes(o.id))
 })
 
 // Methods
@@ -1431,7 +1558,7 @@ const confirmBulkDelete = () => {
 
 const bulkDelete = async () => {
   if (selectedOrders.value.length === 0) return
-  
+
   deletingBulk.value = true
   try {
     const response = await $customFetch('/admin/orders/bulk', {
@@ -1440,7 +1567,7 @@ const bulkDelete = async () => {
         order_ids: selectedOrders.value
       }
     })
-    
+
     if (response.success) {
       const toast = useToast()
       toast.success(t.value.deleteSuccess)
@@ -1454,6 +1581,42 @@ const bulkDelete = async () => {
     toast.error(t.value.deleteError)
   } finally {
     deletingBulk.value = false
+  }
+}
+
+// Merge orders
+const mergeOrders = async () => {
+  if (selectedOrders.value.length < 2) return
+
+  // Validate same user
+  if (!canMergeOrders.value) {
+    const toast = useToast()
+    toast.error(t.value.differentUsers)
+    return
+  }
+
+  mergingOrders.value = true
+  try {
+    const response = await $customFetch('/admin/orders/merge', {
+      method: 'POST',
+      body: {
+        order_ids: selectedOrders.value
+      }
+    })
+
+    if (response.success) {
+      const toast = useToast()
+      toast.success(t.value.mergeSuccess)
+      selectedOrders.value = []
+      showMergeModal.value = false
+      await fetchOrders(pagination.value.currentPage)
+    }
+  } catch (error) {
+    console.error('Error merging orders:', error)
+    const toast = useToast()
+    toast.error(error.data?.message || t.value.mergeError)
+  } finally {
+    mergingOrders.value = false
   }
 }
 

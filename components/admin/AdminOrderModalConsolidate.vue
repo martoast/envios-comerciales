@@ -255,18 +255,18 @@
                   <div class="space-y-2 text-sm">
                     <div class="flex justify-between">
                       <span class="text-purple-700">{{ t.beneficiary }}:</span>
-                      <span class="font-medium text-purple-900">ALEJANDRO MARTOS AYALA</span>
+                      <span class="font-medium text-purple-900">Erick Martos Ayala</span>
                     </div>
                     <div class="flex justify-between">
                       <span class="text-purple-700">{{ t.bank }}:</span>
-                      <span class="font-medium text-purple-900">NU Bank (NUVO)</span>
+                      <span class="font-medium text-purple-900">HSBC México</span>
                     </div>
                     <div class="flex justify-between">
                       <span class="text-purple-700">{{ t.accountNumber }}:</span>
-                      <span class="font-mono font-medium text-purple-900">638975000271400101</span>
+                      <span class="font-mono font-medium text-purple-900">6602161461</span>
                     </div>
                   </div>
-                  <p class="text-xs text-purple-600 mt-3">{{ t.bankDetailsNote }}</p>
+                  <p class="font-medium text-purple-600 mt-3">CLABE: 021028066021614616</p>
                 </div>
 
                 <!-- Customer Info -->
