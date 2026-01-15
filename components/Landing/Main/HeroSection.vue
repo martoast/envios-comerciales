@@ -49,7 +49,12 @@
                 </p>
                 
                 <!-- CTA Buttons -->
-                <div class="flex gap-4 justify-start flex-wrap">
+                <div
+                  class="flex gap-4 justify-start flex-wrap"
+                  @touchstart.stop
+                  @touchmove.stop
+                  @touchend.stop
+                >
                   <NuxtLink
                     :to="registerLink"
                     class="px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-full transition-all duration-300 hover:scale-105 hover:shadow-xl inline-flex items-center gap-2"
@@ -60,12 +65,12 @@
                     </svg>
                   </NuxtLink>
 
-                  <a
-                    href="/how-it-works"
+                  <NuxtLink
+                    to="/how-it-works"
                     class="px-8 py-4 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold rounded-full transition-all duration-300 border border-white/30"
                   >
                     {{ t.ctaHowItWorks }}
-                  </a>
+                  </NuxtLink>
                 </div>
 
                 <!-- Trustpilot Reviews Link -->
