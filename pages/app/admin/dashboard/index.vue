@@ -1469,8 +1469,10 @@ const fetchPendingOrders = async () => {
     const response = await $customFetch('/admin/orders', {
       params: { per_page: 100 }
     })
+    // API returns paginated data: response.data.data is the orders array
+    const ordersArray = response.data?.data || []
     // Filter orders that have pending balance
-    const ordersWithPending = (response.data || []).filter(order => getOrderPendingBalance(order) > 0)
+    const ordersWithPending = ordersArray.filter(order => getOrderPendingBalance(order) > 0)
     // Sort by pending amount (highest first) and take top 10
     pendingOrders.value = ordersWithPending
       .sort((a, b) => getOrderPendingBalance(b) - getOrderPendingBalance(a))
