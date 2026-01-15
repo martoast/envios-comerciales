@@ -8,7 +8,7 @@
       @toggle-menu="showActionsMenu = !showActionsMenu"
       @close-menu="showActionsMenu = false"
       @delete="openDeleteModal"
-      @print-label="showShippingLabelModal = true"
+      @print-label="order?.boxes?.length ? openBoxLabel(order.boxes[0], 1) : null"
       @view-message="showJesusMessageModal = true"
       @next-action="handleNextAction"
     />
@@ -380,7 +380,21 @@
                       <p class="text-xs text-gray-500">{{ formatBoxSizeLabelFull(box.box_size) }}</p>
                     </div>
                   </div>
-                  <p class="text-lg font-bold text-gray-900">${{ parseFloat(box.box_price).toFixed(2) }}</p>
+                  <div class="flex items-center gap-3">
+                    <p class="text-lg font-bold text-gray-900">${{ parseFloat(box.box_price).toFixed(2) }}</p>
+                    <!-- Print Label Button -->
+                    <button
+                      v-if="!isCrossing && order.delivery_address"
+                      @click="openBoxLabel(box, index + 1)"
+                      class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-primary-600 hover:text-primary-800 hover:bg-primary-50 rounded transition-colors"
+                      :title="t.printLabel"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                      </svg>
+                      <span class="hidden sm:inline">{{ t.printLabel }}</span>
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Box Dimensions & Weight -->
@@ -1143,10 +1157,13 @@
 
     <!-- Shipping Label Print Modal -->
     <AdminOrderShippingLabel
-      v-if="order"
+      v-if="order && selectedLabelBox"
       :show="showShippingLabelModal"
       :order="order"
-      @close="showShippingLabelModal = false"
+      :box="selectedLabelBox"
+      :box-index="selectedLabelBoxIndex"
+      :total-boxes="order.boxes?.length || 1"
+      @close="showShippingLabelModal = false; selectedLabelBox = null"
     />
 
     <!-- Jesus Message Modal -->
@@ -1260,6 +1277,8 @@ const showMarkArrivedModal = ref(false);
 const showDeleteModal = ref(false);
 const showMarkAllArrivedModal = ref(false);
 const showShippingLabelModal = ref(false);
+const selectedLabelBox = ref(null);
+const selectedLabelBoxIndex = ref(1);
 const showJesusMessageModal = ref(false);
 const showArrivalImageModal = ref(false);
 const imageZoomed = ref(false);
@@ -1363,6 +1382,7 @@ const translations = {
   markAllArrivedSuccess: { es: "Todos los artículos marcados como llegados", en: "All items marked as arrived" },
   markAllArrivedError: { es: "Error al marcar artículos", en: "Error marking items" },
   // Tracking status
+  printLabel: { es: "Imprimir Etiqueta", en: "Print Label" },
   trackingStatus: { es: "Estado de Envío", en: "Shipping Status" },
   trackOnEstafeta: { es: "Rastrear en Estafeta", en: "Track on Estafeta" },
   viewTracking: { es: "Ver Rastreo", en: "View Tracking" },
@@ -1614,6 +1634,13 @@ const copyToClipboard = async (text) => {
   } catch (err) {
     console.error("Failed to copy:", err);
   }
+};
+
+// Open shipping label modal for a specific box
+const openBoxLabel = (box, boxIndex) => {
+  selectedLabelBox.value = box;
+  selectedLabelBoxIndex.value = boxIndex;
+  showShippingLabelModal.value = true;
 };
 
 const fetchOrder = async () => {

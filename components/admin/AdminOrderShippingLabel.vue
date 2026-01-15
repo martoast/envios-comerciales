@@ -21,6 +21,7 @@
           <img src="/box.svg" alt="Boxly" class="logo" />
           <div class="order-info">
             <span class="order-number">Order #{{ order.order_number }}</span>
+            <span class="box-indicator">Box {{ boxIndex }} of {{ totalBoxes }}</span>
           </div>
         </div>
 
@@ -43,11 +44,11 @@
           </div>
         </div>
 
-        <!-- Box Details -->
-        <div v-if="hasBoxes" class="boxes-section">
-          <div class="boxes-label">Boxes:</div>
+        <!-- Box Details (single box) -->
+        <div v-if="box" class="boxes-section">
+          <div class="boxes-label">Box Details:</div>
           <div class="boxes-list">
-            <div v-for="(box, index) in order.boxes" :key="box.id || index" class="box-item">
+            <div class="box-item">
               <div class="box-name">{{ box.box_name || box.box_size }}</div>
               <div v-if="box.length || box.width || box.height || box.weight" class="box-specs">
                 <span v-if="box.length || box.width || box.height" class="box-dims">{{ box.length || '-' }} × {{ box.width || '-' }} × {{ box.height || '-' }} cm</span>
@@ -78,6 +79,21 @@ const props = defineProps({
   order: {
     type: Object,
     required: true
+  },
+  // Single box to display on this label
+  box: {
+    type: Object,
+    required: true
+  },
+  // Box number (1-indexed) for display
+  boxIndex: {
+    type: Number,
+    default: 1
+  },
+  // Total number of boxes in the order
+  totalBoxes: {
+    type: Number,
+    default: 1
   }
 })
 
@@ -111,26 +127,20 @@ const fullAddress = computed(() => {
   return parts.join(', ')
 })
 
-// Check if order has boxes
-const hasBoxes = computed(() => {
-  return props.order?.boxes && props.order.boxes.length > 0
-})
-
-// Format box details for print
+// Format single box details for print
 const formatBoxDetails = () => {
-  if (!hasBoxes.value) return ''
-  return props.order.boxes.map((box, index) => {
-    const name = box.box_name || box.box_size
-    const dims = (box.length || box.width || box.height)
-      ? `${box.length || '-'} × ${box.width || '-'} × ${box.height || '-'} cm`
-      : ''
-    const weight = box.weight ? `${box.weight} kg` : ''
-    const hasSpecs = dims || weight
-    const specsHtml = hasSpecs
-      ? `<div class="box-specs">${dims ? `<span class="box-dims">${dims}</span>` : ''}${weight ? `<span class="box-weight">${weight}</span>` : ''}</div>`
-      : ''
-    return `<div class="box-item"><div class="box-name">${name}</div>${specsHtml}</div>`
-  }).join('')
+  if (!props.box) return ''
+  const box = props.box
+  const name = box.box_name || box.box_size
+  const dims = (box.length || box.width || box.height)
+    ? `${box.length || '-'} × ${box.width || '-'} × ${box.height || '-'} cm`
+    : ''
+  const weight = box.weight ? `${box.weight} kg` : ''
+  const hasSpecs = dims || weight
+  const specsHtml = hasSpecs
+    ? `<div class="box-specs">${dims ? `<span class="box-dims">${dims}</span>` : ''}${weight ? `<span class="box-weight">${weight}</span>` : ''}</div>`
+    : ''
+  return `<div class="box-item"><div class="box-name">${name}</div>${specsHtml}</div>`
 }
 
 // Generate Code128 barcode as SVG
@@ -246,7 +256,9 @@ const printLabel = () => {
         }
 
         .logo { height: 0.5in; width: auto; }
-        .order-number { font-size: 14px; font-weight: bold; }
+        .order-info { text-align: right; }
+        .order-number { font-size: 14px; font-weight: bold; display: block; }
+        .box-indicator { font-size: 12px; color: #666; display: block; margin-top: 2px; }
 
         .ship-to-section { flex: 1; margin-bottom: 0.1in; }
         .section-title { font-size: 12px; font-weight: bold; color: #666; margin-bottom: 4px; }
@@ -296,6 +308,7 @@ const printLabel = () => {
           <img src="/box.svg" alt="Boxly" class="logo" />
           <div class="order-info">
             <span class="order-number">Order #${props.order.order_number}</span>
+            <span class="box-indicator">Box ${props.boxIndex} of ${props.totalBoxes}</span>
           </div>
         </div>
 
@@ -310,9 +323,9 @@ const printLabel = () => {
           ${props.order.user?.email ? `<div class="contact-item"><span class="contact-label">Email:</span><span class="email-text">${props.order.user.email}</span></div>` : ''}
         </div>
 
-        ${hasBoxes.value ? `
+        ${props.box ? `
         <div class="boxes-section">
-          <div class="boxes-label">Boxes:</div>
+          <div class="boxes-label">Box Details:</div>
           <div class="boxes-list">${formatBoxDetails()}</div>
         </div>
         ` : ''}
@@ -426,6 +439,13 @@ const printLabel = () => {
 .order-number {
   font-size: 14px;
   font-weight: bold;
+}
+
+.box-indicator {
+  font-size: 12px;
+  color: #666;
+  display: block;
+  margin-top: 2px;
 }
 
 .ship-to-section {

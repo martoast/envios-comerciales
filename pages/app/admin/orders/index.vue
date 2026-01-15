@@ -1390,40 +1390,55 @@ const getFullAddress = (order) => {
 }
 
 // Format box details for an order
-const formatBoxDetails = (order) => {
-  if (!order?.boxes || order.boxes.length === 0) return ''
-  return order.boxes.map(box => {
-    const name = box.box_name || box.box_size
-    const dims = (box.length || box.width || box.height)
-      ? `${box.length || '-'} × ${box.width || '-'} × ${box.height || '-'} cm`
-      : ''
-    const weight = box.weight ? `${box.weight} kg` : ''
-    const hasSpecs = dims || weight
-    const specsHtml = hasSpecs
-      ? `<div class="box-specs">${dims ? `<span class="box-dims">${dims}</span>` : ''}${weight ? `<span class="box-weight">${weight}</span>` : ''}</div>`
-      : ''
-    return `<div class="box-item"><div class="box-name">${name}</div>${specsHtml}</div>`
-  }).join('')
+// Format a single box's details for label
+const formatSingleBoxDetails = (box) => {
+  if (!box) return ''
+  const name = box.box_name || box.box_size
+  const dims = (box.length || box.width || box.height)
+    ? `${box.length || '-'} × ${box.width || '-'} × ${box.height || '-'} cm`
+    : ''
+  const weight = box.weight ? `${box.weight} kg` : ''
+  const hasSpecs = dims || weight
+  const specsHtml = hasSpecs
+    ? `<div class="box-specs">${dims ? `<span class="box-dims">${dims}</span>` : ''}${weight ? `<span class="box-weight">${weight}</span>` : ''}</div>`
+    : ''
+  return `<div class="box-item"><div class="box-name">${name}</div>${specsHtml}</div>`
 }
 
-// Print bulk order labels
+// Print bulk order labels - one label per box
 const printBulkLabels = () => {
   if (selectedOrders.value.length === 0) return
 
   const selectedOrderData = orders.value.filter(o => selectedOrders.value.includes(o.id))
 
+  // Flatten orders to get one entry per box
+  const boxLabels = []
+  selectedOrderData.forEach(order => {
+    if (order.boxes && order.boxes.length > 0) {
+      order.boxes.forEach((box, index) => {
+        boxLabels.push({
+          order,
+          box,
+          boxIndex: index + 1,
+          totalBoxes: order.boxes.length
+        })
+      })
+    }
+  })
+
+  if (boxLabels.length === 0) return
+
   const printWindow = window.open('', '_blank', 'width=450,height=650')
 
-  const labelsHtml = selectedOrderData.map(order => {
+  const labelsHtml = boxLabels.map(({ order, box, boxIndex, totalBoxes }) => {
     const barcodeSvg = generateBarcode(order.order_number)
     const fullAddress = getFullAddress(order)
-    const hasBoxes = order.boxes && order.boxes.length > 0
-    const boxesHtml = hasBoxes ? `
+    const boxHtml = `
       <div class="boxes-section">
-        <div class="boxes-label">Boxes:</div>
-        <div class="boxes-list">${formatBoxDetails(order)}</div>
+        <div class="boxes-label">Box:</div>
+        <div class="boxes-list">${formatSingleBoxDetails(box)}</div>
       </div>
-    ` : ''
+    `
 
     return `
       <div class="shipping-label">
@@ -1431,6 +1446,7 @@ const printBulkLabels = () => {
           <img src="/box.svg" alt="Boxly" class="logo" />
           <div class="order-info">
             <span class="order-number">Order #${order.order_number}</span>
+            <span class="box-indicator">Box ${boxIndex} of ${totalBoxes}</span>
           </div>
         </div>
 
@@ -1445,7 +1461,7 @@ const printBulkLabels = () => {
           ${order.user?.email ? `<div class="contact-item"><span class="contact-label">Email:</span><span class="email-text">${order.user.email}</span></div>` : ''}
         </div>
 
-        ${boxesHtml}
+        ${boxHtml}
 
         <div class="barcode-section">
           <div class="barcode">${barcodeSvg}</div>
@@ -1490,7 +1506,9 @@ const printBulkLabels = () => {
         }
 
         .logo { height: 0.5in; width: auto; }
+        .order-info { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
         .order-number { font-size: 14px; font-weight: bold; }
+        .box-indicator { font-size: 12px; font-weight: 600; color: #4f46e5; background: #eef2ff; padding: 2px 8px; border-radius: 4px; }
 
         .ship-to-section { flex: 1; margin-bottom: 0.1in; }
         .section-title { font-size: 12px; font-weight: bold; color: #666; margin-bottom: 4px; }
