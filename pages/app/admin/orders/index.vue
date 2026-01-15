@@ -241,6 +241,22 @@
                 </option>
               </select>
 
+              <!-- Pending Payment Filter -->
+              <button
+                @click="pendingPaymentFilter = !pendingPaymentFilter"
+                :class="[
+                  'px-4 py-2.5 border rounded-xl text-sm font-medium transition-all flex items-center gap-2',
+                  pendingPaymentFilter
+                    ? 'bg-orange-100 border-orange-300 text-orange-700'
+                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                ]"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {{ t.pendingPayment }}
+              </button>
+
               <!-- Date Range Picker -->
               <div class="relative">
                 <button
@@ -696,6 +712,25 @@
                   </select>
                 </div>
 
+                <!-- Pending Payment Filter -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.pendingPayment }}</label>
+                  <button
+                    @click="pendingPaymentFilter = !pendingPaymentFilter"
+                    :class="[
+                      'w-full px-4 py-3 border rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2',
+                      pendingPaymentFilter
+                        ? 'bg-orange-100 border-orange-300 text-orange-700'
+                        : 'bg-white border-gray-200 text-gray-600'
+                    ]"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    {{ pendingPaymentFilter ? t.pendingPayment + ' ✓' : t.pendingPayment }}
+                  </button>
+                </div>
+
                 <!-- Per Page -->
                 <div>
                   <label class="block text-sm font-semibold text-gray-700 mb-2">{{ t.perPageLabel }}</label>
@@ -933,6 +968,7 @@ const orders = ref([])
 const allOrders = ref([]) // Store all orders for stats calculation
 const loading = ref(true)
 const statusFilter = ref('')
+const pendingPaymentFilter = ref(false)
 const searchQuery = ref('')
 const searchDebounce = ref(null)
 const perPage = ref(25)
@@ -1026,7 +1062,8 @@ const translations = {
   // Per page
   perPageLabel: { es: 'Por página', en: 'Per page' },
   // Pending balance
-  pendingBalance: { es: 'Saldo Pendiente', en: 'Pending Balance' }
+  pendingBalance: { es: 'Saldo Pendiente', en: 'Pending Balance' },
+  pendingPayment: { es: 'Pago Pendiente', en: 'Pending Payment' }
 }
 
 // Get reactive translations
@@ -1040,13 +1077,14 @@ const perPageOptions = [10, 25, 50, 100, 200]
 
 // Check if any filters are active
 const hasActiveFilters = computed(() => {
-  return searchQuery.value || statusFilter.value || fromDate.value || toDate.value
+  return searchQuery.value || statusFilter.value || pendingPaymentFilter.value || fromDate.value || toDate.value
 })
 
 // Count active filters (excluding search)
 const activeFilterCount = computed(() => {
   let count = 0
   if (statusFilter.value) count++
+  if (pendingPaymentFilter.value) count++
   if (fromDate.value || toDate.value) count++
   return count
 })
@@ -1148,10 +1186,13 @@ const hasPendingBalance = (order) => {
 const fetchOrders = async (page = 1) => {
   loading.value = true
   try {
+    // When pending payment filter is active, fetch more orders and filter on frontend
+    const fetchPerPage = pendingPaymentFilter.value ? 500 : perPage.value
+
     const response = await $customFetch('/admin/orders', {
       params: {
-        page,
-        per_page: perPage.value,
+        page: pendingPaymentFilter.value ? 1 : page,
+        per_page: fetchPerPage,
         status: statusFilter.value || undefined,
         search: searchQuery.value || undefined,
         from_date: fromDate.value || undefined,
@@ -1159,13 +1200,33 @@ const fetchOrders = async (page = 1) => {
       }
     })
 
-    orders.value = response.data.data
-    pagination.value = {
-      currentPage: response.data.current_page,
-      lastPage: response.data.last_page,
-      from: response.data.from,
-      to: response.data.to,
-      total: response.data.total
+    let fetchedOrders = response.data.data
+
+    // Apply pending payment filter on frontend
+    if (pendingPaymentFilter.value) {
+      fetchedOrders = fetchedOrders.filter(order => hasPendingBalance(order))
+      // Manual pagination for filtered results
+      const start = (page - 1) * perPage.value
+      const end = start + perPage.value
+      const paginatedOrders = fetchedOrders.slice(start, end)
+
+      orders.value = paginatedOrders
+      pagination.value = {
+        currentPage: page,
+        lastPage: Math.ceil(fetchedOrders.length / perPage.value) || 1,
+        from: fetchedOrders.length > 0 ? start + 1 : 0,
+        to: Math.min(end, fetchedOrders.length),
+        total: fetchedOrders.length
+      }
+    } else {
+      orders.value = fetchedOrders
+      pagination.value = {
+        currentPage: response.data.current_page,
+        lastPage: response.data.last_page,
+        from: response.data.from,
+        to: response.data.to,
+        total: response.data.total
+      }
     }
   } catch (error) {
     console.error('Error fetching orders:', error)
@@ -1183,6 +1244,7 @@ const changePage = (page) => {
 const clearFilters = () => {
   searchQuery.value = ''
   statusFilter.value = ''
+  pendingPaymentFilter.value = false
   fromDate.value = ''
   toDate.value = ''
   datePreset.value = ''
@@ -1706,6 +1768,12 @@ watch(statusFilter, () => {
   updateQueryParams()
 })
 
+watch(pendingPaymentFilter, () => {
+  fetchOrders(1)
+  clearSelection()
+  updateQueryParams()
+})
+
 // Watch perPage
 watch(perPage, () => {
   fetchOrders(1)
@@ -1727,6 +1795,7 @@ watch(searchQuery, () => {
 const updateQueryParams = () => {
   const query = {}
   if (statusFilter.value) query.status = statusFilter.value
+  if (pendingPaymentFilter.value) query.pending = '1'
   if (searchQuery.value) query.search = searchQuery.value
   if (fromDate.value) query.from_date = fromDate.value
   if (toDate.value) query.to_date = toDate.value
@@ -1740,6 +1809,7 @@ const updateQueryParams = () => {
 const initFiltersFromQuery = () => {
   const q = route.query
   if (q.status) statusFilter.value = q.status
+  if (q.pending === '1') pendingPaymentFilter.value = true
   if (q.search) searchQuery.value = q.search
   if (q.from_date) fromDate.value = q.from_date
   if (q.to_date) toDate.value = q.to_date
