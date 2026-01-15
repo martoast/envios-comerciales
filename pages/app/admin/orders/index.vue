@@ -1116,6 +1116,10 @@ const totalSelectedBoxes = computed(() => {
 const getOrderPendingBalance = (order) => {
   if (!order) return 0
 
+  // If paid_at is set, final payment was made - no pending balance
+  // (amount_paid might be less than box_price due to adjustments/discounts)
+  if (order.paid_at) return 0
+
   // Calculate total price from boxes or legacy box_price
   let totalPrice = 0
   if (order.boxes && order.boxes.length > 0) {

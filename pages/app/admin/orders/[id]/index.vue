@@ -883,7 +883,8 @@
                 <div v-if="!isCrossing && !order.deposit_amount && order.box_price" class="mb-3 p-3 bg-primary-50 rounded-lg border border-primary-100">
                   <div class="flex justify-between items-center mb-2">
                     <span class="text-xs font-semibold text-primary-700">{{ t.consolidationPayment }} (100%)</span>
-                    <span class="text-sm font-bold text-gray-900">${{ totalBoxPrice.toFixed(2) }}</span>
+                    <!-- Show amount_paid when paid, otherwise show totalBoxPrice -->
+                    <span class="text-sm font-bold text-gray-900">${{ order.paid_at && order.amount_paid ? parseFloat(order.amount_paid).toFixed(2) : totalBoxPrice.toFixed(2) }}</span>
                   </div>
                   <div class="flex justify-between items-center">
                     <span
