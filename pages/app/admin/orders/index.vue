@@ -173,7 +173,7 @@
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                   </svg>
-                  {{ t.printLabels }} ({{ selectedOrders.length }})
+                  {{ t.printLabels }} ({{ totalSelectedBoxes }})
                 </button>
                 <button
                   v-if="canMergeOrders"
@@ -1081,6 +1081,13 @@ const canMergeOrders = computed(() => {
 // Get selected orders data for the modal
 const selectedOrdersData = computed(() => {
   return orders.value.filter(o => selectedOrders.value.includes(o.id))
+})
+
+// Calculate total boxes across all selected orders (for label count display)
+const totalSelectedBoxes = computed(() => {
+  return selectedOrdersData.value.reduce((total, order) => {
+    return total + (order.boxes?.length || 0)
+  }, 0)
 })
 
 // Methods
