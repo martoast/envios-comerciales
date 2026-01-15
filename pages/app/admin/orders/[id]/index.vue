@@ -117,11 +117,12 @@
               ref="replaceImageInput"
               accept="image/jpeg,image/jpg,image/png,image/webp"
               class="hidden"
-              @change="handleArrivalImageSelect"
+              @change="handleReplaceImageSelect"
             />
             <button
               @click="$refs.replaceImageInput.click()"
-              class="p-2 sm:px-3 sm:py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
+              :disabled="uploadingArrivalImage"
+              class="p-2 sm:px-3 sm:py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
               :title="t.replaceImage"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,7 +188,7 @@
               <p class="text-xs text-gray-500">{{ t.addArrivalImageHint }}</p>
             </div>
           </div>
-          <div>
+          <div class="flex items-center gap-2">
             <input
               type="file"
               ref="addImageInput"
@@ -196,6 +197,7 @@
               @change="handleArrivalImageSelect"
             />
             <button
+              v-if="!selectedArrivalImage"
               @click="$refs.addImageInput.click()"
               class="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex items-center gap-2"
             >
@@ -204,6 +206,31 @@
               </svg>
               {{ t.addPhoto }}
             </button>
+            <template v-else>
+              <span class="text-sm text-gray-600 truncate max-w-[120px]">{{ selectedArrivalImage.name }}</span>
+              <button
+                @click="selectedArrivalImage = null"
+                class="p-1 text-gray-500 hover:text-gray-700"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+              <button
+                @click="uploadArrivalImage"
+                :disabled="uploadingArrivalImage"
+                class="px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <svg v-if="uploadingArrivalImage" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                </svg>
+                {{ t.upload }}
+              </button>
+            </template>
           </div>
         </div>
       </div>
@@ -1318,6 +1345,7 @@ const translations = {
   uploadArrivalImageDesc: { es: "Sube una foto de los paquetes para confirmar y notificar al cliente.", en: "Upload a photo of the packages to confirm and notify the customer." },
   selectImage: { es: "Seleccionar Imagen", en: "Select Image" },
   uploadAndConfirm: { es: "Subir y Confirmar", en: "Upload & Confirm" },
+  upload: { es: "Subir", en: "Upload" },
   arrivalProofImage: { es: "Foto de Llegada", en: "Arrival Proof Photo" },
   arrivalImageUploaded: { es: "Foto enviada al cliente", en: "Photo sent to customer" },
   download: { es: "Descargar", en: "Download" },
@@ -1606,6 +1634,31 @@ const handleArrivalImageSelect = (event) => {
   const file = event.target.files?.[0];
   if (file) {
     selectedArrivalImage.value = file;
+  }
+};
+
+// Auto-upload handler for replace image scenario
+const handleReplaceImageSelect = async (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  uploadingArrivalImage.value = true;
+  try {
+    const formData = new FormData();
+    formData.append('arrival_image', file);
+
+    await $customFetch(`/admin/orders/${route.params.id}/arrival-image`, {
+      method: 'POST',
+      body: formData
+    });
+
+    $toast.success(t.value.uploadSuccess);
+    await fetchOrder();
+  } catch (error) {
+    $toast.error(error.data?.message || t.value.uploadError);
+  } finally {
+    uploadingArrivalImage.value = false;
+    event.target.value = ''; // Reset input
   }
 };
 
