@@ -8,7 +8,6 @@
       @toggle-menu="showActionsMenu = !showActionsMenu"
       @close-menu="showActionsMenu = false"
       @delete="openDeleteModal"
-      @print-label="order?.boxes?.length ? openBoxLabel(order.boxes[0], 1) : null"
       @view-message="showJesusMessageModal = true"
       @next-action="handleNextAction"
     />
