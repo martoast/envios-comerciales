@@ -1456,8 +1456,13 @@ const getOrderPendingBalance = (order) => {
 
   if (totalPrice === 0) return 0
 
-  const amountPaid = parseFloat(order.amount_paid || 0)
-  const pending = totalPrice - amountPaid
+  // Calculate total amount paid (including deposit if paid)
+  let totalPaid = parseFloat(order.amount_paid || 0)
+  if (order.deposit_paid_at && order.deposit_amount) {
+    totalPaid += parseFloat(order.deposit_amount)
+  }
+
+  const pending = totalPrice - totalPaid
   return pending > 0 ? pending : 0
 }
 

@@ -1169,11 +1169,15 @@ const getOrderPendingBalance = (order) => {
   // If no price set yet, no pending balance
   if (totalPrice === 0) return 0
 
-  // Calculate amount paid
-  const amountPaid = parseFloat(order.amount_paid || 0)
+  // Calculate total amount paid (including deposit if paid)
+  let totalPaid = parseFloat(order.amount_paid || 0)
+  // Add deposit amount if deposit was paid
+  if (order.deposit_paid_at && order.deposit_amount) {
+    totalPaid += parseFloat(order.deposit_amount)
+  }
 
   // Calculate pending balance
-  const pending = totalPrice - amountPaid
+  const pending = totalPrice - totalPaid
   return pending > 0 ? pending : 0
 }
 
