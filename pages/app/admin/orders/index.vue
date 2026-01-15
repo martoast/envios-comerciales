@@ -436,6 +436,16 @@
                     <div>
                       <p class="font-semibold text-gray-900">{{ order.tracking_number }}</p>
                       <p class="text-xs text-gray-500 mt-1">{{ order.user?.name }}</p>
+                      <!-- Pending Balance Indicator -->
+                      <span
+                        v-if="hasPendingBalance(order)"
+                        class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-full"
+                      >
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        ${{ getOrderPendingBalance(order).toFixed(2) }}
+                      </span>
                     </div>
                     <!-- USE COMPOSABLE -->
                     <span :class="[
@@ -527,6 +537,16 @@
                   <td class="px-6 py-4 whitespace-nowrap cursor-pointer" @click="navigateTo(`/app/admin/orders/${order.id}`)">
                     <div>
                       <p class="text-sm font-semibold text-gray-900">{{ order.tracking_number }}</p>
+                      <!-- Pending Balance Indicator -->
+                      <span
+                        v-if="hasPendingBalance(order)"
+                        class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-full"
+                      >
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        ${{ getOrderPendingBalance(order).toFixed(2) }}
+                      </span>
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap cursor-pointer" @click="navigateTo(`/app/admin/orders/${order.id}`)">
@@ -1004,7 +1024,9 @@ const translations = {
   clearAll: { es: 'Limpiar todo', en: 'Clear all' },
   applyFilters: { es: 'Aplicar filtros', en: 'Apply filters' },
   // Per page
-  perPageLabel: { es: 'Por página', en: 'Per page' }
+  perPageLabel: { es: 'Por página', en: 'Per page' },
+  // Pending balance
+  pendingBalance: { es: 'Saldo Pendiente', en: 'Pending Balance' }
 }
 
 // Get reactive translations
@@ -1089,6 +1111,34 @@ const totalSelectedBoxes = computed(() => {
     return total + (order.boxes?.length || 0)
   }, 0)
 })
+
+// Calculate pending balance for an order
+const getOrderPendingBalance = (order) => {
+  if (!order) return 0
+
+  // Calculate total price from boxes or legacy box_price
+  let totalPrice = 0
+  if (order.boxes && order.boxes.length > 0) {
+    totalPrice = order.boxes.reduce((sum, box) => sum + parseFloat(box.box_price || 0), 0)
+  } else if (order.box_price) {
+    totalPrice = parseFloat(order.box_price || 0)
+  }
+
+  // If no price set yet, no pending balance
+  if (totalPrice === 0) return 0
+
+  // Calculate amount paid
+  const amountPaid = parseFloat(order.amount_paid || 0)
+
+  // Calculate pending balance
+  const pending = totalPrice - amountPaid
+  return pending > 0 ? pending : 0
+}
+
+// Check if order has pending balance
+const hasPendingBalance = (order) => {
+  return getOrderPendingBalance(order) > 0
+}
 
 // Methods
 const fetchOrders = async (page = 1) => {
