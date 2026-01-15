@@ -674,76 +674,6 @@
           </div>
         </div>
 
-        <!-- Pending Payments List -->
-        <div
-          v-if="pendingOrders.length > 0 || loadingPendingOrders"
-          class="bg-white rounded-2xl shadow-sm border border-border overflow-hidden animate-fadeIn"
-          style="animation-delay: 0.8s"
-        >
-          <!-- Header -->
-          <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="p-2 rounded-lg bg-orange-100">
-                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-              </div>
-              <h3 class="font-semibold text-gray-900">{{ t.pendingPayments }}</h3>
-            </div>
-            <NuxtLink
-              to="/app/admin/orders"
-              class="text-sm text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1"
-            >
-              {{ t.viewAll }}
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
-            </NuxtLink>
-          </div>
-
-          <!-- Loading State -->
-          <div v-if="loadingPendingOrders" class="p-8 text-center">
-            <div class="w-6 h-6 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          </div>
-
-          <!-- Orders List -->
-          <div v-else class="divide-y divide-gray-50">
-            <NuxtLink
-              v-for="order in pendingOrders"
-              :key="order.id"
-              :to="`/app/admin/orders/${order.id}`"
-              class="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition-colors group"
-            >
-              <div class="flex items-center gap-4 min-w-0">
-                <div class="flex-shrink-0">
-                  <div class="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                    </svg>
-                  </div>
-                </div>
-                <div class="min-w-0">
-                  <p class="text-sm font-medium text-gray-900 truncate">{{ order.order_number }}</p>
-                  <p class="text-xs text-gray-500 truncate">{{ order.user?.name }}</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-3">
-                <span class="inline-flex items-center px-2.5 py-1 bg-orange-100 text-orange-700 text-sm font-semibold rounded-lg">
-                  ${{ formatMoney(getOrderPendingBalance(order)) }}
-                </span>
-                <svg class="w-4 h-4 text-gray-400 group-hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-              </div>
-            </NuxtLink>
-          </div>
-
-          <!-- Empty State (should not show if section is hidden when empty) -->
-          <div v-if="!loadingPendingOrders && pendingOrders.length === 0" class="p-8 text-center">
-            <p class="text-sm text-gray-500">{{ t.noPendingOrders }}</p>
-          </div>
-        </div>
-
         <!-- Marketing Metrics Row (Show when conversations > 0) -->
         <div
           v-if="hasConversations"
@@ -1140,8 +1070,6 @@ const { t: createTranslations } = useLanguage();
 const loading = ref(true);
 const dashboardData = ref(null);
 const selectedPeriod = ref("");
-const pendingOrders = ref([]);
-const loadingPendingOrders = ref(false);
 
 // Get current date
 const currentDate = new Date();
@@ -1400,13 +1328,6 @@ const translations = {
   expenses: { es: "Gastos", en: "Expenses" },
   accountsReceivable: { es: "Cuentas por Cobrar", en: "Accounts Receivable" },
   unpaidOrders: { es: "órdenes pendientes", en: "unpaid orders" },
-  pendingPayments: { es: "Pagos Pendientes", en: "Pending Payments" },
-  order: { es: "Orden", en: "Order" },
-  customer: { es: "Cliente", en: "Customer" },
-  pending: { es: "Pendiente", en: "Pending" },
-  viewOrder: { es: "Ver", en: "View" },
-  viewAll: { es: "Ver Todos", en: "View All" },
-  noPendingOrders: { es: "No hay órdenes con pagos pendientes", en: "No orders with pending payments" },
 };
 
 const t = createTranslations(translations);
@@ -1440,54 +1361,6 @@ const fetchDashboard = async () => {
 const refreshData = async () => {
   await fetchDashboard();
 };
-
-// Calculate pending balance for an order
-const getOrderPendingBalance = (order) => {
-  if (!order) return 0
-  // If paid_at is set, final payment was made - no pending balance
-  if (order.paid_at) return 0
-
-  let totalPrice = 0
-  if (order.boxes && order.boxes.length > 0) {
-    totalPrice = order.boxes.reduce((sum, box) => sum + parseFloat(box.box_price || 0), 0)
-  } else if (order.box_price) {
-    totalPrice = parseFloat(order.box_price || 0)
-  }
-
-  if (totalPrice === 0) return 0
-
-  // Calculate total amount paid (including deposit if paid)
-  let totalPaid = parseFloat(order.amount_paid || 0)
-  if (order.deposit_paid_at && order.deposit_amount) {
-    totalPaid += parseFloat(order.deposit_amount)
-  }
-
-  const pending = totalPrice - totalPaid
-  return pending > 0 ? pending : 0
-}
-
-// Fetch orders with pending payments
-const fetchPendingOrders = async () => {
-  loadingPendingOrders.value = true
-  try {
-    // Fetch recent orders (we'll filter for pending on frontend)
-    const response = await $customFetch('/admin/orders', {
-      params: { per_page: 100 }
-    })
-    // API returns paginated data: response.data.data is the orders array
-    const ordersArray = response.data?.data || []
-    // Filter orders that have pending balance
-    const ordersWithPending = ordersArray.filter(order => getOrderPendingBalance(order) > 0)
-    // Sort by pending amount (highest first) and take top 10
-    pendingOrders.value = ordersWithPending
-      .sort((a, b) => getOrderPendingBalance(b) - getOrderPendingBalance(a))
-      .slice(0, 10)
-  } catch (error) {
-    console.error('Error fetching pending orders:', error)
-  } finally {
-    loadingPendingOrders.value = false
-  }
-}
 
 const getCategoryLabel = (category) => {
   return t.value[category] || category;
@@ -1542,7 +1415,6 @@ onMounted(() => {
     "0"
   )}`;
   fetchDashboard();
-  fetchPendingOrders();
 });
 </script>
 
