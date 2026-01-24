@@ -2204,8 +2204,8 @@ const handleSubmit = async () => {
 
     if (boxesChanged) {
       if (form.value.boxes.length === 0) {
-        // Explicitly tell backend to delete all boxes
-        formData.append('clear_boxes', '1');
+        // Send empty boxes to tell backend to delete all boxes
+        formData.append('boxes', '');
       } else {
         // Add all boxes with their GIA data and dimensions
         form.value.boxes.forEach((box, index) => {
