@@ -69,6 +69,52 @@
                 {{ t.clearSelection }}
               </button>
             </div>
+            <!-- Merge Button -->
+            <button
+              v-if="canMergeRequests"
+              @click="confirmMerge"
+              :disabled="mergingRequests"
+              class="inline-flex items-center px-4 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            >
+              <svg
+                v-if="!mergingRequests"
+                class="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                />
+              </svg>
+              <svg
+                v-else
+                class="animate-spin h-4 w-4 mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              {{ mergingRequests ? t.merging : t.mergeRequests }} ({{ selectedRequests.length }})
+            </button>
+
+            <!-- Delete Button -->
             <button
               @click="confirmBulkDelete"
               :disabled="deletingBulk"
@@ -401,6 +447,100 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Merge Confirmation Modal -->
+    <Teleport to="body">
+      <div v-if="showMergeModal" class="fixed inset-0 z-50 overflow-y-auto">
+        <div
+          class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0"
+        >
+          <div
+            class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+            @click="showMergeModal = false"
+          ></div>
+
+          <div
+            class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full p-6"
+          >
+            <div class="sm:flex sm:items-start">
+              <div
+                class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-amber-100 rounded-full sm:mx-0 sm:h-10 sm:w-10"
+              >
+                <svg
+                  class="w-6 h-6 text-amber-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
+                <h3 class="text-lg font-medium leading-6 text-gray-900">
+                  {{ t.confirmMerge }}
+                </h3>
+                <div class="mt-3">
+                  <!-- Selected requests list -->
+                  <div class="max-h-48 overflow-y-auto space-y-2 mb-3">
+                    <div
+                      v-for="req in requests.filter((r) =>
+                        selectedRequests.includes(r.id)
+                      )"
+                      :key="req.id"
+                      class="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                    >
+                      <div class="flex items-center gap-2">
+                        <span class="font-medium text-sm text-gray-900">{{
+                          req.request_number
+                        }}</span>
+                        <span class="text-xs text-gray-500"
+                          >({{ req.items?.length || 0 }} items)</span
+                        >
+                      </div>
+                      <span
+                        :class="[
+                          'px-2 py-0.5 rounded-full text-xs font-medium',
+                          getStatusColor(req.status),
+                        ]"
+                      >
+                        {{ getStatusLabel(req.status) }}
+                      </span>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-500">
+                    {{ t.mergeDescription }}
+                  </p>
+                  <p class="text-sm text-amber-600 mt-2 font-medium">
+                    {{ t.mergeWarning }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-3">
+              <button
+                @click="mergeRequests"
+                :disabled="mergingRequests"
+                class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-amber-500 border border-transparent rounded-lg shadow-sm hover:bg-amber-600 sm:w-auto sm:text-sm disabled:opacity-50"
+              >
+                {{ mergingRequests ? t.merging : t.yesMerge }}
+              </button>
+              <button
+                @click="showMergeModal = false"
+                :disabled="mergingRequests"
+                class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm disabled:opacity-50"
+              >
+                {{ t.cancel }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </section>
 </template>
 
@@ -451,6 +591,16 @@ const translations = {
   },
   yesDelete: { es: "Sí, eliminar", en: "Yes, delete" },
   cancel: { es: "Cancelar", en: "Cancel" },
+  // Merge
+  mergeRequests: { es: "Unir Solicitudes", en: "Merge Requests" },
+  merging: { es: "Uniendo...", en: "Merging..." },
+  confirmMerge: { es: "¿Unir estas solicitudes?", en: "Merge these requests?" },
+  mergeDescription: { es: "Todos los artículos de las solicitudes seleccionadas se moverán a una sola solicitud. Las otras solicitudes serán eliminadas.", en: "All items from selected requests will be moved to a single request. Other requests will be deleted." },
+  mergeWarning: { es: "La solicitud con el estado más avanzado será la que se mantenga.", en: "The request with the furthest status will be kept." },
+  yesMerge: { es: "Sí, unir", en: "Yes, merge" },
+  mergeSuccess: { es: "Solicitudes unidas exitosamente", en: "Requests merged successfully" },
+  mergeError: { es: "Error al unir solicitudes", en: "Error merging requests" },
+  differentUsers: { es: "Las solicitudes seleccionadas deben pertenecer al mismo usuario", en: "Selected requests must belong to the same user" },
   // Statuses
   pendingReview: { es: "Pendiente Revisión", en: "Pending Review" },
   quoted: { es: "Cotizado", en: "Quoted" },
@@ -477,12 +627,24 @@ const pagination = ref({
 const selectedRequests = ref([]);
 const showDeleteModal = ref(false);
 const deletingBulk = ref(false);
+const showMergeModal = ref(false);
+const mergingRequests = ref(false);
 
 const allSelected = computed(() => {
   return (
     requests.value.length > 0 &&
     selectedRequests.value.length === requests.value.length
   );
+});
+
+// Check if selected requests can be merged (same user, 2+ requests)
+const canMergeRequests = computed(() => {
+  if (selectedRequests.value.length < 2) return false;
+  const selectedData = requests.value.filter((r) =>
+    selectedRequests.value.includes(r.id)
+  );
+  const userIds = [...new Set(selectedData.map((r) => r.user_id))];
+  return userIds.length === 1;
 });
 
 const fetchRequests = async (page = 1) => {
@@ -567,6 +729,44 @@ const bulkDelete = async () => {
     $toast.error("Error deleting requests");
   } finally {
     deletingBulk.value = false;
+  }
+};
+
+// Merge Requests
+const confirmMerge = () => {
+  if (!canMergeRequests.value) {
+    $toast.error(t.value.differentUsers);
+    return;
+  }
+  showMergeModal.value = true;
+};
+
+const mergeRequests = async () => {
+  if (selectedRequests.value.length < 2) return;
+
+  if (!canMergeRequests.value) {
+    $toast.error(t.value.differentUsers);
+    return;
+  }
+
+  mergingRequests.value = true;
+  try {
+    const response = await $customFetch("/admin/purchase-requests/merge", {
+      method: "POST",
+      body: { request_ids: selectedRequests.value },
+    });
+
+    if (response.success) {
+      $toast.success(t.value.mergeSuccess);
+      selectedRequests.value = [];
+      showMergeModal.value = false;
+      await fetchRequests(pagination.value.currentPage);
+    }
+  } catch (e) {
+    console.error("Error merging requests:", e);
+    $toast.error(e.data?.message || t.value.mergeError);
+  } finally {
+    mergingRequests.value = false;
   }
 };
 
