@@ -2203,22 +2203,27 @@ const handleSubmit = async () => {
     const boxesChanged = JSON.stringify(originalBoxesCompare) !== JSON.stringify(currentBoxesCompare) || hasGiaFiles;
 
     if (boxesChanged) {
-      // Add all boxes with their GIA data and dimensions
-      form.value.boxes.forEach((box, index) => {
-        if (box.id) {
-          formData.append(`boxes[${index}][id]`, box.id);
-        }
-        formData.append(`boxes[${index}][stripe_price_id]`, box.stripe_price_id);
-        formData.append(`boxes[${index}][guia_number]`, box.guia_number ?? '');
-        if (box.new_gia_file) {
-          formData.append(`boxes[${index}][gia_file]`, box.new_gia_file);
-        }
-        // Add dimensions
-        if (box.length != null) formData.append(`boxes[${index}][length]`, box.length);
-        if (box.width != null) formData.append(`boxes[${index}][width]`, box.width);
-        if (box.height != null) formData.append(`boxes[${index}][height]`, box.height);
-        if (box.weight != null) formData.append(`boxes[${index}][weight]`, box.weight);
-      });
+      if (form.value.boxes.length === 0) {
+        // Explicitly tell backend to delete all boxes
+        formData.append('boxes', '[]');
+      } else {
+        // Add all boxes with their GIA data and dimensions
+        form.value.boxes.forEach((box, index) => {
+          if (box.id) {
+            formData.append(`boxes[${index}][id]`, box.id);
+          }
+          formData.append(`boxes[${index}][stripe_price_id]`, box.stripe_price_id);
+          formData.append(`boxes[${index}][guia_number]`, box.guia_number ?? '');
+          if (box.new_gia_file) {
+            formData.append(`boxes[${index}][gia_file]`, box.new_gia_file);
+          }
+          // Add dimensions
+          if (box.length != null) formData.append(`boxes[${index}][length]`, box.length);
+          if (box.width != null) formData.append(`boxes[${index}][width]`, box.width);
+          if (box.height != null) formData.append(`boxes[${index}][height]`, box.height);
+          if (box.weight != null) formData.append(`boxes[${index}][weight]`, box.weight);
+        });
+      }
     }
 
     // Use POST with _method=PUT for FormData (Laravel convention)
