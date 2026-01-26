@@ -89,7 +89,7 @@
                 <div class="space-y-2 font-mono text-sm bg-white p-4 rounded-lg">
                   <p class="font-bold text-gray-900">{{ t.step2NameExample }}</p>
                   <p class="text-gray-700">{{ t.step2AddressExample }}</p>
-                  <p class="text-gray-700">San Diego, CA 91915</p>
+                  <p class="text-gray-700">San Ysidro, CA 92173</p>
                 </div>
               </div>
               <div class="flex items-start gap-3 text-sm">

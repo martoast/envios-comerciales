@@ -664,8 +664,8 @@ const fullUserName = computed(() => {
 
 // PO Box Address
 const poBoxAddress = computed(() => ({
-  line1: `2220 Otay Lakes Rd. Suite 502 #95`,
-  line2: "Chula Vista CA 91915",
+  line1: `482 W. San Ysidro Blvd. Apt. 123`,
+  line2: "San Ysidro, CA 92173",
 }));
 
 // Translations

@@ -203,7 +203,7 @@
         </div>
 
         <!-- Register Link -->
-        <div class="text-center">
+        <div class="text-center mt-6">
           <p class="text-sm sm:text-base text-gray-600">
             {{ t.dontHaveAccount }}
           </p>
