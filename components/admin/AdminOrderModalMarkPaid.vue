@@ -92,16 +92,16 @@ const isCrossing = computed(() => props.order?.order_type === 'crossing')
 // All orders now use 100% full payment
 const paymentTypeLabel = computed(() => t.value.fullPayment)
 
-// Calculate the payment amount - all orders now use 100% payment
+// Calculate the payment amount from boxes or box_price
 const paymentAmount = computed(() => {
   if (!props.order) return null
 
-  if (isCrossing.value) {
-    // Crossing: 100% payment = deposit_amount (which stores the full amount)
-    return props.order.deposit_amount
+  // Sum boxes if available
+  if (props.order.boxes && props.order.boxes.length > 0) {
+    return props.order.boxes.reduce((sum, box) => sum + parseFloat(box.box_price || 0), 0)
   }
 
-  // Shipping: 100% payment = box_price
+  // Fallback to box_price
   return props.order.box_price
 })
 
@@ -133,9 +133,8 @@ const t = createTranslations(translations)
 const confirm = async () => {
   processing.value = true
   try {
-    await $customFetch(`/admin/orders/${props.order.id}/status`, {
-      method: 'PUT',
-      body: { status: 'paid' }
+    await $customFetch(`/admin/orders/${props.order.id}/mark-consolidation-paid`, {
+      method: 'POST'
     })
     $toast.success(t.value.success)
     emit('success')

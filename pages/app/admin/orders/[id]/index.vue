@@ -1436,6 +1436,7 @@ const icons = {
   ship: '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>',
   warehouse: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>',
   check: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+  money: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
 };
 
 // Compute next action button for header
@@ -1471,6 +1472,16 @@ const nextAction = computed(() => {
         action: 'consolidate',
       };
     }
+  }
+
+  // awaiting_payment → Mark as Paid (manual payment confirmation)
+  if (status === 'awaiting_payment' && !order.value.paid_at) {
+    return {
+      label: t.value.markAsPaid,
+      color: 'bg-green-600 hover:bg-green-700',
+      iconSvg: icons.money,
+      action: 'markPaid',
+    };
   }
 
   // processing/paid → Ship Order (shipping) or Mark Ready for Pickup (crossing)
@@ -1536,6 +1547,9 @@ const handleNextAction = () => {
       break;
     case 'markDelivered':
       showMarkDeliveredModal.value = true;
+      break;
+    case 'markPaid':
+      showMarkPaidModal.value = true;
       break;
   }
 };
