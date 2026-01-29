@@ -31,7 +31,8 @@
           <h1 class="text-base font-bold text-gray-900 truncate">
             #{{ order?.order_number }}
           </h1>
-          <p class="text-xs text-gray-500 truncate">{{ order?.user?.name }}</p>
+          <NuxtLink v-if="order?.user?.id" :to="`/app/admin/customers/${order.user.id}`" class="text-xs text-primary-600 hover:text-primary-800 hover:underline truncate block">{{ order?.user?.name }}</NuxtLink>
+          <p v-else class="text-xs text-gray-500 truncate">{{ order?.user?.name }}</p>
         </div>
 
         <div class="flex items-center gap-2 flex-shrink-0">
@@ -102,7 +103,11 @@
                 {{ isCrossing ? t.crossingOnly : t.shipping }}
               </span>
             </div>
-            <p class="text-sm text-gray-500 truncate">{{ order?.user?.name }} · {{ order?.user?.email }}</p>
+            <p class="text-sm text-gray-500 truncate">
+              <NuxtLink v-if="order?.user?.id" :to="`/app/admin/customers/${order.user.id}`" class="text-primary-600 hover:text-primary-800 hover:underline">{{ order?.user?.name }}</NuxtLink>
+              <span v-else>{{ order?.user?.name }}</span>
+              · {{ order?.user?.email }}
+            </p>
           </div>
         </div>
 
