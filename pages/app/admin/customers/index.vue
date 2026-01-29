@@ -183,39 +183,24 @@
               </button>
             </div>
 
-            <!-- Filters - Full Width on Mobile, Inline on Desktop -->
-            <div
-              class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-            >
-              <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
-                <label class="flex items-center gap-3 cursor-pointer">
-                  <input
-                    v-model="activeOnly"
-                    type="checkbox"
-                    class="w-4 h-4 text-primary-600 bg-white border-gray-300 rounded focus:ring-primary-500 focus:ring-2 cursor-pointer"
-                  />
-                  <span class="text-sm text-gray-700">{{
-                    t.showActiveOnly
-                  }}</span>
-                </label>
-                <label class="flex items-center gap-3 cursor-pointer">
-                  <input
-                    v-model="noOrders"
-                    type="checkbox"
-                    class="w-4 h-4 text-primary-600 bg-white border-gray-300 rounded focus:ring-primary-500 focus:ring-2 cursor-pointer"
-                  />
-                  <span class="text-sm text-gray-700">{{
-                    t.showNoOrders
-                  }}</span>
-                </label>
-              </div>
-
-              <!-- Active Filters Count (Desktop) -->
-              <div
-                v-if="(searchQuery || activeOnly || noOrders) && !loading"
-                class="hidden sm:flex items-center gap-2 text-sm text-gray-600"
+            <!-- Filter Dropdown -->
+            <div class="flex items-center justify-between gap-3">
+              <select
+                v-model="customerFilter"
+                class="block w-full sm:w-auto px-3 py-2.5 sm:py-2 border border-gray-200 rounded-xl bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all cursor-pointer"
               >
-                <span>{{ t.showingFiltered }}</span>
+                <option value="all">{{ t.filterAll }}</option>
+                <option value="active_only">{{ t.filterActiveOrders }}</option>
+                <option value="has_orders">{{ t.filterHasOrders }}</option>
+                <option value="no_orders">{{ t.filterNoOrders }}</option>
+              </select>
+
+              <!-- Active Filters Indicator -->
+              <div
+                v-if="(searchQuery || customerFilter !== 'all') && !loading"
+                class="flex items-center gap-2 text-sm text-gray-600"
+              >
+                <span class="hidden sm:inline">{{ t.showingFiltered }}</span>
                 <button
                   @click="clearFilters"
                   class="text-primary-600 hover:text-primary-700 font-medium"
@@ -223,20 +208,6 @@
                   {{ t.clearFilters }}
                 </button>
               </div>
-            </div>
-
-            <!-- Active Filters Count (Mobile) -->
-            <div
-              v-if="(searchQuery || activeOnly || noOrders) && !loading"
-              class="sm:hidden flex items-center justify-between text-sm"
-            >
-              <span class="text-gray-600">{{ t.showingFiltered }}</span>
-              <button
-                @click="clearFilters"
-                class="text-primary-600 hover:text-primary-700 font-medium"
-              >
-                {{ t.clearFilters }}
-              </button>
             </div>
           </div>
         </div>
@@ -541,8 +512,7 @@ const customers = ref([]);
 const allCustomers = ref([]); // Store all customers for stats
 const loading = ref(true);
 const searchQuery = ref("");
-const activeOnly = ref(false);
-const noOrders = ref(false);
+const customerFilter = ref("all");
 const searchDebounce = ref(null);
 const pagination = ref({
   currentPage: 1,
@@ -566,13 +536,21 @@ const translations = {
     es: "Buscar por nombre, correo o teléfono...",
     en: "Search by name, email or phone...",
   },
-  showActiveOnly: {
-    es: "Mostrar solo clientes con órdenes activas",
-    en: "Show only customers with active orders",
+  filterAll: {
+    es: "Todos los clientes",
+    en: "All customers",
   },
-  showNoOrders: {
-    es: "Mostrar solo clientes sin órdenes",
-    en: "Show only customers without orders",
+  filterActiveOrders: {
+    es: "Con órdenes activas",
+    en: "With active orders",
+  },
+  filterHasOrders: {
+    es: "Con órdenes",
+    en: "With orders",
+  },
+  filterNoOrders: {
+    es: "Sin órdenes",
+    en: "Without orders",
   },
   exportCsv: {
     es: "Exportar CSV",
@@ -743,8 +721,9 @@ const fetchCustomers = async (page = 1) => {
     const params = {
       page,
       search: searchQuery.value || undefined,
-      active_only: activeOnly.value || undefined,
-      no_orders: noOrders.value || undefined,
+      active_only: customerFilter.value === 'active_only' || undefined,
+      has_orders: customerFilter.value === 'has_orders' || undefined,
+      no_orders: customerFilter.value === 'no_orders' || undefined,
     };
 
     const response = await $customFetch("/admin/customers", { params });
@@ -787,8 +766,7 @@ const changePage = (page) => {
 
 const clearFilters = () => {
   searchQuery.value = "";
-  activeOnly.value = false;
-  noOrders.value = false;
+  customerFilter.value = "all";
   fetchCustomers(1).then(() => updateQueryParams());
 };
 
@@ -796,8 +774,7 @@ const clearFilters = () => {
 const updateQueryParams = () => {
   const query = {};
   if (searchQuery.value) query.search = searchQuery.value;
-  if (activeOnly.value) query.active_only = 'true';
-  if (noOrders.value) query.no_orders = 'true';
+  if (customerFilter.value !== 'all') query.filter = customerFilter.value;
   if (pagination.value.currentPage > 1) query.page = pagination.value.currentPage;
   router.replace({ query });
 };
@@ -806,16 +783,18 @@ const updateQueryParams = () => {
 const initFiltersFromQuery = () => {
   const q = route.query;
   if (q.search) searchQuery.value = q.search;
-  if (q.active_only === 'true') activeOnly.value = true;
-  if (q.no_orders === 'true') noOrders.value = true;
+  if (q.filter && ['active_only', 'has_orders', 'no_orders'].includes(q.filter)) {
+    customerFilter.value = q.filter;
+  }
 };
 
 const exportCustomers = async () => {
   try {
     const params = new URLSearchParams();
     if (searchQuery.value) params.append('search', searchQuery.value);
-    if (activeOnly.value) params.append('active_only', 'true');
-    if (noOrders.value) params.append('no_orders', 'true');
+    if (customerFilter.value === 'active_only') params.append('active_only', 'true');
+    if (customerFilter.value === 'has_orders') params.append('has_orders', 'true');
+    if (customerFilter.value === 'no_orders') params.append('no_orders', 'true');
 
     const queryString = params.toString();
     const url = `/admin/customers/export${queryString ? '?' + queryString : ''}`;
@@ -855,13 +834,8 @@ watch(searchQuery, () => {
   }, 300);
 });
 
-// Watch active only filter
-watch(activeOnly, () => {
-  fetchCustomers(1).then(() => updateQueryParams());
-});
-
-// Watch no orders filter
-watch(noOrders, () => {
+// Watch customer filter
+watch(customerFilter, () => {
   fetchCustomers(1).then(() => updateQueryParams());
 });
 
