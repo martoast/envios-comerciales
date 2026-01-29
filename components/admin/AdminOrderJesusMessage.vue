@@ -178,11 +178,13 @@ const getBoxDetails = () => {
 // Generate the message
 const generateMessage = () => {
   const name = props.order?.user?.name || ''
+  const phone = props.order?.user?.phone || ''
   const address = getFullAddress()
   const boxDetails = getBoxDetails()
   const shipping = shippingType.value === 'air' ? 'Avión Estafeta' : 'Terrestre Estafeta'
 
   let message = `Nombre: ${name}\n`
+  if (phone) message += `    •    Teléfono: ${phone}\n`
   message += `    •    Dirección: ${address}\n`
 
   // Handle single or multiple boxes
