@@ -99,37 +99,45 @@
             </div>
 
             <!-- Bulk Actions Bar (only show when items selected) -->
-            <div v-if="selectedOrders.length > 0" class="flex items-center justify-between p-3 bg-primary-50 border border-primary-200 rounded-xl">
-              <div class="flex items-center gap-3">
-                <span class="text-sm font-medium text-primary-900">
-                  {{ selectedOrders.length }} {{ t.selected }}
-                </span>
-                <button
-                  @click="clearSelection"
-                  class="text-sm text-primary-600 hover:text-primary-700 font-medium"
-                >
-                  {{ t.clearSelection }}
-                </button>
-              </div>
-              <div class="flex items-center gap-2">
-                <button
-                  @click="printBulkLabels"
-                  class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-all duration-300"
-                >
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                  </svg>
-                  {{ t.printLabels }}
-                </button>
-                <button
-                  @click="exportOrders"
-                  class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-300"
-                >
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                  </svg>
-                  {{ t.exportCsv }}
-                </button>
+            <div v-if="selectedOrders.length > 0" class="space-y-2">
+              <div class="flex items-center justify-between p-3 bg-primary-50 border border-primary-200 rounded-xl">
+                <div class="flex flex-col gap-1">
+                  <span class="text-sm font-medium text-primary-900">
+                    {{ selectAllFiltered ? t.allFilteredSelected.replace('{count}', pagination.total) : selectedOrders.length + ' ' + t.selected }}
+                  </span>
+                  <div class="flex items-center gap-2">
+                    <button
+                      @click="clearSelection"
+                      class="text-xs text-primary-600 hover:text-primary-700 font-medium"
+                    >
+                      {{ t.clearSelection }}
+                    </button>
+                    <button
+                      v-if="showSelectAllFiltered"
+                      @click="selectAllFilteredOrders"
+                      class="text-xs text-primary-600 hover:text-primary-700 font-medium underline"
+                    >
+                      {{ t.selectAllFiltered.replace('{count}', pagination.total) }}
+                    </button>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button
+                    @click="printBulkLabels"
+                    class="inline-flex items-center px-3 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-all duration-300"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    </svg>
+                  </button>
+                  <button
+                    @click="exportOrders"
+                    class="inline-flex items-center px-3 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-300"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                  </button>
                 <button
                   v-if="canMergeOrders"
                   @click="showMergeModal = true"
@@ -156,43 +164,53 @@
                   {{ deletingBulk ? t.deleting : t.deleteSelected }}
                 </button>
               </div>
+              </div>
             </div>
           </div>
 
           <!-- Desktop: Inline Search and Filters -->
           <div class="hidden sm:block space-y-3">
             <!-- Bulk Actions Bar (only show when items selected) -->
-            <div v-if="selectedOrders.length > 0" class="flex items-center justify-between p-3 bg-primary-50 border border-primary-200 rounded-xl">
-              <div class="flex items-center gap-3">
-                <span class="text-sm font-medium text-primary-900">
-                  {{ selectedOrders.length }} {{ t.selected }}
-                </span>
-                <button
-                  @click="clearSelection"
-                  class="text-sm text-primary-600 hover:text-primary-700 font-medium"
-                >
-                  {{ t.clearSelection }}
-                </button>
-              </div>
-              <div class="flex items-center gap-2">
-                <button
-                  @click="printBulkLabels"
-                  class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-all duration-300"
-                >
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                  </svg>
-                  {{ t.printLabels }} ({{ totalSelectedBoxes }})
-                </button>
-                <button
-                  @click="exportOrders"
-                  class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-300"
-                >
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                  </svg>
-                  {{ t.exportCsv }} ({{ selectedOrders.length }})
-                </button>
+            <div v-if="selectedOrders.length > 0" class="space-y-2">
+              <div class="flex items-center justify-between p-3 bg-primary-50 border border-primary-200 rounded-xl">
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-medium text-primary-900">
+                    {{ selectAllFiltered ? t.allFilteredSelected.replace('{count}', pagination.total) : selectedOrders.length + ' ' + t.selected }}
+                  </span>
+                  <button
+                    @click="clearSelection"
+                    class="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    {{ t.clearSelection }}
+                  </button>
+                  <!-- Show "Select all X orders" link when all on current page selected but more exist -->
+                  <button
+                    v-if="showSelectAllFiltered"
+                    @click="selectAllFilteredOrders"
+                    class="text-sm text-primary-600 hover:text-primary-700 font-medium underline"
+                  >
+                    {{ t.selectAllFiltered.replace('{count}', pagination.total) }}
+                  </button>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button
+                    @click="printBulkLabels"
+                    class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-all duration-300"
+                  >
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    </svg>
+                    {{ t.printLabels }} ({{ totalSelectedBoxes }})
+                  </button>
+                  <button
+                    @click="exportOrders"
+                    class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-300"
+                  >
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    {{ t.exportCsv }} ({{ exportCount }})
+                  </button>
                 <button
                   v-if="canMergeOrders"
                   @click="showMergeModal = true"
@@ -218,6 +236,7 @@
                   </svg>
                   {{ deletingBulk ? t.deleting : t.deleteSelected }}
                 </button>
+              </div>
               </div>
             </div>
 
@@ -1005,6 +1024,7 @@ const pagination = ref({
 
 // Bulk delete state
 const selectedOrders = ref([])
+const selectAllFiltered = ref(false) // When true, export ALL filtered orders (not just current page)
 const showDeleteModal = ref(false)
 const deletingBulk = ref(false)
 
@@ -1049,6 +1069,8 @@ const translations = {
   manage: { es: 'Gestionar', en: 'Manage' },
   printLabels: { es: 'Imprimir Etiquetas', en: 'Print Labels' },
   exportCsv: { es: 'Exportar CSV', en: 'Export CSV' },
+  selectAllFiltered: { es: 'Seleccionar las {count} órdenes', en: 'Select all {count} orders' },
+  allFilteredSelected: { es: 'Las {count} órdenes están seleccionadas', en: 'All {count} orders are selected' },
   // Merge orders
   mergeOrders: { es: 'Unir Órdenes', en: 'Merge Orders' },
   merging: { es: 'Uniendo...', en: 'Merging...' },
@@ -1147,6 +1169,16 @@ const dateRangeLabel = computed(() => {
 // Bulk selection computed
 const allSelected = computed(() => {
   return orders.value.length > 0 && selectedOrders.value.length === orders.value.length
+})
+
+// Show "select all X filtered orders" option when all on current page are selected but more exist
+const showSelectAllFiltered = computed(() => {
+  return allSelected.value && !selectAllFiltered.value && pagination.value.total > orders.value.length
+})
+
+// Count for export button - show total when selectAllFiltered, otherwise show selected count
+const exportCount = computed(() => {
+  return selectAllFiltered.value ? pagination.value.total : selectedOrders.value.length
 })
 
 // Check if selected orders can be merged (same user, 2+ orders)
@@ -1423,6 +1455,7 @@ const isSelected = (orderId) => {
 }
 
 const toggleSelection = (orderId) => {
+  selectAllFiltered.value = false // Reset when manually toggling
   const index = selectedOrders.value.indexOf(orderId)
   if (index > -1) {
     selectedOrders.value.splice(index, 1)
@@ -1432,6 +1465,7 @@ const toggleSelection = (orderId) => {
 }
 
 const toggleSelectAll = () => {
+  selectAllFiltered.value = false // Reset when toggling select all
   if (allSelected.value) {
     selectedOrders.value = []
   } else {
@@ -1439,8 +1473,13 @@ const toggleSelectAll = () => {
   }
 }
 
+const selectAllFilteredOrders = () => {
+  selectAllFiltered.value = true
+}
+
 const clearSelection = () => {
   selectedOrders.value = []
+  selectAllFiltered.value = false
 }
 
 // Generate Code128 barcode as SVG (same as AdminOrderShippingLabel)
@@ -1715,16 +1754,18 @@ const exportOrders = async () => {
   try {
     const params = new URLSearchParams()
 
-    // If orders are selected, export only those
-    if (selectedOrders.value.length > 0) {
-      selectedOrders.value.forEach(id => params.append('order_ids[]', id))
-    } else {
-      // Otherwise export based on current filters
+    // If selectAllFiltered is true, export ALL orders matching current filters
+    // Otherwise if specific orders are selected, export only those
+    if (selectAllFiltered.value || selectedOrders.value.length === 0) {
+      // Export based on current filters (all filtered orders)
       if (statusFilter.value) params.append('status', statusFilter.value)
       if (searchQuery.value) params.append('search', searchQuery.value)
       if (fromDate.value) params.append('from_date', fromDate.value)
       if (toDate.value) params.append('to_date', toDate.value)
       if (pendingPaymentFilter.value) params.append('pending_payment', 'true')
+    } else {
+      // Export only specifically selected orders
+      selectedOrders.value.forEach(id => params.append('order_ids[]', id))
     }
 
     const queryString = params.toString()
