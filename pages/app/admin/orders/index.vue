@@ -122,6 +122,15 @@
                   {{ t.printLabels }}
                 </button>
                 <button
+                  @click="exportOrders"
+                  class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-300"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  {{ t.exportCsv }}
+                </button>
+                <button
                   v-if="canMergeOrders"
                   @click="showMergeModal = true"
                   :disabled="mergingOrders"
@@ -174,6 +183,15 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                   </svg>
                   {{ t.printLabels }} ({{ totalSelectedBoxes }})
+                </button>
+                <button
+                  @click="exportOrders"
+                  class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-300"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  {{ t.exportCsv }} ({{ selectedOrders.length }})
                 </button>
                 <button
                   v-if="canMergeOrders"
@@ -1030,6 +1048,7 @@ const translations = {
   deleteError: { es: 'Error al eliminar órdenes', en: 'Error deleting orders' },
   manage: { es: 'Gestionar', en: 'Manage' },
   printLabels: { es: 'Imprimir Etiquetas', en: 'Print Labels' },
+  exportCsv: { es: 'Exportar CSV', en: 'Export CSV' },
   // Merge orders
   mergeOrders: { es: 'Unir Órdenes', en: 'Merge Orders' },
   merging: { es: 'Uniendo...', en: 'Merging...' },
@@ -1689,6 +1708,45 @@ const printBulkLabels = () => {
 
   printWindow.document.write(html)
   printWindow.document.close()
+}
+
+// Export selected orders to CSV
+const exportOrders = async () => {
+  try {
+    const params = new URLSearchParams()
+
+    // If orders are selected, export only those
+    if (selectedOrders.value.length > 0) {
+      selectedOrders.value.forEach(id => params.append('order_ids[]', id))
+    } else {
+      // Otherwise export based on current filters
+      if (statusFilter.value) params.append('status', statusFilter.value)
+      if (searchQuery.value) params.append('search', searchQuery.value)
+      if (fromDate.value) params.append('from_date', fromDate.value)
+      if (toDate.value) params.append('to_date', toDate.value)
+      if (pendingPaymentFilter.value) params.append('pending_payment', 'true')
+    }
+
+    const queryString = params.toString()
+    const url = `/admin/orders/export${queryString ? '?' + queryString : ''}`
+
+    const response = await $customFetch(url, {
+      responseType: 'blob'
+    })
+
+    // Create download link
+    const blob = new Blob([response], { type: 'text/csv' })
+    const downloadUrl = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = downloadUrl
+    link.download = `orders-${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(downloadUrl)
+  } catch (error) {
+    console.error('Error exporting orders:', error)
+  }
 }
 
 const confirmBulkDelete = () => {
